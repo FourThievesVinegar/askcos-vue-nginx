@@ -20,51 +20,53 @@
  * @param {Number} args.asProduct - Occurrences in training data as a product for annotation.
  * @param {Number} args.size - Length of shortest dimension of annotated image.
  */
-function getImageUrl({ smiles, inputType, svg, transparent, highlight, drawMap, reactingAtoms, reference, align, annotate, ppg, asReactant, asProduct, size}) {
-  let params = new URLSearchParams()
-  params.append('smiles', smiles)
+function getImageUrl({
+  smiles, inputType, svg, transparent, highlight, drawMap, reactingAtoms, reference, align, annotate, ppg, asReactant, asProduct, size,
+}) {
+  const params = new URLSearchParams();
+  params.append('smiles', smiles);
   if (inputType !== undefined) {
-    params.append('input_type', inputType)
+    params.append('input_type', inputType);
   }
   if (svg !== undefined) {
-    params.append('svg', svg)
+    params.append('svg', svg);
   }
   if (transparent !== undefined) {
-    params.append('transparent', transparent)
+    params.append('transparent', transparent);
   }
   if (highlight !== undefined) {
-    params.append('highlight', highlight)
+    params.append('highlight', highlight);
   }
   if (drawMap !== undefined) {
-    params.append('draw_map', drawMap)
+    params.append('draw_map', drawMap);
   }
   if (reactingAtoms !== undefined) {
-    for (let ra of reactingAtoms) {
-      params.append('reacting_atoms', ra)
+    for (const ra of reactingAtoms) {
+      params.append('reacting_atoms', ra);
     }
   }
   if (reference !== undefined) {
-    params.append('reference', reference)
+    params.append('reference', reference);
   }
   if (align !== undefined) {
-    params.append('align', align)
+    params.append('align', align);
   }
   if (annotate !== undefined) {
-    params.append('annotate', annotate)
+    params.append('annotate', annotate);
   }
   if (ppg !== undefined) {
-    params.append('ppg', ppg)
+    params.append('ppg', ppg);
   }
   if (asReactant !== undefined) {
-    params.append('as_reactant', asReactant)
+    params.append('as_reactant', asReactant);
   }
   if (asProduct !== undefined) {
-    params.append('as_product', asProduct)
+    params.append('as_product', asProduct);
   }
   if (size !== undefined) {
-    params.append('size', size)
+    params.append('size', size);
   }
-  return `/api/v2/draw/?${params.toString()}`
+  return `/api/v2/draw/?${params.toString()}`;
 }
 
 function getMolImageUrl(precursor, highlight, transparent, reference, annotate, size) {
@@ -76,43 +78,42 @@ function getMolImageUrl(precursor, highlight, transparent, reference, annotate, 
   if (typeof precursor === 'string') {
     return getImageUrl({
       smiles: precursor,
-      transparent: transparent,
-      reference: reference,
-    })
-  } else if (annotate) {
+      transparent,
+      reference,
+    });
+  } if (annotate) {
     return getImageUrl({
       smiles: precursor.id,
-      transparent: transparent,
-      reference: reference,
-      annotate: annotate,
+      transparent,
+      reference,
+      annotate,
       ppg: precursor.ppg === 'not buyable' ? 0 : precursor.ppg,
       asReactant: precursor.asReactant,
       asProduct: precursor.asProduct,
-      size: size,
-    })
-  } else if (highlight && precursor.mappedSmiles !== undefined && precursor.reactingAtoms !== undefined) {
+      size,
+    });
+  } if (highlight && precursor.mappedSmiles !== undefined && precursor.reactingAtoms !== undefined) {
     return getImageUrl({
       smiles: precursor.mappedSmiles,
-      highlight: highlight,
-      transparent: transparent,
+      highlight,
+      transparent,
       reactingAtoms: precursor.reactingAtoms,
-      reference: reference,
-    })
-  } else if (precursor.smiles !== undefined) {
+      reference,
+    });
+  } if (precursor.smiles !== undefined) {
     return getImageUrl({
       smiles: precursor.smiles,
-      transparent: transparent,
-      reference: reference,
-    })
-  } else if (precursor.precursorSmiles !== undefined) {
+      transparent,
+      reference,
+    });
+  } if (precursor.precursorSmiles !== undefined) {
     return getImageUrl({
       smiles: precursor.precursorSmiles,
-      transparent: transparent,
-      reference: reference,
-    })
-  } else {
-    return ''
+      transparent,
+      reference,
+    });
   }
+  return '';
 }
 
-export {getImageUrl, getMolImageUrl};
+export { getImageUrl, getMolImageUrl };

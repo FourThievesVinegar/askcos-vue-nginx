@@ -1,10 +1,10 @@
 // Plugins
-import vue from "@vitejs/plugin-vue";
-import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
+import { fileURLToPath, URL } from 'node:url';
+import vue from '@vitejs/plugin-vue';
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
 
 // Utilities
-import { defineConfig } from "vite";
-import { fileURLToPath, URL } from "node:url";
+import { defineConfig } from 'vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -16,18 +16,18 @@ export default defineConfig({
     vuetify({
       autoImport: true,
       styles: {
-        configFile: "src/styles/settings.scss",
+        configFile: 'src/styles/settings.scss',
       },
     }),
   ],
-  define: { "process.env": {} },
+  define: { 'process.env': {} },
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
-    extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
+    extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue'],
   },
-  base: "./",
+  base: './',
   server: {
     port: 3000,
     proxy: {
@@ -36,7 +36,7 @@ export default defineConfig({
         target: 'https://askcos-demo.mit.edu',
         changeOrigin: true,
         ws: true,
-      }
+      },
     },
   },
 });
