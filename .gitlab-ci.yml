@@ -1,0 +1,30 @@
+stages:
+  - test
+
+lint-js:
+  stage: test
+  image: node:18-alpine
+  before_script:
+    - cd askcos_vue
+    - npm ci
+  script:
+    - npm run lint
+
+flow-js:
+  stage: test
+  image: node:18-alpine
+  before_script:
+    - apk add gcompat
+    - cd askcos_vue
+    - npm ci
+  script:
+    - npm run flow
+
+test-js:
+  stage: test
+  image: node:18-alpine
+  before_script:
+    - cd askcos_vue
+    - npm ci
+  script:
+    - npm run test
