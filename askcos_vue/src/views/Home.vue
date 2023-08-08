@@ -1,36 +1,61 @@
 <template>
-  <v-container fluid>
-    <v-row style="min-height: 100vh" class="justify-center">
+  <v-container fluid style="min-height: calc(100vh-50px)">
+    <v-row class="justify-center">
       <v-col cols="12" sm="8" md="10">
         <h1 class="my-6 text-center">
           ASKCOS: Software tools for organic synthesis
         </h1>
-
-        <v-sheet elevation="5" rounded="lg" width="100%" class="pa-6">
-          <h2 class="my-6">This is ASKCOS!</h2>
-          <v-divider></v-divider>
-          <p class="mt-6">
-            Here, we have hosted a number of computational tools to assist in
-            synthetic planning and other aspects of organic chemistry. These are
-            listed and described in the Modules tab in the top navigation bar.
-            Please keep in mind that this service is supported by a fixed amount
-            of computational resources. Your requests may take significantly
-            longer than expected if there are several other users on the site
-            also performing computationally-expensive requests.
-          </p>
-          <p class="mt-6">
-            This work began under the DARPA Make-It program (ARO
+        <v-expand-transition>
+          <v-sheet
+            elevation="5"
+            rounded="lg"
+            width="100%"
+            class="pa-6"
+            v-show="show"
+          >
+            <h2 class="my-6">🧪 This is ASKCOS!</h2>
+            <v-divider></v-divider>
+            <p class="mt-6">
+              Here, we have hosted a number of computational tools to assist in
+              synthetic planning and other aspects of organic chemistry. These
+              are listed and described in the Modules tab in the top navigation
+              bar. Please keep in mind that this service is supported by a fixed
+              amount of computational resources. Your requests may take
+              significantly longer than expected if there are several other
+              users on the site also performing computationally-expensive
+              requests.
+            </p>
+            <v-expansion-panels class="mt-6" variant="accordion">
+              <v-expansion-panel
+                text="This work began under the DARPA Make-It program (ARO
             W911NF-16-2-0023) and continues to be supported by the Machine
             Learning for Pharmaceutical Discovery and Synthesis Consortium.
             Several of the deployed models are described in publications listed
-            here.
-          </p>
-          <p class="mt-6">
-            If you have any questions or if any of the links/images appear
-            broken, please email mlpds_support@mit.edu.
-          </p>
-          <p class="mt-6">
-            THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESSED OR IMPLIED
+            here."
+                class="text-blue-darken-3"
+              >
+                <template v-slot:title
+                  ><span
+                    ><v-icon class="mr-1">mdi mdi-domain</v-icon
+                    ><strong
+                      >Machine Learning for Pharmaceutical Discovery and
+                      Synthesis (MLPDS) Consortium</strong
+                    ></span
+                  ></template
+                >
+              </v-expansion-panel>
+              <v-expansion-panel
+                text="If you have any questions or if any of the links/images appear
+            broken, please email mlpds_support@mit.edu."
+                class="text-blue-darken-3"
+              >
+                <template v-slot:title
+                  ><v-icon class="mr-1">mdi mdi-lifebuoy</v-icon
+                  ><strong>Support</strong></template
+                >
+              </v-expansion-panel>
+              <v-expansion-panel
+                text='THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESSED OR IMPLIED
             WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
             MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
             IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
@@ -40,31 +65,44 @@
             INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
             IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
             OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
-            IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-          </p>
-        </v-sheet>
-        <v-sheet elevation="5" rounded="lg" width="100%" class="my-6 pa-6">
-          <h2 class="my-6">Getting Started!</h2>
-          <v-divider></v-divider>
-          <LaunchPad></LaunchPad>
-        </v-sheet>
+            IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."'
+                class="text-blue-darken-3"
+              >
+                <template v-slot:title
+                  ><v-icon class="mr-1">mdi mdi-license</v-icon
+                  ><strong>License</strong></template
+                >
+              </v-expansion-panel>
+            </v-expansion-panels>
+          </v-sheet>
+        </v-expand-transition>
+        <v-expand-transition>
+          <v-sheet
+            elevation="5"
+            rounded="lg"
+            width="100%"
+            class="my-6 pa-6"
+            v-show="show"
+          >
+            <h2 class="my-6">🚀 Getting Started!</h2>
+            <v-divider></v-divider>
+            <LaunchPad></LaunchPad>
+          </v-sheet>
+        </v-expand-transition>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import LaunchPad from "@/components/home/Launchpad.vue"
+import { ref, onMounted} from "vue";
+import LaunchPad from "@/components/home/Launchpad.vue";
 
-const loaded = ref(false);
-const loading = ref(false);
+const show = ref(false);
 
-function onClick() {
-  loading.value = true;
-  setTimeout(() => {
-    loading.value = false;
-    loaded.value = true;
-  }, 2000);
-}
+onMounted(() => {
+  show.value = true; // <div>
+});
+
 </script>
+

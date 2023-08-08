@@ -16,11 +16,56 @@
       <template v-slot:append>
         <v-btn-group color="primary" rounded divided>
           <v-btn prepend-icon="mdi mdi-pencil">Draw</v-btn>
-          <v-btn prepend-icon="mdi mdi-web" @click="canonicalize(smiles, 'smiles')">Canonicalize</v-btn>
+          <v-btn prepend-icon="mdi mdi-web" @click="start">Canonicalize</v-btn>
         </v-btn-group>
       </template>
     </v-text-field>
-    <div class="row text-center">
+    <v-dialog  v-model="dialog" width="auto" scrollable>
+      <v-card>
+        <v-card-title>🎓 Coley Research Group</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text style="height: 500px;">
+          <v-list class="py-0">
+            <v-list-item>Connor Coley</v-list-item>
+            <v-list-item>Zhengkai Tu</v-list-item>
+            <v-list-item>Mengjie Liu</v-list-item>
+            <v-list-item>Mark Murnin</v-list-item>
+            <v-list-item>Michael Fortunato</v-list-item>
+            <v-list-item>Jihye Roh</v-list-item>
+            <v-list-item>Joonyoung Joung</v-list-item>
+            <v-list-item>Kevin Greenman</v-list-item>
+            <v-list-item>Mun Hong Fong</v-list-item>
+            <v-list-item>Seung Kyun Ha</v-list-item>
+            <v-list-item>Shinje Lee</v-list-item>
+            <v-list-item>Priyanka Raghavan</v-list-item>
+            <v-list-item>Itai Levin</v-list-item>
+            <v-list-item>Florence Vermeire</v-list-item>
+            <v-list-item>Fanwang Meng</v-list-item>
+            <v-list-item>Sourabh Choure</v-list-item>
+            <v-list-item>Christian Ulmer</v-list-item>
+            <v-list-item>Florence Vermeire</v-list-item>
+            <v-list-item>Ioannis Lignos</v-list-item>
+            <v-list-item>Jiannan Liu</v-list-item>
+            <v-list-item>John Bradshaw</v-list-item>
+            <v-list-item>Nathaniel Kim</v-list-item>
+            <v-list-item>Pearce Kieser</v-list-item>
+            <v-list-item>Pritha Verma</v-list-item>
+            <v-list-item>Thijs Stuyver</v-list-item>
+            <v-list-item>Travis Nevins</v-list-item>
+            <v-list-item>Vladislav Cherdantsev</v-list-item>
+            <v-list-item>Wenhao Gao</v-list-item>
+            <v-list-item>Yanfei Guan</v-list-item>
+          </v-list>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-btn color="primary" block @click="stop"
+            >Take me back!</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- <div class="row text-center">
       <div class="col-12">
         <div class="input-group">
           <div class="input-group-prepend">
@@ -45,7 +90,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div v-if="!!smiles" class="row text-center my-5">
       <div class="col-12">
@@ -479,7 +524,7 @@
 </style>
 
 <script>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, getCurrentInstance } from "vue";
 import KetcherModal from "@/components/KetcherModal";
 import CopyTooltip from "@/components/CopyTooltip";
 import SmilesImage from "@/components/SmilesImage";
@@ -496,6 +541,7 @@ export default {
     SmilesImage,
   },
   setup() {
+    const dialog = ref(false);
     const smiles = ref("");
     const validSmiles = ref(false);
     const scscore = ref(undefined);
@@ -512,6 +558,8 @@ export default {
     const tbPresetOptions = ref(TB_PRESETS);
     const tbDesc = ref("");
 
+    const globals = getCurrentInstance().appContext.config.globalProperties;
+
     const context = computed(() =>
       JSON.parse(document.getElementById("django-context").textContent)
     );
@@ -527,7 +575,7 @@ export default {
     const canonicalize = (smiles, field) => {
       API.post("/api/v2/rdkit/smiles/canonicalize/", { smiles: smiles })
         .then((json) => {
-          console.log(json)
+          console.log(json);
           field.value = json.smiles;
         })
         .catch((error) => {
@@ -653,6 +701,16 @@ export default {
         });
     };
 
+    const start = () => {
+      dialog.value = true;
+      globals.$confetti.start();
+    };
+
+    const stop = () => {
+      dialog.value = false;
+      globals.$confetti.stop();
+    };
+
     watch(smiles, (newVal, oldVal) => {
       if (newVal !== oldVal) {
         validSmiles.value = false;
@@ -666,6 +724,7 @@ export default {
     });
 
     return {
+      dialog,
       smiles,
       validSmiles,
       scscore,
@@ -690,6 +749,8 @@ export default {
       getClassification,
       tbPresetToArgs,
       sendTreeBuilderJob,
+      start,
+      stop,
     };
   },
 };
@@ -716,5 +777,15 @@ export default {
   justify-content: center;
   text-align: center;
   min-height: 100px;
+}
+
+</style>
+
+<style>
+.v-overlay__scrim{
+  opacity: 0 !important
+}
+#confetti-canvas {
+  z-index: 999;
 }
 </style>
