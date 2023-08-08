@@ -16,11 +16,11 @@
       <template v-slot:append>
         <v-btn-group color="primary" rounded divided>
           <v-btn prepend-icon="mdi mdi-pencil">Draw</v-btn>
-          <v-btn prepend-icon="mdi mdi-web" @click="canonicalize(smiles, 'smiles')">Canonicalize</v-btn>
+          <v-btn prepend-icon="mdi mdi-web">Canonicalize</v-btn>
         </v-btn-group>
       </template>
     </v-text-field>
-    <div class="row text-center">
+    <!-- <div class="row text-center">
       <div class="col-12">
         <div class="input-group">
           <div class="input-group-prepend">
@@ -45,7 +45,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div v-if="!!smiles" class="row text-center my-5">
       <div class="col-12">
@@ -479,7 +479,7 @@
 </style>
 
 <script>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch} from "vue";
 import KetcherModal from "@/components/KetcherModal";
 import CopyTooltip from "@/components/CopyTooltip";
 import SmilesImage from "@/components/SmilesImage";
@@ -527,7 +527,7 @@ export default {
     const canonicalize = (smiles, field) => {
       API.post("/api/v2/rdkit/smiles/canonicalize/", { smiles: smiles })
         .then((json) => {
-          console.log(json)
+          console.log(json);
           field.value = json.smiles;
         })
         .catch((error) => {
@@ -717,4 +717,5 @@ export default {
   text-align: center;
   min-height: 100px;
 }
+
 </style>

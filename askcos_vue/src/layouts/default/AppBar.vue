@@ -4,18 +4,19 @@
     rail
     elevation="10"
     @update:rail="onDrawerCollapse"
+    width="100px"
   >
     <v-list>
       <v-list-item
         prepend-icon="mdi-chemical-weapon"
         title="ASKCOS"
-        subtitle="by MIT ChemE"
+        subtitle="Demo"
       ></v-list-item>
     </v-list>
 
     <v-divider></v-divider>
 
-    <v-list density="comfortable" nav v-model:opened="openGroups">
+    <v-list nav v-model:opened="openGroups" color="primary">
       <v-list-group value="modules" no-action>
         <template v-slot:activator="{ props }">
           <v-list-item
@@ -30,12 +31,81 @@
           title="Overview"
           value="overview"
         ></v-list-item>
-        <v-divider></v-divider>
-        <v-list-item
-          prepend-icon="mdi-help-box"
-          title="Interactive Path Planning/Tree Builder"
-          value="IIP"
-        ></v-list-item>
+        <v-list-group value="Retrosynthesis" subgroup>
+          <template v-slot:activator="{ props }">
+            <v-list-item v-bind="props" title="Retrosynthesis"></v-list-item>
+          </template>
+
+          <v-list-item
+            prepend-icon="mdi-help-box"
+            title="Interactive Path Planning/Tree Builder"
+            value="IPP"
+          ></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-help-box"
+            title="Retrosynthesis Prediction"
+            value="RP"
+          ></v-list-item>
+        </v-list-group>
+        <v-list-group value="ForwardSynthesis" subgroup>
+          <template v-slot:activator="{ props }">
+            <v-list-item v-bind="props" title="Forward Synthesis"></v-list-item>
+          </template>
+
+          <v-list-item
+            prepend-icon="mdi-help-box"
+            title="Condition Recommendation"
+            value="CR"
+          ></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-help-box"
+            title="Synthesis Prediction"
+            value="SP"
+          ></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-help-box"
+            title="Impurity Prediction"
+            value="IP"
+          ></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-help-box"
+            title="Regio-selectivity Prediction"
+            value="RSP"
+          ></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-help-box"
+            title="Aromatic Site Selectivity"
+            value="ARSS"
+          ></v-list-item>
+        </v-list-group>
+
+        <v-list-group value="Utilities" subgroup>
+          <template v-slot:activator="{ props }">
+            <v-list-item v-bind="props" title="Utilities"></v-list-item>
+          </template>
+
+          <v-list-item
+            prepend-icon="mdi-help-box"
+            title="Solubility Prediction"
+            value="USP"
+          ></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-help-box"
+            title="Solvent Screening"
+            value="USS"
+          ></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-help-box"
+            title="Buyable Look-up"
+            value="UBLU"
+          ></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-help-box"
+            title="Drawing"
+            value="UD"
+          ></v-list-item>
+        </v-list-group>
+        
       </v-list-group>
       <v-list-item
         prepend-icon="mdi-help-box"
@@ -73,3 +143,9 @@ function onDrawerCollapse(value) {
   }
 }
 </script>
+
+<style>
+.v-icon {
+  margin-inline-end: 0px;
+}
+</style>
