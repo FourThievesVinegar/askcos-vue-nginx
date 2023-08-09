@@ -3,15 +3,14 @@
     <!-- drawing box -->
     <!-- <ketcher-modal v-model="smiles"></ketcher-modal> -->
     <v-text-field
+      v-model="smiles"
       class="centered-input my-6"
-      :loading="loading"
       density="compact"
       variant="solo"
       label="Enter a molecule or reaction SMILES to explore available tasks"
       prepend-inner-icon="mdi-magnify"
       single-line
       hide-details
-      @click:append-inner="onClick"
     >
       <template v-slot:append>
         <v-btn-group color="primary" rounded divided>
@@ -47,8 +46,8 @@
       </div>
     </div> -->
 
-    <div v-if="!!smiles" class="row text-center my-5">
-      <div class="col-12">
+    <div v-if="!!smiles" class="my-5">
+      <div>
         <smiles-image
           :smiles="smiles"
           allow-copy
@@ -58,7 +57,7 @@
       </div>
     </div>
 
-    <template v-if="validSmiles && type === 'mol'">
+    <!-- <template v-if="validSmiles && type === 'mol'">
       <div class="card-deck my-5">
         <div class="card bg-light">
           <div class="card-body launchcard-body">
@@ -462,7 +461,7 @@
           </template>
         </div>
       </div>
-    </template>
+    </template> -->
   </div>
 </template>
 
@@ -479,7 +478,7 @@
 </style>
 
 <script>
-import { ref, computed, watch} from "vue";
+import { ref, computed, watch } from "vue";
 import KetcherModal from "@/components/KetcherModal";
 import CopyTooltip from "@/components/CopyTooltip";
 import SmilesImage from "@/components/SmilesImage";
@@ -717,5 +716,4 @@ export default {
   text-align: center;
   min-height: 100px;
 }
-
 </style>

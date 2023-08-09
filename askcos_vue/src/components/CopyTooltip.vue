@@ -1,5 +1,5 @@
 <template>
-    <div v-b-tooltip.hover v-b-hover="handleHover" ref="tooltipDiv" :title="tooltipTitle"
+    <div ref="tooltipDiv" :title="tooltipTitle"
       :class="{ 'text-primary': highlight }" @click="copy" role="button">
       <slot></slot>
     </div>
