@@ -1,14 +1,20 @@
 <template>
   <v-sheet elevation="5" rounded="lg" width="100%" class="pa-6">
-    <v-card-title>
+  <v-card-title>
+    <v-row align="center" justify="space-between">
+      <v-col>  
+        <h3 class="text-h5">Celery Worker Status</h3>
+      </v-col>
       <v-spacer></v-spacer>
-      <h3 class="text-h5">Celery Worker Status</h3>
-      <v-btn icon @click="getStatus" :disabled="loading" title="Refresh celery status">
-        <v-icon>mdi-refresh</v-icon>
-      </v-btn>
-    </v-card-title>
-<div>
-    <v-data-table  :headers="headers" :items="data"></v-data-table>
+      <v-col cols="auto">
+        <v-btn icon @click="getStatus" :disabled="loading">
+          <v-icon>mdi-refresh</v-icon>
+        </v-btn>
+      </v-col>
+    </v-row>
+  </v-card-title>
+    <div>
+      <v-data-table :headers="headers" :items="data" :loading="loading"></v-data-table>
     </div>
   </v-sheet>
 </template>
@@ -34,7 +40,6 @@ const getStatus = async () => {
   try {
     const json = await API.get('/api/v2/status/celery/');
     data.value = json['queues'];
-    console.log(data.value)
   } catch (error) {
     console.error(error)
   } finally {
