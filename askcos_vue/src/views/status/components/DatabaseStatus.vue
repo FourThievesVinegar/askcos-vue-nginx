@@ -17,6 +17,13 @@
       <v-data-table v-model:expanded="expanded" :headers="headers" :items="data" :loading="loading" show-expand
         item-value="name">
 
+  <template v-slot:item.url="{ item }">
+
+    <v-btn v-if=item.columns.url >
+        {{ item.columns.url }}
+        </v-btn>
+      </template>
+
         <template v-slot:expanded-row="{ columns, item }">
           <td :colspan="columns.length">
             <v-table density="compact" class="text-left">
@@ -51,7 +58,7 @@ const headers = [
   { key: 'name', title: 'Collection Name' },
   { key: 'description', title: 'Description' },
   { key: 'total', title: 'Total Documents' },
-  // { key: 'url', title: 'URL' },
+  { key: 'url', title: '' },
   { key: 'show_details', title: '' }];
 const loading = ref(false);
 const expanded = ref([])
