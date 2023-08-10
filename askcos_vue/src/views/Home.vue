@@ -16,7 +16,7 @@
             <h2 class="my-6">🧪 This is ASKCOS!</h2>
             <v-divider></v-divider>
             <p class="mt-6">
-              Here, we have hosted a number of computational tools to assist in
+              Here,  we have hosted a number of computational tools to assist in
               synthetic planning and other aspects of organic chemistry. These
               are listed and described in the Modules tab in the top navigation
               bar. Please keep in mind that this service is supported by a fixed
