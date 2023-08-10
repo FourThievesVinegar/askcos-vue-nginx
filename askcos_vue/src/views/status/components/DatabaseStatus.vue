@@ -18,10 +18,11 @@
         item-value="name">
 
   <template v-slot:item.url="{ item }">
-
-    <v-btn v-if=item.columns.url >
-        {{ item.columns.url }}
+     <router-link v-if="item.columns.url" :to="item.columns.url">
+      <v-btn color="primary">
+        Search Collection
         </v-btn>
+        </router-link>
       </template>
 
         <template v-slot:expanded-row="{ columns, item }">
