@@ -112,11 +112,15 @@
         title="Help"
         value="help"
       ></v-list-item>
-      <v-list-item
-        prepend-icon="mdi-list-status"
-        title="Server Status"
-        value="serverStatus"
-      ></v-list-item>
+     <router-link to="/status" custom v-slot="{ navigate }">
+        <v-list-item
+          v-bind="props"
+          prepend-icon="mdi-list-status"
+          title="Server Status"
+          value="serverStatus"
+          @click="navigate"
+        ></v-list-item>
+      </router-link>
       <v-list-item
         prepend-icon="mdi-book-information-variant"
         title="Quick Reference"

@@ -51,7 +51,7 @@ const headers = [
   { key: 'name', title: 'Collection Name' },
   { key: 'description', title: 'Description' },
   { key: 'total', title: 'Total Documents' },
-  { key: 'url', title: 'URL' },
+  // { key: 'url', title: 'URL' },
   { key: 'show_details', title: '' }];
 const loading = ref(false);
 const expanded = ref([])
