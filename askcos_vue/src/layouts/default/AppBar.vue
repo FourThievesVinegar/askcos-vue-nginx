@@ -94,11 +94,15 @@
             title="Solvent Screening"
             value="USS"
           ></v-list-item>
+          <router-link to="/buyables" custom v-slot="{ navigate }">
           <v-list-item
+            v-bind="props"
             prepend-icon="mdi-help-box"
             title="Buyable Look-up"
             value="UBLU"
+            @click="navigate"
           ></v-list-item>
+          </router-link>
           <v-list-item
             prepend-icon="mdi-help-box"
             title="Drawing"
