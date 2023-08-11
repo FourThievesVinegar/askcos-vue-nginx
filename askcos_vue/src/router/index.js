@@ -30,6 +30,20 @@ const routes = [
       },
     ],
   },
+  {
+    path: '/status',
+    component: () => import('@/layouts/default/Default.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Status',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "home" */ '@/views/status/App.vue'),
+      },
+    ],
+  },
 ];
 
 const router = createRouter({
