@@ -1,25 +1,29 @@
 <template>
-  <div class="my-5">
+  <div>
     <!-- drawing box -->
     <!-- <ketcher-modal v-model="smiles"></ketcher-modal> -->
-    <v-text-field
-      class="centered-input my-6"
-      :loading="loading"
-      density="compact"
-      variant="solo"
-      label="Enter a molecule or reaction SMILES to explore available tasks"
-      prepend-inner-icon="mdi-magnify"
-      single-line
-      hide-details
-      @click:append-inner="onClick"
-    >
-      <template v-slot:append>
-        <v-btn-group color="primary" rounded divided>
-          <v-btn prepend-icon="mdi mdi-pencil">Draw</v-btn>
-          <v-btn prepend-icon="mdi mdi-web">Canonicalize</v-btn>
-        </v-btn-group>
-      </template>
-    </v-text-field>
+    <v-row class="mt-6">
+      <v-col>
+        <v-text-field
+          v-model="smiles"
+          class="centered-input"
+          density="compact"
+          variant="solo"
+          label="Enter a molecule or reaction SMILES to explore available tasks"
+          prepend-inner-icon="mdi mdi-flask"
+          single-line
+          hide-details
+        >
+          <template v-slot:append>
+            <v-btn-group color="primary" rounded divided>
+              <v-btn prepend-icon="mdi mdi-pencil">Draw</v-btn>
+              <v-btn prepend-icon="mdi mdi-web">Canonicalize</v-btn>
+            </v-btn-group>
+          </template>
+        </v-text-field>
+      </v-col>
+    </v-row>
+
     <!-- <div class="row text-center">
       <div class="col-12">
         <div class="input-group">
@@ -47,18 +51,165 @@
       </div>
     </div> -->
 
-    <div v-if="!!smiles" class="row text-center my-5">
-      <div class="col-12">
-        <smiles-image
+    <v-row v-if="!!smiles" class="justify-center">
+      <v-col cols="12" sm="4" md="2"
+        ><smiles-image
           :smiles="smiles"
           allow-copy
           @load="validSmiles = true"
           @error="validSmiles = false"
-        ></smiles-image>
-      </div>
-    </div>
+        ></smiles-image
+      ></v-col>
+    </v-row>
 
     <template v-if="validSmiles && type === 'mol'">
+      <v-row>
+        <v-col cols="12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title
+              class="text-h5 text-center text-wrap bg-grey-lighten-2"
+            >
+              SCScore
+            </v-card-title>
+            <v-card-actions class="justify-center"
+              ><v-btn
+                prepend-icon="mdi mdi-play"
+                variant="tonal"
+                color="primary"
+                >Run Task</v-btn
+              ></v-card-actions
+            >
+          </v-card>
+        </v-col>
+        <v-col cols="12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title
+              class="text-h5 text-center text-wrap bg-grey-lighten-2"
+            >
+              Interactive Path Planner
+            </v-card-title>
+            <v-card-actions class="justify-center"
+              ><v-btn
+                prepend-icon="mdi mdi-play"
+                variant="tonal"
+                color="primary"
+                >Run Task</v-btn
+              ></v-card-actions
+            >
+          </v-card>
+        </v-col>
+        <v-col cols="12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title
+              class="text-h5 text-center text-wrap bg-grey-lighten-2"
+            >
+              Tree Builder
+            </v-card-title>
+            <v-card-actions class="justify-center"
+              ><v-btn
+                prepend-icon="mdi mdi-play"
+                variant="tonal"
+                color="primary"
+                >Run Task</v-btn
+              ></v-card-actions
+            >
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title
+              class="text-h5 text-center text-wrap bg-grey-lighten-2"
+            >
+              Predict Forward Synthesis
+            </v-card-title>
+            <v-card-actions class="justify-center"
+              ><v-btn
+                prepend-icon="mdi mdi-play"
+                variant="tonal"
+                color="primary"
+                >Run Task</v-btn
+              ></v-card-actions
+            >
+          </v-card>
+        </v-col>
+        <v-col cols="12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title
+              class="text-h5 text-center text-wrap bg-grey-lighten-2"
+            >
+              Predict Impurities
+            </v-card-title>
+            <v-card-actions class="justify-center"
+              ><v-btn
+                prepend-icon="mdi mdi-play"
+                variant="tonal"
+                color="primary"
+                >Run Task</v-btn
+              ></v-card-actions
+            >
+          </v-card>
+        </v-col>
+        <v-col cols="12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title
+              class="text-h5 text-center text-wrap bg-grey-lighten-2"
+            >
+              Predict Aromatic Site Selectivity
+            </v-card-title>
+            <v-card-actions class="justify-center"
+              ><v-btn
+                prepend-icon="mdi mdi-play"
+                variant="tonal"
+                color="primary"
+                >Run Task</v-btn
+              ></v-card-actions
+            >
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title
+              class="text-h5 text-center text-wrap bg-grey-lighten-2"
+            >
+              Solvent Screen
+            </v-card-title>
+            <v-card-actions class="justify-center"
+              ><v-btn
+                prepend-icon="mdi mdi-play"
+                variant="tonal"
+                color="primary"
+                >Run Task</v-btn
+              ></v-card-actions
+            >
+          </v-card>
+        </v-col>
+        <v-col cols="12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title
+              class="text-h5 text-center text-wrap bg-grey-lighten-2"
+            >
+              Buyables
+            </v-card-title>
+            <v-card-actions class="justify-center"
+              ><v-btn
+                prepend-icon="mdi mdi-play"
+                variant="tonal"
+                color="primary"
+                >Run Task</v-btn
+              ></v-card-actions
+            >
+          </v-card>
+        </v-col>
+      </v-row>
+    </template>
+
+    <!-- <template v-if="validSmiles && type === 'mol'">
       <div class="card-deck my-5">
         <div class="card bg-light">
           <div class="card-body launchcard-body">
@@ -214,9 +365,9 @@
         </div>
         <div class="card bg-light invisible"></div>
       </div>
-    </template>
+    </template> -->
 
-    <template v-if="validSmiles && type === 'rxn'">
+    <!--<template v-if="validSmiles && type === 'rxn'">
       <div class="card-deck my-5">
         <div class="card bg-light">
           <div class="card-body launchcard-body">
@@ -462,7 +613,7 @@
           </template>
         </div>
       </div>
-    </template>
+    </template> -->
   </div>
 </template>
 
@@ -479,7 +630,7 @@
 </style>
 
 <script>
-import { ref, computed, watch} from "vue";
+import { ref, computed, watch } from "vue";
 import KetcherModal from "@/components/KetcherModal";
 import CopyTooltip from "@/components/CopyTooltip";
 import SmilesImage from "@/components/SmilesImage";
@@ -717,5 +868,4 @@ export default {
   text-align: center;
   min-height: 100px;
 }
-
 </style>
