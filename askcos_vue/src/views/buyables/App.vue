@@ -31,68 +31,53 @@
             <v-col cols="12" class="my-4">
 
               <v-row align="center" justify="space-between" class="mb-2">
-
                 <v-text-field v-model="searchSmilesQuery" label="SMILES/SMARTS" prepend-inner-icon="mdi-magnify"
                   class="mx-2"></v-text-field>
-
                 <v-checkbox v-model="searchRegex" label="Use SMARTS" class="mx-2"></v-checkbox>
-
                 <v-btn color="primary" @click="search" class="mx-2">
                   Search
                 </v-btn>
-
               </v-row>
+
               <v-row align="center" justify="space-between" class="mb-4">
-
-
                 <v-text-field v-model="simThresh" label="Similarity Threshold" type="number" :min="0" :max="1"
                   :step="0.0001" class="mx-2" />
-
                 <v-text-field v-model="searchLimit" label="Limit Results" type="number" :min="1" :max="1000"
                   class="mx-2" />
-
-
-
-
-
               </v-row>
+
               <v-row justify="space-between">
                 <v-btn color="success" class="mx-2" @click="showAddModal = !showAddModal">
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
-                                <v-btn @click="showSourcesDialog = true" height="45px">
-                    Select Sources
-                  </v-btn>
+                <v-btn @click="showSourcesDialog = true" height="45px">
+                  Select Sources
+                </v-btn>
 
-                  <v-dialog v-model="showSourcesDialog" max-width="600px">
+                <v-dialog v-model="showSourcesDialog" max-width="600px">
+                  <v-card>
+                    <v-card-title>
+                      Select Sources
+                    </v-card-title>
+                    <v-card-text>
+                      <v-checkbox v-model="buyablesSourceAll" @change="searchSourceQuery = []" label="All"></v-checkbox>
+                      <v-checkbox v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery"
+                        :value="source" :disabled="buyablesSourceAll"
+                        :label="source === NO_SOURCE ? NO_SOURCE_TEXT : source"></v-checkbox>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-btn @click="showSourcesDialog = false">
+                        Select
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
 
-                    <v-card>
-
-                      <v-card-title>
-                        Select Sources
-                      </v-card-title>
-
-                      <v-card-text>
-                        <v-checkbox v-model="buyablesSourceAll" @change="searchSourceQuery = []" label="All"></v-checkbox>
-
-                        <v-checkbox v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery"
-                          :value="source" :disabled="buyablesSourceAll"
-                          :label="source === NO_SOURCE ? NO_SOURCE_TEXT : source"></v-checkbox>
-                      </v-card-text>
-
-                      <v-card-actions>
-                        <v-btn @click="showSourcesDialog = false">
-                          Select
-                        </v-btn>
-                      </v-card-actions>
-
-                    </v-card>
-
-                  </v-dialog>
                 <v-btn color="info" class="mx-2" @click="showUploadModal = !showUploadModal">
                   <v-icon>mdi-file-upload</v-icon>
                 </v-btn>
               </v-row>
+
             </v-col>
           </v-row>
 
@@ -200,8 +185,6 @@
                   </template>
                 </v-data-table>
               </div>
-
-
             </v-col>
           </v-row>
         </v-sheet>
@@ -243,7 +226,8 @@ const headers = computed(() => {
     { key: 'tanimoto', title: 'Similarity', align: 'center' }
   ]
   if (buyables.value.length > 0) {
-    headers.push({key: 'delete', title: '', align: 'center'
+    headers.push({
+      key: 'delete', title: '', align: 'center'
     })
   }
   return headers
