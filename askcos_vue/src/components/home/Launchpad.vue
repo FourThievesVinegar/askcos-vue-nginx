@@ -52,7 +52,7 @@
     </div> -->
 
     <v-row v-if="!!smiles" class="justify-center">
-      <v-col cols="12" sm="4" md="2"
+      <v-col  
         ><smiles-image
           :smiles="smiles"
           allow-copy
