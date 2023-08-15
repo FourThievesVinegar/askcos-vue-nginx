@@ -16,7 +16,7 @@
             <h2 class="my-6">🧪 This is ASKCOS!</h2>
 
             <v-divider></v-divider>
-            <p class="mt-6">
+            <p class="mt-6 text-body-1">
               Here, we have hosted a number of computational tools to assist in
               synthetic planning and other aspects of organic chemistry. These
               are listed and described in the Modules tab in the top navigation
@@ -26,7 +26,7 @@
               users on the site also performing computationally-expensive
               requests.
             </p>
-            <v-expansion-panels class="mt-6" variant="accordion">
+            <v-expansion-panels class="mt-6 text-body-1" variant="accordion">
               <v-expansion-panel
                 text="This work began under the DARPA Make-It program (ARO
             W911NF-16-2-0023) and continues to be supported by the Machine
