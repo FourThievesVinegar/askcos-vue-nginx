@@ -112,3 +112,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+.hide-invalid > .v-responsive__sizer{
+  padding-bottom: 150px !important;
+}
+</style>

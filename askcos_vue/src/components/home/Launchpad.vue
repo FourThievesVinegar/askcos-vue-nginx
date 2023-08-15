@@ -8,11 +8,12 @@
           v-model="smiles"
           class="centered-input"
           density="compact"
-          variant="solo"
+          variant="outlined"
           label="Enter a molecule or reaction SMILES to explore available tasks"
           prepend-inner-icon="mdi mdi-flask"
-          single-line
+          placeholder="SMILES"
           hide-details
+          clearable
         >
           <template v-slot:append>
             <v-btn-group color="primary" rounded divided>
@@ -52,7 +53,7 @@
     </div> -->
 
     <v-row v-if="!!smiles" class="justify-center">
-      <v-col cols="12" sm="4" md="2"
+      <v-col  
         ><smiles-image
           :smiles="smiles"
           allow-copy

@@ -14,6 +14,7 @@
             v-show="show"
           >
             <h2 class="my-6">🧪 This is ASKCOS!</h2>
+
             <v-divider></v-divider>
             <p class="mt-6">
               Here, we have hosted a number of computational tools to assist in
@@ -95,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted} from "vue";
+import { ref, onMounted } from "vue";
 import LaunchPad from "@/components/home/Launchpad.vue";
 
 const show = ref(false);
@@ -103,6 +104,4 @@ const show = ref(false);
 onMounted(() => {
   show.value = true; // <div>
 });
-
 </script>
-
