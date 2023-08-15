@@ -8,11 +8,12 @@
           v-model="smiles"
           class="centered-input"
           density="compact"
-          variant="solo"
+          variant="outlined"
           label="Enter a molecule or reaction SMILES to explore available tasks"
           prepend-inner-icon="mdi mdi-flask"
-          single-line
+          placeholder="SMILES"
           hide-details
+          clearable
         >
           <template v-slot:append>
             <v-btn-group color="primary" rounded divided>

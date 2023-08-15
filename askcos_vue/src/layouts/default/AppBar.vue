@@ -17,13 +17,13 @@
     <v-divider></v-divider>
 
     <v-list nav v-model:opened="openGroups" color="primary">
-      <v-list-group value="modules" no-action>
+      <v-list-item prepend-icon="mdi-home" title="Home" to="/" value="home"></v-list-item>
+      <v-list-group value="modules" no-action >
         <template v-slot:activator="{ props }">
           <v-list-item
             v-bind="props"
             prepend-icon="mdi-file-tree"
             title="Modules"
-            value="modules"
           ></v-list-item>
         </template>
         <v-list-item
@@ -37,14 +37,18 @@
           </template>
 
           <v-list-item
+            to="network?tab=IPP"
             prepend-icon="mdi-help-box"
             title="Interactive Path Planning/Tree Builder"
             value="IPP"
+            :active="route.query.tab === 'IPP'"
           ></v-list-item>
           <v-list-item
+            to="network?tab=RP"
             prepend-icon="mdi-help-box"
             title="Retrosynthesis Prediction"
             value="RP"
+            :active="route.query.tab === 'RP'"
           ></v-list-item>
         </v-list-group>
         <v-list-group value="ForwardSynthesis" subgroup>
@@ -105,22 +109,18 @@
             value="UD"
           ></v-list-item>
         </v-list-group>
-        
       </v-list-group>
       <v-list-item
         prepend-icon="mdi-help-box"
         title="Help"
         value="help"
       ></v-list-item>
-     <router-link to="/status" custom v-slot="{ navigate }">
-        <v-list-item
-          v-bind="props"
-          prepend-icon="mdi-list-status"
-          title="Server Status"
-          value="serverStatus"
-          @click="navigate"
-        ></v-list-item>
-      </router-link>
+      <v-list-item
+        to="status"
+        prepend-icon="mdi-list-status"
+        title="Server Status"
+        value="serverStatus"
+      ></v-list-item>
       <v-list-item
         prepend-icon="mdi-book-information-variant"
         title="Quick Reference"
@@ -136,16 +136,22 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { useRoute } from "vue-router";
+import { ref, onMounted } from "vue";
 
 // const listGroupExpanded = ref(true);
 const openGroups = ref([]);
+const route = useRoute();
 
 function onDrawerCollapse(value) {
   if (value) {
     openGroups.value = [];
   }
 }
+
+onMounted(() => {
+  openGroups.value = [];
+});
 </script>
 
 <style>

@@ -1,46 +1,64 @@
 // Composables
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
   {
-    path: '/',
-    component: () => import('@/layouts/default/Default.vue'),
+    path: "/",
+    component: () => import("@/layouts/default/Default.vue"),
     children: [
       {
-        path: '',
-        name: 'Home',
+        path: "",
+        name: "Home",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/Home.vue"),
       },
     ],
   },
   {
-    path: '/network',
-    component: () => import('@/layouts/default/Default.vue'),
+    path: "/network",
+    component: () => import("@/layouts/default/Default.vue"),
     children: [
       {
-        path: '',
-        name: 'Network',
+        path: "",
+        query: {
+          tab: "IPP",
+        },
+        name: "Network",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "home" */ '@/views/network/App.vue'),
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/network/App.vue"),
+      },
+      {
+        path: "",
+        query: {
+          tab: "RP",
+        },
+        name: "Network",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/network/App.vue"),
       },
     ],
   },
   {
-    path: '/status',
-    component: () => import('@/layouts/default/Default.vue'),
+    path: "/status",
+    component: () => import("@/layouts/default/Default.vue"),
     children: [
       {
-        path: '',
-        name: 'Status',
+        path: "",
+        name: "Status",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "home" */ '@/views/status/App.vue'),
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/status/App.vue"),
       },
     ],
   },
