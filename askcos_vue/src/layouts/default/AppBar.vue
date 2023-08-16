@@ -100,11 +100,9 @@
           ></v-list-item>
           <v-list-item
             to="buyables"
-            v-bind="props"
             prepend-icon="mdi-help-box"
             title="Buyable Look-up"
             value="UBLU"
-            @click="navigate"
           ></v-list-item>
           <v-list-item
             prepend-icon="mdi-help-box"
