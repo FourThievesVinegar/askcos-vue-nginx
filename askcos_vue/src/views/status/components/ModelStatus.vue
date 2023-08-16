@@ -7,6 +7,14 @@
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="auto">
+          <span class="text-body-2 mr-3">Last Update:
+            <timeago :datetime="date" :converter-options="{
+              includeSeconds: true,
+              addSuffix: false,
+              useStrict: false,
+            }" auto-update />
+            ago
+          </span>
           <v-btn icon @click="getStatus" :disabled="loading">
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
@@ -25,6 +33,7 @@
 import { API } from "@/common/api";
 import { onMounted, ref } from "vue"
 const data = ref([]);
+const date = ref(new Date());
 
 const headers = [
   { key: 'name', title: 'Model Name' },
@@ -41,7 +50,7 @@ const getStatus = async () => {
   try {
     const json = await API.get('/api/v2/status/ml/');
     data.value = json['models'];
-    console.log(data.value)
+    date.value = new Date();
   } catch (error) {
     console.error(error);
   } finally {
