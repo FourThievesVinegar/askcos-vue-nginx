@@ -22,10 +22,10 @@ const API = {
       return response.json();
     }
     return response.json().catch(() =>
-    // Status not ok, and there is no json body
+      // Status not ok, and there is no json body
       Promise.reject(new Error(response.statusText))).then((json) =>
-    // Status not ok, but there is a json body
-      Promise.reject(new Error(json.error)));
+        // Status not ok, but there is a json body
+        Promise.reject(new Error(json.error)));
   },
 
   get(endpoint, params) {

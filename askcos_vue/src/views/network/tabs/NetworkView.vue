@@ -1,46 +1,20 @@
 <template>
   <v-sheet>
     <v-toolbar density="compact" height="200px">
-      <v-progress-linear
-        :active="pendingTasks !== 0"
-        :indeterminate="pendingTasks !== 0"
-        absolute
-        bottom
-        color="grey-darken-1"
-        striped
-      ></v-progress-linear>
+      <v-progress-linear :active="pendingTasks !== 0" :indeterminate="pendingTasks !== 0" absolute location="bottom"
+        color="green-darken-1"></v-progress-linear>
       <v-container fluid>
         <v-row class="justify-center align-center">
-          <v-col cols="12" md="10"
-            ><v-text-field
-              v-model="resultsStore.target"
-              density="compact"
-              variant="outlined"
-              label="Target"
-              placeholder="SMILES"
-              type="text"
-              clearable
-              class="target-input"
-              hide-details
-            >
+          <v-col cols="12" md="10"><v-text-field v-model="resultsStore.target" density="compact" variant="outlined"
+              label="Target" placeholder="SMILES" type="text" clearable class="target-input" hide-details>
               <template v-slot:append>
-                <v-btn
-                  variant="flat"
-                  color="green-darken-1"
-                  prepend-icon="mdi mdi-play"
-                  class="mr-2"
-                  :disabled="!resultsStore.target"
-                  @click="changeTarget"
-                  >One Step</v-btn
-                >
+                <v-btn variant="flat" color="green-darken-1" prepend-icon="mdi mdi-play" class="mr-2"
+                  :disabled="!resultsStore.target" @click="changeTarget">One Step</v-btn>
                 <v-btn-group density="compact" color="primary" divided>
                   <v-btn prepend-icon="mdi mdi-family-tree">Build Tree</v-btn>
                   <v-menu location="bottom">
                     <template v-slot:activator="{ props }">
-                      <v-btn
-                        v-bind="props"
-                        icon="mdi mdi-menu-down"
-                      />
+                      <v-btn v-bind="props" icon="mdi mdi-menu-down" />
                     </template>
 
                     <v-list>
@@ -56,44 +30,70 @@
                     </v-list>
                   </v-menu>
                 </v-btn-group>
-                <v-btn
-                  variant="flat"
-                  color="primary"
-                  prepend-icon="mdi mdi-application-import"
-                  class="ml-2"
-                  >Import Network</v-btn
-                >
+                <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-application-import" class="ml-2">Import
+                  Network</v-btn>
               </template>
-            </v-text-field></v-col
-          >
+            </v-text-field></v-col>
         </v-row>
-        <v-row class="justify-center align-center"
-          ><span class="text-overline">Using model(s):</span>
-          <div
-            v-if="settingsStore.tbSettings.strategies.length !== 0"
-            class="pa-0"
-          >
-            <v-chip
-              v-for="(strategy, idx) in settingsStore.tbSettings.strategies"
-              :key="idx"
-              class="text-overline"
-            >
+        <v-row class="justify-center align-center"><span class="text-overline">Using model(s):</span>
+          <div v-if="settingsStore.tbSettings.strategies.length !== 0" class="pa-0">
+            <v-chip v-for="(strategy, idx) in settingsStore.tbSettings.strategies" :key="idx" class="text-overline">
               {{ strategy.model }}
             </v-chip>
           </div>
           <div v-else>No strategy added</div>
           <v-divider class="border-opacity-75 mx-2" vertical></v-divider>
-          <v-btn variant="tonal" color="primary" prepend-icon="mdi mdi-cog"
-            >Strategy Settings</v-btn
-          >
+          <v-btn variant="tonal" color="primary" prepend-icon="mdi mdi-cog">Strategy Settings</v-btn>
         </v-row>
       </v-container>
     </v-toolbar>
     <div v-if="!isCanvasEmpty">
-      <div
-        id="network"
-        :class="visible ? 'open-toolbar' : 'close-toolbar'"
-      ></div>
+      <div id="network" :class="visible ? 'open-toolbar' : 'close-toolbar'"></div>
+      <div class="hover-btn justify-center align-center flex-gap-2 elevation-3" id="hoverBtn">
+        <v-btn v-if="!!selected && selected.type === 'chemical'" density="compact" icon="mdi mdi-plus-circle" id="expand-btn"
+          @click="expandNode" title="Expand node" variant="flat" color="green-darken-1">
+        </v-btn>
+        <v-btn id="select-all-btn" class="text-light" @click="selectAllOccur" title="Select all occurrences"
+          density="compact" icon="mdi mdi-select-all" variant="flat" color="orange-darken-1">
+        </v-btn>
+        <v-btn id="delete-btn" @click="deleteChoice" title="Delete children node(s)" density="compact" icon="mdi mdi-delete-empty" variant="flat" color="red-darken-1">
+        </v-btn>
+        <v-btn id="collapse-btn" @click="collapseNode" title="Collapse children node(s)" density="compact"
+          icon="mdi mdi-collapse-all" variant="flat" color="blue-darken-1">
+        </v-btn>
+        <v-btn id="node-detail-btn" @click="showNodeDetail" title="Show Node Detail" density="compact" icon="mdi mdi-information" variant="flat" color="grey-darken-1">
+        </v-btn>
+      </div>
+      <div class="canvas-btn d-flex flex-column flex-gap-2 align-items-center">
+        <v-btn :disabled="isCanvasEmpty" @click="saveImage" title="Take Screenshot" density="compact" icon="mdi mdi-camera"
+          variant="tonal" color="primary" elevation="3">
+        </v-btn>
+        <v-btn :disabled="isCanvasEmpty" id="hierarchical-button" @click="toggleHierarchical" title="Tree/Graph"
+          density="compact" icon="mdi-plus" variant="tonal" color="primary" elevation="3">
+          {{ settingsStore.visjsOptions.layout.hierarchical.enabled ? "H" : "G" }}
+        </v-btn>
+        <v-btn :disabled="isCanvasEmpty" id="center-graph-button" @click="centerGraph" title="Center Canvas"
+          density="compact" icon="mdi mdi-fit-to-screen-outline" variant="tonal" color="primary" elevation="3">
+        </v-btn>
+      </div>
+      <div class="result-btn d-flex justify-content-center align-items-center flex-gap-2">
+        <v-btn id="clear-reactions-btn" @click="clear()" title="Clear all results" size="small" color="red-darken-2" prepend-icon="mdi mdi-close-circle">
+          Clear Result </v-btn>
+        <v-menu location="top">
+          <template v-slot:activator="{ props }">
+            <v-btn color="primary" size="small" v-bind="props" prepend-icon="mdi mdi-content-save">
+              Save Results
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item>
+              <v-list-item-title>My PC</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+
     </div>
     <div v-else class="d-flex justify-center pa-16">
       <div v-if="!!resultsStore.target">
@@ -534,7 +534,7 @@ export default {
           let error_msg = error.message || error || "unknown error";
           this.$bvModal.msgBoxOk(
             "There was an error submitting the tree builder job with the supplied settings: " +
-              error_msg,
+            error_msg,
             {
               title: "Alert",
               size: "sm",
@@ -775,7 +775,7 @@ export default {
           let error_msg = error.message || error || "unknown error";
           this.$bvModal.msgBoxOk(
             "There was an error fetching precursors for this target with the supplied settings: " +
-              error_msg,
+            error_msg,
             {
               title: "Alert",
               size: "sm",
@@ -878,7 +878,7 @@ export default {
           let error_msg = error.message || error || "unknown error";
           this.$bvModal.msgBoxOk(
             "There was an error fetching precursors for this target with the supplied settings: " +
-              error_msg,
+            error_msg,
             {
               title: "Alert",
               size: "sm",
@@ -1266,7 +1266,7 @@ export default {
       let hoverBtnElem = document.getElementById("hoverBtn");
       hoverBtnElem.style.display = "flex";
       hoverBtnElem.style.left = nodePos.x + "px";
-      hoverBtnElem.style.top = nodePos.y + "px";
+      hoverBtnElem.style.top = (nodePos.y + 120) + "px";
 
       let dispObj = this.resultsStore.dispGraph.nodes.get(nodeId);
       if (!dispObj) return;
@@ -1481,7 +1481,7 @@ export default {
         .catch((error) => {
           this.$bvModal.msgBoxOk(
             "There was an error predicting selectivity for this reaction: " +
-              error,
+            error,
             {
               title: "Alert",
               size: "sm",
@@ -1665,12 +1665,12 @@ export default {
             !!this.settingsStore.tbSettings.chemicalPopularityReactants &&
             !!n.asReactant &&
             n.asReactant >=
-              this.settingsStore.tbSettings.chemicalPopularityReactants;
+            this.settingsStore.tbSettings.chemicalPopularityReactants;
           const prodCheck =
             !!this.settingsStore.tbSettings.chemicalPopularityProducts &&
             !!n.asProduct &&
             n.asProduct >=
-              this.settingsStore.tbSettings.chemicalPopularityProducts;
+            this.settingsStore.tbSettings.chemicalPopularityProducts;
           return reacCheck || prodCheck;
         },
       };
@@ -1803,12 +1803,12 @@ export default {
 
 .open-toolbar {
   width: 100%;
-  height: calc(100vh - 16.5rem);
+  height: calc(100vh - 16rem);
 }
 
 .close-toolbar {
   width: 100%;
-  height: calc(100vh - 17rem);
+  height: calc(100vh - 16rem);
 }
 
 #tree-view-overlay {
@@ -1831,7 +1831,7 @@ export default {
   display: none;
   position: absolute;
   padding: 5px;
-  background-color: #b0dcff;
+  background-color: #BBDEFB;
   border-radius: 30px;
 }
 
@@ -1845,7 +1845,7 @@ export default {
 .canvas-btn {
   position: absolute;
   padding: 5px;
-  bottom: 45px;
+  bottom: 40px;
   right: 1px;
 }
 

@@ -1041,7 +1041,7 @@ export const useResultsStore = defineStore("results", {
         .catch((error) => {
           alert(
             "There was an error fetching cluster results for this target with the supplied settings: " +
-              error
+            error
           );
         });
     },

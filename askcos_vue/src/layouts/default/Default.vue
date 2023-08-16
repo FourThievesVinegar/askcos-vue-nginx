@@ -4,7 +4,7 @@
       <default-bar />
 
       <default-view />
-    
+
     </v-layout>
   </v-app>
 </template>
