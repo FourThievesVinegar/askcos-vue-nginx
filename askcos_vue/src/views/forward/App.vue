@@ -6,6 +6,21 @@
                     <h1 class="my-2">
                         Forward Synthesis Planner
                     </h1>
+    <div class="row my-3">
+        <smiles-input class="col-3 col-xl-6" id="reactants" label="Reactants"
+        ></smiles-input>
+        <smiles-input class="col-3 col-xl-6" id="reactants" label="Reactants"
+        ></smiles-input>
+        <smiles-input class="col-3 col-xl-6" id="reactants" label="Reactants"
+        ></smiles-input>
+        <smiles-input class="col-3 col-xl-6" id="reactants" label="Reactants"
+        ></smiles-input>
+    </div>
+
+                 <div class="text-center my-3">
+                    <b-button variant="success" id="submit-button" type="submit">Submit</b-button>
+                  </div>
+
                 </v-sheet>
 
                 <v-sheet elevation="5" rounded="lg" class="my-6 ">
@@ -31,6 +46,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { useRoute, useRouter } from "vue-router";
+import SmilesInput from "@/components/SmilesInput.vue";
 
 const route = useRoute();
 const router = useRouter();

@@ -1,25 +1,43 @@
 <template>
-    <div>
-        <v-text-field v-bind="$attrs" v-model="smiles" :disabled="disabled" :required="required" :label="label"
+    <v-form>
+        <v-text-field :id="id" v-model="smiles" :disabled="disabled" :rules="required ? requiredRule : []"
             append-icon="mdi-pencil" @click:append="openModal"></v-text-field>
-        <slot></slot>
-        <KetcherModal :id="modalId" :smiles="smiles"></KetcherModal>
-    </div>
+        <v-dialog v-model="modalOpen" max-width="500px">
+            <KetcherModal :id="modalId" :smiles="smiles" @close="closeModal" />
+        </v-dialog>
+    </v-form>
 </template>
 
 <script>
-import { ref, computed, toRefs } from 'vue'
-import KetcherModal from "@/components/KetcherModal";
+import KetcherModal from '@/components/KetcherModal'
 
 export default {
-    name: 'SmilesInput',
     components: {
-        KetcherModal,
+        KetcherModal
     },
+
+    data() {
+        return {
+            modalOpen: false,
+            requiredRule: [
+                v => !!v || 'Required'
+            ]
+        }
+    },
+
+    methods: {
+        openModal() {
+            this.modalOpen = true
+        },
+        closeModal() {
+            this.modalOpen = false
+        }
+    },
+
     props: {
         id: {
             type: String,
-            default: '',
+            default: ''
         },
         value: {
             type: String,
@@ -32,25 +50,26 @@ export default {
         required: {
             type: Boolean,
             default: false
-        },
-        label: {
-            type: String,
-            default: 'Enter SMILES'
         }
     },
-    setup(props, { emit }) {
-        const { id, value, disabled, required } = toRefs(props)
 
-        const buttonId = computed(() => `edit-btn-${id.value}`)
-        const modalId = computed(() => `ketcher-modal-${id.value}`)
-        const smiles = ref(value.value)
-
-        return {
-            buttonId,
-            modalId,
-            smiles,
-            disabled,
-            required,
+    computed: {
+        buttonId() {
+            return `edit-btn-${this.id}`
+        },
+        modalId() {
+            return `ketcher-modal-${this.id}`
+        },
+        requiredRule() {
+            return [v => !!v || 'Required']
+        },
+        smiles: {
+            get() {
+                return this.value
+            },
+            set(value) {
+                this.$emit('input', value)
+            }
         }
     }
 }
