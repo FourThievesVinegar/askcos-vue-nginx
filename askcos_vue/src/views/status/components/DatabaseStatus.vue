@@ -7,6 +7,14 @@
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="auto">
+          <span class="text-body-2 mr-3">Last Update:
+            <timeago :datetime="date" :converter-options="{
+              includeSeconds: true,
+              addSuffix: false,
+              useStrict: false,
+            }" auto-update />
+            ago
+          </span>
           <v-btn icon @click="getStatus" :disabled="loading">
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
@@ -17,13 +25,13 @@
       <v-data-table v-model:expanded="expanded" :headers="headers" :items="data" :loading="loading" show-expand
         item-value="name">
 
-  <template v-slot:item.url="{ item }">
-     <router-link v-if="item.columns.url" :to="item.columns.url">
-      <v-btn color="primary">
-        Search Collection
-        </v-btn>
-        </router-link>
-      </template>
+        <template v-slot:item.url="{ item }">
+          <router-link v-if="item.columns.url" :to="item.columns.url">
+            <v-btn color="primary">
+              Search Collection
+            </v-btn>
+          </router-link>
+        </template>
 
         <template v-slot:expanded-row="{ columns, item }">
           <td :colspan="columns.length">
@@ -50,7 +58,6 @@
 </template>
 
 
-
 <script setup>
 import { API } from "@/common/api";
 import { ref, onMounted } from "vue";
@@ -63,14 +70,16 @@ const headers = [
   { key: 'show_details', title: '' }];
 const loading = ref(false);
 const expanded = ref([])
-
+const date = ref(new Date())
 
 const getStatus = async () => {
   loading.value = true;
   try {
     const json = await API.get('/api/v2/status/database/');
     data.value = json['collections'];
-    console.log("Fetched data:", data.value);
+    date.value = new Date();
+  } catch (error) {
+    console.error(error)
   } finally {
     loading.value = false;
   }

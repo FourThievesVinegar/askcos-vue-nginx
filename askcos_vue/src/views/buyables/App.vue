@@ -1,8 +1,8 @@
 <template>
-  <v-container fluid style="min-height: calc(100vh-50px)" class="my-10">
-    <v-row style="min-height: 100vh" class="justify-center">
+  <v-container fluid style="min-height: calc(25vh-13px)" class="my-10">
+    <v-row style="min-height: 30vh" class="justify-center">
       <v-col cols="12" sm="8" md="10">
-        <v-sheet elevation="5" rounded="lg" class="pa-10">
+        <v-sheet elevation="5" rounded="lg" class="pa-10 my-10">
           <h1 class="my-4">
             Buyable Compounds
           </h1>
@@ -21,8 +21,9 @@
               </v-row>
               <v-row>
                 <v-col>
-                  <p>
-                    Note: The first search performed may take longer than expected.
+
+                  <p class="mdi mdi-information">
+                    The first search performed may take longer than expected.
                   </p>
                 </v-col>
               </v-row>
@@ -30,27 +31,32 @@
 
             <v-col cols="12" class="my-4">
 
-              <v-row align="center" justify="space-between" class="mb-2">
-                <v-text-field v-model="searchSmilesQuery" label="SMILES/SMARTS" prepend-inner-icon="mdi-magnify"
-                  class="mx-2"></v-text-field>
-                <v-checkbox v-model="searchRegex" label="Use SMARTS" class="mx-2"></v-checkbox>
-                <v-btn color="primary" @click="search" class="mx-2">
+              <v-row align="center" justify-end justify="space-between" class="mb-2">
+                <v-text-field class="mr-auto mx-2 flex-grow-1" v-model="searchSmilesQuery" placeholder="SMILES/SMARTS"
+                  prepend-inner-icon="mdi mdi-flask" density="compact" variant="outlined"
+                  label="Enter SMILES/SMART to explore"></v-text-field>
+                <v-checkbox v-model="searchRegex" label="Use SMARTS" class="mx-2 flex-grow-0">
+                </v-checkbox>
+                <v-btn color="primary" @click="search" class="mb-6 mx-2">
                   Search
                 </v-btn>
               </v-row>
 
-              <v-row align="center" justify="space-between" class="mb-4">
-                <v-text-field v-model="simThresh" label="Similarity Threshold" type="number" :min="0" :max="1"
-                  :step="0.0001" class="mx-2" />
-                <v-text-field v-model="searchLimit" label="Limit Results" type="number" :min="1" :max="1000"
-                  class="mx-2" />
+              <v-row align="center" justify="space-between" class="mb-2">
+
+                <v-slider v-model="simThresh" label="Similarity Threshold" min="0" max="1" step="0.0001" class="mr-10"
+                  thumb-label="true"></v-slider>
+
+                <v-slider v-model="searchLimit" label="Limit Results" min="1" max="100" step="1" class="mx-4"
+                  thumb-label="true"></v-slider>
+
               </v-row>
 
-              <v-row justify="space-between">
-                <v-btn color="success" class="mx-2" @click="showAddModal = !showAddModal">
+              <v-row align="center" justify="space-between" class="mb-3">
+                <v-btn color="success" class="mx-2" rounded @click="showAddModal = !showAddModal">
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
-                <v-btn @click="showSourcesDialog = true" height="45px">
+                <v-btn @click="showSourcesDialog = true" height="40px" color="blue-grey mx-2">
                   Select Sources
                 </v-btn>
 
@@ -73,7 +79,7 @@
                   </v-card>
                 </v-dialog>
 
-                <v-btn color="info" class="mx-2" @click="showUploadModal = !showUploadModal">
+                <v-btn color="info" class="mx-2" rounded @click="showUploadModal = !showUploadModal">
                   <v-icon>mdi-file-upload</v-icon>
                 </v-btn>
               </v-row>
@@ -174,7 +180,7 @@
                 </v-card>
               </v-dialog>
               <div>
-                <v-data-table :headers="headers" :items="buyables" hide-no-data :loading="showLoader">
+                <v-data-table v-if="buyables.length" :headers="headers" :items="buyables" :loading="showLoader">
                   <template v-slot:item.smiles="{ item }">
                     <copy-tooltip :data="item.columns.smiles">
                       <smiles-image :smiles="item.columns.smiles" height="80px"></smiles-image>
@@ -185,6 +191,7 @@
                   </template>
                 </v-data-table>
               </div>
+
             </v-col>
           </v-row>
         </v-sheet>
@@ -220,7 +227,7 @@ const buyablesSources = ref([]);
 
 const headers = computed(() => {
   let headers = [
-    { key: 'smiles', title: 'SMILES', align: 'center', width: '400px' },
+    { key: 'smiles', title: 'SMILES', align: 'center', width: '500px' },
     { key: 'ppg', title: 'Price ($/g)', align: 'center' },
     { key: 'source', title: 'Source', align: 'center' },
     { key: 'tanimoto', title: 'Similarity', align: 'center' }

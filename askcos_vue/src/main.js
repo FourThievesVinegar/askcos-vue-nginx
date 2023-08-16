@@ -7,6 +7,7 @@
 // Components
 import { createApp } from 'vue';
 import App from './App.vue';
+import timeago from 'vue-timeago3';
 
 // Composables
 
@@ -18,3 +19,5 @@ const app = createApp(App);
 registerPlugins(app);
 
 app.mount('#app');
+
+app.use(timeago);
