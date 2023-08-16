@@ -1,10 +1,5 @@
 <template>
-  <div
-    ref="tooltipDiv"
-    :class="{ 'text-primary': highlight }"
-    @click="copy"
-    role="button"
-  >
+  <div ref="tooltipDiv" :class="{ 'text-primary': highlight }" @click="copy" role="button">
     <v-tooltip activator="parent" location="top">{{ tooltipTitle }}</v-tooltip>
     <slot></slot>
   </div>

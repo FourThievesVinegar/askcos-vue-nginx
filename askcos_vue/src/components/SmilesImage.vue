@@ -1,10 +1,6 @@
 <template>
   <component :is="allowCopy ? 'copy-tooltip' : 'div'" v-bind="copyProps">
-    <component
-      :is="lazy ? 'v-img-lazy' : 'v-img'"
-      v-bind="imageProps"
-      class="hide-invalid"
-    ></component>
+    <component :is="lazy ? 'v-img-lazy' : 'v-img'" v-bind="imageProps" class="hide-invalid"></component>
   </component>
 </template>
 
@@ -114,7 +110,7 @@ export default defineComponent({
 </script>
 
 <style>
-.hide-invalid > .v-responsive__sizer{
+.hide-invalid>.v-responsive__sizer {
   padding-bottom: 150px !important;
 }
 </style>

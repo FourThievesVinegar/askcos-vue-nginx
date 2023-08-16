@@ -1,43 +1,41 @@
 <template>
-  <v-container fluid style="min-height: calc(25vh-13px)" class="my-10">
+  <v-container fluid >
     <v-row style="min-height: 30vh" class="justify-center">
       <v-col cols="12" sm="8" md="10">
-        <v-sheet elevation="5" rounded="lg" class="pa-10 my-10">
-          <h1 class="my-4">
-            Buyable Compounds
-          </h1>
+        <v-sheet elevation="5" rounded="lg" class="pa-10">
+          <h1 class="my-4">Buyable Compounds</h1>
 
           <v-row>
             <v-col cols="12">
               <v-row>
                 <v-col>
                   <p>
-                    The chemicals and prices stored in our database are taken from Reaxys and are originally from
-                    eMolecules, LabNetwork, or Sigma Aldrich. All compounds with an average price per gram listed at $100
-                    or lower were included. Please note that prices in the database are unfortunately rounded to the
-                    nearest integer. That is, the cheapest compounds are still listed as $1/g.
+                    The chemicals and prices stored in our database are taken
+                    from Reaxys and are originally from eMolecules, LabNetwork,
+                    or Sigma Aldrich. All compounds with an average price per
+                    gram listed at $100 or lower were included. Please note that
+                    prices in the database are unfortunately rounded to the
+                    nearest integer. That is, the cheapest compounds are still
+                    listed as $1/g.
                   </p>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col>
-
-                  <p class="mdi mdi-information">
-                    The first search performed may take longer than expected.
+                  <p>
+                    Note: The first search performed may take longer than
+                    expected.
                   </p>
                 </v-col>
               </v-row>
             </v-col>
 
             <v-col cols="12" class="my-4">
-
-              <v-row align="center" justify-end justify="space-between" class="mb-2">
-                <v-text-field class="mr-auto mx-2 flex-grow-1" v-model="searchSmilesQuery" placeholder="SMILES/SMARTS"
-                  prepend-inner-icon="mdi mdi-flask" density="compact" variant="outlined"
-                  label="Enter SMILES/SMART to explore"></v-text-field>
-                <v-checkbox v-model="searchRegex" label="Use SMARTS" class="mx-2 flex-grow-0">
-                </v-checkbox>
-                <v-btn color="primary" @click="search" class="mb-6 mx-2">
+              <v-row align="center" justify="space-between" class="mb-2">
+                <v-text-field v-model="searchSmilesQuery" label="SMILES/SMARTS" prepend-inner-icon="mdi-magnify"
+                  class="mx-2"></v-text-field>
+                <v-checkbox v-model="searchRegex" label="Use SMARTS" class="mx-2"></v-checkbox>
+                <v-btn color="primary" @click="search" class="mx-2">
                   Search
                 </v-btn>
               </v-row>
@@ -62,9 +60,7 @@
 
                 <v-dialog v-model="showSourcesDialog" max-width="600px">
                   <v-card>
-                    <v-card-title>
-                      Select Sources
-                    </v-card-title>
+                    <v-card-title> Select Sources </v-card-title>
                     <v-card-text>
                       <v-checkbox v-model="buyablesSourceAll" @change="searchSourceQuery = []" label="All"></v-checkbox>
                       <v-checkbox v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery"
@@ -72,9 +68,7 @@
                         :label="source === NO_SOURCE ? NO_SOURCE_TEXT : source"></v-checkbox>
                     </v-card-text>
                     <v-card-actions>
-                      <v-btn @click="showSourcesDialog = false">
-                        Select
-                      </v-btn>
+                      <v-btn @click="showSourcesDialog = false"> Select </v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
@@ -83,7 +77,6 @@
                   <v-icon>mdi-file-upload</v-icon>
                 </v-btn>
               </v-row>
-
             </v-col>
           </v-row>
 
@@ -142,12 +135,13 @@
                       <v-row>
                         <v-col cols="12">
                           <p>
-                            File uploads should be in CSV format containing "smiles", "ppg", and "source" columns or in
-                            JSON format as an
-                            array of objects containing "smiles", "ppg", and "source" fields. Optionally, a
-                            "properties" field containing additional metadata can be specified as an array of JSON objects
-                            with "name" and
-                            "value" fields.
+                            File uploads should be in CSV format containing
+                            "smiles", "ppg", and "source" columns or in JSON
+                            format as an array of objects containing "smiles",
+                            "ppg", and "source" fields. Optionally, a
+                            "properties" field containing additional metadata
+                            can be specified as an array of JSON objects with
+                            "name" and "value" fields.
                           </p>
                         </v-col>
                       </v-row>
@@ -203,14 +197,14 @@
 <script setup>
 import { API } from "@/common/api";
 import { getBuyables } from "@/common/buyables";
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch } from "vue";
 import SmilesImage from "@/components/SmilesImage.vue";
 import CopyTooltip from "@/components/CopyTooltip";
 
 const showSourcesDialog = ref(false);
 const buyables = ref([]);
 const uploadFile = ref(null);
-const searchSmilesQuery = ref('');
+const searchSmilesQuery = ref("");
 const searchSourceQuery = ref([]);
 const searchRegex = ref(false);
 const searchLimit = ref(100);
@@ -218,41 +212,41 @@ const simThresh = ref(1.0);
 const allowOverwrite = ref(true);
 const showAddModal = ref(false);
 const showUploadModal = ref(false);
-const addBuyableSmiles = ref('');
+const addBuyableSmiles = ref("");
 const addBuyablePrice = ref(1);
-const addBuyableSource = ref('');
-const uploadFileFormat = ref('json');
+const addBuyableSource = ref("");
+const uploadFileFormat = ref("json");
 const pendingTasks = ref(0);
 const buyablesSources = ref([]);
 
 const headers = computed(() => {
   let headers = [
-    { key: 'smiles', title: 'SMILES', align: 'center', width: '500px' },
-    { key: 'ppg', title: 'Price ($/g)', align: 'center' },
-    { key: 'source', title: 'Source', align: 'center' },
-    { key: 'tanimoto', title: 'Similarity', align: 'center' }
-  ]
+    { key: "smiles", title: "SMILES", align: "center", width: "400px" },
+    { key: "ppg", title: "Price ($/g)", align: "center" },
+    { key: "source", title: "Source", align: "center" },
+    { key: "tanimoto", title: "Similarity", align: "center" },
+  ];
   if (buyables.value.length > 0) {
     headers.push({
-      key: 'delete', title: '', align: 'center'
-    })
+      key: "delete",
+      title: "",
+      align: "center",
+    });
   }
-  return headers
+  return headers;
 });
 
 const showLoader = computed(() => {
-  return pendingTasks.value > 0
+  return pendingTasks.value > 0;
 });
 
-
 onMounted(() => {
-  API.get('/api/v2/buyables/sources/')
-    .then(json => {
-      buyablesSources.value = json.sources
-      console.log(buyablesSources.value)
-    });
+  API.get("/api/v2/buyables/sources/").then((json) => {
+    buyablesSources.value = json.sources;
+    console.log(buyablesSources.value);
+  });
   let urlParams = new URLSearchParams(window.location.search);
-  let query = urlParams.get('q');
+  let query = urlParams.get("q");
   if (query) {
     searchSmilesQuery.value = query;
     search();
@@ -268,49 +262,60 @@ const search = () => {
     searchLimit.value,
     simThresh.value
   )
-    .then(json => {
-      buyables.value = json['result'];
-      console.log(buyables.value)
+    .then((json) => {
+      buyables.value = json["result"];
+      console.log(buyables.value);
     })
     .finally(() => {
-      pendingTasks.value--
-    })
+      pendingTasks.value--;
+    });
 };
-
 
 const handleUploadSubmit = () => {
   if (!uploadFile.value) {
-    alert('Please select a file to upload');
+    alert("Please select a file to upload");
     return;
   }
   pendingTasks.value++;
   let formData = new FormData();
-  formData.append('file', uploadFile.value);
-  formData.append('format', uploadFileFormat.value);
-  formData.append('allowOverwrite', allowOverwrite.value);
-  API.post('/api/v2/buyables/upload/', formData)
-    .then(json => {
+  formData.append("file", uploadFile.value);
+  formData.append("format", uploadFileFormat.value);
+  formData.append("allowOverwrite", allowOverwrite.value);
+  API.post("/api/v2/buyables/upload/", formData)
+    .then((json) => {
       if (json.error) {
-        alert(json.error)
-        return
+        alert(json.error);
+        return;
       }
-      alert('Out of ' + json.total_count + ' entries, successfully added ' + json.inserted_count + ', updated ' + json.updated_count + ', and skipped ' + json.duplicate_count + ' duplicates. Only adding (up to) ' + 2 * this.searchLimit + ' documents to the list below')
+      alert(
+        "Out of " +
+        json.total_count +
+        " entries, successfully added " +
+        json.inserted_count +
+        ", updated " +
+        json.updated_count +
+        ", and skipped " +
+        json.duplicate_count +
+        " duplicates. Only adding (up to) " +
+        2 * this.searchLimit +
+        " documents to the list below"
+      );
       if (json.inserted.length > 0) {
-        buyables.value.unshift(...json.inserted)
+        buyables.value.unshift(...json.inserted);
       }
       if (json.updated.length > 0) {
         for (const updated of json.updated) {
-          let inList = false
+          let inList = false;
           for (const buyable of buyables.value) {
             if (buyable._id === updated._id) {
-              inList = true
-              buyable.ppg = updated.ppg
-              buyable.source = updated.source
-              break
+              inList = true;
+              buyable.ppg = updated.ppg;
+              buyable.source = updated.source;
+              break;
             }
           }
           if (!inList) {
-            buyables.value.unshift(updated)
+            buyables.value.unshift(updated);
           }
         }
       }
@@ -329,24 +334,26 @@ const addBuyable = () => {
     source: addBuyableSource.value,
     allowOverwrite: allowOverwrite.value,
   };
-  API.post('/api/v2/buyables/', body)
-    .then(json => {
+  API.post("/api/v2/buyables/", body)
+    .then((json) => {
       if (json.error || !json.success) {
-        alert('Error adding buyable compound')
+        alert("Error adding buyable compound");
       } else {
         if (json.inserted) {
-          buyables.value.unshift(json.result)
+          buyables.value.unshift(json.result);
         }
         if (json.updated) {
           for (const buyable of buyables.value) {
             if (buyable._id === json.result._id) {
-              buyable.ppg = json.result.ppg
-              buyable.source = json.result.source
+              buyable.ppg = json.result.ppg;
+              buyable.source = json.result.source;
             }
           }
         }
         if (json.duplicate) {
-          alert('Compound already exists in database! Check allow overwrite checkbox to allow overwriting!')
+          alert(
+            "Compound already exists in database! Check allow overwrite checkbox to allow overwriting!"
+          );
         }
       }
     })
@@ -354,7 +361,6 @@ const addBuyable = () => {
       pendingTasks.value--;
     });
 };
-
 
 const deleteBuyable = (_id) => {
   if (!window.confirm('Click "OK" to confirm deleting this entry')) {
@@ -362,16 +368,17 @@ const deleteBuyable = (_id) => {
   }
 
   pendingTasks.value++;
-  API.delete(`/api/v2/buyables/${encodeURIComponent(_id)}`)
-  console.log(_id)
-    .then(json => {
+  API.delete(`/api/v2/buyables/${encodeURIComponent(_id)}`);
+  console
+    .log(_id)
+    .then((json) => {
       if (json.error) {
-        alert(json.error)
+        alert(json.error);
       }
-      if (json['success']) {
+      if (json["success"]) {
         for (let i = 0; i < buyables.value.length; i++) {
-          if (buyables.value[i]['_id'] === _id) {
-            buyables.value.splice(i, 1)
+          if (buyables.value[i]["_id"] === _id) {
+            buyables.value.splice(i, 1);
           }
         }
       }
@@ -381,16 +388,13 @@ const deleteBuyable = (_id) => {
     });
 };
 
-
-
 watch(uploadFile, (file) => {
   if (file) {
-    if (file.name.endsWith('.json')) {
-      uploadFileFormat.value = 'json'
-    } else if (file.name.endsWith('.csv')) {
-      uploadFileFormat.value = 'csv'
+    if (file.name.endsWith(".json")) {
+      uploadFileFormat.value = "json";
+    } else if (file.name.endsWith(".csv")) {
+      uploadFileFormat.value = "csv";
     }
   }
 });
-
 </script>

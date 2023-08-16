@@ -2,19 +2,11 @@
   <v-container fluid style="min-height: calc(100vh-50px)">
     <v-row class="justify-center">
       <v-col cols="12" sm="8" md="10">
-        <v-sheet elevation="2"
-          ><v-tabs
-            v-model="tab"
-            color="primary"
-            align-tabs="center"
-            grow
-            class="mb-4"
-          >
+        <v-sheet elevation="2"><v-tabs v-model="tab" color="primary" align-tabs="center" grow class="mb-4">
             <v-tab value="IPP">Interactive Path Planner</v-tab>
             <v-tab value="RP">Retro Synthesis</v-tab>
             <v-tab value="TE" disabled>Tree Explorer</v-tab>
-          </v-tabs></v-sheet
-        >
+          </v-tabs></v-sheet>
         <v-window v-model="tab" class="elevation-2">
           <v-window-item value="IPP">
             <NetworkView />

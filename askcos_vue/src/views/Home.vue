@@ -6,13 +6,7 @@
           ASKCOS: Software tools for organic synthesis
         </h1>
         <v-expand-transition>
-          <v-sheet
-            elevation="5"
-            rounded="lg"
-            width="100%"
-            class="pa-6"
-            v-show="show"
-          >
+          <v-sheet elevation="5" rounded="lg" width="100%" class="pa-6" v-show="show">
             <h2 class="my-6">🧪 This is ASKCOS!</h2>
 
             <v-divider></v-divider>
@@ -27,36 +21,20 @@
               requests.
             </p>
             <v-expansion-panels class="mt-6 text-body-1" variant="accordion">
-              <v-expansion-panel
-                text="This work began under the DARPA Make-It program (ARO
+              <v-expansion-panel text="This work began under the DARPA Make-It program (ARO
             W911NF-16-2-0023) and continues to be supported by the Machine
             Learning for Pharmaceutical Discovery and Synthesis Consortium.
             Several of the deployed models are described in publications listed
-            here."
-                class="text-blue-darken-3"
-              >
-                <template v-slot:title
-                  ><span
-                    ><v-icon class="mr-1">mdi mdi-domain</v-icon
-                    ><strong
-                      >Machine Learning for Pharmaceutical Discovery and
-                      Synthesis (MLPDS) Consortium</strong
-                    ></span
-                  ></template
-                >
+            here." class="text-blue-darken-3">
+                <template v-slot:title><span><v-icon class="mr-1">mdi mdi-domain</v-icon><strong>Machine Learning for
+                      Pharmaceutical Discovery and
+                      Synthesis (MLPDS) Consortium</strong></span></template>
               </v-expansion-panel>
-              <v-expansion-panel
-                text="If you have any questions or if any of the links/images appear
-            broken, please email mlpds_support@mit.edu."
-                class="text-blue-darken-3"
-              >
-                <template v-slot:title
-                  ><v-icon class="mr-1">mdi mdi-lifebuoy</v-icon
-                  ><strong>Support</strong></template
-                >
+              <v-expansion-panel text="If you have any questions or if any of the links/images appear
+            broken, please email mlpds_support@mit.edu." class="text-blue-darken-3">
+                <template v-slot:title><v-icon class="mr-1">mdi mdi-lifebuoy</v-icon><strong>Support</strong></template>
               </v-expansion-panel>
-              <v-expansion-panel
-                text='THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESSED OR IMPLIED
+              <v-expansion-panel text='THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESSED OR IMPLIED
             WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
             MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
             IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
@@ -66,25 +44,14 @@
             INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
             IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
             OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
-            IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."'
-                class="text-blue-darken-3"
-              >
-                <template v-slot:title
-                  ><v-icon class="mr-1">mdi mdi-license</v-icon
-                  ><strong>License</strong></template
-                >
+            IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."' class="text-blue-darken-3">
+                <template v-slot:title><v-icon class="mr-1">mdi mdi-license</v-icon><strong>License</strong></template>
               </v-expansion-panel>
             </v-expansion-panels>
           </v-sheet>
         </v-expand-transition>
         <v-expand-transition>
-          <v-sheet
-            elevation="5"
-            rounded="lg"
-            width="100%"
-            class="my-6 pa-6"
-            v-show="show"
-          >
+          <v-sheet elevation="5" rounded="lg" width="100%" class="my-6 pa-6" v-show="show">
             <h2 class="my-6">🚀 Getting Started!</h2>
             <v-divider></v-divider>
             <LaunchPad></LaunchPad>
