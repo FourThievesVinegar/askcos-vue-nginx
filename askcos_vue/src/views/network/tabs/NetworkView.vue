@@ -11,10 +11,10 @@
                 <v-btn variant="flat" color="green-darken-1" prepend-icon="mdi mdi-play" class="mr-2"
                   :disabled="!resultsStore.target" @click="changeTarget">One Step</v-btn>
                 <v-btn-group density="compact" color="primary" divided>
-                  <v-btn prepend-icon="mdi mdi-family-tree">Build Tree</v-btn>
+                  <v-btn prepend-icon="mdi mdi-family-tree" :disabled="!isAuth">Build Tree</v-btn>
                   <v-menu location="bottom">
                     <template v-slot:activator="{ props }">
-                      <v-btn v-bind="props" icon="mdi mdi-menu-down" />
+                      <v-btn v-bind="props" icon="mdi mdi-menu-down" :disabled="!isAuth" />
                     </template>
 
                     <v-list>
@@ -50,23 +50,25 @@
     <div v-if="!isCanvasEmpty">
       <div id="network" :class="visible ? 'open-toolbar' : 'close-toolbar'"></div>
       <div class="hover-btn justify-center align-center flex-gap-2 elevation-3" id="hoverBtn">
-        <v-btn v-if="!!selected && selected.type === 'chemical'" density="compact" icon="mdi mdi-plus-circle" id="expand-btn"
-          @click="expandNode" title="Expand node" variant="flat" color="green-darken-1">
+        <v-btn v-if="!!selected && selected.type === 'chemical'" density="compact" icon="mdi mdi-plus-circle"
+          id="expand-btn" @click="expandNode" title="Expand node" variant="flat" color="green-darken-1">
         </v-btn>
         <v-btn id="select-all-btn" class="text-light" @click="selectAllOccur" title="Select all occurrences"
           density="compact" icon="mdi mdi-select-all" variant="flat" color="orange-darken-1">
         </v-btn>
-        <v-btn id="delete-btn" @click="deleteChoice" title="Delete children node(s)" density="compact" icon="mdi mdi-delete-empty" variant="flat" color="red-darken-1">
+        <v-btn id="delete-btn" @click="deleteChoice" title="Delete children node(s)" density="compact"
+          icon="mdi mdi-delete-empty" variant="flat" color="red-darken-1">
         </v-btn>
         <v-btn id="collapse-btn" @click="collapseNode" title="Collapse children node(s)" density="compact"
           icon="mdi mdi-collapse-all" variant="flat" color="blue-darken-1">
         </v-btn>
-        <v-btn id="node-detail-btn" @click="showNodeDetail" title="Show Node Detail" density="compact" icon="mdi mdi-information" variant="flat" color="grey-darken-1">
+        <v-btn id="node-detail-btn" @click="showNodeDetail" title="Show Node Detail" density="compact"
+          icon="mdi mdi-information" variant="flat" color="grey-darken-1">
         </v-btn>
       </div>
       <div class="canvas-btn d-flex flex-column flex-gap-2 align-items-center">
-        <v-btn :disabled="isCanvasEmpty" @click="saveImage" title="Take Screenshot" density="compact" icon="mdi mdi-camera"
-          variant="tonal" color="primary" elevation="3">
+        <v-btn :disabled="isCanvasEmpty" @click="saveImage" title="Take Screenshot" density="compact"
+          icon="mdi mdi-camera" variant="tonal" color="primary" elevation="3">
         </v-btn>
         <v-btn :disabled="isCanvasEmpty" id="hierarchical-button" @click="toggleHierarchical" title="Tree/Graph"
           density="compact" icon="mdi-plus" variant="tonal" color="primary" elevation="3">
@@ -77,7 +79,8 @@
         </v-btn>
       </div>
       <div class="result-btn d-flex justify-content-center align-items-center flex-gap-2">
-        <v-btn id="clear-reactions-btn" @click="clear()" title="Clear all results" size="small" color="red-darken-2" prepend-icon="mdi mdi-close-circle">
+        <v-btn id="clear-reactions-btn" @click="clear()" title="Clear all results" size="small" color="red-darken-2"
+          prepend-icon="mdi mdi-close-circle">
           Clear Result </v-btn>
         <v-menu location="top">
           <template v-slot:activator="{ props }">
@@ -93,7 +96,15 @@
           </v-list>
         </v-menu>
       </div>
-
+      <div class="highlight-btn d-flex flex-column align-items-center justify-items-center flex-gap-2">
+        <v-btn :disabled="isCanvasEmpty" id="enumerate-paths-button" title="Enumerate paths to starting materials" density="compact" icon="mdi-plus">
+        </v-btn>
+        <v-btn :disabled="isCanvasEmpty" id="enumerate-paths-button" title="Enumerate paths to starting materials" density="compact" icon="mdi mdi-marker">
+        </v-btn>
+        <!-- <v-checkbox :disabled="isCanvasEmpty" id="tree-view-switch" name="tree-view-switch" hide-details></v-checkbox> -->
+        <!-- <span>Highlight<br />Trees <i v-b-tooltip class="fas fa-question-circle"
+            title="Highlight individual retrosynthetic pathways and display statistics."></i></span> -->
+      </div>
     </div>
     <div v-else class="d-flex justify-center pa-16">
       <div v-if="!!resultsStore.target">
@@ -235,7 +246,7 @@ export default {
       return this.context.enableResolver;
     },
     isAuth() {
-      return this.context.isAuth;
+      return false;
     },
     showLoader() {
       return this.pendingTasks > 0;
@@ -1852,8 +1863,8 @@ export default {
 .highlight-btn {
   position: absolute;
   padding: 5px;
-  top: 0;
-  left: 95%;
+  top: 120px;
+  right: 1px;
 }
 
 .form-bg {

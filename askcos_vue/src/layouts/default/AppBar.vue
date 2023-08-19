@@ -1,7 +1,7 @@
 <template>
-  <v-navigation-drawer expand-on-hover rail elevation="10" @update:rail="onDrawerCollapse" width="100px">
+  <v-navigation-drawer expand-on-hover rail elevation="4" @update:rail="onDrawerCollapse" width="100px">
     <v-list>
-      <v-list-item prepend-icon="mdi-chemical-weapon" title="ASKCOS" subtitle="Demo"></v-list-item>
+      <v-list-item :prepend-avatar="logoSrc" title="ASKCOS" subtitle="Demo"></v-list-item>
     </v-list>
 
     <v-divider></v-divider>
@@ -55,10 +55,11 @@
 </template>
 
 <script setup>
+import logo from "@/assets/logo.svg";
 import { useRoute } from "vue-router";
 import { ref, onMounted } from "vue";
 
-// const listGroupExpanded = ref(true);
+const logoSrc = ref();
 const openGroups = ref([]);
 const route = useRoute();
 
@@ -70,6 +71,7 @@ function onDrawerCollapse(value) {
 
 onMounted(() => {
   openGroups.value = [];
+  logoSrc.value = logo;
 });
 </script>
 

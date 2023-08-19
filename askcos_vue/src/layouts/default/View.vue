@@ -1,5 +1,5 @@
 <template>
-  <v-main style="background-color: #f5f5f5">
+  <v-main style="background-color: #f0f2f5">
     <router-view v-slot="{ Component }">
       <keep-alive>
         <component :is="Component" />

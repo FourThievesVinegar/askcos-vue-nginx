@@ -2,11 +2,11 @@
   <v-container fluid style="min-height: calc(100vh-50px)">
     <v-row class="justify-center">
       <v-col cols="12" sm="8" md="10">
-        <h1 class="my-6 text-center">
+        <h1 class="header my-6 text-center">
           ASKCOS: Software tools for organic synthesis
         </h1>
         <v-expand-transition>
-          <v-sheet elevation="5" rounded="lg" width="100%" class="pa-6" v-show="show">
+          <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6" v-show="show">
             <h2 class="my-6">🧪 This is ASKCOS!</h2>
 
             <v-divider></v-divider>
@@ -20,7 +20,7 @@
               users on the site also performing computationally-expensive
               requests.
             </p>
-            <v-expansion-panels class="mt-6 text-body-1" variant="accordion">
+            <v-expansion-panels class="mt-6 text-body-1" variant="popout">
               <v-expansion-panel text="This work began under the DARPA Make-It program (ARO
             W911NF-16-2-0023) and continues to be supported by the Machine
             Learning for Pharmaceutical Discovery and Synthesis Consortium.
@@ -51,7 +51,7 @@
           </v-sheet>
         </v-expand-transition>
         <v-expand-transition>
-          <v-sheet elevation="5" rounded="lg" width="100%" class="my-6 pa-6" v-show="show">
+          <v-sheet elevation="2" rounded="lg" width="100%" class="my-6 pa-6" v-show="show">
             <h2 class="my-6">🚀 Getting Started!</h2>
             <v-divider></v-divider>
             <LaunchPad></LaunchPad>
@@ -72,3 +72,29 @@ onMounted(() => {
   show.value = true; // <div>
 });
 </script>
+
+<style scoped>
+.header {
+  background: linear-gradient(to right,
+      #65676b 20%,
+      #006bd6 30%,
+      #0080ff 70%,
+      #8a8e94 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-fill-color: transparent;
+  background-size: 500% auto;
+  animation: paint 5s ease-in-out infinite alternate;
+}
+
+@keyframes paint {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 100% 50%;
+  }
+}
+</style>
