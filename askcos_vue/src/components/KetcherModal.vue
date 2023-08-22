@@ -1,17 +1,28 @@
 <template>
-  <b-modal :id="id" size='fit' centered hide-header @ok="smilesFromKetcher" @shown="smilesToKetcher">
-    <iframe ref="ketcherIframe" src="/ketcher/iframe/" width="800" height="432"></iframe>
-    <b-spinner ref="ketcherSpinner" label="Loading"></b-spinner>
-  </b-modal>
+  <v-dialog v-model="propShow" :id="id" width="auto">
+    <v-card>
+      <v-card-text>
+        <iframe ref="ketcherIframe" src="/ketcher-standalone/index.html" width="800" height="432"></iframe>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" @click="propShow = false">Ok</v-btn>
+      </v-card-actions>
+    </v-card>
+
+  </v-dialog>
 </template>
   
 <script>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { API } from "@/common/api";
 
 export default {
   name: 'KetcherModal',
   props: {
+    value: {
+      type: Boolean,
+      default: false,
+    },
     id: {
       type: String,
       default: 'ketcher-modal',
@@ -23,38 +34,48 @@ export default {
   },
   setup(props, context) {
     const ketcherIframe = ref(null);
-    const ketcherSpinner = ref(null);
+    // const ketcherSpinner = ref(null);
 
-    watch(props.smiles, () => {
-      smilesToKetcher();
+    const propShow = computed({
+      get() {
+        return props.value
+      },
+      set(newValue) {
+        context.emit('input', newValue)
+      },
+    })
+
+    watch(propShow, () => {
+        smilesToKetcher();
     });
 
     const smilesToKetcher = () => {
+      // console.log(props.smiles)
       const km = ketcherIframe.value;
-      const spinner = ketcherSpinner.value;
-      if (!(km && km.contentWindow.ketcher && km.contentWindow.ketcher.ready)) {
-        spinner.style.display = 'block';
+      // const spinner = ketcherSpinner.value;
+      if (!(km && km.contentWindow.ketcher)) {
+        // spinner.style.display = 'block';
         setTimeout(smilesToKetcher, 100);
         return;
       }
       const ketcher = km.contentWindow.ketcher;
       let molfileOld = ketcher.getMolfile();
       ketcher.editor.struct(null);
-      spinner.style.display = 'block';
+      // // spinner.style.display = 'block';
 
       if (!props.smiles) {
-        spinner.style.display = 'none';
+        // spinner.style.display = 'none';
         return;
       }
       API.post('/api/v2/rdkit/smiles/to_molfile/', { 'smiles': props.smiles })
         .then(json => {
           ketcher.setMolecule(json.molfile);
-          spinner.style.display = 'none';
+          // spinner.style.display = 'none';
         })
         .catch(error => {
           console.log('Could not convert SMILES to molfile for Ketcher use: ' + error);
           ketcher.setMolecule(molfileOld);
-          spinner.style.display = 'none';
+          // spinner.style.display = 'none';
         });
     };
 
@@ -71,11 +92,16 @@ export default {
         });
     };
 
+    function dialogChange(dialogState) {
+      console.log(dialogState)
+    }
+
     return {
+      propShow,
       ketcherIframe,
-      ketcherSpinner,
       smilesToKetcher,
-      smilesFromKetcher
+      smilesFromKetcher,
+      dialogChange,
     };
   }
 };
