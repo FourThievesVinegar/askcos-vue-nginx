@@ -16,7 +16,6 @@
                     <template v-slot:activator="{ props }">
                       <v-btn v-bind="props" icon="mdi mdi-menu-down" :disabled="!isAuth" />
                     </template>
-
                     <v-list>
                       <v-list-item>
                         <v-list-item-title>Option 1</v-list-item-title>
@@ -30,7 +29,8 @@
                     </v-list>
                   </v-menu>
                 </v-btn-group>
-                <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-application-import" class="ml-2">Import
+                <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-application-import" class="ml-2"
+                  @click="showImportNetwork = true">Import
                   Network</v-btn>
               </template>
             </v-text-field></v-col>
@@ -49,6 +49,32 @@
     </v-toolbar>
     <div v-if="!isCanvasEmpty">
       <div id="network" :class="visible ? 'open-toolbar' : 'close-toolbar'"></div>
+      <div v-if="treeViewEnabled" id="tree-view-overlay">
+        <v-btn-group variant="outlined" density="comfortable" divided :border="true">
+          <v-btn icon="mdi mdi-chevron-double-left" @click="changeTreeIndex('first')"
+            :disabled="!treeViewEnabled"></v-btn>
+          <v-btn icon="mdi mdi-chevron-left" @click="changeTreeIndex('prev')" :disabled="!treeViewEnabled"></v-btn>
+          <v-btn variant="tonal">Tree {{ treeViewEnabled ?
+            `${currentTreeIndex
+            + 1} of ${trees.length}` : "N/A" }}</v-btn>
+          <v-btn icon="mdi mdi-chevron-right" @click="changeTreeIndex('next')" :disabled="!treeViewEnabled"></v-btn>
+          <v-btn icon="mdi mdi-chevron-double-right" @click="changeTreeIndex('last')"
+            :disabled="!treeViewEnabled"></v-btn>
+        </v-btn-group>
+        <div>
+          <v-btn variant="outlined" block size="small" class="my-2" :disabled="currentTreeVisible"
+            @click="resultsStore.addTreeToDispGraph(currentTree)">Add full tree to network</v-btn>
+        </div>
+        <div v-if="currentTreeData">
+          <table class="text-left">
+            <tr v-for="(value, key) in currentTreeData" :key="key">
+              <th class="px-1">{{ key }}</th>
+              <td class="px-1">{{ Number.isInteger(value) ? value : num2str(value) }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
       <div class="hover-btn justify-center align-center flex-gap-2 elevation-3" id="hoverBtn">
         <v-btn v-if="!!selected && selected.type === 'chemical'" density="compact" icon="mdi mdi-plus-circle"
           id="expand-btn" @click="expandNode" title="Expand node" variant="flat" color="green-darken-1">
@@ -67,16 +93,31 @@
         </v-btn>
       </div>
       <div class="canvas-btn d-flex flex-column flex-gap-2 align-items-center">
-        <v-btn :disabled="isCanvasEmpty" @click="saveImage" title="Take Screenshot" density="compact"
-          icon="mdi mdi-camera" variant="tonal" color="primary" elevation="3">
-        </v-btn>
-        <v-btn :disabled="isCanvasEmpty" id="hierarchical-button" @click="toggleHierarchical" title="Tree/Graph"
-          density="compact" icon="mdi-plus" variant="tonal" color="primary" elevation="3">
-          {{ settingsStore.visjsOptions.layout.hierarchical.enabled ? "H" : "G" }}
-        </v-btn>
-        <v-btn :disabled="isCanvasEmpty" id="center-graph-button" @click="centerGraph" title="Center Canvas"
-          density="compact" icon="mdi mdi-fit-to-screen-outline" variant="tonal" color="primary" elevation="3">
-        </v-btn>
+        <v-tooltip location="end">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" :disabled="isCanvasEmpty" @click="saveImage" density="compact" icon="mdi-camera"
+              variant="tonal" color="primary" elevation="3">
+            </v-btn>
+          </template>
+          <span>Take Screenshot</span>
+        </v-tooltip>
+        <v-tooltip location="end">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" :disabled="isCanvasEmpty" id="hierarchical-button" @click="toggleHierarchical"
+              density="compact" icon="mdi-plus" variant="tonal" color="primary" elevation="3">
+              {{ settingsStore.visjsOptions.layout.hierarchical.enabled ? "H" : "G" }}
+            </v-btn>
+          </template>
+          <span>Tree/Graph</span>
+        </v-tooltip>
+        <v-tooltip location="end">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" :disabled="isCanvasEmpty" id="center-graph-button" @click="centerGraph"
+              density="compact" icon="mdi-fit-to-screen-outline" variant="tonal" color="primary" elevation="3">
+            </v-btn>
+          </template>
+          <span>Center Canvas</span>
+        </v-tooltip>
       </div>
       <div class="result-btn d-flex justify-content-center align-items-center flex-gap-2">
         <v-btn id="clear-reactions-btn" @click="clear()" title="Clear all results" size="small" color="red-darken-2"
@@ -90,20 +131,19 @@
           </template>
 
           <v-list>
-            <v-list-item>
-              <v-list-item-title>My PC</v-list-item-title>
-            </v-list-item>
+            <v-list-item>My PC</v-list-item>
+            <v-list-item>My Account</v-list-item>
           </v-list>
         </v-menu>
       </div>
       <div class="highlight-btn d-flex flex-column align-items-center justify-items-center flex-gap-2">
-        <v-btn :disabled="isCanvasEmpty" id="enumerate-paths-button" title="Enumerate paths to starting materials" density="compact" icon="mdi-plus">
+        <v-btn :disabled="isCanvasEmpty" title="Enumerate paths to starting materials" density="compact"
+          icon="mdi mdi-map-marker-path" variant="tonal" color="primary" elevation="3" @click="showEnumeratePaths = true">
         </v-btn>
-        <v-btn :disabled="isCanvasEmpty" id="enumerate-paths-button" title="Enumerate paths to starting materials" density="compact" icon="mdi mdi-marker">
+        <v-btn :disabled="isCanvasEmpty" title="Enumerate paths to starting materials" density="compact"
+          icon="mdi mdi-marker" variant="tonal" :color="treeViewEnabled ? 'success' : 'primary'" elevation="3"
+          @click="treeViewEnabled = !treeViewEnabled">
         </v-btn>
-        <!-- <v-checkbox :disabled="isCanvasEmpty" id="tree-view-switch" name="tree-view-switch" hide-details></v-checkbox> -->
-        <!-- <span>Highlight<br />Trees <i v-b-tooltip class="fas fa-question-circle"
-            title="Highlight individual retrosynthetic pathways and display statistics."></i></span> -->
       </div>
     </div>
     <div v-else class="d-flex justify-center pa-16">
@@ -120,6 +160,57 @@
       </div>
     </div>
   </v-sheet>
+
+  <v-dialog v-model="showEnumeratePaths" width="auto">
+    <v-card>
+      <v-card-title>Enumerate Pathways</v-card-title>
+      <v-divider></v-divider>
+      <v-card-text>
+        <p class="mb-2">This will enumerate pathways to terminal precursors based on the current tree builder settings.
+        </p>
+        <p>Following settings are considered as listed below:</p>
+        <v-list class="mb-2">
+          <v-list-item prepend-icon="mdi mdi-circle-small" min-height="0px">Max depth</v-list-item>
+          <v-list-item prepend-icon="mdi mdi-circle-small" min-height="0px">Max trees</v-list-item>
+          <v-list-item prepend-icon="mdi mdi-circle-small" min-height="0px">Buyable sources</v-list-item>
+          <v-list-item prepend-icon="mdi mdi-circle-small" min-height="0px">Buyable logic</v-list-item>
+          <v-list-item prepend-icon="mdi mdi-circle-small" min-height="0px">Chemical price logic and Max chemical
+            price</v-list-item>
+          <v-list-item prepend-icon="mdi mdi-circle-small" min-height="0px">Chemical SCScore logic and Max
+            SCScore</v-list-item>
+          <v-list-item prepend-icon="mdi mdi-circle-small" min-height="0px">Chemical popularity logic and Min
+            occurrences</v-list-item>
+        </v-list>
+        <v-checkbox v-model="useDispNodesOnly"
+          label="Restrict search to results currently shown in network view"></v-checkbox>
+        <v-alert text="Chemical property criteria are not yet supported." type="info" class="mb-2"></v-alert>
+        <v-alert v-if="trees.length" text="Continuing with path enumeration will clear existing trees."
+          type="warning"></v-alert>
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" @click="showEnumeratePaths = false">Cancel</v-btn>
+        <v-btn color="primary" @click="() => { showEnumeratePaths = false; enumerateTrees() }">Ok</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="showImportNetwork" width="auto" min-width="500px">
+    <v-card>
+      <v-card-title>Load Network JSON</v-card-title>
+      <v-divider></v-divider>
+      <v-card-text>
+        <v-file-input label="File input" variant="outlined"></v-file-input>
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" @click="showImportNetwork = false">Cancel</v-btn>
+        <v-btn color="primary" @click="() => { showImportNetwork = false; load() }">Load</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -135,6 +226,9 @@ import { useResultsStore } from "@/store/results";
 import { useSettingsStore } from "@/store/settings";
 import dayjs from "dayjs";
 import { Network } from "vis-network";
+import { getPaths } from "@/common/graph";
+import { useConfirm } from 'vuetify-use-dialog';
+const BG_OPACITY = 0.2; // Background opacity
 export default {
   name: "NetworkView",
   components: {
@@ -145,6 +239,12 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  setup() {
+    const createConfirm = useConfirm()
+    return {
+      createConfirm
+    }
   },
   data() {
     return {
@@ -164,6 +264,8 @@ export default {
       showClusterEditModal: false,
       showAddNewPrecursorModal: false,
       showSaveModal: false,
+      showEnumeratePaths: false,
+      showImportNetwork: false,
       downloadName: "network.json",
       tb: {
         modes: TB_PRESETS,
@@ -283,8 +385,6 @@ export default {
     },
     currentTreeVisible() {
       // Whether the current tree is fully visible in the display graph
-      let recomputeDisp = this.recomputeDisp;
-      console.debug(recomputeDisp);
       if (!this.trees.length) {
         return false;
       }
@@ -1188,51 +1288,23 @@ export default {
         }
       }
     },
-    clear(skipConfirm = false) {
+    async clear(skipConfirm = false) {
       // Returns true or false depending on whether results were cleared
       if (!skipConfirm) {
-        this.$bvModal
-          .msgBoxConfirm(
-            "This will clear all of your current results. Continue anyway?",
-            {
-              title: "Please Confirm",
-              size: "sm",
-              okVariant: "success",
-              okTitle: "Yes",
-              cancelTitle: "No",
-              footerClass: "p-2",
-              hideHeaderClose: false,
-              centered: true,
-            }
-          )
-          .then((value) => {
-            if (!value) return false;
-            this.resultsStore.target = "";
-            this.selected = null;
-            this.resultsStore.clearDataGraph();
-            this.resultsStore.clearDispGraph();
-            this.resultsStore.clearRemovedReactions();
-            this.resultsStore.setSavedResultInfo({});
-            this.trees = [];
-            this.isCanvasEmpty = true;
-            this.visible = true;
-            return true;
-          })
-          .catch(() => {
-            // An error occurred
-          });
-      } else {
-        this.resultsStore.target = "";
-        this.selected = null;
-        this.resultsStore.clearDataGraph();
-        this.resultsStore.clearDispGraph();
-        this.resultsStore.clearRemovedReactions();
-        this.resultsStore.setSavedResultInfo({});
-        this.trees = [];
-        this.isCanvasEmpty = true;
-        this.visible = true;
-        return true;
+        const isConfirmed = await this.createConfirm({ title: 'Please Confirm', content: 'This will clear all of your current results. Continue anyway?', dialogProps: { width: "auto" } })
+        if (!isConfirmed)
+          return
       }
+      this.resultsStore.target = "";
+      this.selected = null;
+      this.resultsStore.clearDataGraph();
+      this.resultsStore.clearDispGraph();
+      this.resultsStore.clearRemovedReactions();
+      this.resultsStore.setSavedResultInfo({});
+      this.trees = [];
+      this.isCanvasEmpty = true;
+      this.visible = true;
+      this.treeViewEnabled = false;
     },
     clearSelection() {
       let hoverBtnElem = document.getElementById("hoverBtn");
@@ -1606,9 +1678,10 @@ export default {
         id: node["id"],
         terminal: this.isNodeTerminal(node),
       }));
-      this.updateDataNodes(updates);
+      this.resultsStore.updateDataNodes(updates);
     },
     enumerateTrees() {
+      this.currentTreeIndex = 0;
       this.updateTerminalNodes();
       let trees = getPaths({
         dataGraph: this.resultsStore.dataGraph,
@@ -1622,7 +1695,7 @@ export default {
       trees.forEach((tree) => this.calculateTreeMetadata(tree));
       this.trees = trees;
       this.treeViewEnabled = true;
-      this.updateTreeConnectivity();
+      this.resultsStore.updateTreeConnectivity();
     },
     calculateTreeMetadata(tree) {
       // Updates tree in place
@@ -1824,9 +1897,9 @@ export default {
 
 #tree-view-overlay {
   position: absolute;
-  top: 2px;
-  left: 2px;
-  padding: 0.5rem;
+  top: 120px;
+  left: 1px;
+  padding: 5px;
   background-color: rgba(255, 255, 255, 0.8);
 }
 
