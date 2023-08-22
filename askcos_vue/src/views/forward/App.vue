@@ -19,14 +19,14 @@
               </v-col>
 
               <v-col cols="6">
-                <v-text-field v-model="products" label="Products"
+                <v-text-field v-model="product" label="Product"
                   :disabled="mode === 'forward' || mode === 'sites'"></v-text-field>
               </v-col>
 
             </v-row>
 
-            <v-row v-if="!!reactants" align="center" class="my-10">
-              <v-col cols="12">
+            <v-row v-if="!!reactants" class="d-flex justify-center">
+              <v-col cols="4">
                 <smiles-image :smiles="reactants + '>>' + product"></smiles-image>
               </v-col>
             </v-row>
@@ -71,12 +71,12 @@
 
         <v-window v-model="tab" class="elevation-2">
           <v-window-item value="CR" rounded="lg">
-            <ConditionRecommendation value="CR" rounded="lg" />
+            <ConditionRecommendation value="CR" rounded="lg" :results="contextResults"/>
           </v-window-item>
-          <v-window-item value="SP"> Synthesis Prediction </v-window-item>
-          <v-window-item value="IP"> Impurity Prediction </v-window-item>
-          <v-window-item value="RSP"> Regioselectivity Prediction </v-window-item>
-          <v-window-item value="ARSS"> Site Selectivity Prediction </v-window-item>
+          <v-window-item value="SP"> <SynthesisPrediction value="SP" rounded="lg" /></v-window-item>
+          <v-window-item value="IP">  <ImpurityPrediction value="IP" rounded="lg" /> </v-window-item>
+          <v-window-item value="RSP"> <Regioselectivity value="RSP" rounded="lg" /> </v-window-item>
+          <v-window-item value="ARSS"><SiteSelectivity value="ARSS" rounded="lg" /> </v-window-item>
         </v-window>
       </v-col>
     </v-row>
@@ -141,7 +141,10 @@
               <v-text-field label="Num. results" hint="How many forward prediction results to return?" type="number"
                 v-model="numForwardResults"></v-text-field>
             </v-col>
-
+            <v-divider></v-divider>
+            <v-col cols="12">
+              <h4>Impurity predictor settings</h4>
+            </v-col>
             <v-col cols="12">
               <v-text-field label="Top-k from forward prediction"
                 hint="How many of the top forward prediction products should be included in impurity prediction?"
@@ -158,18 +161,22 @@
                 :items="['WLN forward inspector', 'Reaxys inspector']"></v-select>
             </v-col>
 
+            <v-col cols="8">
+              <v-switch label="Use atom mapping" hint="Whether to use atom mapping to check reaction modes."
+                v-model="impurityCheckMapping"></v-switch>
+            </v-col>
+            <v-divider></v-divider>
             <v-col cols="12">
-              <v-checkbox label="Use atom mapping" hint="Whether to use atom mapping to check reaction modes."
-                v-model="impurityCheckMapping"></v-checkbox>
+              <h4>Regio-selectivity predictor settings</h4>
+            </v-col>
+            <v-col cols="12">
+              <v-switch label="Do not map reagents" hint="Reagents do not provide any atom to the product."
+                v-model="absoluteReagents"></v-switch>
             </v-col>
 
           </v-row>
         </v-card-text>
 
-        <!-- <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" @click="dialog = false">OK</v-btn>
-        </v-card-actions> -->
       </v-card>
     </v-dialog>
   </template>
@@ -178,10 +185,13 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter, useRoute } from "vue-router";
-import SmilesInput from "@/components/SmilesInput.vue";
 import { API } from "@/common/api";
 import SmilesImage from "@/components/SmilesImage";
 import ConditionRecommendation from "@/views/forward/tab/ConditionRecommendation.vue"
+import SynthesisPrediction from  "@/views/forward/tab/SynthesisPrediction.vue"
+import ImpurityPrediction from "@/views/forward/tab/ImpurityPrediction.vue"
+import Regioselectivity from  "@/views/forward/tab/Regioselectivity.vue"
+import SiteSelectivity from  "@/views/forward/tab/SiteSelectivity.vue"
 
 const route = useRoute();
 const router = useRouter();
@@ -189,7 +199,12 @@ const tab = ref("");
 const dialog = ref(false)
 const contextModel = ref('neuralnetwork');
 const modelStatus = ref([]);
-const reactants = ref("");
+const reactants = ref('');
+const product = ref('');
+const reagents = ref('');
+const solvent = ref('');
+const contextResults = ref([]);
+
 
 const contextV2ModelType = ref('fp-small');
 const contextV2ModelVersion = ref('20191118');
@@ -198,6 +213,11 @@ const forwardModelTrainingSet = ref('uspto_500k');
 const forwardModelVersion = ref('1');
 const numContextResults = ref(10);
 const numForwardResults = ref(100);
+const impurityTopk = ref(3);
+const inspectionThreshold = ref(0.1);
+const inspectionModel = ref('WLN forward inspector');
+const impurityCheckMapping = ref(true);
+const absoluteReagents = ref(true);
 
 const forwardModels = computed(() => {
   const models = new Set()
@@ -251,9 +271,6 @@ onMounted(() => {
 });
 
 const predict = () => {
-  pendingTasks.value++;
-  canonicalizeAll()
-    .then(() => {
       switch (mode.value) {
         case 'forward':
           clearForward();
@@ -278,10 +295,6 @@ const predict = () => {
         default:
           alert('unsupported mode');
       }
-    })
-    .finally(() => {
-      pendingTasks.value--;
-    });
 };
 
 watch(tab, (newTab) => {
@@ -299,6 +312,28 @@ onMounted(() => {
     predict();
   }
 });
+
+const forwardPredict = async () => {
+  pendingTasks.value++;
+  forwardResults.value = [];
+
+  if (reactants.value.length < 4) {
+    alert('Please enter a reactant with at least 4 atoms.');
+    pendingTasks.value--;
+    return;
+  }
+
+  const postData = constructForwardPostData(reagents.value, solvent.value);
+
+  try {
+    const output = await API.runCeleryTask('/api/v2/forward/', postData);
+    forwardResults.value = output;
+  } catch (error) {
+    console.error('Error in forward prediction:', error);
+  } finally {
+    pendingTasks.value--;
+  }
+};
 
 </script>
 

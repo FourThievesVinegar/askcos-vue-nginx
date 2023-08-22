@@ -264,7 +264,6 @@ const search = () => {
   )
     .then((json) => {
       buyables.value = json["result"];
-      console.log(buyables.value);
     })
     .finally(() => {
       pendingTasks.value--;
