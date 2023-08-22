@@ -24,16 +24,24 @@
           <v-list-item to="network?tab=RP" prepend-icon="mdi-help-box" title="Retrosynthesis Prediction" value="RP"
             :active="route.query.tab === 'RP'"></v-list-item>
         </v-list-group>
+
         <v-list-group value="ForwardSynthesis" subgroup>
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" title="Forward Synthesis"></v-list-item>
           </template>
 
-          <v-list-item prepend-icon="mdi-help-box" title="Condition Recommendation" value="CR"></v-list-item>
-          <v-list-item prepend-icon="mdi-help-box" title="Synthesis Prediction" value="SP"></v-list-item>
-          <v-list-item prepend-icon="mdi-help-box" title="Impurity Prediction" value="IP"></v-list-item>
-          <v-list-item prepend-icon="mdi-help-box" title="Regio-selectivity Prediction" value="RSP"></v-list-item>
-          <v-list-item prepend-icon="mdi-help-box" title="Aromatic Site Selectivity" value="ARSS"></v-list-item>
+          <v-list-item to="forward?tab=CR" 
+          prepend-icon="mdi-help-box" title="Condition Recommendation" value="CR"
+           :active="route.query.tab === 'CR'"></v-list-item>
+          <v-list-item to="forward?tab=SP" prepend-icon="mdi-help-box" title="Synthesis Prediction" value="SP"
+          :active="route.query.tab === 'SP'"></v-list-item>
+          <v-list-item to="forward?tab=IP" 
+          prepend-icon="mdi-help-box" title="Impurity Prediction" value="IP"
+          :active="route.query.tab === 'IP'"></v-list-item>
+          <v-list-item to="forward?tab=RSP"  prepend-icon="mdi-help-box" title="Regio-selectivity Prediction" value="RSP"
+          :active="route.query.tab === 'RSP'"></v-list-item>
+          <v-list-item to="forward?tab=ARSS"  prepend-icon="mdi-help-box" title="Aromatic Site Selectivity" value="ARSS"
+          :active="route.query.tab === 'ARSS'"></v-list-item>
         </v-list-group>
 
         <v-list-group value="Utilities" subgroup>
