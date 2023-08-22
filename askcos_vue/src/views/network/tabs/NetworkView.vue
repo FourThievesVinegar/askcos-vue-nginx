@@ -16,7 +16,6 @@
                     <template v-slot:activator="{ props }">
                       <v-btn v-bind="props" icon="mdi mdi-menu-down" :disabled="!isAuth" />
                     </template>
-
                     <v-list>
                       <v-list-item>
                         <v-list-item-title>Option 1</v-list-item-title>
@@ -94,16 +93,31 @@
         </v-btn>
       </div>
       <div class="canvas-btn d-flex flex-column flex-gap-2 align-items-center">
-        <v-btn :disabled="isCanvasEmpty" @click="saveImage" title="Take Screenshot" density="compact"
-          icon="mdi mdi-camera" variant="tonal" color="primary" elevation="3">
-        </v-btn>
-        <v-btn :disabled="isCanvasEmpty" id="hierarchical-button" @click="toggleHierarchical" title="Tree/Graph"
-          density="compact" icon="mdi-plus" variant="tonal" color="primary" elevation="3">
-          {{ settingsStore.visjsOptions.layout.hierarchical.enabled ? "H" : "G" }}
-        </v-btn>
-        <v-btn :disabled="isCanvasEmpty" id="center-graph-button" @click="centerGraph" title="Center Canvas"
-          density="compact" icon="mdi mdi-fit-to-screen-outline" variant="tonal" color="primary" elevation="3">
-        </v-btn>
+        <v-tooltip location="end">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" :disabled="isCanvasEmpty" @click="saveImage" density="compact" icon="mdi-camera"
+              variant="tonal" color="primary" elevation="3">
+            </v-btn>
+          </template>
+          <span>Take Screenshot</span>
+        </v-tooltip>
+        <v-tooltip location="end">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" :disabled="isCanvasEmpty" id="hierarchical-button" @click="toggleHierarchical"
+              density="compact" icon="mdi-plus" variant="tonal" color="primary" elevation="3">
+              {{ settingsStore.visjsOptions.layout.hierarchical.enabled ? "H" : "G" }}
+            </v-btn>
+          </template>
+          <span>Tree/Graph</span>
+        </v-tooltip>
+        <v-tooltip location="end">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" :disabled="isCanvasEmpty" id="center-graph-button" @click="centerGraph"
+              density="compact" icon="mdi-fit-to-screen-outline" variant="tonal" color="primary" elevation="3">
+            </v-btn>
+          </template>
+          <span>Center Canvas</span>
+        </v-tooltip>
       </div>
       <div class="result-btn d-flex justify-content-center align-items-center flex-gap-2">
         <v-btn id="clear-reactions-btn" @click="clear()" title="Clear all results" size="small" color="red-darken-2"
