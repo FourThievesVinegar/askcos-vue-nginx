@@ -83,7 +83,7 @@ const routes = [
       {
         path: "",
         query: {
-          tab: "1",
+          tab: "CR",
         },
         name: "forward",
         // route level code-splitting
@@ -95,7 +95,43 @@ const routes = [
       {
         path: "",
         query: {
-          tab: "2",
+          tab: "SP",
+        },
+        name: "forward",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/forward/App.vue"),
+      },
+      {
+        path: "",
+        query: {
+          tab: "IP",
+        },
+        name: "forward",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/forward/App.vue"),
+      },
+      {
+        path: "",
+        query: {
+          tab: "RSP",
+        },
+        name: "forward",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/forward/App.vue"),
+      },
+      {
+        path: "",
+        query: {
+          tab: "ARSS",
         },
         name: "forward",
         // route level code-splitting
