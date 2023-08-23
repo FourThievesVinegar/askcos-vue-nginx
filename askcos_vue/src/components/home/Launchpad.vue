@@ -1,21 +1,16 @@
 <template>
   <div>
+    <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="smiles" @input="showKetcher = false"
+      @update:smiles="(ketcherSmiles) => smiles = ketcherSmiles" />
     <v-row class="mt-6">
       <v-col>
-        <v-text-field
-          v-model="smiles"
-          class="centered-input"
-          density="compact"
-          variant="outlined"
-          label="Enter a molecule or reaction SMILES to explore available tasks"
-          prepend-inner-icon="mdi mdi-flask"
-          placeholder="SMILES"
-          hide-details
-          clearable
-        >
+        <v-text-field v-model="smiles" class="centered-input" density="compact" variant="outlined"
+          label="Enter a molecule or reaction SMILES to explore available tasks" prepend-inner-icon="mdi mdi-flask"
+          placeholder="SMILES" hide-details clearable>
           <template v-slot:append>
             <v-btn-group color="primary" rounded divided>
-              <v-btn prepend-icon="mdi mdi-pencil">Draw</v-btn>
+              <v-btn prepend-icon="mdi mdi-pencil"
+                @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }">Draw</v-btn>
               <v-btn prepend-icon="mdi mdi-web">Canonicalize</v-btn>
             </v-btn-group>
           </template>
@@ -24,67 +19,37 @@
     </v-row>
 
     <v-row v-if="!!smiles" class="justify-center">
-      <v-col
-        ><smiles-image
-          :smiles="smiles"
-          allow-copy
-          @load="validSmiles = true"
-          @error="validSmiles = false"
-        ></smiles-image
-      ></v-col>
+      <v-col><smiles-image :smiles="smiles" allow-copy @load="validSmiles = true"
+          @error="validSmiles = false"></smiles-image></v-col>
     </v-row>
 
     <template v-if="validSmiles && type === 'mol'">
       <v-row>
         <v-col cols="12" sm="4" md="4">
           <v-card min-height="100px">
-            <v-card-title
-              class="text-h5 text-center text-wrap bg-grey-lighten-2"
-            >
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               SCScore
             </v-card-title>
-            <v-card-actions class="justify-center"
-              ><v-btn
-                prepend-icon="mdi mdi-play"
-                variant="tonal"
-                color="primary"
-                >Run Task</v-btn
-              ></v-card-actions
-            >
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
+                Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
         <v-col cols="12" sm="4" md="4">
           <v-card min-height="100px">
-            <v-card-title
-              class="text-h5 text-center text-wrap bg-grey-lighten-2"
-            >
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Interactive Path Planner
             </v-card-title>
-            <v-card-actions class="justify-center"
-              ><v-btn
-                prepend-icon="mdi mdi-play"
-                variant="tonal"
-                color="primary"
-                >Run Task</v-btn
-              ></v-card-actions
-            >
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
+                Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
         <v-col cols="12" sm="4" md="4">
           <v-card min-height="100px">
-            <v-card-title
-              class="text-h5 text-center text-wrap bg-grey-lighten-2"
-            >
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Tree Builder
             </v-card-title>
-            <v-card-actions class="justify-center"
-              ><v-btn
-                prepend-icon="mdi mdi-play"
-                variant="tonal"
-                color="primary"
-                >Run Task</v-btn
-              ></v-card-actions
-            >
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
+                Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
       </v-row>
@@ -92,53 +57,29 @@
       <v-row>
         <v-col cols="12" sm="4" md="4">
           <v-card min-height="100px">
-            <v-card-title
-              class="text-h5 text-center text-wrap bg-grey-lighten-2"
-            >
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Predict Forward Synthesis
             </v-card-title>
-            <v-card-actions class="justify-center"
-              ><v-btn
-                prepend-icon="mdi mdi-play"
-                variant="tonal"
-                color="primary"
-                >Run Task</v-btn
-              ></v-card-actions
-            >
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
+                Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
         <v-col cols="12" sm="4" md="4">
           <v-card min-height="100px">
-            <v-card-title
-              class="text-h5 text-center text-wrap bg-grey-lighten-2"
-            >
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Predict Impurities
             </v-card-title>
-            <v-card-actions class="justify-center"
-              ><v-btn
-                prepend-icon="mdi mdi-play"
-                variant="tonal"
-                color="primary"
-                >Run Task</v-btn
-              ></v-card-actions
-            >
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
+                Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
         <v-col cols="12" sm="4" md="4">
           <v-card min-height="100px">
-            <v-card-title
-              class="text-h5 text-center text-wrap bg-grey-lighten-2"
-            >
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Predict Aromatic Site Selectivity
             </v-card-title>
-            <v-card-actions class="justify-center"
-              ><v-btn
-                prepend-icon="mdi mdi-play"
-                variant="tonal"
-                color="primary"
-                >Run Task</v-btn
-              ></v-card-actions
-            >
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
+                Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
       </v-row>
@@ -146,36 +87,20 @@
       <v-row>
         <v-col cols="12" sm="4" md="4">
           <v-card min-height="100px">
-            <v-card-title
-              class="text-h5 text-center text-wrap bg-grey-lighten-2"
-            >
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Solvent Screen
             </v-card-title>
-            <v-card-actions class="justify-center"
-              ><v-btn
-                prepend-icon="mdi mdi-play"
-                variant="tonal"
-                color="primary"
-                >Run Task</v-btn
-              ></v-card-actions
-            >
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
+                Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
         <v-col cols="12" sm="4" md="4">
           <v-card min-height="100px">
-            <v-card-title
-              class="text-h5 text-center text-wrap bg-grey-lighten-2"
-            >
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Buyables
             </v-card-title>
-            <v-card-actions class="justify-center"
-              ><v-btn
-                prepend-icon="mdi mdi-play"
-                variant="tonal"
-                color="primary"
-                >Run Task</v-btn
-              ></v-card-actions
-            >
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
+                Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
       </v-row>
@@ -228,6 +153,8 @@ export default {
     const tbPreset = ref("normal");
     const tbPresetOptions = ref(TB_PRESETS);
     const tbDesc = ref("");
+    const showKetcher = ref(false);
+    const ketcherRef = ref(null);
 
     const context = computed(() =>
       JSON.parse(document.getElementById("django-context").textContent)
@@ -407,6 +334,8 @@ export default {
       getClassification,
       tbPresetToArgs,
       sendTreeBuilderJob,
+      showKetcher,
+      ketcherRef,
     };
   },
 };

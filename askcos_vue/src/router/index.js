@@ -31,7 +31,7 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/network/App.vue"),
+          import(/* webpackChunkName: "home" */ "@/views/network/Network.vue"),
       },
       {
         path: "",
@@ -43,7 +43,7 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/network/App.vue"),
+          import(/* webpackChunkName: "home" */ "@/views/network/Network.vue"),
       },
     ],
   },
@@ -58,7 +58,7 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/status/App.vue"),
+          import(/* webpackChunkName: "home" */ "@/views/status/Status.vue"),
       },
     ],
   },
@@ -72,7 +72,7 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "home" */ '@/views/buyables/App.vue'),
+        component: () => import(/* webpackChunkName: "home" */ '@/views/buyables/Buyables.vue'),
       },
     ],
   },

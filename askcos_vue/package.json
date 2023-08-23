@@ -85,7 +85,8 @@
     },
     "rules": {},
     "ignorePatterns": [
-      "flow-typed/"
+      "flow-typed/",
+      "public/"
     ]
   }
 }
