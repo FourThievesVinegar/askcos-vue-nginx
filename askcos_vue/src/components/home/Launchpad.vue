@@ -2,17 +2,17 @@
   <div>
     <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="smiles" @input="showKetcher = false"
       @update:smiles="(ketcherSmiles) => smiles = ketcherSmiles" />
-    <v-row class="mt-6">
-      <v-col>
+    <v-row class="my-6 justify-center">
+      <v-col cols="12" md="10">
         <v-text-field v-model="smiles" class="centered-input" density="compact" variant="outlined"
           label="Enter a molecule or reaction SMILES to explore available tasks" prepend-inner-icon="mdi mdi-flask"
           placeholder="SMILES" hide-details clearable>
+          <template v-slot:append-inner>
+            <v-btn variant="tonal" size="small" prepend-icon="mdi mdi-pencil"
+              @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }">Draw</v-btn>
+          </template>
           <template v-slot:append>
-            <v-btn-group color="primary" rounded divided>
-              <v-btn prepend-icon="mdi mdi-pencil"
-                @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }">Draw</v-btn>
-              <v-btn prepend-icon="mdi mdi-web">Canonicalize</v-btn>
-            </v-btn-group>
+            <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web">Canonicalize</v-btn>
           </template>
         </v-text-field>
       </v-col>
