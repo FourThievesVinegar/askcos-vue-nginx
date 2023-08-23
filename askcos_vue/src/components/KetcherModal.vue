@@ -2,10 +2,12 @@
   <v-dialog v-model="propShow" :id="id" width="auto">
     <v-card>
       <v-card-text>
-        <iframe ref="ketcherIframe" src="/ketcher-standalone/index.html" width="800" height="432"></iframe>
+        <iframe ref="ketcherIframe" src="/ketcher-standalone/index.html" width="800px" height="800px"></iframe>
       </v-card-text>
       <v-card-actions>
-        <v-btn color="primary" @click="propShow = false">Ok</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" @click="() => { propShow = false }">Cancel</v-btn>
+        <v-btn color="primary" @click="() => { smilesFromKetcher(); propShow = false }">Done</v-btn>
       </v-card-actions>
     </v-card>
 
@@ -45,8 +47,17 @@ export default {
       },
     })
 
+    const propSmiles = computed({
+      get() {
+        return props.smiles
+      },
+      set(newValue) {
+        context.emit('update:smiles', newValue)
+      },
+    })
+
     watch(propShow, () => {
-        smilesToKetcher();
+      smilesToKetcher();
     });
 
     const smilesToKetcher = () => {
@@ -82,14 +93,12 @@ export default {
     const smilesFromKetcher = () => {
       const km = ketcherIframe.value;
       const ketcher = km.contentWindow.ketcher;
-
-      let smiles = ketcher.getSmiles();
-      return API.post('/api/v2/rdkit/smiles/canonicalize/', { smiles: smiles })
-        .then(json => {
-          if (json.smiles) {
-            context.emit('update:smiles', json.smiles);
-          }
-        });
+      ketcher.getSmiles().then(async smiles => {
+        const json = await API.post('/api/v2/rdkit/smiles/canonicalize/', { smiles: smiles });
+        if (json.smiles) {
+          context.emit('update:smiles', json.smiles);
+        }
+      });
     };
 
     function dialogChange(dialogState) {

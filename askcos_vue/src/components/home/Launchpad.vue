@@ -1,6 +1,7 @@
 <template>
   <div>
-    <ketcher-modal ref="childComponentRef" v-model="showKetcher" :smiles="smiles" @input="showKetcher=false"/>
+    <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="smiles" @input="showKetcher = false"
+      @update:smiles="(ketcherSmiles) => smiles = ketcherSmiles" />
     <v-row class="mt-6">
       <v-col>
         <v-text-field v-model="smiles" class="centered-input" density="compact" variant="outlined"
@@ -8,7 +9,8 @@
           placeholder="SMILES" hide-details clearable>
           <template v-slot:append>
             <v-btn-group color="primary" rounded divided>
-              <v-btn prepend-icon="mdi mdi-pencil" @click="() => {showKetcher = true; childComponentRef.smilesToKetcher();}">Draw</v-btn>
+              <v-btn prepend-icon="mdi mdi-pencil"
+                @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }">Draw</v-btn>
               <v-btn prepend-icon="mdi mdi-web">Canonicalize</v-btn>
             </v-btn-group>
           </template>
@@ -152,7 +154,7 @@ export default {
     const tbPresetOptions = ref(TB_PRESETS);
     const tbDesc = ref("");
     const showKetcher = ref(false);
-    const childComponentRef = ref(null);
+    const ketcherRef = ref(null);
 
     const context = computed(() =>
       JSON.parse(document.getElementById("django-context").textContent)
@@ -333,7 +335,7 @@ export default {
       tbPresetToArgs,
       sendTreeBuilderJob,
       showKetcher,
-      childComponentRef,
+      ketcherRef,
     };
   },
 };

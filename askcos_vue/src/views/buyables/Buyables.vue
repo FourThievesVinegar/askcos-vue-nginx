@@ -2,7 +2,7 @@
   <v-container fluid style="min-height: calc(25vh-13px)" class="my-10">
     <v-row style="min-height: 30vh" class="justify-center">
       <v-col cols="12" sm="8" md="10">
-        <v-sheet elevation="5" rounded="lg" class="pa-10 my-10">
+        <v-sheet elevation="2" rounded="lg" class="pa-10 my-10">
           <h1 class="my-4">
             Buyable Compounds
           </h1>
