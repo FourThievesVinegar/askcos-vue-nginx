@@ -1,5 +1,5 @@
 <template>
-    <v-sheet elevation="5" rounded="lg" width="100%" class="pa-6">
+    <v-sheet elevation="5" width="100%" class="pa-6">
         <v-row align="center" justify="space-between">
             <v-col>
                 <h3 class="text-h5">Synthesis Recommendation</h3>
@@ -44,11 +44,37 @@
             <v-divider></v-divider>
         </v-card>
     </v-dialog>
+         <v-data-table :headers="headers" :items="results" v-show="results.length > 0" :items-per-page="10" height="400px">
+                <template v-slot:item.smiles="{ item }">
+                    <smiles-image :smiles="item.columns.smiles" height="80px"></smiles-image>
+                </template>
+            </v-data-table>
 </template>
 
 
 <script setup>
-import { ref } from "vue";
+import SmilesImage from "@/components/SmilesImage.vue";
+import { ref, defineProps, defineEmits } from 'vue'
+
+const { results, models } = defineProps({
+    results: {
+        type: Array,
+        default: [],
+    },
+    models: {
+        type: Array,
+        default: []
+    },
+})
 
 const showDialog = ref(false)
+const headers = ref([
+    { key: 'rank', title: 'Rank' },
+    { key: 'smiles', title: 'Product' },
+    { key: 'prob', title: 'Probability' },
+    { key: 'score', title: 'Max. Score' },
+    { key: 'mol_wt', title: 'Molecular Weight' },
+
+])
+
 </script>

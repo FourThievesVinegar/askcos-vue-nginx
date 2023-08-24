@@ -34,47 +34,25 @@
         </v-card>
     </v-dialog>
 
-    <v-data-table :headers="headers" :items="results" :items-per-page="10" v-if="results.length > 0" :loading="loading">
 
-        <!-- <template v-slot:item.evaluation="{ item }">
-            <v-progress-circular v-if="item.columns.evaluating" indeterminate color="primary"></v-progress-circular>
-
-            <v-icon v-else-if="item.columns.evaluation" small color="success">
-                mdi-check
-            </v-icon>
-
-            <v-icon v-else small color="error">
-                mdi-close
-            </v-icon>
+    <v-data-table :headers="headers" :items="results" v-if="results.length" :items-per-page="10" height="400px">
+        <template v-slot:item.solvent="{ item }">
+            <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
         </template>
-
-        <template v-slot:item.reagents="{ item }">
-            <v-avatar v-if="item.columns.reagent">
-                <v-img :src="getSmilesImg(item.columns.reagent)"></v-img>
-            </v-avatar>
-            {{ item.reagent_name_only }}
-        </template>
-
-        <template v-slot:item.actions="{ item }">
-            <v-icon small class="mr-2" @click="predictForward(item)">
-                mdi-arrow-right-bold
-            </v-icon>
-        </template> -->
-
     </v-data-table>
 </template>
 
 
 <script setup>
+import SmilesImage from "@/components/SmilesImage.vue";
 import { ref, defineProps, defineEmits } from 'vue'
 
 const showDialog = ref(false)
 
-const props = defineProps({
+const { results, models } = defineProps({
     results: {
         type: Array,
         default: [],
-        required: true
     },
     models: {
         type: Array,
@@ -82,16 +60,14 @@ const props = defineProps({
     },
 })
 
-const headers = [
-    // { key: '#', title: 'index' },
-    // { key: 'Rank', title: 'Rank' },
-    { key: 'solvent', title: 'solvent' },
+const headers = ref([
+    { key: 'solvent', title: 'Solvent' },
     { key: 'reagent', title: 'Reagents' },
     { key: 'temperature', title: 'Temperature' },
-    { key: 'solvent_score', title: 'solvent_score' }
-]
+    { key: 'solvent_score', title: 'Solvent Score' }
+])
 
-// const emits = defineEmits(['go-to-forward'])
+const emits = defineEmits(['go-to-forward'])
 
 // const goToForward = (index) => {
 //     emits('go-to-forward', index)

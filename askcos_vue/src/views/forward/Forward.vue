@@ -12,17 +12,14 @@
 
           <v-form @submit.prevent="predict">
 
-            <v-row align="center ">
-
+            <v-row align="center">
               <v-col cols="6" class="my-4">
                 <v-text-field v-model="reactants" label="Reactants"></v-text-field>
               </v-col>
-
               <v-col cols="6">
                 <v-text-field v-model="product" label="Product"
                   :disabled="mode === 'forward' || mode === 'sites'"></v-text-field>
               </v-col>
-
             </v-row>
 
             <v-row v-if="!!reactants" class="d-flex justify-center">
@@ -35,13 +32,11 @@
 
               <v-col cols="6">
                 <v-text-field v-model="reagents" label="Reagents" :disabled="mode === 'context' || mode === 'sites'">
-                  <v-img v-if="!!reagents" :src="getMolImgUrl(reagents)" class="mx-auto" />
                 </v-text-field>
               </v-col>
 
               <v-col cols="6">
                 <v-text-field v-model="solvent" label="Solvent" :disabled="mode === 'context' || mode === 'sites'">
-                  <v-img v-if="!!solvent" :src="getMolImgUrl(solvent)" class="mx-auto" />
                 </v-text-field>
               </v-col>
 
@@ -74,7 +69,7 @@
             <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel" />
           </v-window-item>
           <v-window-item value="forward">
-            <SynthesisPrediction value="forward" rounded="lg" />
+            <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel" />
           </v-window-item>
           <v-window-item value="impurity">
             <ImpurityPrediction value="impurity" rounded="lg" />
@@ -202,7 +197,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, reactive } from 'vue'
 import { useRouter, useRoute } from "vue-router";
 import { API } from "@/common/api";
 import SmilesImage from "@/components/SmilesImage";
@@ -240,6 +235,7 @@ const forwardResults = ref([])
 const pendingTasks = ref(0)
 const reactionScore = ref(null)
 const evaluating = ref(false)
+const impurityResults = ref([]);
 
 const modes = ref({
   0: 'context',
@@ -342,6 +338,7 @@ const predict = async () => {
 watch(route, async (newRoute, oldRoute) => {
   if (newRoute.path === '/forward') {
     tab.value = newRoute.query.tab
+      updateFromURL();
   }
 })
 
@@ -349,10 +346,12 @@ const clearForward = () => {
   forwardResults.value = []
 }
 
-onMounted(() => {
+const updateFromURL = () => {
   let urlParams = new URLSearchParams(window.location.search);
-  let mode = urlParams.get('mode');
-
+  let mode = urlParams.get('tab');
+    if (mode) {
+    changeMode(mode);
+  }
   let rxnsmiles = urlParams.get('rxnsmiles');
   if (rxnsmiles) {
     const split = rxnsmiles.split('>>');
@@ -371,13 +370,15 @@ onMounted(() => {
   if (urlParams.get('solvent')) {
     solvent.value = urlParams.get('solvent');
   }
-  if (mode) {
-    changeMode(mode);
-  }
+
+};
+
+onMounted(() => {
   API.get('/api/v2/status/ml/')
     .then(json => {
       modelStatus.value = json['models'];
     });
+  updateFromURL();
   if (reactants.value) {
     predict();
   }
@@ -392,9 +393,7 @@ const forwardPredict = async () => {
     pendingTasks.value--;
     return;
   }
-
   const postData = constructForwardPostData(reagents.value, solvent.value);
-
   try {
     const output = await API.runCeleryTask('/api/v2/forward/', postData);
     forwardResults.value = output;
@@ -405,6 +404,25 @@ const forwardPredict = async () => {
     pendingTasks.value--;
   }
 };
+
+const constructForwardPostData = (reagents, solvent) => {
+  let data = reactive({
+    reactants: reactants.value,
+    model_name: forwardModel.value,
+    training_set: forwardModelTrainingSet.value,
+    model_version: forwardModelVersion.value,
+    num_results: numForwardResults.value
+  });
+
+  if (reagents) {
+    data.reagents = reagents;
+  }
+  if (solvent) {
+    data.solvent = solvent;
+  }
+
+  return data;
+}
 
 watch(contextResults, (newValue) => {
   console.log(newValue)
@@ -459,7 +477,7 @@ const contextPredict = () => {
   }
 }
 
-const contextV1Predict = () => {
+const contextV1Predict = async () => {
   pendingTasks.value++;
   contextResults.value = []
   evaluating.value = false
