@@ -4,15 +4,15 @@
       @update:smiles="(ketcherSmiles) => smiles = ketcherSmiles" />
     <v-row class="my-6 justify-center">
       <v-col cols="12" md="10">
-        <v-text-field v-model="smiles" class="centered-input" density="compact" variant="outlined"
+        <v-text-field v-model="smiles" class="centered-input" variant="outlined"
           label="Enter a molecule or reaction SMILES to explore available tasks" prepend-inner-icon="mdi mdi-flask"
           placeholder="SMILES" hide-details clearable>
           <template v-slot:append-inner>
-            <v-btn variant="tonal" size="small" prepend-icon="mdi mdi-pencil"
+            <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
               @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }">Draw</v-btn>
           </template>
           <template v-slot:append>
-            <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web">Canonicalize</v-btn>
+            <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large">Canonicalize</v-btn>
           </template>
         </v-text-field>
       </v-col>
@@ -105,6 +105,48 @@
         </v-col>
       </v-row>
     </template>
+
+    <template v-if="smiles && !validSmiles">
+      <v-row>
+        <v-col cols="12" sm="4" md="4">
+          <v-skeleton-loader class="mx-auto border" elevation="2" min-height="100px" type="paragraph">
+          </v-skeleton-loader>
+        </v-col>
+        <v-col cols="12" sm="4" md="4">
+          <v-skeleton-loader class="mx-auto border" elevation="2" min-height="100px" type="paragraph">
+          </v-skeleton-loader>
+        </v-col>
+        <v-col cols="12" sm="4" md="4">
+          <v-skeleton-loader class="mx-auto border" elevation="2" min-height="100px" type="paragraph">
+          </v-skeleton-loader>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" sm="4" md="4">
+          <v-skeleton-loader class="mx-auto border" elevation="2" min-height="100px" type="paragraph">
+          </v-skeleton-loader>
+        </v-col>
+        <v-col cols="12" sm="4" md="4">
+          <v-skeleton-loader class="mx-auto border" elevation="2" min-height="100px" type="paragraph">
+          </v-skeleton-loader>
+        </v-col>
+        <v-col cols="12" sm="4" md="4">
+          <v-skeleton-loader class="mx-auto border" elevation="2" min-height="100px" type="paragraph">
+          </v-skeleton-loader>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" sm="4" md="4">
+          <v-skeleton-loader class="mx-auto border" elevation="2" min-height="100px" type="paragraph">
+          </v-skeleton-loader>
+        </v-col>
+        <v-col cols="12" sm="4" md="4">
+          <v-skeleton-loader class="mx-auto border" elevation="2" min-height="100px" type="paragraph">
+          </v-skeleton-loader>
+        </v-col>
+      </v-row>
+    </template>
+
   </div>
 </template>
 
