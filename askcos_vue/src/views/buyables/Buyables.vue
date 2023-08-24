@@ -399,7 +399,7 @@ watch(uploadFile, (file) => {
 </script>
 
 <style scoped>
-.left-justify{
+.left-justify {
   text-align: justify;
   text-justify: inter-word;
 }
