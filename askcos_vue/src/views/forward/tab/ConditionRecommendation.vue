@@ -34,9 +34,9 @@
         </v-card>
     </v-dialog>
 
-    <v-data-table :headers="headers" :items="contextResults" :items-per-page="5">
+    <v-data-table :headers="headers" :items="results" :items-per-page="10" v-if="results.length > 0" :loading="loading">
 
-        <template v-slot:item.evaluation="{ item }">
+        <!-- <template v-slot:item.evaluation="{ item }">
             <v-progress-circular v-if="item.columns.evaluating" indeterminate color="primary"></v-progress-circular>
 
             <v-icon v-else-if="item.columns.evaluation" small color="success">
@@ -59,7 +59,7 @@
             <v-icon small class="mr-2" @click="predictForward(item)">
                 mdi-arrow-right-bold
             </v-icon>
-        </template>
+        </template> -->
 
     </v-data-table>
 </template>
@@ -73,25 +73,28 @@ const showDialog = ref(false)
 const props = defineProps({
     results: {
         type: Array,
+        default: [],
         required: true
-    }
+    },
+    models: {
+        type: Array,
+        default: []
+    },
 })
 
-const headers = ref([
-    { text: '#', value: 'index' },
-    { text: 'Rank' },
-    { text: 'Reactants' },
-    { text: 'Reagents' },
-    { text: 'Temperature' },
-    { text: 'Predict' }
-])
+const headers = [
+    // { key: '#', title: 'index' },
+    // { key: 'Rank', title: 'Rank' },
+    { key: 'solvent', title: 'solvent' },
+    { key: 'reagent', title: 'Reagents' },
+    { key: 'temperature', title: 'Temperature' },
+    { key: 'solvent_score', title: 'solvent_score' }
+]
 
-const emits = defineEmits(['go-to-forward'])
+// const emits = defineEmits(['go-to-forward'])
 
-const goToForward = (index) => {
-    emits('go-to-forward', index)
-}
-
-
+// const goToForward = (index) => {
+//     emits('go-to-forward', index)
+// }
 
 </script>

@@ -83,7 +83,7 @@ const routes = [
       {
         path: "",
         query: {
-          tab: "CR",
+          tab: "context",
         },
         name: "forward",
         // route level code-splitting
@@ -95,7 +95,7 @@ const routes = [
       {
         path: "",
         query: {
-          tab: "SP",
+          tab: "forward",
         },
         name: "forward",
         // route level code-splitting
@@ -107,7 +107,7 @@ const routes = [
       {
         path: "",
         query: {
-          tab: "IP",
+          tab: "impurity",
         },
         name: "forward",
         // route level code-splitting
@@ -119,7 +119,7 @@ const routes = [
       {
         path: "",
         query: {
-          tab: "RSP",
+          tab: "selectivity",
         },
         name: "forward",
         // route level code-splitting
@@ -131,7 +131,7 @@ const routes = [
       {
         path: "",
         query: {
-          tab: "ARSS",
+          tab: "sites",
         },
         name: "forward",
         // route level code-splitting
