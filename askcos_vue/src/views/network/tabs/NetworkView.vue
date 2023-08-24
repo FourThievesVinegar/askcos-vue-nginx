@@ -7,6 +7,9 @@
         <v-row class="justify-center align-center">
           <v-col cols="12" md="10"><v-text-field v-model="resultsStore.target" density="compact" variant="outlined"
               label="Target" placeholder="SMILES" type="text" clearable class="target-input" hide-details>
+              <template v-slot:append-inner>
+                <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil">Draw</v-btn>
+              </template>
               <template v-slot:append>
                 <v-btn variant="flat" color="green-darken-1" prepend-icon="mdi mdi-play" class="mr-2"
                   :disabled="!resultsStore.target" @click="changeTarget">One Step</v-btn>

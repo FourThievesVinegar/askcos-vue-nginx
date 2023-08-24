@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer expand-on-hover rail elevation="2" @update:rail="onDrawerCollapse" width="100px">
+  <v-navigation-drawer expand-on-hover rail elevation="2" @update:rail="onDrawerCollapse" width="100px" >
     <v-list>
       <v-list-item :prepend-avatar="logoSrc" title="ASKCOS" subtitle="Demo"></v-list-item>
     </v-list>
