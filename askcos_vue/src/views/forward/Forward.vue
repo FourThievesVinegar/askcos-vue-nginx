@@ -1,14 +1,15 @@
 <template>
-  <v-container fluid class="my-10">
-    <v-row style="min-height: 30vh" class="justify-center">
+  <v-container fluid>
+    <v-row class="justify-center">
       <v-col cols="12" sm="8" md="10">
+        <div class="mt-8 mb-5">
+          <v-breadcrumbs class="pa-0" :items="['Home', 'Forward']"></v-breadcrumbs>
+          <h1>
+            Forward Synthesis Planner
+          </h1>
+        </div>
         <v-sheet elevation="2" rounded="lg" class="pa-10">
-          <v-row align="center" justify="space-between">
-            <h1 class="my-2">Forward Synthesis Planner</h1>
-            <v-btn icon @click="dialog = !dialog">
-              <v-icon>mdi-cog</v-icon>
-            </v-btn>
-          </v-row>
+
 
           <v-form @submit.prevent="predict">
 
@@ -42,15 +43,17 @@
 
             </v-row>
 
-            <v-row align="center">
-              <v-col cols="12">
-                <v-btn type="submit" color="success">
-                  Submit
-                </v-btn>
-              </v-col>
-            </v-row>
-
           </v-form>
+          <v-row  align="center" justify="space-between">
+            <v-col>
+              <v-btn type="submit" color="success">
+                Submit
+              </v-btn>
+            </v-col>
+            <v-btn icon @click="dialog = !dialog">
+              <v-icon>mdi-cog</v-icon>
+            </v-btn>
+          </v-row>
 
         </v-sheet>
 
@@ -338,7 +341,7 @@ const predict = async () => {
 watch(route, async (newRoute, oldRoute) => {
   if (newRoute.path === '/forward') {
     tab.value = newRoute.query.tab
-      updateFromURL();
+    updateFromURL();
   }
 })
 
@@ -349,7 +352,7 @@ const clearForward = () => {
 const updateFromURL = () => {
   let urlParams = new URLSearchParams(window.location.search);
   let mode = urlParams.get('tab');
-    if (mode) {
+  if (mode) {
     changeMode(mode);
   }
   let rxnsmiles = urlParams.get('rxnsmiles');
@@ -424,9 +427,9 @@ const constructForwardPostData = (reagents, solvent) => {
   return data;
 }
 
-watch(contextResults, (newValue) => {
-  console.log(newValue)
-})
+// watch(contextResults, (newValue) => {
+//   console.log(newValue)
+// })
 
 const canonicalize = async (smiles, input) => {
   return API.post('/api/v2/rdkit/smiles/canonicalize/', { smiles: smiles })
