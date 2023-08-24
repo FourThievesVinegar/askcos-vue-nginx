@@ -43,17 +43,17 @@
 
             </v-row>
 
-          </v-form>
-          <v-row  align="center" justify="space-between">
-            <v-col>
-              <v-btn type="submit" color="success">
-                Submit
+            <v-row  align="center" justify="space-between">
+              <v-col>
+                <v-btn type="submit" color="success">
+                  Submit
+                </v-btn>
+              </v-col>
+              <v-btn icon @click="dialog = !dialog">
+                <v-icon>mdi-cog</v-icon>
               </v-btn>
-            </v-col>
-            <v-btn icon @click="dialog = !dialog">
-              <v-icon>mdi-cog</v-icon>
-            </v-btn>
-          </v-row>
+            </v-row>
+          </v-form>
 
         </v-sheet>
 

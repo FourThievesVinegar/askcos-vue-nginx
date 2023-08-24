@@ -34,7 +34,7 @@
         </v-card>
     </v-dialog>
 
-
+    <!-- <pre>{{ JSON.stringify(results, null, 2) }}</pre> -->
     <v-data-table :headers="headers" :items="results" v-if="results.length" :items-per-page="10" height="400px">
         <template v-slot:item.solvent="{ item }">
             <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
