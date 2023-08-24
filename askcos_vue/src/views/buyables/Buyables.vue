@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row class="justify-center">
       <v-col cols="12" sm="8" md="10">
-        <div class="mt-8 mb-2">
+        <div class="mt-8 mb-5">
           <v-breadcrumbs class="pa-0" :items="['Home', 'Buyables']"></v-breadcrumbs>
           <h1>
             Buyable Compounds
@@ -12,26 +12,26 @@
     </v-row>
     <v-row class="justify-center">
       <v-col cols="12" md="10">
-        <v-sheet elevation="2" rounded="lg" class="pa-10">
-          <v-row class="mb-2">
+        <v-sheet elevation="2" rounded="lg">
+          <v-row class="mb-2 px-5 pt-2">
             <v-col cols="12">
-              <p>
+              <p class="text-body-1 left-justify">
                 The chemicals and prices stored in our database are taken from Reaxys and are originally from
                 eMolecules, LabNetwork, or Sigma Aldrich. All compounds with an average price per gram listed at $100
                 or lower were included. Please note that prices in the database are unfortunately rounded to the
                 nearest integer. That is, the cheapest compounds are still listed as $1/g.
               </p>
-              <p class="mdi mdi-information">
+              <p class="mdi mdi-information text-subtitle-2">
                 The first search performed may take longer than expected.
               </p>
             </v-col>
           </v-row>
-          <v-row class="mb-2">
-            <v-col cols="12">
+          <v-row class="mb-2 px-5 justify-center">
+            <v-col cols="12" md="10">
               <v-text-field v-model="searchSmilesQuery" placeholder="SMILES/SMARTS" prepend-inner-icon="mdi mdi-flask"
                 density="comfortable" variant="outlined" label="Enter SMILES/SMART to explore" hide-details clearable>
                 <template v-slot:append>
-                  <v-btn color="primary" @click="search">
+                  <v-btn color="primary" @click="search" size="large">
                     Search
                   </v-btn>
                   <v-checkbox-btn v-model="searchRegex" label="Use SMARTS" hide-details>
@@ -41,7 +41,7 @@
             </v-col>
           </v-row>
 
-          <v-row class="mb-2">
+          <v-row class="mb-2 px-5">
             <v-col cols="12" md="4">
               <v-slider hide-details v-model="simThresh" label="Similarity Threshold" min="0" max="1" step="0.0001"
                 color="primary">
@@ -70,6 +70,7 @@
               </v-btn>
             </v-col>
           </v-row>
+          <v-divider class="border-opacity-25 mb-6"></v-divider>
           <v-row v-if="buyables.length">
             <v-col cols="12">
               <v-data-table :headers="headers" :items="buyables" :loading="showLoader">
@@ -84,9 +85,9 @@
               </v-data-table>
             </v-col>
           </v-row>
-          <v-row v-else> <v-col cols="12"  class="d-flex justify-center align-center">
+          <v-row v-else class="px-5 pb-5"> <v-col cols="12" class="d-flex justify-center align-center">
               <div>
-                <v-img :width="400" cover :src="emptyCart" ></v-img>
+                <v-img :width="400" cover :src="emptyCart"></v-img>
               </div>
             </v-col></v-row>
         </v-sheet>
@@ -396,3 +397,10 @@ watch(uploadFile, (file) => {
 });
 
 </script>
+
+<style scoped>
+.left-justify{
+  text-align: justify;
+  text-justify: inter-word;
+}
+</style>
