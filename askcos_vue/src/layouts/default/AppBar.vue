@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer expand-on-hover rail elevation="2" @update:rail="onDrawerCollapse" width="100px" >
+  <v-navigation-drawer expand-on-hover rail elevation="2" @update:rail="onDrawerCollapse" width="100px">
     <v-list>
       <v-list-item :prepend-avatar="logoSrc" title="ASKCOS" subtitle="Demo"></v-list-item>
     </v-list>
@@ -30,18 +30,16 @@
             <v-list-item v-bind="props" title="Forward Synthesis"></v-list-item>
           </template>
 
-          <v-list-item to="forward?tab=context" 
-          prepend-icon="mdi-help-box" title="Condition Recommendation" value="context"
-           :active="route.query.tab === 'context'"></v-list-item>
+          <v-list-item to="forward?tab=context" prepend-icon="mdi-help-box" title="Condition Recommendation"
+            value="context" :active="route.query.tab === 'context'"></v-list-item>
           <v-list-item to="forward?tab=forward" prepend-icon="mdi-help-box" title="Synthesis Prediction" value="forward"
-          :active="route.query.tab === 'forward'"></v-list-item>
-          <v-list-item to="forward?tab=impurity" 
-          prepend-icon="mdi-help-box" title="Impurity Prediction" value="impurity"
-          :active="route.query.tab === 'impurity'"></v-list-item>
-          <v-list-item to="forward?tab=selectivity"  prepend-icon="mdi-help-box" title="Regio-selectivity Prediction" value="selectivity"
-          :active="route.query.tab === 'selectivity'"></v-list-item>
-          <v-list-item to="forward?tab=sites"  prepend-icon="mdi-help-box" title="Aromatic Site Selectivity" value="sites"
-          :active="route.query.tab === 'sites'"></v-list-item>
+            :active="route.query.tab === 'forward'"></v-list-item>
+          <v-list-item to="forward?tab=impurity" prepend-icon="mdi-help-box" title="Impurity Prediction" value="impurity"
+            :active="route.query.tab === 'impurity'"></v-list-item>
+          <v-list-item to="forward?tab=selectivity" prepend-icon="mdi-help-box" title="Regio-selectivity Prediction"
+            value="selectivity" :active="route.query.tab === 'selectivity'"></v-list-item>
+          <v-list-item to="forward?tab=sites" prepend-icon="mdi-help-box" title="Aromatic Site Selectivity" value="sites"
+            :active="route.query.tab === 'sites'"></v-list-item>
         </v-list-group>
 
         <v-list-group value="Utilities" subgroup>
@@ -73,7 +71,8 @@ const logoSrc = ref();
 const openGroups = ref([]);
 const route = useRoute();
 const activeModules = computed(() => {
-  return route.path === '/network' ? true : false
+  const shouldBeActiveModules = ['/network', '/buyables', '/forward']
+  return shouldBeActiveModules.some(el=> route.path.includes(el));
 })
 function onDrawerCollapse(value) {
   if (value) {
