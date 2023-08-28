@@ -44,11 +44,17 @@
             <v-divider></v-divider>
         </v-card>
     </v-dialog>
-         <v-data-table :headers="headers" :items="results" v-show="results.length > 0" :items-per-page="10" height="400px">
-                <template v-slot:item.smiles="{ item }">
-                    <smiles-image :smiles="item.columns.smiles" height="80px"></smiles-image>
-                </template>
-            </v-data-table>
+    <div v-if="!pending">
+        <v-data-table :headers="headers" :items="results" v-show="results.length > 0" :items-per-page="10" height="400px">
+            <template v-slot:item.smiles="{ item }">
+                <smiles-image :smiles="item.columns.smiles" height="80px"></smiles-image>
+            </template>
+        </v-data-table>
+    </div>
+    <div v-if="pending">
+        <v-skeleton-loader class="mx-auto" min-height="100px" type="table">
+        </v-skeleton-loader>
+    </div>
 </template>
 
 
@@ -64,6 +70,10 @@ const { results, models } = defineProps({
     models: {
         type: Array,
         default: []
+    },
+    pending: {
+        type: Number,
+        default: 0
     },
 })
 

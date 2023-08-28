@@ -21,10 +21,8 @@
         </v-col>
       </v-row>
     </v-card-title>
-    <div>
-      <v-data-table v-model:expanded="expanded" :headers="headers" :items="data" :loading="loading" show-expand
-        item-value="name">
-
+    <div v-if="!loading">
+      <v-data-table v-model:expanded="expanded" :headers="headers" :items="data" show-expand item-value="name">
         <template v-slot:item.url="{ item }">
           <router-link v-if="item.columns.url" :to="item.columns.url">
             <v-btn color="primary">
@@ -32,7 +30,6 @@
             </v-btn>
           </router-link>
         </template>
-
         <template v-slot:expanded-row="{ columns, item }">
           <td :colspan="columns.length">
             <v-table density="compact" class="text-left">
@@ -51,9 +48,14 @@
             </v-table>
           </td>
         </template>
-
       </v-data-table>
     </div>
+
+    <div v-if="loading">
+      <v-skeleton-loader class="mx-auto" min-height="60px" type="table">
+      </v-skeleton-loader>
+    </div>
+
   </v-sheet>
 </template>
 

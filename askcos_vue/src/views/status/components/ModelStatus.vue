@@ -21,11 +21,18 @@
         </v-col>
       </v-row>
     </v-card-title>
-    <v-data-table :headers="headers" :items="data" :loading="loading">
-      <template v-slot:item.ready="{ item }">
-        <v-icon :color="item.ready ? 'error' : 'success'" :icon="item.ready ? 'mdi-alert-circle' : 'mdi-check-circle'" />
-      </template>
-    </v-data-table>
+    <div v-if="!loading">
+      <v-data-table :headers="headers" :items="data">
+        <template v-slot:item.ready="{ item }">
+          <v-icon :color="item.ready ? 'error' : 'success'"
+            :icon="item.ready ? 'mdi-alert-circle' : 'mdi-check-circle'" />
+        </template>
+      </v-data-table>
+    </div>
+    <div v-if="loading">
+      <v-skeleton-loader class="mx-auto" min-height="150px" type="table">
+      </v-skeleton-loader>
+    </div>
   </v-sheet>
 </template>
 

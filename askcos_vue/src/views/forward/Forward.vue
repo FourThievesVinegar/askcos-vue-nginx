@@ -69,10 +69,10 @@
 
         <v-window v-model="tab" class="elevation-2">
           <v-window-item value="context" rounded="lg">
-            <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel" />
+            <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel" :pending="pendingTasks" />
           </v-window-item>
           <v-window-item value="forward">
-            <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel" />
+            <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel" :pending="pendingTasks" />
           </v-window-item>
           <v-window-item value="impurity">
             <ImpurityPrediction value="impurity" rounded="lg" />
