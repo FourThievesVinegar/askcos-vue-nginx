@@ -21,8 +21,12 @@
         </v-col>
       </v-row>
     </v-card-title>
-    <div>
-      <v-data-table :headers="headers" :items="data" :loading="loading"></v-data-table>
+    <div v-if="!loading">
+      <v-data-table :headers="headers" :items="data"></v-data-table>
+    </div>
+    <div v-if="loading">
+      <v-skeleton-loader class="mx-auto" min-height="100px" type="table">
+      </v-skeleton-loader>
     </div>
   </v-sheet>
 </template>

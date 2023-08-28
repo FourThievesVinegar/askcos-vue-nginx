@@ -35,11 +35,17 @@
     </v-dialog>
 
     <!-- <pre>{{ JSON.stringify(results, null, 2) }}</pre> -->
-    <v-data-table :headers="headers" :items="results" v-if="results.length" :items-per-page="10" height="400px">
-        <template v-slot:item.solvent="{ item }">
-            <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
-        </template>
-    </v-data-table>
+    <div v-if="!pending">
+        <v-data-table :headers="headers" :items="results" v-if="results.length" :items-per-page="10" height="400px">
+            <template v-slot:item.solvent="{ item }">
+                <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
+            </template>
+        </v-data-table>
+    </div>
+    <div v-if="pending">
+        <v-skeleton-loader class="mx-auto" min-height="80px" type="table">
+        </v-skeleton-loader>
+    </div>
 </template>
 
 
@@ -57,6 +63,10 @@ const { results, models } = defineProps({
     models: {
         type: Array,
         default: []
+    },
+    pending: {
+        type: Number,
+        default: 0
     },
 })
 
