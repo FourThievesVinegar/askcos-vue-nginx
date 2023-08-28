@@ -60,6 +60,7 @@
         :active="route.path === '/status'"></v-list-item>
       <v-list-item prepend-icon="mdi-book-information-variant" title="Quick Reference" value="wiki"></v-list-item>
       <v-divider></v-divider>
+      <v-list-item prepend-icon="mdi-book-open-variant" title="Wiki" value="wiki" :active="false" href="https://docusaurus.io/" target="_blank"/>
       <v-list-item prepend-icon="mdi-bug" title="Report a bug" value="bug" :active="false"></v-list-item>
     </v-list>
   </v-navigation-drawer>
