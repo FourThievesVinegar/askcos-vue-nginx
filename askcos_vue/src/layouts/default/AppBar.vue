@@ -6,7 +6,7 @@
 
     <v-divider></v-divider>
 
-    <v-list nav v-model:opened="openGroups" color="primary">
+    <v-list nav v-model:opened="openGroups" @update:opened="closeGroupsOnBack" color="primary">
       <v-list-item prepend-icon="mdi-home" title="Home" to="/" value="home"></v-list-item>
       <v-list-group value="modules" no-action>
         <template v-slot:activator="{ props }">
@@ -65,24 +65,40 @@
 <script setup>
 import logo from "@/assets/logo.svg";
 import { useRoute } from "vue-router";
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, nextTick } from "vue";
 
 const logoSrc = ref();
 const openGroups = ref([]);
 const route = useRoute();
+const backPressed = ref(false);
 const activeModules = computed(() => {
   const shouldBeActiveModules = ['/network', '/buyables', '/forward']
-  return shouldBeActiveModules.some(el=> route.path.includes(el));
+  return shouldBeActiveModules.some(el => route.path.includes(el));
 })
+
 function onDrawerCollapse(value) {
   if (value) {
     openGroups.value = [];
   }
 }
 
+async function closeGroupsOnBack(_value) {
+  // wait for DOM to update
+  await nextTick();
+  if (backPressed.value === true) {
+    openGroups.value = [];
+    backPressed.value = false;
+  }
+
+}
+
 onMounted(() => {
   openGroups.value = [];
   logoSrc.value = logo;
+  // if back button is pressed
+  window.onpopstate = function (_event) {
+    backPressed.value = true;
+  };
 });
 </script>
 
