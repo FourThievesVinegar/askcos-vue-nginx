@@ -7,7 +7,7 @@
     <v-divider></v-divider>
 
     <v-list nav v-model:opened="openGroups" @update:opened="closeGroupsOnBack" color="primary">
-      <v-list-item prepend-icon="mdi-home" title="Home" to="/" value="home"></v-list-item>
+      <v-list-item prepend-icon="mdi-home" title="Home" to="/" value="home" :active="route.path === '/'"></v-list-item>
       <v-list-group value="modules" no-action>
         <template v-slot:activator="{ props }">
           <v-list-item v-bind="props" prepend-icon="mdi-file-tree" title="Modules" :active="activeModules"
@@ -54,7 +54,8 @@
         </v-list-group>
       </v-list-group>
       <v-list-item prepend-icon="mdi-help-box" title="Help" value="help"></v-list-item>
-      <v-list-item to="status" prepend-icon="mdi-list-status" title="Server Status" value="serverStatus"></v-list-item>
+      <v-list-item to="status" prepend-icon="mdi-list-status" title="Server Status" value="status"
+        :active="route.path === '/status'"></v-list-item>
       <v-list-item prepend-icon="mdi-book-information-variant" title="Quick Reference" value="wiki"></v-list-item>
       <v-divider></v-divider>
       <v-list-item prepend-icon="mdi-bug" title="Report a bug" value="bug" :active="false"></v-list-item>
