@@ -8,7 +8,7 @@ const routes = [
   },
   {
     path: "/commands",
-    component: () => import("@/views/Parse.vue")
+    component: () => import("@/views/parse/Parse.vue")
   },
   {
     path: "/",
