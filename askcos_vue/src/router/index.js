@@ -142,6 +142,36 @@ const routes = [
       },
     ],
   },
+  {
+    path: "/solprop",
+    component: () => import("@/layouts/default/Default.vue"),
+    children: [
+      {
+        path: "",
+        query: {
+          tab: "solpred",
+        },
+        name: "SolProp",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/solprop/SolProp.vue"),
+      },
+      {
+        path: "",
+        query: {
+          tab: "solscreen",
+        },
+        name: "SolProp",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/solprop/SolProp.vue"),
+      },
+    ],
+  },
 ];
 
 const router = createRouter({

@@ -27,7 +27,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import NetworkView from "@/views/network/tabs/NetworkView";
-import RetroView from "@/views/network/tabs//RetroView.vue";
+import RetroView from "@/views/network/tabs//RetroView";
 import { useResultsStore } from "@/store/results";
 
 export default {
@@ -82,7 +82,7 @@ export default {
       }
     };
 
-    watch(route, async (newRoute, oldRoute) => {
+    watch(route, async (newRoute, _oldRoute) => {
       if (newRoute.path === '/network') {
         tab.value = newRoute.query.tab
       }
