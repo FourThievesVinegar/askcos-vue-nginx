@@ -16,18 +16,17 @@
           <v-form @submit.prevent="predict">
 
             <v-row align="center">
-              <v-col cols="6" class="my-4">
-                <v-text-field v-model="reactants" class="centered-input" variant="outlined" label="reactants"
+              <v-col :cols="mode === 'context' || mode === 'impurity' || mode === 'selectivity' ? 6 : 12" class="my-4">
+                <v-text-field v-model="reactants" class="centered-input" variant="outlined" label="Reactants"
                   prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
                   <template v-slot:append-inner>
                     <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('reactants')">Draw</v-btn>
                   </template>
                 </v-text-field>
               </v-col>
-              <v-col cols="6">
+              <v-col cols="6" v-if="mode === 'context' || mode === 'impurity' || mode === 'selectivity'">
                 <v-text-field v-model="product" label="Product" class="centered-input" variant="outlined"
-                  prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable
-                  :disabled="mode === 'forward' || mode === 'sites'">
+                  prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
                   <template v-slot:append-inner>
                     <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('product')">Draw</v-btn>
                   </template>
@@ -42,29 +41,30 @@
             </v-row>
 
             <v-row align="center" v-if="mode !== 'context' && mode !== 'sites'">
-
               <v-col cols="6">
                 <v-text-field v-model="reagents" label="Reagents" class="centered-input" variant="outlined"
                   prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable
                   :disabled="mode === 'context' || mode === 'sites'">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
-                      @click="openKetcher('reagents')">Draw</v-btn>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('reagents')">Draw</v-btn>
                   </template>
                 </v-text-field>
               </v-col>
-
               <v-col cols="6">
                 <v-text-field v-model="solvent" label="Solvent" class="centered-input" variant="outlined"
                   prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable
                   :disabled="mode === 'context' || mode === 'sites'">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
-                      @click="openKetcher('solvent')">Draw</v-btn>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solvent')">Draw</v-btn>
                   </template>
                 </v-text-field>
               </v-col>
+            </v-row>
 
+            <v-row v-if="!!reagents && mode === 'forward' || mode === 'impurity' || mode === 'selectivity'" class="d-flex justify-center">
+              <v-col cols="4">
+                <smiles-image :smiles="reagents + '>>' + solvent"></smiles-image>
+              </v-col>
             </v-row>
 
             <v-row align="center" justify="space-between">
@@ -112,7 +112,7 @@
         </v-window>
       </v-col>
     </v-row>
-  
+
 
     <v-dialog v-model="dialog" max-width="600px">
       <v-card class="pa-3">
