@@ -7,6 +7,10 @@ const routes = [
     component: () => import(/* webpackChunkName: "login" */ "@/views/login/Login.vue")
   },
   {
+    path: "/commands",
+    component: () => import("@/views/Parse.vue")
+  },
+  {
     path: "/",
     component: () => import("@/layouts/default/Default.vue"),
     children: [
