@@ -34,8 +34,8 @@
               </v-col>
             </v-row>
 
-            <v-row v-if="!!reactants" class="d-flex justify-center">
-              <v-col cols="4">
+            <v-row v-if="!!reactants"  class="d-flex justify-center">
+              <v-col cols="12" >
                 <smiles-image :smiles="reactants + '>>' + product"></smiles-image>
               </v-col>
             </v-row>
