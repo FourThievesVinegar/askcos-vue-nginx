@@ -61,11 +61,11 @@
               </v-col>
             </v-row>
 
-            <v-row v-if="!!reagents && mode === 'forward' || mode === 'impurity' || mode === 'selectivity'" class="d-flex justify-center">
+            <v-row v-if="!!reagents && mode === 'forward' || !!reagents && mode === 'impurity' || !!reagents && mode === 'selectivity'" class="d-flex justify-center">
               <v-col cols="4">
                 <smiles-image :smiles="reagents + '>>' + solvent"></smiles-image>
               </v-col>
-            </v-row>
+            </v-row> 
 
             <v-row align="center" justify="space-between">
               <v-col>
