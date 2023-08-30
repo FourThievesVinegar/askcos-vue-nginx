@@ -11,7 +11,7 @@
                 </v-btn>
             </v-col>
         </v-row>
-    </v-sheet>
+   
 
 
     <v-dialog v-model="showDialog" max-width="500px">
@@ -26,7 +26,7 @@
                         </em></p>
                     <p class="card-text">
                         <b>New in 2021.01:</b> Quantitative condition predictions now available using neural network v2
-                        model. Select in <a v-b-modal.settings-modal href="#">settings menu.</a>
+                        model. Select in <a>settings menu.</a>
                     </p>
                 </div>
             </v-card-text>
@@ -35,40 +35,44 @@
     </v-dialog>
 
     <!-- <pre>{{ JSON.stringify(results, null, 2) }}</pre> -->
-    <div v-if="!pending">
-        <v-data-table :headers="headers" :items="results" v-if="results.length" :items-per-page="10" height="400px">
-            <template v-slot:item.solvent="{ item }">
-                <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
-            </template>
-        </v-data-table>
-    </div>
-    <div v-if="pending">
-        <v-skeleton-loader class="mx-auto" min-height="80px" type="table">
-        </v-skeleton-loader>
-    </div>
+    <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" :items-per-page="10"
+        height="400px">
+        <template #item.solvent="{ item }">
+            <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
+        </template>
+    </v-data-table>
+
+    <v-skeleton-loader v-if="pending" class="mx-auto" min-height="80px" type="table">
+    </v-skeleton-loader>
+     </v-sheet>
 </template>
 
 
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
-import { ref, defineProps, defineEmits } from 'vue'
+import { ref, defineProps, defineOptions } from 'vue'
 
 const showDialog = ref(false)
 
-const { results, models } = defineProps({
+const { results, models, pending } = defineProps({
     results: {
         type: Array,
         default: [],
     },
     models: {
-        type: Array,
-        default: []
+        type: String,
+        default: ""
     },
     pending: {
         type: Number,
         default: 0
     },
 })
+
+defineOptions({
+    inheritAttrs: false,
+});
+
 
 const headers = ref([
     { key: 'solvent', title: 'Solvent' },
@@ -77,7 +81,7 @@ const headers = ref([
     { key: 'solvent_score', title: 'Solvent Score' }
 ])
 
-const emits = defineEmits(['go-to-forward'])
+// const emits = defineEmits(['go-to-forward'])
 
 // const goToForward = (index) => {
 //     emits('go-to-forward', index)
