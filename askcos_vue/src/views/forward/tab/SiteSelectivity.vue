@@ -11,7 +11,7 @@
                 </v-btn>
             </v-col>
         </v-row>
-    </v-sheet>
+
 
 
     <v-dialog v-model="showDialog" max-width="500px">
@@ -28,6 +28,7 @@
             <v-divider></v-divider>
         </v-card>
     </v-dialog>
+     </v-sheet>
 </template>
 
 

@@ -16,7 +16,7 @@
           <v-form @submit.prevent="predict">
 
             <v-row align="center">
-              <v-col :cols="mode === 'context' || mode === 'impurity' || mode === 'selectivity' ? 6 : 12" class="my-4">
+              <v-col :cols="mode === 'context' || mode === 'impurity' || mode === 'selectivity' ? 6 : 12" >
                 <v-text-field v-model="reactants" class="centered-input" variant="outlined" label="Reactants"
                   prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
                   <template v-slot:append-inner>
@@ -35,8 +35,8 @@
             </v-row>
 
             <v-row v-if="!!reactants"  class="d-flex justify-center">
-              <v-col cols="12" >
-                <smiles-image :smiles="reactants + '>>' + product"></smiles-image>
+              <v-col cols="12">
+                <smiles-image  :smiles="reactants + '>>' + product"></smiles-image>
               </v-col>
             </v-row>
 
@@ -62,9 +62,12 @@
             </v-row>
 
             <v-row v-if="!!reagents && mode === 'forward' || !!reagents && mode === 'impurity' || !!reagents && mode === 'selectivity'" class="d-flex justify-center">
-              <v-col cols="4">
-                <smiles-image :smiles="reagents + '>>' + solvent"></smiles-image>
+              <v-col cols="6" class="d-flex justify-center">
+                <smiles-image :smiles="reagents"  width="200"></smiles-image>
               </v-col>
+                            <v-col cols="6" class="d-flex justify-center">
+                  <smiles-image :smiles="solvent" width="200"></smiles-image>
+                </v-col>
             </v-row> 
 
             <v-row align="center" justify="space-between">
