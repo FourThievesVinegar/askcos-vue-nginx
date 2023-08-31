@@ -12,60 +12,46 @@
                     <div class="slider">
                         <div class="slide-track">
                             <div class="slide">
-                                <img src="@/assets/basf.png" height="100"
-                                    width="250" alt="" />
+                                <img src="@/assets/basf.png" height="100" width="250" alt="" />
                             </div>
                             <div class="slide">
-                                <img src="@/assets/bms.png" height="100"
-                                    width="250" alt="" />
+                                <img src="@/assets/bms.png" height="100" width="250" alt="" />
                             </div>
                             <div class="slide">
-                                <img src="@/assets/corteva.png" height="100"
-                                    width="250" alt="" />
+                                <img src="@/assets/corteva.png" height="100" width="250" alt="" />
                             </div>
                             <div class="slide">
-                                <img src="@/assets/janssen.png" height="100"
-                                    width="250" alt="" />
+                                <img src="@/assets/janssen.png" height="100" width="250" alt="" />
                             </div>
                             <div class="slide">
-                                <img src="@/assets/lilly.png" height="100"
-                                    width="250" alt="" />
+                                <img src="@/assets/lilly.png" height="100" width="250" alt="" />
                             </div>
                             <div class="slide">
-                                <img src="@/assets/corteva.png" height="100"
-                                    width="250" alt="" />
+                                <img src="@/assets/corteva.png" height="100" width="250" alt="" />
                             </div>
                             <div class="slide">
-                                <img src="@/assets/bms.png" height="100"
-                                    width="250" alt="" />
+                                <img src="@/assets/bms.png" height="100" width="250" alt="" />
                             </div>
                             <div class="slide">
-                                <img src="@/assets/basf.png" height="100"
-                                    width="250" alt="" />
+                                <img src="@/assets/basf.png" height="100" width="250" alt="" />
                             </div>
                             <div class="slide">
-                                <img src="@/assets/bms.png" height="100"
-                                    width="250" alt="" />
+                                <img src="@/assets/bms.png" height="100" width="250" alt="" />
                             </div>
                             <div class="slide">
-                                <img src="@/assets/corteva.png" height="100"
-                                    width="250" alt="" />
+                                <img src="@/assets/corteva.png" height="100" width="250" alt="" />
                             </div>
                             <div class="slide">
-                                <img src="@/assets/janssen.png" height="100"
-                                    width="250" alt="" />
+                                <img src="@/assets/janssen.png" height="100" width="250" alt="" />
                             </div>
                             <div class="slide">
-                                <img src="@/assets/lilly.png" height="100"
-                                    width="250" alt="" />
+                                <img src="@/assets/lilly.png" height="100" width="250" alt="" />
                             </div>
                             <div class="slide">
-                                <img src="@/assets/corteva.png" height="100"
-                                    width="250" alt="" />
+                                <img src="@/assets/corteva.png" height="100" width="250" alt="" />
                             </div>
                             <div class="slide">
-                                <img src="@/assets/bms.png" height="100"
-                                    width="250" alt="" />
+                                <img src="@/assets/bms.png" height="100" width="250" alt="" />
                             </div>
                         </div>
                     </div>
@@ -130,6 +116,7 @@
 </template>
   
 <script setup>
+import * as THREE from "three";
 import HALO from 'vanta/dist/vanta.halo.min'
 import { ref, onMounted } from 'vue';
 
@@ -138,10 +125,13 @@ const vantaRef = ref(null);
 onMounted(() => {
     HALO({
         el: vantaRef.value,
+        THREE: THREE,
         mouseControls: true,
         touchControls: true,
         gyroControls: false,
         size: 0.50,
+        baseColor: 0x1a59,
+        backgroundColor:  0x2035b1,
     })
 })
 </script>
@@ -206,4 +196,5 @@ $animationSpeed: 20s;
         height: 100px;
         width: 250px;
     }
-}</style>
+}
+</style>
