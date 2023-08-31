@@ -47,8 +47,10 @@
             <v-list-item v-bind="props" title="Utilities"></v-list-item>
           </template>
 
-          <v-list-item prepend-icon="mdi-help-box" title="Solubility Prediction" value="USP"></v-list-item>
-          <v-list-item prepend-icon="mdi-help-box" title="Solvent Screening" value="USS"></v-list-item>
+          <v-list-item to="solprop?tab=solpred" prepend-icon="mdi-help-box" title="Solubility Prediction"
+            value="USP" :active="route.query.tab === 'solpred'"></v-list-item>
+          <v-list-item to="solprop?tab=solscreen" prepend-icon="mdi-help-box" title="Solvent Screening"
+            value="USS" :active="route.query.tab === 'solscreen'"></v-list-item>
           <v-list-item to="buyables" prepend-icon="mdi-help-box" title="Buyable Look-up" value="UBLU"></v-list-item>
           <v-list-item prepend-icon="mdi-help-box" title="Drawing" value="UD"></v-list-item>
         </v-list-group>
@@ -73,7 +75,7 @@ const openGroups = ref([]);
 const route = useRoute();
 const backPressed = ref(false);
 const activeModules = computed(() => {
-  const shouldBeActiveModules = ['/network', '/buyables', '/forward']
+  const shouldBeActiveModules = ['/network', '/buyables', '/forward', '/solprop']
   return shouldBeActiveModules.some(el => route.path.includes(el));
 })
 
