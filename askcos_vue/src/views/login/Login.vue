@@ -77,10 +77,8 @@
                                     </v-row>
                                 </v-container>
                             </div>
-                            <v-text-field v-model="name" :rules="nameRules" label="Username" variant="outlined"
-                                required></v-text-field>
-                            <v-text-field v-model="name" :rules="nameRules" label="Password" variant="outlined"
-                                required></v-text-field>
+                            <v-text-field label="Username" variant="outlined" required></v-text-field>
+                            <v-text-field label="Password" variant="outlined" required></v-text-field>
 
                             <div class="d-flex flex-column">
                                 <v-container>
@@ -131,7 +129,7 @@ onMounted(() => {
         gyroControls: false,
         size: 0.50,
         baseColor: 0x1a59,
-        backgroundColor:  0x2035b1,
+        backgroundColor: 0x2035b1,
     })
 })
 </script>
