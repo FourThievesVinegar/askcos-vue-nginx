@@ -404,7 +404,7 @@ const predict = async () => {
   }
 }
 
-watch(route, async (newRoute, oldRoute) => {
+watch(route, async (newRoute, _oldRoute) => {
   if (newRoute.path === '/forward') {
     tab.value = newRoute.query.tab
     updateFromURL();
@@ -419,6 +419,7 @@ const updateFromURL = () => {
   let urlParams = new URLSearchParams(window.location.search);
   let mode = urlParams.get('tab');
   if (mode) {
+    tab.value = mode
     changeMode(mode);
   }
   let rxnsmiles = urlParams.get('rxnsmiles');
@@ -439,7 +440,6 @@ const updateFromURL = () => {
   if (urlParams.get('solvent')) {
     solvent.value = urlParams.get('solvent');
   }
-
 };
 
 onMounted(() => {
