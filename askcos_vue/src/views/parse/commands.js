@@ -1,12 +1,23 @@
-export const COMMANDS = {
+export const commands = {
+    home: {
+        name: "Home",
+        path: "/",
+        params: ["smiles"]
+    },
+    status: {
+        name: "Server Status",
+        path: "/status",
+    },
     ipp: {
         name: "Interactive Path Planner",
         path: "/network",
-        tab: "ipp"
+        tab: "IPP",
+        params: ["smiles"]
     },
-    rp: {
+    retro: {
         name: "Retro Synthesis",
         path: "/network",
-        tab: "rp",
+        tab: "RP",
+        params: ["smiles"]
     },
 }

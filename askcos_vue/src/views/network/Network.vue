@@ -56,7 +56,7 @@ export default {
     onMounted(() => {
       let urlParams = route.query;
       let urlTab = urlParams.tab;
-      if (urlTab !== null) {
+      if (urlTab) {
         tab.value = urlTab;
       }
 
