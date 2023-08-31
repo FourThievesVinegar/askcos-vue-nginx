@@ -3,6 +3,10 @@ import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
   {
+    path: "/login",
+    component: () => import(/* webpackChunkName: "login" */ "@/views/login/Login.vue")
+  },
+  {
     path: "/",
     component: () => import("@/layouts/default/Default.vue"),
     children: [
@@ -31,7 +35,7 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/network/Network.vue"),
+          import(/* webpackChunkName: "network" */ "@/views/network/Network.vue"),
       },
       {
         path: "",
@@ -43,7 +47,7 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/network/Network.vue"),
+          import(/* webpackChunkName: "network" */ "@/views/network/Network.vue"),
       },
     ],
   },
@@ -58,7 +62,7 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/status/Status.vue"),
+          import(/* webpackChunkName: "status" */ "@/views/status/Status.vue"),
       },
     ],
   },
@@ -72,7 +76,7 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "home" */ '@/views/buyables/Buyables.vue'),
+        component: () => import(/* webpackChunkName: "buyables" */ '@/views/buyables/Buyables.vue'),
       },
     ],
   },
@@ -90,7 +94,7 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/forward/Forward.vue"),
+          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
       },
       {
         path: "",
@@ -102,7 +106,7 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/forward/Forward.vue"),
+          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
       },
       {
         path: "",
@@ -114,7 +118,7 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/forward/Forward.vue"),
+          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
       },
       {
         path: "",
@@ -126,7 +130,7 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/forward/Forward.vue"),
+          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
       },
       {
         path: "",
@@ -138,7 +142,7 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/forward/Forward.vue"),
+          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
       },
     ],
   },
