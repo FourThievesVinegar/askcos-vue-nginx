@@ -1,6 +1,6 @@
 <template>
-    <v-sheet elevation="5" width="100%" class="pa-6">
-        <v-row align="center" justify="space-between">
+    <v-sheet elevation="5" rounded="lg" width="100%" class="pa-6">
+            <v-row align="center" justify="space-between"  class="mx-auto my-auto">
             <v-col>
                 <h3 class="text-h5">Synthesis Recommendation</h3>
             </v-col>
@@ -15,11 +15,8 @@
 
     <v-dialog v-model="showDialog" max-width="500px">
         <v-card>
-            <v-card-text>
-                <div class="card border-info mb-3">
-                    <div class="card-body">
-                        <p class="card-text">
-                            <em>
+            <v-card-text class="px-8 py-8">
+                         <p class="my-4">
                                 Predict most likely outcomes of a chemical reaction using either
                                 <br />
                                 1) a template-free WLN model for predicting likely bond changes
@@ -32,19 +29,16 @@
                                 <a href="https://doi.org/10.1021/acs.jcim.2c00321">
                                     (J. Chem. Inf. Model. 2022, 62, 15, 3503–3513)
                                 </a>
-                            </em>
                         </p>
-                        <p class="card-text">
+                        <p class="my-4">
                             <b>New in 2022.04:</b> Forward prediction model trained on Pistachio dataset. Select in
-                            <a>settings menu</a>.
+                            settings menu.
                         </p>
-                        <p class="card-text">
+                         <p class="my-4">
                             <b>New in 2022.10:</b> Forward prediction model using Graph2SMILES. Select in
                             <a>settings menu</a>. This new model is capable of making chirality-aware prediction, though it
                             currently doesn't support impurity prediction.
                         </p>
-                    </div>
-                </div>
             </v-card-text>
             <v-divider></v-divider>
         </v-card>
