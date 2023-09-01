@@ -1,18 +1,18 @@
 <template>
-    <v-container fluid class="pa-0" >
-    <v-sheet elevation="5" rounded="lg" width="100%" class="pa-6">
-        <v-row align="center" justify="space-between" class="mx-auto my-auto">
-            <v-col>
-                <h3 class="text-h5">Synthesis Recommendation</h3>
-            </v-col>
-            <v-spacer></v-spacer>
-            <v-col cols="auto">
-                <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
-                    Reference
-                </v-btn>
-            </v-col>
-        </v-row>
-            </v-sheet>
+    <v-container fluid class="pa-0">
+        <v-sheet elevation="5" rounded="lg" width="100%" class="pa-6">
+            <v-row align="center" justify="space-between" class="mx-auto my-auto">
+                <v-col>
+                    <h3 class="text-h5">Synthesis Recommendation</h3>
+                </v-col>
+                <v-spacer></v-spacer>
+                <v-col cols="auto">
+                    <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
+                        Reference
+                    </v-btn>
+                </v-col>
+            </v-row>
+        </v-sheet>
 
 
         <v-dialog v-model="showDialog" max-width="500px">

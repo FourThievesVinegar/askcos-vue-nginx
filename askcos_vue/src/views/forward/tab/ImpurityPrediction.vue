@@ -1,4 +1,5 @@
 <template>
+      <v-container fluid class="pa-0" >
         <v-sheet elevation="5" rounded="lg" width="100%" class="pa-6">
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
             <v-col>
@@ -16,7 +17,7 @@
 
         <v-dialog v-model="showDialog" max-width="500px">
             <v-card>
-                 <v-card-text class="px-8 py-8">
+                 <v-card-text class="p-8">
                     <div class="card-body">
                         <p class="my-4">
                                 Predict likely impurities for a chemical reaction. Considers minor products, over-reaction,
@@ -27,9 +28,8 @@
                 <v-divider></v-divider>
             </v-card>
         </v-dialog>
-
-
     </v-sheet>
+        </v-container>
 </template>
 
 
