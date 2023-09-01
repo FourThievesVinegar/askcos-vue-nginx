@@ -10,40 +10,67 @@
         </div>
         <v-sheet elevation="2" rounded="lg" class="pa-10">
 
+          <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="currentSmiles" @input="showKetcher = false"
+            @update:smiles="(ketcherSmiles) => updateSmiles(ketcherSmiles)" />
 
           <v-form @submit.prevent="predict">
 
             <v-row align="center">
-              <v-col cols="6" class="my-4">
-                <v-text-field v-model="reactants" label="Reactants"></v-text-field>
+              <v-col :cols="mode === 'context' || mode === 'impurity' || mode === 'selectivity' ? 6 : 12" >
+                <v-text-field v-model="reactants" class="centered-input" variant="outlined" label="Reactants"
+                  prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
+                  <template v-slot:append-inner>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('reactants')">Draw</v-btn>
+                  </template>
+                </v-text-field>
               </v-col>
-              <v-col cols="6">
-                <v-text-field v-model="product" label="Product"
-                  :disabled="mode === 'forward' || mode === 'sites'"></v-text-field>
+              <v-col cols="6" v-if="mode === 'context' || mode === 'impurity' || mode === 'selectivity'">
+                <v-text-field v-model="product" label="Product" class="centered-input" variant="outlined"
+                  prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
+                  <template v-slot:append-inner>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('product')">Draw</v-btn>
+                  </template>
+                </v-text-field>
               </v-col>
             </v-row>
 
-            <v-row v-if="!!reactants" class="d-flex justify-center">
-              <v-col cols="4">
-                <smiles-image :smiles="reactants + '>>' + product"></smiles-image>
+            <v-row v-if="!!reactants"  class="d-flex justify-center">
+              <v-col cols="12">
+                <smiles-image  :smiles="reactants + '>>' + product"></smiles-image>
               </v-col>
             </v-row>
 
             <v-row align="center" v-if="mode !== 'context' && mode !== 'sites'">
-
               <v-col cols="6">
-                <v-text-field v-model="reagents" label="Reagents" :disabled="mode === 'context' || mode === 'sites'">
+                <v-text-field v-model="reagents" label="Reagents" class="centered-input" variant="outlined"
+                  prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable
+                  :disabled="mode === 'context' || mode === 'sites'">
+                  <template v-slot:append-inner>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('reagents')">Draw</v-btn>
+                  </template>
                 </v-text-field>
               </v-col>
-
               <v-col cols="6">
-                <v-text-field v-model="solvent" label="Solvent" :disabled="mode === 'context' || mode === 'sites'">
+                <v-text-field v-model="solvent" label="Solvent" class="centered-input" variant="outlined"
+                  prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable
+                  :disabled="mode === 'context' || mode === 'sites'">
+                  <template v-slot:append-inner>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solvent')">Draw</v-btn>
+                  </template>
                 </v-text-field>
               </v-col>
-
             </v-row>
 
-            <v-row  align="center" justify="space-between">
+            <v-row v-if="!!reagents && mode === 'forward' || !!reagents && mode === 'impurity' || !!reagents && mode === 'selectivity'" class="d-flex justify-center">
+              <v-col cols="6" class="d-flex justify-center">
+                <smiles-image :smiles="reagents"  width="200"></smiles-image>
+              </v-col>
+                            <v-col cols="6" class="d-flex justify-center">
+                  <smiles-image :smiles="solvent" width="200"></smiles-image>
+                </v-col>
+            </v-row> 
+
+            <v-row align="center" justify="space-between">
               <v-col>
                 <v-btn type="submit" color="success">
                   Submit
@@ -69,10 +96,12 @@
 
         <v-window v-model="tab" class="elevation-2">
           <v-window-item value="context" rounded="lg">
-            <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel" :pending="pendingTasks" />
+            <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel"
+              :pending="pendingTasks" />
           </v-window-item>
           <v-window-item value="forward">
-            <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel" :pending="pendingTasks" />
+            <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel"
+              :pending="pendingTasks" />
           </v-window-item>
           <v-window-item value="impurity">
             <ImpurityPrediction value="impurity" rounded="lg" />
@@ -86,9 +115,8 @@
         </v-window>
       </v-col>
     </v-row>
-  </v-container>
 
-  <template>
+
     <v-dialog v-model="dialog" max-width="600px">
       <v-card class="pa-3">
         <v-card-title>
@@ -190,19 +218,18 @@
                 </v-col>
               </v-expansion-panel-text>
             </v-expansion-panel>
-
-
           </v-expansion-panels>
         </v-expand-transition>
       </v-card>
     </v-dialog>
-  </template>
+  </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted, computed, watch, reactive } from 'vue'
 import { useRouter, useRoute } from "vue-router";
 import { API } from "@/common/api";
+import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage";
 import ConditionRecommendation from "@/views/forward/tab/ConditionRecommendation.vue"
 import SynthesisPrediction from "@/views/forward/tab/SynthesisPrediction.vue"
@@ -239,6 +266,48 @@ const pendingTasks = ref(0)
 const reactionScore = ref(null)
 const evaluating = ref(false)
 const impurityResults = ref([]);
+const showKetcher = ref(false);
+const ketcherRef = ref(null);
+const currentInputSource = ref('');
+
+const currentSmiles = computed(() => {
+  switch (currentInputSource.value) {
+    case 'reactants':
+      return reactants.value;
+    case 'product':
+      return product.value;
+    case 'reagents':
+      return reagents.value;
+    case 'solvent':
+      return solvent.value;
+    default:
+      return '';
+  }
+});
+
+const openKetcher = (source) => {
+  currentInputSource.value = source;
+  showKetcher.value = true;
+  ketcherRef.value.smilesToKetcher();
+};
+
+const updateSmiles = (ketcherSmiles) => {
+  switch (currentInputSource.value) {
+    case 'reactants':
+      reactants.value = ketcherSmiles;
+      break;
+    case 'product':
+      product.value = ketcherSmiles;
+      break;
+    case 'reagents':
+      reagents.value = ketcherSmiles;
+      break;
+    case 'solvent':
+      solvent.value = ketcherSmiles;
+      break;
+  }
+};
+
 
 const modes = ref({
   0: 'context',
@@ -338,7 +407,7 @@ const predict = async () => {
   }
 }
 
-watch(route, async (newRoute, oldRoute) => {
+watch(route, async (newRoute, _oldRoute) => {
   if (newRoute.path === '/forward') {
     tab.value = newRoute.query.tab
     updateFromURL();
@@ -353,6 +422,7 @@ const updateFromURL = () => {
   let urlParams = new URLSearchParams(window.location.search);
   let mode = urlParams.get('tab');
   if (mode) {
+    tab.value = mode
     changeMode(mode);
   }
   let rxnsmiles = urlParams.get('rxnsmiles');
@@ -373,7 +443,6 @@ const updateFromURL = () => {
   if (urlParams.get('solvent')) {
     solvent.value = urlParams.get('solvent');
   }
-
 };
 
 onMounted(() => {
@@ -426,10 +495,6 @@ const constructForwardPostData = (reagents, solvent) => {
 
   return data;
 }
-
-// watch(contextResults, (newValue) => {
-//   console.log(newValue)
-// })
 
 const canonicalize = async (smiles, input) => {
   return API.post('/api/v2/rdkit/smiles/canonicalize/', { smiles: smiles })
