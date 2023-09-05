@@ -33,14 +33,20 @@
                 </v-card>
             </v-dialog>
 
-            <v-data-table class="mx-auto my-auto" v-if="!pending && results.length" :headers="headers" :items="results"
+            <v-data-table class="mx-auto my-auto"  v-if="!pending && results.length"  :headers="headers" :items="results" v-show="results.length > 0"
                 :items-per-page="10" height="400px">
+                <template #item.reagent="{ item }">
+                    <smiles-image :smiles="item.columns.reagent" height="50px"></smiles-image>
+                </template>
                 <template #item.solvent="{ item }">
                     <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
                 </template>
+                <template #item.temperature="{ item }">
+                    {{ Math.round(item.columns.temperature) }} &deg;C
+                </template>
             </v-data-table>
 
-            <v-skeleton-loader v-if="pending" class="mx-auto my-auto" min-height="80px" type="table">
+            <v-skeleton-loader v-if="!!pending" class="mx-auto my-auto" min-height="80px" type="table">
             </v-skeleton-loader>
         </v-sheet>
     </v-container>
@@ -74,10 +80,10 @@ defineOptions({
 
 
 const headers = ref([
-    { key: 'solvent', title: 'Solvent' },
-    { key: 'reagent', title: 'Reagents' },
-    { key: 'temperature', title: 'Temperature' },
-    { key: 'solvent_score', title: 'Solvent Score' }
+    { key: 'solvent', title: 'Solvent' , align: 'center', },
+    { key: 'reagent', title: 'Reagents',  align: 'center',  },
+    { key: 'temperature', title: 'Temperature',  align: 'center',  },
+    { key: 'solvent_score', title: 'Solvent Score', align: 'center', }
 ])
 
 // const emits = defineEmits(['go-to-forward'])

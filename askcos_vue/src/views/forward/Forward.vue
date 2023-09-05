@@ -98,15 +98,13 @@
 
         <v-window v-model="tab" class="elevation-2">
           <v-window-item value="context" rounded="lg">
-            <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel"
-              :pending="pendingTasks" />
+            <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel" :pending="pendingTasks"/>
           </v-window-item>
           <v-window-item value="forward">
-            <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel"
-              :pending="pendingTasks" />
+            <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel" :pending="pendingTasks"/>
           </v-window-item>
           <v-window-item value="impurity">
-            <ImpurityPrediction value="impurity" rounded="lg" />
+            <ImpurityPrediction value="impurity" rounded="lg" :results="impurityResults" :pending="pendingTasks" :progress="impurityProgress"/>
           </v-window-item>
           <v-window-item value="selectivity">
             <Regioselectivity value="selectivity" rounded="lg" />
@@ -273,10 +271,14 @@ const forwardResults = ref([])
 const pendingTasks = ref(0)
 const reactionScore = ref(null)
 const evaluating = ref(false)
-const impurityResults = ref([]);
 const showKetcher = ref(false);
 const ketcherRef = ref(null);
 const currentInputSource = ref('');
+const impurityResults = ref([]);
+const impurityProgress = ref({
+  percent: 0,
+  message: ''
+});
 
 const currentSmiles = computed(() => {
   switch (currentInputSource.value) {
@@ -426,6 +428,79 @@ const clearForward = () => {
   forwardResults.value = []
 }
 
+const clearImpurity = () => {
+  impurityResults.value = [];
+  impurityProgress.value = {
+    percent: 0,
+    message: ''
+  };
+}
+
+const impurityPredict = () => {
+  pendingTasks.value++;
+  impurityResults.value = [];
+
+  let postData = constructImpurityPostData();
+
+  let complete = (output) => {
+    impurityProgress.value.percent = 1.0;
+    impurityProgress.value.message = 'Prediction complete!';
+    impurityResults.value = output['predict_expand'];
+  };
+
+  let progress = (json) => {
+    impurityProgress.value.percent = json['percent'];
+    impurityProgress.value.message = json['message'];
+    console.log(impurityProgress.value.message)
+  };
+
+  let failed = (error) => {
+    console.error('Error encountered during impurity prediction:', error);
+    impurityProgress.value.percent = 0.0;
+    impurityProgress.value.message = 'Impurity prediction failed!';
+  };
+
+  API.runCeleryTask('/api/v2/impurity/', postData, progress)
+    .then(output => {
+      complete(output);
+
+    })
+    .catch(error => {
+      failed(error);
+    })
+    .finally(() => {
+      pendingTasks.value--;
+      console.log(impurityResults.value)
+    });
+}
+
+
+const constructImpurityPostData = () => {
+  let data = {
+    reactants: reactants.value,
+    training_set: forwardModelTrainingSet.value,
+    model_version: forwardModelVersion.value,
+    top_k: impurityTopk.value,
+    threshold: inspectionThreshold.value,
+    check_mapping: impurityCheckMapping.value,
+    inspector: inspectionModel.value
+  };
+
+  if (product.value) {
+    data.products = product.value;
+  }
+
+  if (reagents.value) {
+    data.reagents = reagents.value;
+  }
+
+  if (solvent.value) {
+    data.solvent = solvent.value;
+  }
+
+  return data;
+}
+
 const updateFromURL = () => {
   let urlParams = new URLSearchParams(window.location.search);
   let mode = urlParams.get('tab');
@@ -477,7 +552,6 @@ const forwardPredict = async () => {
   try {
     const output = await API.runCeleryTask('/api/v2/forward/', postData);
     forwardResults.value = output;
-    console.log(forwardResults.value)
   } catch (error) {
     console.error('Error in forward prediction:', error);
   } finally {
