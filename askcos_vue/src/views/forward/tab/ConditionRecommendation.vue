@@ -47,9 +47,8 @@
                     <v-tooltip activator="parent" location="top">
                         <span>{{ item.columns.reagent }}</span>
                     </v-tooltip>
-                    <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
+                    <smiles-image :smiles="item.columns.reagent" height="80px"></smiles-image>
                 </template>
-                <smiles-image :smiles="item.columns.reagent" height="50px"></smiles-image>
                 <template #item.solvent="{ item }">
                     <v-tooltip activator="parent" location="top">
                         <span>{{ item.columns.solvent }}</span>
