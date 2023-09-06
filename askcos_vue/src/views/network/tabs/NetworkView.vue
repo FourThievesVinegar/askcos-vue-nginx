@@ -214,6 +214,9 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+  <NodeDetail :visible="nodeDetailVisible" :enable-resolver="enableResolver" :selected="selected" @close="closeNodeDetail"
+    @expandNode="expandNode" @updatePendingTasks="pendingTasksHandler" ref="node-detail" />
 </template>
 
 <script>
@@ -231,11 +234,13 @@ import dayjs from "dayjs";
 import { Network } from "vis-network";
 import { getPaths } from "@/common/graph";
 import { useConfirm } from 'vuetify-use-dialog';
+import NodeDetail from "@/components/network/NodeDetail";
 const BG_OPACITY = 0.2; // Background opacity
 export default {
   name: "NetworkView",
   components: {
     SmilesImage,
+    NodeDetail,
   },
   props: {
     tabActive: {
@@ -348,7 +353,7 @@ export default {
       return JSON.parse(document.getElementById("django-context").textContent);
     },
     enableResolver() {
-      return this.context.enableResolver;
+      return false;
     },
     isAuth() {
       return false;
@@ -1371,8 +1376,10 @@ export default {
         this.resultsStore.updatePrice([dataObj.id]).then(() => {
           let newData = this.resultsStore.dataGraph.nodes.get(dispObj.smiles);
           let newDisp = this.resultsStore.dispGraph.nodes.get(dispObj.id);
-          this.$set(this.selected, "data", newData);
-          this.$set(this.selected, "disp", newDisp);
+          this.selected.data = newData;
+          this.selected.disp = newDisp;
+          // this.$set(this.selected, "data", newData);
+          // this.$set(this.selected, "disp", newDisp);
         });
       }
     },
@@ -1386,17 +1393,17 @@ export default {
             this.resultsStore.dataGraph.getSuccessors(dispObj.smiles).length > 0
           ) {
             const cmap = this.getReactingAtomColormap(dispObj.smiles);
-            this.$refs["node-detail"].$refs["ketcher-min"].setSmiles(
-              dataObj.id,
-              undefined,
-              (k) => {
-                k.editor.applyColormap(cmap);
-              }
-            );
+            // this.$refs["node-detail"].$refs["ketcher-min"].setSmiles(
+            //   dataObj.id,
+            //   undefined,
+            //   (k) => {
+            //     k.editor.applyColormap(cmap);
+            //   }
+            // );
           } else {
-            this.$refs["node-detail"].$refs["ketcher-min"].setSmiles(
-              dataObj.id
-            );
+            // this.$refs["node-detail"].$refs["ketcher-min"].setSmiles(
+            //   dataObj.id
+            // );
           }
         }
       });
