@@ -127,45 +127,45 @@
           Settings
         </v-card-title>
         <v-expand-transition>
-          <v-expansion-panels>
+          <v-expansion-panels v-model="openSettingsPanel">
 
             <v-expansion-panel>
               <v-expansion-panel-title class="text-primary">Model selections</v-expansion-panel-title>
               <v-expansion-panel-text>
                 <v-row class="my-6">
-                  <v-col cols="12" >
-                    <v-select label="Condition recommendation model" density="comfortable" variant="outlined" hide-details clearable
-                      v-model="contextModel" :items="['neuralnetwork', 'neuralnetworkv2']">
+                  <v-col cols="12">
+                    <v-select label="Condition recommendation model" density="comfortable" variant="outlined" hide-details
+                      clearable v-model="contextModel" :items="['neuralnetwork', 'neuralnetworkv2']">
                     </v-select>
                   </v-col>
                   <v-col cols="12" v-if="contextModel === 'neuralnetworkv2'">
-                    <v-select label="Neural Network v2 model type" density="comfortable" variant="outlined" hide-details clearable
-                      v-model="contextV2ModelType" :items="['graph', 'fp-small']"></v-select>
+                    <v-select label="Neural Network v2 model type" density="comfortable" variant="outlined" hide-details
+                      clearable v-model="contextV2ModelType" :items="['graph', 'fp-small']"></v-select>
                   </v-col>
 
                   <v-col cols="12" v-if="contextModel === 'neuralnetworkv2'">
-                    <v-select label="Neural Network v2 dataset version" density="comfortable" variant="outlined" hide-details clearable
-                      v-model="contextV2ModelVersion" :items="['20191118']"></v-select>
+                    <v-select label="Neural Network v2 dataset version" density="comfortable" variant="outlined"
+                      hide-details clearable v-model="contextV2ModelVersion" :items="['20191118']"></v-select>
                   </v-col>
 
                   <v-col cols="12">
-                    <v-select label="Forward prediction model" v-model="forwardModel" density="comfortable" hide-details clearable
-                      variant="outlined" :items="forwardModels"></v-select>
+                    <v-select label="Forward prediction model" v-model="forwardModel" density="comfortable" hide-details
+                      clearable variant="outlined" :items="forwardModels"></v-select>
                   </v-col>
 
                   <v-col cols="12">
-                    <v-select label="Forward model training set" v-model="forwardModelTrainingSet" density="comfortable" hide-details clearable
-                      variant="outlined" :items="forwardModelTrainingSets"></v-select>
+                    <v-select label="Forward model training set" v-model="forwardModelTrainingSet" density="comfortable"
+                      hide-details clearable variant="outlined" :items="forwardModelTrainingSets"></v-select>
                   </v-col>
 
                   <v-col cols="12">
-                    <v-select label="Forward model version" v-model="forwardModelVersion" density="comfortable" hide-details clearable
-                      variant="outlined" :items="forwardModelVersions"></v-select>
+                    <v-select label="Forward model version" v-model="forwardModelVersion" density="comfortable"
+                      hide-details clearable variant="outlined" :items="forwardModelVersions"></v-select>
                   </v-col>
                 </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
-            <v-expansion-panel>
+            <v-expansion-panel value="condition-settings">
               <v-expansion-panel-title class="text-primary">Condition recommender settings</v-expansion-panel-title>
               <v-expansion-panel-text>
                 <v-row>
@@ -178,55 +178,59 @@
                 </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
-            <v-expansion-panel>
+            <v-expansion-panel value="forward-settings">
               <v-expansion-panel-title class="text-primary">Forward predictor settings</v-expansion-panel-title>
               <v-expansion-panel-text>
                 <v-row>
                   <v-col cols="12">
                     <v-text-field class="my-6" label="Num. results"
-                      placeholder="How many forward prediction results to return?" prepend-inner-icon="mdi mdi-flask" hide-details clearable
-                      density="comfortable" variant="outlined" type="number" v-model="numForwardResults"></v-text-field>
+                      placeholder="How many forward prediction results to return?" prepend-inner-icon="mdi mdi-flask"
+                      hide-details clearable density="comfortable" variant="outlined" type="number"
+                      v-model="numForwardResults"></v-text-field>
                   </v-col>
                 </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
 
-            <v-expansion-panel>
+            <v-expansion-panel value="impurity-settings">
               <v-expansion-panel-title class="text-primary">Impurity predictor settings</v-expansion-panel-title>
               <v-expansion-panel-text>
-   <v-row class="mt-6">
-                <v-col cols="12">
-                  <v-text-field label="Top-k from forward prediction" density="comfortable" variant="outlined" hide-details clearable
-                    placeholder="How many of the top forward prediction products should be included in impurity prediction?"
-                    type="number" v-model="impurityTopk"></v-text-field>
-                </v-col>
+                <v-row class="mt-6">
+                  <v-col cols="12">
+                    <v-text-field label="Top-k from forward prediction" density="comfortable" variant="outlined"
+                      hide-details clearable
+                      placeholder="How many of the top forward prediction products should be included in impurity prediction?"
+                      type="number" v-model="impurityTopk"></v-text-field>
+                  </v-col>
 
-                <v-col cols="12">
-                  <v-text-field label="Inspection threshold" placeholder="Threshold for filtering out bad reactions." density="comfortable" variant="outlined" hide-details clearable
-                    type="number" v-model="inspectionThreshold"></v-text-field>
-                </v-col>
+                  <v-col cols="12">
+                    <v-text-field label="Inspection threshold" placeholder="Threshold for filtering out bad reactions."
+                      density="comfortable" variant="outlined" hide-details clearable type="number"
+                      v-model="inspectionThreshold"></v-text-field>
+                  </v-col>
 
-                <v-col cols="12">
-                  <v-select label="Inspector Score Selection" placeholder="Select inspector scorer to use." density="comfortable" variant="outlined" hide-details clearable
-                    v-model="inspectionModel" :items="['WLN forward inspector', 'Reaxys inspector']"></v-select>
-                </v-col>
+                  <v-col cols="12">
+                    <v-select label="Inspector Score Selection" placeholder="Select inspector scorer to use."
+                      density="comfortable" variant="outlined" hide-details clearable v-model="inspectionModel"
+                      :items="['WLN forward inspector', 'Reaxys inspector']"></v-select>
+                  </v-col>
 
-                <v-col cols="12">
-                  <v-switch label="Use atom mapping" placeholder="Whether to use atom mapping to check reaction modes."
-                    v-model="impurityCheckMapping"></v-switch>
-                </v-col>
+                  <v-col cols="12">
+                    <v-switch label="Use atom mapping" placeholder="Whether to use atom mapping to check reaction modes."
+                      v-model="impurityCheckMapping"></v-switch>
+                  </v-col>
                 </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
-            <v-expansion-panel>
+            <v-expansion-panel value="selectivity-settings">
               <v-expansion-panel-title class="text-primary">Regio-selectivity predictor
                 settings</v-expansion-panel-title>
               <v-expansion-panel-text>
-                              <v-row>
-                <v-col cols="12">
-                  <v-switch label="Do not map reagents" hint="Reagents do not provide any atom to the product."
-                    v-model="absoluteReagents"></v-switch>
-                </v-col>
+                <v-row>
+                  <v-col cols="12">
+                    <v-switch label="Do not map reagents" hint="Reagents do not provide any atom to the product."
+                      v-model="absoluteReagents"></v-switch>
+                  </v-col>
                 </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
@@ -285,7 +289,26 @@ const impurityProgress = ref({
   percent: 0,
   message: ''
 });
-const siteResults = ref(null);
+const openSettingsPanel = ref(null)
+
+watch(tab, () => {
+  switch (tab.value) {
+    case 'context':
+      openSettingsPanel.value = 'condition-settings'
+      break
+    case 'forward':
+      openSettingsPanel.value = 'forward-settings'
+      break
+    case 'impurity':
+      openSettingsPanel.value = 'impurity-settings'
+      break
+    case 'selectivity':
+      openSettingsPanel.value = 'selectivity-settings'
+      break
+    default:
+      openSettingsPanel.value = null;
+  }
+})
 
 const currentSmiles = computed(() => {
   switch (currentInputSource.value) {

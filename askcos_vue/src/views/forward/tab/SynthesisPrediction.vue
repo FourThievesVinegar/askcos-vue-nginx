@@ -45,9 +45,12 @@
                 </v-card>
             </v-dialog>
 
-            <v-data-table  v-if="!pending && results.length"  :headers="headers" :items="results" v-show="results.length > 0"
+            <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" v-show="results.length > 0"
                 :items-per-page="10" height="400px">
                 <template #item.smiles="{ item }">
+                    <v-tooltip activator="parent" location="top">
+                        <span>{{ item.columns.smiles }}</span>
+                    </v-tooltip>
                     <smiles-image :smiles="item.columns.smiles" height="80px"></smiles-image>
                 </template>
                 <template #item.prob="{ item }">

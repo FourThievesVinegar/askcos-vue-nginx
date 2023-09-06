@@ -35,18 +35,25 @@
 
             <v-data-table class="mx-auto my-auto" v-if="!pending && results.length" :headers="headers" :items="results"
                 v-show="results.length > 0" :items-per-page="10" height="400px">
-                  <template v-slot:item.index="{ index }">
-        {{ index + 1 }}
-      </template>
+                <template v-slot:item.index="{ index }">
+                    {{ index + 1 }}
+                </template>
                 <template v-slot:item.solvent_score="{ item }">
                     <v-chip :color="getColor(item.columns.solvent_score)">
                         {{ item.columns.solvent_score }}
                     </v-chip>
                 </template>
                 <template #item.reagent="{ item }">
-                    <smiles-image :smiles="item.columns.reagent" height="50px"></smiles-image>
+                    <v-tooltip activator="parent" location="top">
+                        <span>{{ item.columns.reagent }}</span>
+                    </v-tooltip>
+                    <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
                 </template>
+                <smiles-image :smiles="item.columns.reagent" height="50px"></smiles-image>
                 <template #item.solvent="{ item }">
+                    <v-tooltip activator="parent" location="top">
+                        <span>{{ item.columns.solvent }}</span>
+                    </v-tooltip>
                     <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
                 </template>
                 <template #item.temperature="{ item }">
