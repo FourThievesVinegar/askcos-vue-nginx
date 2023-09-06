@@ -33,8 +33,16 @@
                 </v-card>
             </v-dialog>
 
-            <v-data-table class="mx-auto my-auto"  v-if="!pending && results.length"  :headers="headers" :items="results" v-show="results.length > 0"
-                :items-per-page="10" height="400px">
+            <v-data-table class="mx-auto my-auto" v-if="!pending && results.length" :headers="headers" :items="results"
+                v-show="results.length > 0" :items-per-page="10" height="400px">
+                  <template v-slot:item.index="{ index }">
+        {{ index + 1 }}
+      </template>
+                <template v-slot:item.solvent_score="{ item }">
+                    <v-chip :color="getColor(item.columns.solvent_score)">
+                        {{ item.columns.solvent_score }}
+                    </v-chip>
+                </template>
                 <template #item.reagent="{ item }">
                     <smiles-image :smiles="item.columns.reagent" height="50px"></smiles-image>
                 </template>
@@ -43,6 +51,17 @@
                 </template>
                 <template #item.temperature="{ item }">
                     {{ Math.round(item.columns.temperature) }} &deg;C
+                </template>
+                <template #item.catalyst_name_only="{ item }">
+                    <div class="text-center">
+                        <template v-if="!!item.reagent || !!item.reagent_name_only">
+                            <smiles-image v-if="!!item.reagent" :smiles="item.reagent"></smiles-image>
+                            {{ item.reagent_name_only }}
+                        </template>
+                        <template v-else>
+                            None
+                        </template>
+                    </div>
                 </template>
             </v-data-table>
 
@@ -80,11 +99,18 @@ defineOptions({
 
 
 const headers = ref([
-    { key: 'solvent', title: 'Solvent' , align: 'center', },
-    { key: 'reagent', title: 'Reagents',  align: 'center',  },
-    { key: 'temperature', title: 'Temperature',  align: 'center',  },
+    { key: 'index', title: '#', align: 'center', },
+    { key: 'solvent', title: 'Solvent', align: 'center', },
+    { key: 'reagent', title: 'Reagents', align: 'center', },
+    { key: 'catalyst_name_only', title: 'Catalyst', align: 'center', },
+    { key: 'temperature', title: 'Temperature', align: 'center', },
     { key: 'solvent_score', title: 'Solvent Score', align: 'center', }
 ])
+
+const getColor = (score) => {
+    if (score === 1) return 'green'
+    else return 'orange'
+}
 
 // const emits = defineEmits(['go-to-forward'])
 

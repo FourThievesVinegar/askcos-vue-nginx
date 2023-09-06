@@ -61,7 +61,7 @@
                 </template>
             </v-data-table>
 
-            <v-skeleton-loader v-if="!!pending && pending <1" class="mx-auto" min-height="100px" type="table"></v-skeleton-loader>
+            <v-skeleton-loader v-if="!!pending" class="mx-auto" min-height="100px" type="table"></v-skeleton-loader>
         </v-sheet>
     </v-container>
 </template>
