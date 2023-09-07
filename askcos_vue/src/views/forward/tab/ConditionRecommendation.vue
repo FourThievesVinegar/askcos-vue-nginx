@@ -7,13 +7,14 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
+                    <v-btn v-show="!!results.length" height="30px" color="primary mx-2">
+                        Evaluate Reaction(s)
+                    </v-btn>
                     <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
                         Reference
                     </v-btn>
                 </v-col>
             </v-row>
-
-
 
             <v-dialog v-model="showDialog" max-width="500px">
                 <v-card>
@@ -33,8 +34,8 @@
                 </v-card>
             </v-dialog>
 
-            <v-data-table class="mx-auto my-auto" v-if="!pending && results.length" :headers="headers" :items="results"
-                v-show="results.length > 0" :items-per-page="10" height="400px">
+            <v-data-table class="mx-auto my-auto " v-if="!pending && results.length" :headers="headers" :items="results"
+                v-show="results.length > 0" :items-per-page="10" height="600px">
                 <template v-slot:item.index="{ index }">
                     {{ index + 1 }}
                 </template>
@@ -68,6 +69,12 @@
                             None
                         </template>
                     </div>
+                </template>
+                <template #item.predict="{ item, index }">
+                    <v-btn variant="tonal" @click="emitGoToForward(index)" :id="'predict-conditions-' + index"
+                        title="Predict products">
+                        <v-icon>mdi-arrow-right</v-icon>
+                    </v-btn>
                 </template>
             </v-data-table>
 
@@ -106,22 +113,25 @@ defineOptions({
 
 const headers = ref([
     { key: 'index', title: '#', align: 'center', },
+    { key: 'rank', title: 'Rank', align: 'center', },
     { key: 'solvent', title: 'Solvent', align: 'center', },
     { key: 'reagent', title: 'Reagents', align: 'center', },
     { key: 'catalyst_name_only', title: 'Catalyst', align: 'center', },
     { key: 'temperature', title: 'Temperature', align: 'center', },
-    { key: 'solvent_score', title: 'Solvent Score', align: 'center', }
+    { key: 'solvent_score', title: 'Solvent Score', align: 'center', },
+    { key: 'predict', title: 'Predict with conditions', align: 'center', }
 ])
+
 
 const getColor = (score) => {
     if (score === 1) return 'green'
     else return 'orange'
 }
 
-// const emits = defineEmits(['go-to-forward'])
+const emits = defineEmits(['go-to-forward'])
 
-// const goToForward = (index) => {
-//     emits('go-to-forward', index)
-// }
+const emitGoToForward = (index) => {
+    emits('go-to-forward', index);
+}
 
 </script>

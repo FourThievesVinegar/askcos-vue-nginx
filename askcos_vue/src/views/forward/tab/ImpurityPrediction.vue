@@ -7,7 +7,7 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn v-show="!!result" @click="showDialog = true" height="30px" color="blue-grey mx-2">
+                    <v-btn v-show="!!results.length" @click="emitDownloadImpurity" height="30px" color="primary mx-2">
                         Export
                     </v-btn>
                     <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
@@ -35,7 +35,7 @@
             <v-row>
                 <v-col cols="12">
                     <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" :items-per-page="10"
-                        height="400px">
+                        height="600px">
                         <template #item.prd_smiles="{ item }">
                             <v-tooltip activator="parent" location="top">
                                 <span>{{ item.columns.prd_smiles }}</span>
@@ -65,7 +65,7 @@
 
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
-import { ref, defineProps, defineOptions } from 'vue'
+import { ref, defineProps, defineEmits } from 'vue'
 
 const showDialog = ref(false)
 
@@ -92,4 +92,10 @@ const headers = ref([
     { key: 'similarity_to_major', title: 'Similarity Score', align: 'center', },
     { key: 'prd_mw', title: 'Molecular Weight', align: 'center', },
 ])
+
+const emits = defineEmits()
+
+const emitDownloadImpurity = () => {
+    emits('download-impurity')
+}
 </script>

@@ -100,15 +100,15 @@
         <v-window v-model="tab" class="elevation-2">
           <v-window-item value="context" rounded="lg">
             <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel"
-              :pending="pendingTasks" />
+                           :pending="pendingTasks" @go-to-forward="goToForward" />
           </v-window-item>
           <v-window-item value="forward">
             <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel"
-              :pending="pendingTasks" />
+              :pending="pendingTasks" @download-forward="downloadForwardResults"/>
           </v-window-item>
           <v-window-item value="impurity">
             <ImpurityPrediction value="impurity" rounded="lg" :results="impurityResults" :pending="pendingTasks"
-              :progress="impurityProgress" />
+              :progress="impurityProgress" @download-impurity="downloadImpurityResults"/>
           </v-window-item>
           <v-window-item value="selectivity">
             <Regioselectivity value="selectivity" rounded="lg" />
@@ -252,6 +252,7 @@ import SynthesisPrediction from "@/views/forward/tab/SynthesisPrediction.vue"
 import ImpurityPrediction from "@/views/forward/tab/ImpurityPrediction.vue"
 import Regioselectivity from "@/views/forward/tab/Regioselectivity.vue"
 import SiteSelectivity from "@/views/forward/tab/SiteSelectivity.vue"
+import { saveAs } from 'file-saver';
 
 const route = useRoute();
 const router = useRouter();
@@ -388,6 +389,28 @@ const forwardModels = computed(() => {
     })
   return Array.from(models).sort()
 });
+
+const goToForward = (index) => {
+  canonicalizeAll()
+    .then(() => {
+      const context = contextResults.value[index];
+      let reagentsValue = '';
+      if (context['reagent']) {
+        reagentsValue += context['reagent'];
+      }
+      if (context['catalyst']) {
+        reagentsValue += '.' + context['catalyst'];
+      }
+      reagents.value = reagentsValue;
+      if (context['solvent']) {
+        solvent.value = context['solvent'];
+      }
+      changeMode('forward');
+      tab.value = 'forward';
+      forwardPredict();
+    });
+};
+
 
 const forwardModelTrainingSets = computed(() => {
   const sets = new Set();
@@ -678,10 +701,87 @@ const constructContextV1PostData = () => {
   }
 }
 
+const postprocessContextV2 = (output) => {
+  if (!output.length) {
+    alert('Could not generate condition recommendations for this reaction. Please try a different model.');
+  }
+
+  const processedResults = output.map((val) => {
+    val.temperature -= 273.15;
+    val.reagent = Object.keys(val.reagents).join('.');
+    val.catalyst = '';
+    val.solvent = '';
+    return val;
+  });
+
+  contextResults.value = processedResults;
+};
+
+const constructContextV2PostData = () => {
+  const _reagents = []; // a list of string, each of them is a reagent
+  return {
+    reactants: reactants.value,
+    products: product.value,
+    reagents: _reagents,
+    model: `${contextV2ModelType.value}-${contextV2ModelVersion.value}`,
+    num_results: numContextResults.value,
+  };
+};
+
+
+const contextV2Predict = () => {
+  pendingTasks.value++;
+  contextResults.value = [];
+  evaluating.value = false;
+  const postData = constructContextV2PostData();
+  API.runCeleryTask('/api/v2/context-v2/', postData)
+    .then((output) => {
+      postprocessContextV2(output);
+      console.log(contextResults.value)
+    })
+    .finally(() => {
+      pendingTasks.value--;
+    });
+};
+
 const clearSelectivity = () => {
   selectivityResults.value = [];
 }
 
+const downloadImpurityResults = () => {
+  if (!impurityResults.value.length) {
+    alert('There are no impurity predictor results to download!');
+    return;
+  }
+  let downloadData = 'No.,SMILES,Mechanism,InspectorScore,SimilarityScore,MolWt\n';
+  impurityResults.value.forEach((res) => {
+    downloadData += `${res.no},${res.prd_smiles},${res.modes_name},${res.avg_insp_score},${res.similarity_to_major},${res.prd_mw}\n`;
+  });
+  const blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' });
+  saveAs(blob, 'askcos_impurity_export.csv');
+};
+
+const downloadForwardResults = () => {
+  if (!forwardResults.value.length) {
+    alert('There are no forward predictor results to download!');
+    return;
+  }
+  let downloadData = 'Rank,SMILES,Probability,Score,MolWt\n';
+  forwardResults.value.forEach((res) => {
+    downloadData += `${res.rank},${res.smiles},${res.prob},${res.score},${res.mol_wt}\n`;
+  });
+  const blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' });
+  saveAs(blob, 'askcos_forward_export.csv');
+};
+
+// watch(forwardModel, (newValue) => {
+//   forwardModelTrainingSet.value = forwardModelTrainingSets.value[0];
+// });
+
+
+// watch(() => settings.value.forwardModelTrainingSet, (newValue) => {
+//   forwardModelVersion.value = forwardModelVersions.value[0];
+// });
 
 </script>
 

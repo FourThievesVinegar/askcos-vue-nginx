@@ -7,6 +7,9 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
+                    <v-btn v-show="!!results.length" @click="emitDownloadForward" height="30px" color="primary mx-2">
+                        Export
+                    </v-btn>
                     <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
                         Reference
                     </v-btn>
@@ -46,7 +49,7 @@
             </v-dialog>
 
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" v-show="results.length > 0"
-                :items-per-page="10" height="400px">
+                :items-per-page="10" height="600px">
                 <template #item.smiles="{ item }">
                     <v-tooltip activator="parent" location="top">
                         <span>{{ item.columns.smiles }}</span>
@@ -71,7 +74,7 @@
 
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
-import { ref, defineProps } from 'vue'
+import { ref, defineProps, defineEmits } from 'vue'
 
 const { results, models, pending } = defineProps({
     inheritAttrs: false,
@@ -97,4 +100,10 @@ const headers = ref([
     { key: 'score', title: 'Max. Score', align: 'center' },
     { key: 'mol_wt', title: 'Molecular Weight', align: 'center' },
 ])
+
+const emits = defineEmits()
+
+const emitDownloadForward = () => {
+    emits('download-forward')
+}
 </script>
