@@ -3,9 +3,9 @@
     <v-row class="justify-center">
       <v-col cols="12" sm="8" md="10">
         <div class="mt-8 mb-5">
-          <v-breadcrumbs class="pa-0" :items="['Home', 'Buyables']"></v-breadcrumbs>
+          <v-breadcrumbs class="pa-0" :items="['Home', 'Results']"></v-breadcrumbs>
           <h1>
-            Buyable Compounds
+            My Results
           </h1>
         </div>
       </v-col>
@@ -13,20 +13,7 @@
     <v-row class="justify-center">
       <v-col cols="12" md="10">
         <v-sheet elevation="2" rounded="lg">
-          <v-row class="mb-2 px-5 pt-2">
-            <v-col cols="12">
-              <p class="text-body-1 left-justify">
-                The chemicals and prices stored in our database are taken from Reaxys and are originally from
-                eMolecules, LabNetwork, or Sigma Aldrich. All compounds with an average price per gram listed at $100
-                or lower were included. Please note that prices in the database are unfortunately rounded to the
-                nearest integer. That is, the cheapest compounds are still listed as $1/g.
-              </p>
-              <p class="mdi mdi-information text-subtitle-2">
-                The first search performed may take longer than expected.
-              </p>
-            </v-col>
-          </v-row>
-          <v-row class="mb-2 px-5 justify-center">
+          <v-row class="mb-2 px-5 pt-2 justify-center">
             <v-col cols="12" md="10">
               <v-text-field v-model="searchSmilesQuery" placeholder="SMILES/SMARTS" prepend-inner-icon="mdi mdi-flask"
                 density="comfortable" variant="outlined" label="Enter SMILES/SMART to explore" hide-details clearable>
@@ -34,32 +21,13 @@
                   <v-btn color="primary" @click="search" size="large">
                     Search
                   </v-btn>
-                  <v-checkbox-btn v-model="searchRegex" label="Use SMARTS" hide-details>
-                  </v-checkbox-btn>
                 </template>
               </v-text-field>
             </v-col>
           </v-row>
 
           <v-row class="mb-2 px-5">
-            <v-col cols="12" md="4">
-              <v-slider hide-details v-model="simThresh" label="Similarity Threshold" min="0" max="1" step="0.0001"
-                color="primary">
-                <template v-slot:append>
-                  <v-text-field v-model="simThresh" type="number" style="width: 80px" density="compact" hide-details
-                    variant="outlined"></v-text-field>
-                </template>
-              </v-slider>
-            </v-col>
-            <v-col cols="12" md="4">
-              <v-slider hide-details v-model="searchLimit" label="Limit Results" min="1" max="100" step="1"
-                color="primary">
-                <template v-slot:append>
-                  <v-text-field v-model="searchLimit" type="number" style="width: 80px" density="compact" hide-details
-                    variant="outlined"></v-text-field>
-                </template>
-              </v-slider>
-            </v-col>
+
             <v-col cols="12" md="4" class="d-flex justify-space-evenly align-center"><v-btn
                 @click="showSourcesDialog = true" height="40px" color="primary" variant="tonal">
                 Select Sources
@@ -86,123 +54,11 @@
             </v-col>
           </v-row>
           <v-row v-else class="px-5 pb-5"> <v-col cols="12" class="d-flex justify-center align-center">
-              <div>
-                <v-img :width="400" cover :src="emptyCart"></v-img>
-              </div>
             </v-col></v-row>
         </v-sheet>
       </v-col>
     </v-row>
   </v-container>
-  <v-dialog v-model="showSourcesDialog" max-width="600px">
-    <v-card>
-      <v-card-title>
-        Select Sources
-      </v-card-title>
-      <v-card-text>
-        <v-checkbox v-model="buyablesSourceAll" @change="searchSourceQuery = []" label="All"></v-checkbox>
-        <v-checkbox v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery" :value="source"
-          :disabled="buyablesSourceAll" :label="source === NO_SOURCE ? NO_SOURCE_TEXT : source"></v-checkbox>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn @click="showSourcesDialog = false">
-          Select
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-  <v-dialog v-model="showAddModal" max-width="600px">
-    <v-card>
-      <v-card-title>
-        <span class="headline">Add new buyable compound</span>
-      </v-card-title>
-
-      <v-card-text>
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field label="SMILES" v-model="addBuyableSmiles"></v-text-field>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="12">
-              <v-text-field label="Price per gram" v-model="addBuyablePrice"></v-text-field>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="12">
-              <v-text-field label="Source" v-model="addBuyableSource"></v-text-field>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="12">
-              <v-checkbox label="Allow overwrite" v-model="allowOverwrite"></v-checkbox>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card-text>
-
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="showAddModal = false">Close</v-btn>
-        <v-btn color="green darken-1" text @click="addBuyable">Add Entry</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-
-  <v-dialog v-model="showUploadModal" max-width="600px">
-    <v-card>
-      <v-card-title>
-        <span class="headline">Upload buyable compound file</span>
-      </v-card-title>
-
-      <v-card-text>
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <p>
-                File uploads should be in CSV format containing "smiles", "ppg", and "source" columns or
-                in
-                JSON format as an
-                array of objects containing "smiles", "ppg", and "source" fields. Optionally, a
-                "properties" field containing additional metadata can be specified as an array of JSON
-                objects
-                with "name" and
-                "value" fields.
-              </p>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="12">
-              <v-file-input label="File" v-model="uploadFile"></v-file-input>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="12">
-              <v-select label="Format" v-model="uploadFileFormat" :items="['json', 'csv']"></v-select>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="12">
-              <v-checkbox label="Allow overwrite" v-model="allowOverwrite"></v-checkbox>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card-text>
-
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="showUploadModal = false">Close</v-btn>
-        <v-btn color="green darken-1" text @click="handleUploadSubmit">Upload</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
 </template>
 
 <script setup>
