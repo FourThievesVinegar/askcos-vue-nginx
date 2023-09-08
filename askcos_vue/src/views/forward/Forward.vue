@@ -104,7 +104,7 @@
           </v-window-item>
           <v-window-item value="forward">
             <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel"
-              :pending="pendingTasks" @download-forward="downloadForwardResults"/>
+              :pending="pendingTasks" @download-forward="downloadForwardResults" @go-to-impurities="goToImpurity"/>
           </v-window-item>
           <v-window-item value="impurity">
             <ImpurityPrediction value="impurity" rounded="lg" :results="impurityResults" :pending="pendingTasks"
@@ -114,7 +114,7 @@
             <Regioselectivity value="selectivity" rounded="lg" />
           </v-window-item>
           <v-window-item value="sites">
-            <SiteSelectivity value="sites" rounded="lg" />
+            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" :reactingAtoms="reactingAtoms" :pending="pendingTasks"/>
           </v-window-item>
         </v-window>
       </v-col>
@@ -253,6 +253,7 @@ import ImpurityPrediction from "@/views/forward/tab/ImpurityPrediction.vue"
 import Regioselectivity from "@/views/forward/tab/Regioselectivity.vue"
 import SiteSelectivity from "@/views/forward/tab/SiteSelectivity.vue"
 import { saveAs } from 'file-saver';
+import { createReaxysQuery, createReaxysUrl } from "@/common/reaxys";
 
 const route = useRoute();
 const router = useRouter();
@@ -291,6 +292,10 @@ const impurityProgress = ref({
   message: ''
 });
 const openSettingsPanel = ref(null)
+
+const siteResults = ref([])
+const siteResultsQuery = ref('')
+const siteSelectedAtoms = ref([])
 
 watch(tab, () => {
   switch (tab.value) {
@@ -348,7 +353,6 @@ const updateSmiles = (ketcherSmiles) => {
       break;
   }
 };
-
 
 const modes = ref({
   0: 'context',
@@ -411,6 +415,17 @@ const goToForward = (index) => {
     });
 };
 
+
+const goToImpurity = (smiles) => {
+  canonicalizeAll()
+    .then(() => {
+      product.value = smiles;
+      console.log(smiles)
+      changeMode('impurity');
+      tab.value = 'impurity';
+      impurityPredict();
+    });
+};
 
 const forwardModelTrainingSets = computed(() => {
   const sets = new Set();
@@ -772,6 +787,43 @@ const downloadForwardResults = () => {
   });
   const blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' });
   saveAs(blob, 'askcos_forward_export.csv');
+};
+
+const clearSites = () => {
+  siteResults.value = [];
+  siteSelectedAtoms.value = [];
+};
+
+const sitesPredict = () => {
+  pendingTasks.value++
+  const postData = constructSiteSelectivityPostData()
+  API.runCeleryTask('/api/v2/selectivity/', postData)
+    .then(output => {
+      siteResults.value = output
+      console.log(siteResults.value)
+    })
+    .finally(() => {
+      pendingTasks.value--
+    })
+}
+
+const constructSiteSelectivityPostData = () => {
+  return {
+    smiles: reactants.value
+  }
+}
+
+const getMolImgUrl = (smiles, highlight, reactingAtoms) => {
+  let url = `/api/v2/draw/?smiles=${encodeURIComponent(smiles)}`;
+  if (highlight !== undefined) {
+    url += '&highlight=true';
+  }
+  if (reactingAtoms !== undefined) {
+    for (const ra of reactingAtoms) {
+      url += `&reacting_atoms=${encodeURIComponent(ra)}`;
+    }
+  }
+  return url;
 };
 
 // watch(forwardModel, (newValue) => {

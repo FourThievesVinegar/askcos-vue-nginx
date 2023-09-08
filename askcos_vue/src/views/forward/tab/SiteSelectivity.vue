@@ -26,13 +26,51 @@
                     <v-divider></v-divider>
                 </v-card>
             </v-dialog>
+
+
+            <v-data-table :headers="headers" :items="results" class="my-3" :items-per-page="5">
+
+                <template v-slot:item.task="{ item }">
+                    <smiles-image :smiles="item.columns.task"></smiles-image>
+                </template>
+                <template v-slot:item.smiles="{ item }">
+                    <smiles-image :smiles="item.columns.smiles" :reactingAtoms="item.columns.atom_scores"></smiles-image>
+                </template>
+
+
+            </v-data-table>
         </v-sheet>
     </v-container>
 </template>
 
 
 <script setup>
-import { ref } from "vue";
+import SmilesImage from "@/components/SmilesImage.vue";
+import { ref, defineProps } from 'vue'
 
 const showDialog = ref(false)
+
+
+const { results, pending } = defineProps({
+    results: {
+        type: Array,
+        default: [],
+    },
+    pending: {
+        type: Number,
+        default: 0
+    },
+    reactingAtoms: {
+        type: Array,
+        default: [],
+    }
+})
+
+const headers = ref([
+    { key: 'task', title: 'Reactant', align: 'center', },
+    { key: 'smiles', title: 'Sites', align: 'center', },
+    { key: 'references', title: 'References', align: 'center', },
+
+])
+
 </script>

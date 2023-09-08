@@ -65,6 +65,18 @@
                 <template #item.mol_wt="{ item }">
                     {{ item.columns.mol_wt.toFixed(1) }}
                 </template>
+                <template #item.predict_impurities="{ item, index }">
+                    <v-btn variant="tonal" @click="emitGoToImpurity(item.columns.smiles)" :id="'predict-impurities-' + index"
+                        title="Predict products">
+                        <v-icon>mdi-arrow-right</v-icon>
+                    </v-btn>
+                </template>
+                <template #item.predict_selectivity="{ item, index }">
+                    <v-btn variant="tonal" @click="emitGoToImpurity(index)" :id="'predict-regio-selectivities-' + index"
+                        title="Predict products">
+                        <v-icon>mdi-arrow-right</v-icon>
+                    </v-btn>
+                </template>
             </v-data-table>
 
             <v-skeleton-loader v-if="!!pending" class="mx-auto" min-height="100px" type="table"></v-skeleton-loader>
@@ -99,11 +111,21 @@ const headers = ref([
     { key: 'prob', title: 'Probability', align: 'center' },
     { key: 'score', title: 'Max. Score', align: 'center' },
     { key: 'mol_wt', title: 'Molecular Weight', align: 'center' },
+    { key: 'predict_impurities', title: 'Predict impurities', align: 'center', },
+    { key: 'predict_selectivity', title: 'Predict regio-selectivities', align: 'center', }
 ])
 
 const emits = defineEmits()
 
 const emitDownloadForward = () => {
     emits('download-forward')
+}
+
+const emitGoToImpurity = (smiles) => {
+    emits('go-to-impurities', smiles);
+}
+
+const goToSelectivity = (index) => {
+    emits('go-to-selectivity', index);
 }
 </script>
