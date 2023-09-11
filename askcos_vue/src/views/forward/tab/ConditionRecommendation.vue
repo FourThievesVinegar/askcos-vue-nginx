@@ -87,7 +87,7 @@
 
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
-import { ref, defineProps, defineOptions } from 'vue'
+import { ref, defineOptions } from 'vue'
 
 const showDialog = ref(false)
 
