@@ -16,7 +16,7 @@
           <v-form @submit.prevent="predict">
 
             <v-row align="center">
-              <v-col :cols="mode === 'context' || mode === 'impurity' || mode === 'selectivity' ? 6 : 12" >
+              <v-col :cols="mode === 'context' || mode === 'impurity' || mode === 'selectivity' ? 6 : 12">
                 <v-text-field v-model="reactants" class="centered-input" variant="outlined" label="Reactants"
                   prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
                   <template v-slot:append-inner>
@@ -34,9 +34,9 @@
               </v-col>
             </v-row>
 
-            <v-row v-if="!!reactants"  class="d-flex justify-center">
+            <v-row v-if="!!reactants" class="d-flex justify-center">
               <v-col cols="12">
-                <smiles-image  :smiles="reactants + '>>' + product"></smiles-image>
+                <smiles-image :smiles="reactants + '>>' + product"></smiles-image>
               </v-col>
             </v-row>
 
@@ -61,14 +61,17 @@
               </v-col>
             </v-row>
 
-            <v-row v-if="!!reagents && mode === 'forward' || !!reagents && mode === 'impurity' || !!reagents && mode === 'selectivity'" class="d-flex justify-center">
+            <v-row
+              v-if="!!reagents && mode === 'forward' || !!reagents && mode === 'impurity' || !!reagents && mode === 'selectivity'"
+              class="d-flex justify-center">
               <v-col cols="6" class="d-flex justify-center">
-                <smiles-image :smiles="reagents"  width="200"></smiles-image>
+                <smiles-image :smiles="reagents" width="200"></smiles-image>
               </v-col>
-                            <v-col cols="6" class="d-flex justify-center">
-                  <smiles-image :smiles="solvent" width="200"></smiles-image>
-                </v-col>
-            </v-row> 
+              <v-col cols="6" class="d-flex justify-center">
+                <smiles-image :smiles="solvent" width="200"></smiles-image>
+              </v-col>
+            </v-row>
+
 
             <v-row align="center" justify="space-between">
               <v-col>
@@ -84,7 +87,7 @@
 
         </v-sheet>
 
-        <v-sheet elevation="2" rounded="lg" class="my-6 ">
+        <v-sheet elevation="2" class="my-6 ">
           <v-tabs v-model="tab" color="primary" align-tabs="center" grow class="mb-4">
             <v-tab @click="replaceRoute('context')" value="context">Condition Recommendation</v-tab>
             <v-tab @click="replaceRoute('forward')" value="forward">Synthesis Prediction</v-tab>
@@ -97,125 +100,138 @@
         <v-window v-model="tab" class="elevation-2">
           <v-window-item value="context" rounded="lg">
             <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel"
-              :pending="pendingTasks" />
+                           :pending="pendingTasks" @go-to-forward="goToForward" />
           </v-window-item>
           <v-window-item value="forward">
             <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel"
-              :pending="pendingTasks" />
+              :pending="pendingTasks" @download-forward="downloadForwardResults" @go-to-impurities="goToImpurity"/>
           </v-window-item>
           <v-window-item value="impurity">
-            <ImpurityPrediction value="impurity" rounded="lg" />
+            <ImpurityPrediction value="impurity" rounded="lg" :results="impurityResults" :pending="pendingTasks"
+              :progress="impurityProgress" @download-impurity="downloadImpurityResults"/>
           </v-window-item>
           <v-window-item value="selectivity">
             <Regioselectivity value="selectivity" rounded="lg" />
           </v-window-item>
           <v-window-item value="sites">
-            <SiteSelectivity value="sites" rounded="lg" />
+            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" :reactingAtoms="reactingAtoms" :pending="pendingTasks"/>
           </v-window-item>
         </v-window>
       </v-col>
     </v-row>
 
 
-    <v-dialog v-model="dialog" max-width="600px">
-      <v-card class="pa-3">
-        <v-card-title>
-          <span class="headline">Settings</span>
+    <v-dialog v-model="dialog" max-width="600px" class="justify-center align-center">
+      <v-card class="pa-3 m-5">
+        <v-card-title class="headline">
+          Settings
         </v-card-title>
         <v-expand-transition>
-          <v-expansion-panels>
+          <v-expansion-panels v-model="openSettingsPanel">
 
             <v-expansion-panel>
-              <v-expansion-panel-title>Model selections</v-expansion-panel-title>
+              <v-expansion-panel-title class="text-primary">Model selections</v-expansion-panel-title>
               <v-expansion-panel-text>
-                <v-row>
+                <v-row class="my-6">
                   <v-col cols="12">
-                    <v-select label="Condition recommendation model" v-model="contextModel"
-                      :items="['neuralnetwork', 'neuralnetworkv2']">
+                    <v-select label="Condition recommendation model" density="comfortable" variant="outlined" hide-details
+                      clearable v-model="contextModel" :items="['neuralnetwork', 'neuralnetworkv2']">
                     </v-select>
                   </v-col>
+                  <v-col cols="12" v-if="contextModel === 'neuralnetworkv2'">
+                    <v-select label="Neural Network v2 model type" density="comfortable" variant="outlined" hide-details
+                      clearable v-model="contextV2ModelType" :items="['graph', 'fp-small']"></v-select>
+                  </v-col>
 
                   <v-col cols="12" v-if="contextModel === 'neuralnetworkv2'">
-                    <v-select label="Neural Network v2 model type" v-model="contextV2ModelType"
-                      :items="['graph', 'fp-small']"></v-select>
-                  </v-col>
-
-                  <v-col cols="12" v-if="contextModel === 'neuralnetworkv2'">
-                    <v-select label="Neural Network v2 dataset version" v-model="contextV2ModelVersion"
-                      :items="['20191118']"></v-select>
+                    <v-select label="Neural Network v2 dataset version" density="comfortable" variant="outlined"
+                      hide-details clearable v-model="contextV2ModelVersion" :items="['20191118']"></v-select>
                   </v-col>
 
                   <v-col cols="12">
-                    <v-select label="Forward prediction model" v-model="forwardModel" :items="forwardModels"></v-select>
+                    <v-select label="Forward prediction model" v-model="forwardModel" density="comfortable" hide-details
+                      clearable variant="outlined" :items="forwardModels"></v-select>
                   </v-col>
 
                   <v-col cols="12">
-                    <v-select label="Forward model training set" v-model="forwardModelTrainingSet"
-                      :items="forwardModelTrainingSets"></v-select>
+                    <v-select label="Forward model training set" v-model="forwardModelTrainingSet" density="comfortable"
+                      hide-details clearable variant="outlined" :items="forwardModelTrainingSets"></v-select>
                   </v-col>
 
                   <v-col cols="12">
-                    <v-select label="Forward model version" v-model="forwardModelVersion"
-                      :items="forwardModelVersions"></v-select>
+                    <v-select label="Forward model version" v-model="forwardModelVersion" density="comfortable"
+                      hide-details clearable variant="outlined" :items="forwardModelVersions"></v-select>
                   </v-col>
                 </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
-            <v-expansion-panel>
-              <v-expansion-panel-title>Condition recommender settings</v-expansion-panel-title>
+            <v-expansion-panel value="condition-settings">
+              <v-expansion-panel-title class="text-primary">Condition recommender settings</v-expansion-panel-title>
               <v-expansion-panel-text>
                 <v-row>
                   <v-col cols="12">
-                    <v-text-field label="Num. results" hint="How many condition recommendation results to return?"
+                    <v-text-field class="my-6" label="Num. results" prepend-inner-icon="mdi mdi-flask"
+                      density="comfortable" variant="outlined"
+                      placeholder="How many condition recommendation results to return?" hide-details clearable
                       type="number" v-model="numContextResults"></v-text-field>
                   </v-col>
                 </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
-            <v-expansion-panel>
-              <v-expansion-panel-title>Forward predictor settings</v-expansion-panel-title>
+            <v-expansion-panel value="forward-settings">
+              <v-expansion-panel-title class="text-primary">Forward predictor settings</v-expansion-panel-title>
               <v-expansion-panel-text>
-
-                <v-col cols="12">
-                  <v-text-field label="Num. results" hint="How many forward prediction results to return?" type="number"
-                    v-model="numForwardResults"></v-text-field>
-                </v-col>
+                <v-row>
+                  <v-col cols="12">
+                    <v-text-field class="my-6" label="Num. results"
+                      placeholder="How many forward prediction results to return?" prepend-inner-icon="mdi mdi-flask"
+                      hide-details clearable density="comfortable" variant="outlined" type="number"
+                      v-model="numForwardResults"></v-text-field>
+                  </v-col>
+                </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
 
-            <v-expansion-panel>
-              <v-expansion-panel-title>Impurity predictor settings</v-expansion-panel-title>
+            <v-expansion-panel value="impurity-settings">
+              <v-expansion-panel-title class="text-primary">Impurity predictor settings</v-expansion-panel-title>
               <v-expansion-panel-text>
+                <v-row class="mt-6">
+                  <v-col cols="12">
+                    <v-text-field label="Top-k from forward prediction" density="comfortable" variant="outlined"
+                      hide-details clearable
+                      placeholder="How many of the top forward prediction products should be included in impurity prediction?"
+                      type="number" v-model="impurityTopk"></v-text-field>
+                  </v-col>
 
-                <v-col cols="12">
-                  <v-text-field label="Top-k from forward prediction"
-                    hint="How many of the top forward prediction products should be included in impurity prediction?"
-                    type="number" v-model="impurityTopk"></v-text-field>
-                </v-col>
+                  <v-col cols="12">
+                    <v-text-field label="Inspection threshold" placeholder="Threshold for filtering out bad reactions."
+                      density="comfortable" variant="outlined" hide-details clearable type="number"
+                      v-model="inspectionThreshold"></v-text-field>
+                  </v-col>
 
-                <v-col cols="12">
-                  <v-text-field label="Inspection threshold" hint="Threshold for filtering out bad reactions."
-                    type="number" v-model="inspectionThreshold"></v-text-field>
-                </v-col>
+                  <v-col cols="12">
+                    <v-select label="Inspector Score Selection" placeholder="Select inspector scorer to use."
+                      density="comfortable" variant="outlined" hide-details clearable v-model="inspectionModel"
+                      :items="['WLN forward inspector', 'Reaxys inspector']"></v-select>
+                  </v-col>
 
-                <v-col cols="12">
-                  <v-select label="Inspector Score Selection" hint="Select inspector scorer to use."
-                    v-model="inspectionModel" :items="['WLN forward inspector', 'Reaxys inspector']"></v-select>
-                </v-col>
-
-                <v-col cols="8">
-                  <v-switch label="Use atom mapping" hint="Whether to use atom mapping to check reaction modes."
-                    v-model="impurityCheckMapping"></v-switch>
-                </v-col>
+                  <v-col cols="12">
+                    <v-switch label="Use atom mapping" placeholder="Whether to use atom mapping to check reaction modes."
+                      v-model="impurityCheckMapping"></v-switch>
+                  </v-col>
+                </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
-            <v-expansion-panel>
-              <v-expansion-panel-title>Regio-selectivity predictor settings</v-expansion-panel-title>
+            <v-expansion-panel value="selectivity-settings">
+              <v-expansion-panel-title class="text-primary">Regio-selectivity predictor
+                settings</v-expansion-panel-title>
               <v-expansion-panel-text>
-                <v-col cols="12">
-                  <v-switch label="Do not map reagents" hint="Reagents do not provide any atom to the product."
-                    v-model="absoluteReagents"></v-switch>
-                </v-col>
+                <v-row>
+                  <v-col cols="12">
+                    <v-switch label="Do not map reagents" hint="Reagents do not provide any atom to the product."
+                      v-model="absoluteReagents"></v-switch>
+                  </v-col>
+                </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
@@ -236,6 +252,8 @@ import SynthesisPrediction from "@/views/forward/tab/SynthesisPrediction.vue"
 import ImpurityPrediction from "@/views/forward/tab/ImpurityPrediction.vue"
 import Regioselectivity from "@/views/forward/tab/Regioselectivity.vue"
 import SiteSelectivity from "@/views/forward/tab/SiteSelectivity.vue"
+import { saveAs } from 'file-saver';
+import { createReaxysQuery, createReaxysUrl } from "@/common/reaxys";
 
 const route = useRoute();
 const router = useRouter();
@@ -265,10 +283,38 @@ const forwardResults = ref([])
 const pendingTasks = ref(0)
 const reactionScore = ref(null)
 const evaluating = ref(false)
-const impurityResults = ref([]);
 const showKetcher = ref(false);
 const ketcherRef = ref(null);
 const currentInputSource = ref('');
+const impurityResults = ref([]);
+const impurityProgress = ref({
+  percent: 0,
+  message: ''
+});
+const openSettingsPanel = ref(null)
+
+const siteResults = ref([])
+const siteResultsQuery = ref('')
+const siteSelectedAtoms = ref([])
+
+watch(tab, () => {
+  switch (tab.value) {
+    case 'context':
+      openSettingsPanel.value = 'condition-settings'
+      break
+    case 'forward':
+      openSettingsPanel.value = 'forward-settings'
+      break
+    case 'impurity':
+      openSettingsPanel.value = 'impurity-settings'
+      break
+    case 'selectivity':
+      openSettingsPanel.value = 'selectivity-settings'
+      break
+    default:
+      openSettingsPanel.value = null;
+  }
+})
 
 const currentSmiles = computed(() => {
   switch (currentInputSource.value) {
@@ -307,7 +353,6 @@ const updateSmiles = (ketcherSmiles) => {
       break;
   }
 };
-
 
 const modes = ref({
   0: 'context',
@@ -348,6 +393,39 @@ const forwardModels = computed(() => {
     })
   return Array.from(models).sort()
 });
+
+const goToForward = (index) => {
+  canonicalizeAll()
+    .then(() => {
+      const context = contextResults.value[index];
+      let reagentsValue = '';
+      if (context['reagent']) {
+        reagentsValue += context['reagent'];
+      }
+      if (context['catalyst']) {
+        reagentsValue += '.' + context['catalyst'];
+      }
+      reagents.value = reagentsValue;
+      if (context['solvent']) {
+        solvent.value = context['solvent'];
+      }
+      changeMode('forward');
+      tab.value = 'forward';
+      forwardPredict();
+    });
+};
+
+
+const goToImpurity = (smiles) => {
+  canonicalizeAll()
+    .then(() => {
+      product.value = smiles;
+      console.log(smiles)
+      changeMode('impurity');
+      tab.value = 'impurity';
+      impurityPredict();
+    });
+};
 
 const forwardModelTrainingSets = computed(() => {
   const sets = new Set();
@@ -418,6 +496,77 @@ const clearForward = () => {
   forwardResults.value = []
 }
 
+const clearImpurity = () => {
+  impurityResults.value = [];
+  impurityProgress.value = {
+    percent: 0,
+    message: ''
+  };
+}
+
+const impurityPredict = () => {
+  pendingTasks.value++;
+  impurityResults.value = [];
+
+  let postData = constructImpurityPostData();
+
+  let complete = (output) => {
+    impurityProgress.value.percent = 1.0;
+    impurityProgress.value.message = 'Prediction complete!';
+    impurityResults.value = output['predict_expand'];
+  };
+
+  let progress = (json) => {
+    impurityProgress.value.percent = json['percent'];
+    impurityProgress.value.message = json['message'];
+  };
+
+  let failed = (error) => {
+    console.error('Error encountered during impurity prediction:', error);
+    impurityProgress.value.percent = 0.0;
+    impurityProgress.value.message = 'Impurity prediction failed!';
+  };
+
+  API.runCeleryTask('/api/v2/impurity/', postData, progress)
+    .then(output => {
+      complete(output);
+
+    })
+    .catch(error => {
+      failed(error);
+    })
+    .finally(() => {
+      pendingTasks.value--;
+    });
+}
+
+
+const constructImpurityPostData = () => {
+  let data = {
+    reactants: reactants.value,
+    training_set: forwardModelTrainingSet.value,
+    model_version: forwardModelVersion.value,
+    top_k: impurityTopk.value,
+    threshold: inspectionThreshold.value,
+    check_mapping: impurityCheckMapping.value,
+    inspector: inspectionModel.value
+  };
+
+  if (product.value) {
+    data.products = product.value;
+  }
+
+  if (reagents.value) {
+    data.reagents = reagents.value;
+  }
+
+  if (solvent.value) {
+    data.solvent = solvent.value;
+  }
+
+  return data;
+}
+
 const updateFromURL = () => {
   let urlParams = new URLSearchParams(window.location.search);
   let mode = urlParams.get('tab');
@@ -469,7 +618,6 @@ const forwardPredict = async () => {
   try {
     const output = await API.runCeleryTask('/api/v2/forward/', postData);
     forwardResults.value = output;
-    console.log(forwardResults.value)
   } catch (error) {
     console.error('Error in forward prediction:', error);
   } finally {
@@ -567,6 +715,125 @@ const constructContextV1PostData = () => {
     num_results: numContextResults.value
   }
 }
+
+const postprocessContextV2 = (output) => {
+  if (!output.length) {
+    alert('Could not generate condition recommendations for this reaction. Please try a different model.');
+  }
+
+  const processedResults = output.map((val) => {
+    val.temperature -= 273.15;
+    val.reagent = Object.keys(val.reagents).join('.');
+    val.catalyst = '';
+    val.solvent = '';
+    return val;
+  });
+
+  contextResults.value = processedResults;
+};
+
+const constructContextV2PostData = () => {
+  const _reagents = []; // a list of string, each of them is a reagent
+  return {
+    reactants: reactants.value,
+    products: product.value,
+    reagents: _reagents,
+    model: `${contextV2ModelType.value}-${contextV2ModelVersion.value}`,
+    num_results: numContextResults.value,
+  };
+};
+
+
+const contextV2Predict = () => {
+  pendingTasks.value++;
+  contextResults.value = [];
+  evaluating.value = false;
+  const postData = constructContextV2PostData();
+  API.runCeleryTask('/api/v2/context-v2/', postData)
+    .then((output) => {
+      postprocessContextV2(output);
+      console.log(contextResults.value)
+    })
+    .finally(() => {
+      pendingTasks.value--;
+    });
+};
+
+const clearSelectivity = () => {
+  selectivityResults.value = [];
+}
+
+const downloadImpurityResults = () => {
+  if (!impurityResults.value.length) {
+    alert('There are no impurity predictor results to download!');
+    return;
+  }
+  let downloadData = 'No.,SMILES,Mechanism,InspectorScore,SimilarityScore,MolWt\n';
+  impurityResults.value.forEach((res) => {
+    downloadData += `${res.no},${res.prd_smiles},${res.modes_name},${res.avg_insp_score},${res.similarity_to_major},${res.prd_mw}\n`;
+  });
+  const blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' });
+  saveAs(blob, 'askcos_impurity_export.csv');
+};
+
+const downloadForwardResults = () => {
+  if (!forwardResults.value.length) {
+    alert('There are no forward predictor results to download!');
+    return;
+  }
+  let downloadData = 'Rank,SMILES,Probability,Score,MolWt\n';
+  forwardResults.value.forEach((res) => {
+    downloadData += `${res.rank},${res.smiles},${res.prob},${res.score},${res.mol_wt}\n`;
+  });
+  const blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' });
+  saveAs(blob, 'askcos_forward_export.csv');
+};
+
+const clearSites = () => {
+  siteResults.value = [];
+  siteSelectedAtoms.value = [];
+};
+
+const sitesPredict = () => {
+  pendingTasks.value++
+  const postData = constructSiteSelectivityPostData()
+  API.runCeleryTask('/api/v2/selectivity/', postData)
+    .then(output => {
+      siteResults.value = output
+      console.log(siteResults.value)
+    })
+    .finally(() => {
+      pendingTasks.value--
+    })
+}
+
+const constructSiteSelectivityPostData = () => {
+  return {
+    smiles: reactants.value
+  }
+}
+
+const getMolImgUrl = (smiles, highlight, reactingAtoms) => {
+  let url = `/api/v2/draw/?smiles=${encodeURIComponent(smiles)}`;
+  if (highlight !== undefined) {
+    url += '&highlight=true';
+  }
+  if (reactingAtoms !== undefined) {
+    for (const ra of reactingAtoms) {
+      url += `&reacting_atoms=${encodeURIComponent(ra)}`;
+    }
+  }
+  return url;
+};
+
+// watch(forwardModel, (newValue) => {
+//   forwardModelTrainingSet.value = forwardModelTrainingSets.value[0];
+// });
+
+
+// watch(() => settings.value.forwardModelTrainingSet, (newValue) => {
+//   forwardModelVersion.value = forwardModelVersions.value[0];
+// });
 
 </script>
 
