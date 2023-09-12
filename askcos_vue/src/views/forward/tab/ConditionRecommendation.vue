@@ -4,7 +4,7 @@
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
                     <h3 class="text-h5">Condition Recommendation</h3>
-                    <b v-if=!!score>Reaction score: {{ score }}</b>
+                    <b v-if=!!score>Reaction score: {{ score.toFixed(3) }}</b>
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
@@ -35,7 +35,7 @@
                 </v-card>
             </v-dialog>
 
-            <v-data-table class="mx-auto my-auto " v-if="!pending && results.length" :headers="headers" :items="results"
+            <v-data-table class="mx-auto my-auto " v-if="!pending  && results.length" :headers="headers" :items="results"
                 v-show="results.length > 0" :items-per-page="10" height="600px">
                 <template v-slot:item.index="{ index }">
                     {{ index + 1 }}
@@ -43,7 +43,7 @@
                 <template v-slot:item.evaluation="{ item }">
                     <td class="text-center">
                         <v-progress-circular indeterminate
-                            v-if="evaluating && item.columns.evaluation === undefined"></v-progress-circular>
+                            v-if="pending > 0"></v-progress-circular>
 
                         <span v-else-if="item.columns.evaluation">
                             <v-icon>mdi-check</v-icon> (rank: {{ item.columns.evaluation }})
@@ -76,9 +76,9 @@
                 </template>
                 <template #item.catalyst_name_only="{ item }">
                     <div class="text-center">
-                        <template v-if="!!item.reagent || !!item.reagent_name_only">
-                            <smiles-image v-if="!!item.reagent" :smiles="item.reagent"></smiles-image>
-                            {{ item.reagent_name_only }}
+                        <template v-if="!!item.columns.reagent || !!item.columns.reagent_name_only">
+                            <!-- <smiles-image v-if="!!item.columns.columns.reagent" :smiles="item.columns.reagent"></smiles-image> -->
+                            {{ item.columns.catalyst_name_only }}
                         </template>
                         <template v-else>
                             None
@@ -105,6 +105,8 @@ import SmilesImage from "@/components/SmilesImage.vue";
 import { ref } from 'vue'
 
 const showDialog = ref(false)
+
+console.log(pending)
 
 const { results, models, pending } = defineProps({
     inheritAttrs: false,

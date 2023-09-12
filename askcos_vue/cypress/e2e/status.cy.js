@@ -18,9 +18,7 @@ describe('Status Page', () => {
 
     it('Clicking refresh should trigger data refresh', () => {
       cy.intercept('GET', '/api/v2/status/celery/').as('getStatus')
-
       cy.get('[data-cy="refresh-button"]').click()
-
       cy.wait('@getStatus') 
       cy.get('span.text-body-2').should('contain', 'Last Update:')
     })

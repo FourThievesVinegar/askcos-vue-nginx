@@ -15,8 +15,8 @@
         <v-sheet elevation="2" rounded="lg">
           <v-row class="px-5 pt-4 justify-center">
             <v-col cols="12" md="11">
-              <v-text-field prepend-inner-icon="mdi mdi-flask"
-                density="comfortable" variant="outlined" label="Search Result Descriptions" hide-details clearable>
+              <v-text-field prepend-inner-icon="mdi mdi-flask" density="comfortable" variant="outlined"
+                label="Search Result Descriptions" hide-details clearable>
                 <template v-slot:append>
                   <v-btn color="primary" size="large">
                     Search
@@ -27,14 +27,14 @@
           </v-row>
 
           <v-row class="mb-3 px-3 justify-center">
-            <v-col cols="12" md="11" >
+            <v-col cols="12" md="11">
               <v-row class="px-5 py-4 justify-space-between">
-              <v-btn icon class="bg-red">
-                <v-icon bg-purple-darken-2>mdi-trash-can-outline</v-icon>
-              </v-btn>
-              <v-btn icon class="bg-teal-lighten-3 white">
-                <v-icon>mdi-refresh</v-icon>
-              </v-btn>
+                <v-btn icon class="bg-red">
+                  <v-icon bg-purple-darken-2>mdi-trash-can-outline</v-icon>
+                </v-btn>
+                <v-btn icon class="bg-teal-lighten-3 white">
+                  <v-icon>mdi-refresh</v-icon>
+                </v-btn>
               </v-row>
             </v-col>
           </v-row>
@@ -49,8 +49,10 @@
             </v-row>
             <v-row v-else class="px-10 py-10">
               <v-col cols="12" class="d-flex justify-center align-center">
-                <div>
-                  <v-img :width="400" cover :src="emptyCart"></v-img>
+                <div class="text-center">
+                  <v-img :width="400" cover :src="results"></v-img>
+                  <h2 class="mt-6">No Results Yet...</h2>
+                  <p class="text-body-1">Please check back later</p>
                 </div>
               </v-col>
             </v-row>
@@ -63,7 +65,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import emptyCart from "@/assets/emptyCart.svg";
+import results from "@/assets/results.svg";
 
 const buyables = ref([]);
 
