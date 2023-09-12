@@ -15,7 +15,7 @@
             }" auto-update />
             ago
           </span>
-          <v-btn icon @click="getStatus" :disabled="loading">
+          <v-btn icon data-cy="refresh-button" @click="getStatus" :disabled="loading">
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
         </v-col>
