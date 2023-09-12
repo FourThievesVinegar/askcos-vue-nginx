@@ -3,9 +3,9 @@
     <v-row class="justify-center">
       <v-col cols="12" sm="8" md="10">
         <div class="mt-8 mb-2">
-          <v-breadcrumbs class="pa-0" :items="['Home', 'Buyables']"></v-breadcrumbs>
+          <v-breadcrumbs class="pa-0" :items="['Home', 'Banlist']"></v-breadcrumbs>
           <h1>
-            Buyable Compounds
+            Your banned items
           </h1>
         </div>
       </v-col>
@@ -30,20 +30,22 @@
               <v-tab>Chemicals</v-tab>
               <v-tab>Reactions</v-tab>
             </v-tabs>
-            
+
             <v-row v-if="buyables.length">
               <v-col cols="12">
                 //datatable
               </v-col>
             </v-row>
-            <v-row v-else class="px-10 py-10"> 
+            <v-row v-else class="px-10 py-10">
               <v-col cols="12" class="d-flex justify-center align-center">
-                <div>
-                  <v-img :width="400" cover :src="emptyCart"></v-img>
+                <div class="text-center">
+                  <v-img :width="400" cover :src="banlist"></v-img>
+                  <h2 class="mt-6">No Ban Items</h2>
+                  <p class="text-body-1">Please check back later</p>
                 </div>
               </v-col>
             </v-row>
-            </v-card>
+          </v-card>
         </v-sheet>
       </v-col>
     </v-row>
@@ -52,7 +54,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import emptyCart from "@/assets/emptyCart.svg";
+import banlist from "@/assets/banlist.svg";
 
 const buyables = ref([]);
 const tab = ref("")

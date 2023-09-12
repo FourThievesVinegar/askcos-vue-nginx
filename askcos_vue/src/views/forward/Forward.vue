@@ -328,6 +328,7 @@ const evaluate = async () => {
     return;
   }
   clearEvaluation()
+  pendingTasks.value++;
   evaluating.value = true;
   const postData = constructFastFilterPostData();
 
@@ -338,6 +339,7 @@ const evaluate = async () => {
     console.error("An error occurred during evaluation:", error);
   } finally {
     evaluating.value = false;
+    pendingTasks.value--
   }
 
   contextResults.value.forEach((item, index) => {
@@ -354,7 +356,7 @@ const clearEvaluation = () => {
 };
 
 const evaluateIndex = async (index) => {
-
+  pendingTasks.value++;
   contextResults.value[index].evaluating = true;
 
   let reagents = contextResults.value[index].reagent;
@@ -383,6 +385,8 @@ const evaluateIndex = async (index) => {
 
   } catch (error) {
     console.error("An error occurred while evaluating the index:", error);
+  } finally {
+    pendingTasks.value--;
   }
 }
 
