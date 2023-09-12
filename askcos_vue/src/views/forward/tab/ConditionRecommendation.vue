@@ -4,10 +4,11 @@
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
                     <h3 class="text-h5">Condition Recommendation</h3>
+                    <b v-if=!!score>Reaction score: {{ score }}</b>
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn v-show="!!results.length" height="30px" color="primary mx-2">
+                    <v-btn v-show="!!results.length" @click="handleClick" height="30px" color="primary mx-2">
                         Evaluate Reaction(s)
                     </v-btn>
                     <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
@@ -38,6 +39,20 @@
                 v-show="results.length > 0" :items-per-page="10" height="600px">
                 <template v-slot:item.index="{ index }">
                     {{ index + 1 }}
+                </template>
+                <template v-slot:item.evaluation="{ item }">
+                    <td class="text-center">
+                        <v-progress-circular indeterminate
+                            v-if="evaluating && item.columns.evaluation === undefined"></v-progress-circular>
+
+                        <span v-else-if="item.columns.evaluation">
+                            <v-icon>mdi-check</v-icon> (rank: {{ item.columns.evaluation }})
+                        </span>
+
+                        <span v-else-if="item.columns.evaluation !== undefined && !item.columns.evaluation">
+                            <v-icon>mdi-close</v-icon> (rank: N/A)
+                        </span>
+                    </td>
                 </template>
                 <template v-slot:item.solvent_score="{ item }">
                     <v-chip :color="getColor(item.columns.solvent_score)">
@@ -87,11 +102,12 @@
 
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
-import { ref, defineOptions } from 'vue'
+import { ref } from 'vue'
 
 const showDialog = ref(false)
 
 const { results, models, pending } = defineProps({
+    inheritAttrs: false,
     results: {
         type: Array,
         default: [],
@@ -104,16 +120,20 @@ const { results, models, pending } = defineProps({
         type: Number,
         default: 0
     },
+    score: {
+        type: Number,
+        default: null
+    },
+    evaluating: {
+        type: Boolean,
+        default: false
+    }
 })
-
-defineOptions({
-    inheritAttrs: false,
-});
 
 
 const headers = ref([
     { key: 'index', title: '#', align: 'center', },
-    { key: 'rank', title: 'Rank', align: 'center', },
+    { key: 'evaluation', title: 'Rank', align: 'center', },
     { key: 'solvent', title: 'Solvent', align: 'center', },
     { key: 'reagent', title: 'Reagents', align: 'center', },
     { key: 'catalyst_name_only', title: 'Catalyst', align: 'center', },
@@ -128,10 +148,15 @@ const getColor = (score) => {
     else return 'orange'
 }
 
-const emits = defineEmits(['go-to-forward'])
+const emits = defineEmits()
 
 const emitGoToForward = (index) => {
     emits('go-to-forward', index);
+}
+
+const handleClick = () => {
+    emits('evaluate');
+    console.log("was clicked")
 }
 
 </script>
