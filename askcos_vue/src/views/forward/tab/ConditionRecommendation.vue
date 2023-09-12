@@ -8,7 +8,7 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn v-show="!!results.length" @click="handleClick" height="30px" color="primary mx-2">
+                    <v-btn v-show="!!results.length" @click="handleClick " :disabled="score" height="30px" color="primary mx-2">
                         Evaluate Reaction(s)
                     </v-btn>
                     <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
@@ -43,7 +43,7 @@
                 <template v-slot:item.evaluation="{ item }">
                     <td class="text-center">
                         <v-progress-circular indeterminate
-                            v-if="pending > 0"></v-progress-circular>
+                            v-if="pendingRank > 0 && item.columns.evaluation === undefined"></v-progress-circular>
 
                         <span v-else-if="item.columns.evaluation">
                             <v-icon>mdi-check</v-icon> (rank: {{ item.columns.evaluation }})
@@ -76,8 +76,8 @@
                 </template>
                 <template #item.catalyst_name_only="{ item }">
                     <div class="text-center">
-                        <template v-if="!!item.columns.reagent || !!item.columns.reagent_name_only">
-                            <!-- <smiles-image v-if="!!item.columns.columns.reagent" :smiles="item.columns.reagent"></smiles-image> -->
+                        <template v-if="!!item.columns.catalyst || !!item.columns.catalyst_name_only">
+                            <smiles-image v-if="!!item.columns.catalyst" :smiles="item.columns.catalyst"></smiles-image>
                             {{ item.columns.catalyst_name_only }}
                         </template>
                         <template v-else>
@@ -119,6 +119,10 @@ const { results, models, pending } = defineProps({
         default: ""
     },
     pending: {
+        type: Number,
+        default: 0
+    },
+        pendingRank: {
         type: Number,
         default: 0
     },

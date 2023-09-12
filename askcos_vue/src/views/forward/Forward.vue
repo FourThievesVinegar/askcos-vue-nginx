@@ -100,7 +100,7 @@
         <v-window v-model="tab" class="elevation-2">
           <v-window-item value="context" rounded="lg">
             <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel"
-                           :pending="pendingTasks" :evaluating="evaluating" @go-to-forward="goToForward" :score="reactionScore" @evaluate="evaluate"/> 
+                           :pending="pendingTasks" :pendingRank="pendingRank" :evaluating="evaluating" @go-to-forward="goToForward" :score="reactionScore" @evaluate="evaluate"/> 
           </v-window-item>
           <v-window-item value="forward">
             <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel"
@@ -296,6 +296,7 @@ const openSettingsPanel = ref(null)
 const siteResults = ref([])
 const siteResultsQuery = ref('')
 const siteSelectedAtoms = ref([])
+const pendingRank = ref(0)
 
 watch(tab, () => {
   switch (tab.value) {
@@ -328,10 +329,14 @@ const evaluate = async () => {
     return;
   }
   clearEvaluation()
-  pendingTasks.value++;
+  pendingRank.value++;
   evaluating.value = true;
   const postData = constructFastFilterPostData();
-
+  
+  contextResults.value.forEach((item, index) => {
+    evaluateIndex(index)
+  })
+  
   try {
     const output = await API.runCeleryTask('/api/v2/fast-filter/', postData);
     reactionScore.value = output;
@@ -339,12 +344,9 @@ const evaluate = async () => {
     console.error("An error occurred during evaluation:", error);
   } finally {
     evaluating.value = false;
-    pendingTasks.value--
+    pendingRank.value--
   }
 
-  contextResults.value.forEach((item, index) => {
-    evaluateIndex(index)
-  })
 };
 
 const clearEvaluation = () => {
@@ -356,7 +358,7 @@ const clearEvaluation = () => {
 };
 
 const evaluateIndex = async (index) => {
-  pendingTasks.value++;
+  pendingRank.value++;
   contextResults.value[index].evaluating = true;
 
   let reagents = contextResults.value[index].reagent;
@@ -386,7 +388,7 @@ const evaluateIndex = async (index) => {
   } catch (error) {
     console.error("An error occurred while evaluating the index:", error);
   } finally {
-    pendingTasks.value--;
+    pendingRank.value--;
   }
 }
 
