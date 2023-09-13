@@ -8,7 +8,8 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn v-show="!!results.length" @click="handleClick " :disabled="score" height="30px" color="primary mx-2">
+                    <v-btn v-show="!!results.length" @click="handleClick" :disabled="evaluating" height="30px"
+                        color="primary mx-2">
                         Evaluate Reaction(s)
                     </v-btn>
                     <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
@@ -35,8 +36,8 @@
                 </v-card>
             </v-dialog>
 
-            <v-data-table class="mx-auto my-auto " v-if="!pending  && results.length" :headers="headers" :items="results"
-                v-show="results.length > 0" :items-per-page="10" height="600px">
+            <v-data-table class="mx-auto my-auto " v-if="models === 'neuralnetwork' && !pending && results.length"
+                :headers="headers" :items="results" v-show="results.length > 0" :items-per-page="10" height="600px">
                 <template v-slot:item.index="{ index }">
                     {{ index + 1 }}
                 </template>
@@ -93,7 +94,49 @@
                 </template>
             </v-data-table>
 
-            <v-skeleton-loader v-if="!!pending" class="mx-auto my-auto" min-height="80px" type="table">
+            <v-data-table class="mx-auto my-auto " v-else-if="models === 'neuralnetworkv2' && !pending && results.length"
+                :headers="headersAlt" :items="results" v-show="results.length > 0" :items-per-page="10" height="600px">
+                <template v-slot:item.index="{ index }">
+                    {{ index + 1 }}
+                </template>
+                <template v-slot:item.evaluation="{ item }">
+                    <td class="text-center">
+                        <v-progress-circular indeterminate
+                            v-if="pendingRank > 0 && item.columns.evaluation === undefined"></v-progress-circular>
+
+                        <span v-else-if="item.columns.evaluation">
+                            <v-icon>mdi-check</v-icon> (rank: {{ item.columns.evaluation }})
+                        </span>
+
+                        <span v-else-if="item.columns.evaluation !== undefined && !item.columns.evaluation">
+                            <v-icon>mdi-close</v-icon> (rank: N/A)
+                        </span>
+                    </td>
+                </template>
+                <template #item.reactants="{ item }">
+                    <div v-for="(amount, rct) in item.columns.reactants" :key="rct">
+                        <smiles-image :smiles="rct"></smiles-image>
+                        ({{ amount.toFixed(2) }})
+                    </div>
+                </template>
+                <template v-slot:item.reagents="{ item }">
+                    <div v-if="!!item.columns.reagents" class="text-center" v-for="(amount, rgt) in item.columns.reagents"
+                        :key="rgt">
+                        <smiles-image :smiles="rgt"></smiles-image>
+                        ({{ (amount > 0.01) ? amount.toFixed(2) : amount.toExponential(2) }})
+                    </div>
+                    <span v-else class="text-center">None</span>
+                </template>
+                <template #item.predict="{ item, index }">
+                    <v-btn variant="tonal" @click="emitGoToForward(index)" :id="'predict-conditions-' + index"
+                        title="Predict products">
+                        <v-icon>mdi-arrow-right</v-icon>
+                    </v-btn>
+                </template>
+            </v-data-table>
+
+
+            <v-skeleton-loader v-else-if="!!pending" class="mx-auto my-auto" min-height="80px" type="table">
             </v-skeleton-loader>
         </v-sheet>
     </v-container>
@@ -102,11 +145,11 @@
 
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const showDialog = ref(false)
 
-console.log(pending)
+console.log('Initial models:', models);
 
 const { results, models, pending } = defineProps({
     inheritAttrs: false,
@@ -122,7 +165,7 @@ const { results, models, pending } = defineProps({
         type: Number,
         default: 0
     },
-        pendingRank: {
+    pendingRank: {
         type: Number,
         default: 0
     },
@@ -136,7 +179,6 @@ const { results, models, pending } = defineProps({
     }
 })
 
-
 const headers = ref([
     { key: 'index', title: '#', align: 'center', },
     { key: 'evaluation', title: 'Rank', align: 'center', },
@@ -145,6 +187,15 @@ const headers = ref([
     { key: 'catalyst_name_only', title: 'Catalyst', align: 'center', },
     { key: 'temperature', title: 'Temperature', align: 'center', },
     { key: 'solvent_score', title: 'Solvent Score', align: 'center', },
+    { key: 'predict', title: 'Predict with conditions', align: 'center', }
+])
+
+
+const headersAlt = ref([
+    { key: 'index', title: '#', align: 'center', },
+    { key: 'evaluation', title: 'Rank', align: 'center', },
+    { key: 'reactants', title: 'Reactants (Amount)', align: 'center', },
+    { key: 'reagents', title: 'Reagents (Amount)', align: 'center', },
     { key: 'predict', title: 'Predict with conditions', align: 'center', }
 ])
 
