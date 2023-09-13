@@ -100,7 +100,7 @@
         <v-window v-model="tab" class="elevation-2">
           <v-window-item value="context" rounded="lg">
             <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel"
-                           :pending="pendingTasks" @go-to-forward="goToForward" />
+                           :pending="pendingTasks" :pendingRank="pendingRank" :evaluating="evaluating" @go-to-forward="goToForward" :score="reactionScore" @evaluate="evaluate"/> 
           </v-window-item>
           <v-window-item value="forward">
             <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel"
@@ -296,6 +296,7 @@ const openSettingsPanel = ref(null)
 const siteResults = ref([])
 const siteResultsQuery = ref('')
 const siteSelectedAtoms = ref([])
+const pendingRank = ref(0)
 
 watch(tab, () => {
   switch (tab.value) {
@@ -315,6 +316,81 @@ watch(tab, () => {
       openSettingsPanel.value = null;
   }
 })
+
+const constructFastFilterPostData = () => {
+  return {
+    reactants: reactants.value,
+    products: product.value
+  }
+}
+
+const evaluate = async () => {
+  if (evaluating.value) {
+    return;
+  }
+  clearEvaluation()
+  pendingRank.value++;
+  evaluating.value = true;
+  const postData = constructFastFilterPostData();
+  
+  contextResults.value.forEach((item, index) => {
+    evaluateIndex(index)
+  })
+  
+  try {
+    const output = await API.runCeleryTask('/api/v2/fast-filter/', postData);
+    reactionScore.value = output;
+  } catch (error) {
+    console.error("An error occurred during evaluation:", error);
+  } finally {
+    evaluating.value = false;
+    pendingRank.value--
+  }
+
+};
+
+const clearEvaluation = () => {
+  reactionScore.value = null;
+
+  for (let res of contextResults.value) {
+    res.evaluation = undefined;
+  }
+};
+
+const evaluateIndex = async (index) => {
+  pendingRank.value++;
+  contextResults.value[index].evaluating = true;
+
+  let reagents = contextResults.value[index].reagent;
+  if (contextResults.value[index].catalyst) {
+    if (reagents) {
+      reagents += '.';
+    }
+    reagents += contextResults.value[index].catalyst;
+  }
+
+  let solvent = contextResults.value[index].solvent;
+  const postData = constructForwardPostData(reagents, solvent);
+  try {
+    const output = await API.runCeleryTask('/api/v2/forward/', postData);
+    for (let i = 0; i < output.length; i++) {
+      const outcome = output[i];
+      if (outcome.smiles === product.value) {
+        contextResults.value[index].evaluation = i + 1;
+        break;
+      }
+    }
+    if (!contextResults.value[index].evaluation) {
+      contextResults.value[index].evaluation = 0;
+    }
+    contextResults.value[index].evaluating = false;
+
+  } catch (error) {
+    console.error("An error occurred while evaluating the index:", error);
+  } finally {
+    pendingRank.value--;
+  }
+}
 
 const currentSmiles = computed(() => {
   switch (currentInputSource.value) {

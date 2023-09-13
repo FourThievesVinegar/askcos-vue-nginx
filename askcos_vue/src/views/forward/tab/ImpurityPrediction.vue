@@ -5,6 +5,7 @@
                 <v-col>
                     <h3 class="text-h5">Impurity Prediction</h3>
                 </v-col>
+                
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
                     <v-btn v-show="!!results.length" @click="emitDownloadImpurity" height="30px" color="primary mx-2">
@@ -65,7 +66,7 @@
 
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
-import { ref, defineProps, defineEmits } from 'vue'
+import { ref } from 'vue'
 
 const showDialog = ref(false)
 

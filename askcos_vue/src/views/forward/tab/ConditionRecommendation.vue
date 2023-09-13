@@ -4,10 +4,11 @@
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
                     <h3 class="text-h5">Condition Recommendation</h3>
+                    <b v-if=!!score>Reaction score: {{ score.toFixed(3) }}</b>
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn v-show="!!results.length" height="30px" color="primary mx-2">
+                    <v-btn v-show="!!results.length" @click="handleClick " :disabled="score" height="30px" color="primary mx-2">
                         Evaluate Reaction(s)
                     </v-btn>
                     <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
@@ -34,10 +35,24 @@
                 </v-card>
             </v-dialog>
 
-            <v-data-table class="mx-auto my-auto " v-if="!pending && results.length" :headers="headers" :items="results"
+            <v-data-table class="mx-auto my-auto " v-if="!pending  && results.length" :headers="headers" :items="results"
                 v-show="results.length > 0" :items-per-page="10" height="600px">
                 <template v-slot:item.index="{ index }">
                     {{ index + 1 }}
+                </template>
+                <template v-slot:item.evaluation="{ item }">
+                    <td class="text-center">
+                        <v-progress-circular indeterminate
+                            v-if="pendingRank > 0 && item.columns.evaluation === undefined"></v-progress-circular>
+
+                        <span v-else-if="item.columns.evaluation">
+                            <v-icon>mdi-check</v-icon> (rank: {{ item.columns.evaluation }})
+                        </span>
+
+                        <span v-else-if="item.columns.evaluation !== undefined && !item.columns.evaluation">
+                            <v-icon>mdi-close</v-icon> (rank: N/A)
+                        </span>
+                    </td>
                 </template>
                 <template v-slot:item.solvent_score="{ item }">
                     <v-chip :color="getColor(item.columns.solvent_score)">
@@ -61,9 +76,9 @@
                 </template>
                 <template #item.catalyst_name_only="{ item }">
                     <div class="text-center">
-                        <template v-if="!!item.reagent || !!item.reagent_name_only">
-                            <smiles-image v-if="!!item.reagent" :smiles="item.reagent"></smiles-image>
-                            {{ item.reagent_name_only }}
+                        <template v-if="!!item.columns.catalyst || !!item.columns.catalyst_name_only">
+                            <smiles-image v-if="!!item.columns.catalyst" :smiles="item.columns.catalyst"></smiles-image>
+                            {{ item.columns.catalyst_name_only }}
                         </template>
                         <template v-else>
                             None
@@ -87,11 +102,14 @@
 
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
-import { ref, defineProps, defineOptions } from 'vue'
+import { ref } from 'vue'
 
 const showDialog = ref(false)
 
+console.log(pending)
+
 const { results, models, pending } = defineProps({
+    inheritAttrs: false,
     results: {
         type: Array,
         default: [],
@@ -104,16 +122,24 @@ const { results, models, pending } = defineProps({
         type: Number,
         default: 0
     },
+        pendingRank: {
+        type: Number,
+        default: 0
+    },
+    score: {
+        type: Number,
+        default: null
+    },
+    evaluating: {
+        type: Boolean,
+        default: false
+    }
 })
-
-defineOptions({
-    inheritAttrs: false,
-});
 
 
 const headers = ref([
     { key: 'index', title: '#', align: 'center', },
-    { key: 'rank', title: 'Rank', align: 'center', },
+    { key: 'evaluation', title: 'Rank', align: 'center', },
     { key: 'solvent', title: 'Solvent', align: 'center', },
     { key: 'reagent', title: 'Reagents', align: 'center', },
     { key: 'catalyst_name_only', title: 'Catalyst', align: 'center', },
@@ -128,10 +154,15 @@ const getColor = (score) => {
     else return 'orange'
 }
 
-const emits = defineEmits(['go-to-forward'])
+const emits = defineEmits()
 
 const emitGoToForward = (index) => {
     emits('go-to-forward', index);
+}
+
+const handleClick = () => {
+    emits('evaluate');
+    console.log("was clicked")
 }
 
 </script>

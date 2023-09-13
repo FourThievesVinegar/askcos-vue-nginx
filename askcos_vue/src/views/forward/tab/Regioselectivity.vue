@@ -15,13 +15,13 @@
 
             <v-dialog v-model="showDialog" max-width="500px">
                 <v-card>
-                        <v-card-text class="px-8 py-8">
-                            <p class="my-4">
-                                        Predict selectivity of regio-selective reactions. The QM-GNN model combines a WLN
-                                        graph encoding
-                                        with predicted quantum descriptors as input to a multitask neural network.
-                                        <a href="https://doi.org/10.1039/D0SC04823B">(Chem. Sci., 2021, 12, 2198-2208)</a>
-                                    </p>
+                    <v-card-text class="px-8 py-8">
+                        <p class="my-4">
+                            Predict selectivity of regio-selective reactions. The QM-GNN model combines a WLN
+                            graph encoding
+                            with predicted quantum descriptors as input to a multitask neural network.
+                            <a href="https://doi.org/10.1039/D0SC04823B">(Chem. Sci., 2021, 12, 2198-2208)</a>
+                        </p>
                     </v-card-text>
                     <v-divider></v-divider>
                 </v-card>
@@ -35,4 +35,5 @@
 import { ref } from "vue";
 
 const showDialog = ref(false)
+
 </script>
