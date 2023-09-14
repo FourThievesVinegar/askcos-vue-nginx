@@ -99,7 +99,8 @@
         <v-row v-if="Object.keys(results).length">
             <v-col cols="12">
                 <v-sheet elevation="2">
-                    Prediction Table
+                    <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers" :items="desserts"
+                        item-value="name" class="elevation-1"></v-data-table>
                 </v-sheet>
             </v-col>
         </v-row>
