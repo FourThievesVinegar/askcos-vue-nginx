@@ -15,11 +15,13 @@
                     </div>
                     <div class="my-3">
                         <v-select id="retro-model-0" label="Model" :items="models" v-model="settings.model"
-                            variant="outlined" density="compact"></v-select>
+                            variant="outlined" density="compact" hide-details class="my-3"></v-select>
                         <v-select id="retro-training-set-0" label="Training Set" :items="trainingSets"
-                            v-model="settings.trainingSet" variant="outlined" density="compact"></v-select>
+                            v-model="settings.trainingSet" variant="outlined" density="compact" hide-details
+                            class="my-3"></v-select>
                         <v-select id="retro-model-version-0" label="Version" :items="modelVersions"
-                            v-model="settings.modelVersion" variant="outlined" density="compact"></v-select>
+                            v-model="settings.modelVersion" variant="outlined" density="compact" hide-details
+                            class="my-3"></v-select>
                     </div>
                     <div class="text-center">
                         <v-btn color="success" @click="runRetro()" :disabled="!target || !validSmiles">Submit</v-btn>
@@ -99,8 +101,71 @@
         <v-row v-if="Object.keys(results).length">
             <v-col cols="12">
                 <v-sheet elevation="2">
-                    <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers" :items="desserts"
-                        item-value="name" class="elevation-1"></v-data-table>
+                    <v-data-table :headers="headers" :items="tableItems" item-value="smiles" class="elevation-2"
+                        ref="retroResultTable" :fixed-header="true">
+                        <template v-for="header in headers" v-slot:[`item.${header.key}`]="{ item }">
+                            <div v-if="header.key === 'smiles'">
+                                <smiles-image :smiles="item.raw.smiles" width="100px"></smiles-image>
+                                <v-simple-table>
+                                    <template v-if="item.raw.plausibility">
+                                        <tbody>
+                                            <tr>
+                                                <th>Plausibility</th>
+                                                <td>{{ num2str(item.raw.plausibility) }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>SCScore</th>
+                                                <td>{{ num2str(item.raw.scscore) }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </template>
+                                </v-simple-table>
+                            </div>
+                            <div v-else>
+                                <!-- {{item}} -->
+                                <v-simple-table v-if="item.columns[header.key]" class="text-nowrap">
+                                    <tbody>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <td>{{ item.columns[header.key].rank }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Score</th>
+                                            <td>{{ num2str(item.columns[header.key].score) }}</td>
+                                        </tr>
+                                        <tr v-if="predictions[header.key]['model'] === 'template_relevance'">
+                                            <th>Template Rank</th>
+                                            <td>{{ item.columns[header.key].template_rank }}</td>
+                                        </tr>
+                                        <tr v-if="predictions[header.key]['model'] === 'template_relevance'">
+                                            <th>Template Score</th>
+                                            <td>{{ num2str(item.columns[header.key].template_score) }}</td>
+                                        </tr>
+                                        <tr v-if="item.columns[header.key].templates">
+                                            <th>Templates</th>
+                                            <td>
+                                                <template v-if="predictions[header.key]['model'] === 'template_relevance'">
+                                                    <p v-for="id in item.columns[header.key].templates" :key="id"
+                                                        class="mb-0">
+                                                        <a :href="`/template/?id=${id}`" target="_blank">{{ id }}</a>
+                                                    </p>
+                                                </template>
+                                                <template v-else>
+                                                    <b-button
+                                                        v-for="(template, index) in item.columns[header.key].templates"
+                                                        :key="template" size="sm" :class="{ 'ml-1': index > 0 }"
+                                                        @click="viewTemplate(template)">
+                                                        {{ index + 1 }}
+                                                    </b-button>
+                                                </template>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </v-simple-table>
+                                <p v-else><strong>Not Predicted</strong></p>
+                            </div>
+                        </template>
+                    </v-data-table>
                 </v-sheet>
             </v-col>
         </v-row>
@@ -144,13 +209,6 @@ export default {
         }
     },
     setup() {
-        const slides = ref([
-            'First',
-            'Second',
-            'Third',
-            'Fourth',
-            'Fifth',
-        ]);
         const target = ref("");
         const validSmiles = ref(true);
         const modelStatus = ref([]);
@@ -164,8 +222,12 @@ export default {
         const showSettingsViewModal = ref(false);
         const selectedTemplate = ref(null);
         const showTemplateInfoModal = ref(false);
-        const retroResultTable = ref(null);
         const carouselSlide = ref(0);
+        const retroResultTable = ref(null);
+
+        function hide(key) {
+            predictions.value[key].show = false;
+        }
 
         const context = computed(() => JSON.parse(document.getElementById("django-context").textContent));
 
@@ -217,8 +279,8 @@ export default {
         const precursors = computed(() => {
             // Compile full list of precursors by combining results from each prediction
             const precursors = {};
-            Object.entries(results.value).forEach(([index, results]) => {
-                results.forEach((res) => {
+            Object.entries(results.value).forEach(([index, resultsN]) => {
+                resultsN.forEach((res) => {
                     if (res.smiles in precursors) {
                         precursors[res.smiles][index] = res;
                     } else {
@@ -238,6 +300,16 @@ export default {
             return Object.keys(predictions.value).filter((index) => predictions.value[index].show);
         });
 
+        const headers = computed(() => {
+            const fields = [{ key: "smiles", title: "Precursor", width: '200px' }];
+            Object.entries(predictions.value).forEach(([index, item]) => {
+                if (item.show && !item.loading) {
+                    fields.push({ key: index, title: labels.value[index], sortable: true, removable: true })
+                }
+            })
+            return fields;
+        })
+
         const tableFields = computed(() => {
             const classes = ["text-center", "align-middle"];
             const fields = [{ key: "smiles", label: "Precursor", stickyColumn: true, tdClass: classes, thClass: classes }];
@@ -250,10 +322,12 @@ export default {
         });
 
         const tableItems = computed(() => {
-            return Object.entries(precursors.value).map(([smiles, item]) => ({
+            let test = Object.entries(precursors.value).map(([smiles, item]) => ({
                 smiles: smiles,
                 ...item,
             }));
+            console.log(test)
+            return test
         });
 
         const allowResolve = computed({
@@ -316,7 +390,7 @@ export default {
             // }
             const newIndex = maxIndex.value + 1;
             console.log(maxIndex.value)
-            carouselSlide.value = maxIndex.value;
+            carouselSlide.value = Object.keys(predictions.value).length;
             const url = "/api/v2/retro/";
             const body = {
                 target: target.value,
@@ -347,6 +421,7 @@ export default {
                             retroResultTable.value.refresh();
                         }
                     });
+
                 })
                 .catch((error) => {
                     alert("There was an error predicting precursors for this target: " + error);
@@ -459,9 +534,11 @@ export default {
                 settings.attributeFilter = [];
             }
         );
+
         return {
+            headers,
+            hide,
             carouselSlide,
-            slides,
             target,
             validSmiles,
             modelStatus,
