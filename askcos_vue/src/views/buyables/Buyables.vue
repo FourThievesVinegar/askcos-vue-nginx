@@ -121,19 +121,19 @@
         <v-container>
           <v-row>
             <v-col cols="12">
-              <v-text-field label="SMILES" v-model="addBuyableSmiles"></v-text-field>
+              <v-text-field data-cy="smiles-input" label="SMILES" v-model="addBuyableSmiles"></v-text-field>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
-              <v-text-field label="Price per gram" v-model="addBuyablePrice"></v-text-field>
+              <v-text-field id="pricePerGram" label="Price per gram" v-model="addBuyablePrice"></v-text-field>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
-              <v-text-field label="Source" v-model="addBuyableSource"></v-text-field>
+              <v-text-field id="source" label="Source" v-model="addBuyableSource"></v-text-field>
             </v-col>
           </v-row>
 
