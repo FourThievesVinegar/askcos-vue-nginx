@@ -69,6 +69,7 @@
               </v-col>
               <v-col cols="6" class="d-flex justify-center">
                 <smiles-image :smiles="solvent" width="200"></smiles-image>
+                                  
               </v-col>
             </v-row>
 
@@ -253,6 +254,7 @@ import ImpurityPrediction from "@/views/forward/tab/ImpurityPrediction.vue"
 import Regioselectivity from "@/views/forward/tab/Regioselectivity.vue"
 import SiteSelectivity from "@/views/forward/tab/SiteSelectivity.vue"
 import { saveAs } from 'file-saver';
+import KetcherMin from "@/components/KetcherMin.vue";
 import { createReaxysQuery, createReaxysUrl } from "@/common/reaxys";
 
 const route = useRoute();
@@ -297,6 +299,7 @@ const siteResults = ref([])
 const siteResultsQuery = ref('')
 const siteSelectedAtoms = ref([])
 const pendingRank = ref(0)
+const ketcherMinRef = ref(null);
 
 watch(tab, () => {
   switch (tab.value) {
@@ -876,6 +879,7 @@ const sitesPredict = () => {
   API.runCeleryTask('/api/v2/selectivity/', postData)
     .then(output => {
       siteResults.value = output
+      ketcherMinRef.value.setSmiles(reactants.value);
       console.log(siteResults.value)
     })
     .finally(() => {
