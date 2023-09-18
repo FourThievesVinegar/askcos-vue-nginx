@@ -1,30 +1,40 @@
 <template>
-    <b-modal id="support-modal" title="Send support email" centered @ok="submitSupport" ok-title="Submit"
-        ok-variant="success">
-        <div id="support-form" class="form mb-3">
-            <b-form-group id="support-module" label="Select module" label-for="support-module-select">
-                <b-form-select v-model="selectedModule" :options="moduleOptions" id="support-module-select" />
-            </b-form-group>
-            <b-form-group id="support-category" label="Select issue category" label-for="support-category-select">
-                <b-form-select v-model="selectedCategory" :options="categoryOptions" id="support-category-select" />
-            </b-form-group>
-            <b-form-group id="support-subject" label="Email subject line" label-for="support-subject-input">
-                <b-form-input v-model="supportSubject" placeholder="Subject line (max length: 150 characters)"
-                    maxlength="150" autocomplete="off" id="support-subject-input" />
-            </b-form-group>
-            <b-form-checkbox v-model="supportShared" id="support-shared-check">
-                I wish to share this information with other Consortium members
-            </b-form-checkbox>
-        </div>
-        <div class="text-justify">
-            NOTE: Clicking "Submit" should launch your email client to send us an email. If this is blocked for some
-            reason, please include the above information in an email you compose separately to {{ context.contactEmail }}.
-        </div>
-    </b-modal>
+    <v-dialog v-model="dialogVisible" max-width="600px">
+        <v-card>
+            <v-card-title>Send support email</v-card-title>
+
+            <v-card-text>
+                <v-form>
+                    <v-select v-model="selectedModule" :items="moduleOptions" label="Select module"></v-select>
+                    <v-select v-model="selectedCategory" :items="categoryOptions" label="Select issue category"></v-select>
+                    <v-text-field v-model="supportSubject" label="Email subject line"
+                        placeholder="Subject line (max length: 150 characters)" maxlength="150"
+                        autocomplete="off"></v-text-field>
+                    <v-checkbox v-model="supportShared"
+                        label="I wish to share this information with other Consortium members"></v-checkbox>
+                </v-form>
+            </v-card-text>
+
+            <v-card-text class="text-justify">
+                NOTE: Clicking "Submit" should launch your email client to send us an email. If this is blocked for some
+                reason, please include the above information in an email you compose separately to {{ context.contactEmail
+                }}.
+            </v-card-text>
+
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="success" @click="submitSupport">Submit</v-btn>
+                <v-btn text @click="dialogVisible = false">Cancel</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
+
+const dialogVisible = ref(false);
+
 
 const selectedModule = ref("onestep");
 const moduleOptions = ref([
