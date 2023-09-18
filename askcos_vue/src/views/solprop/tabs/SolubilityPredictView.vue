@@ -1,50 +1,64 @@
 <template>
-    <v-container fluid>
-        <v-row class="justify-center align-center">
-            <v-col cols="12" md="6">
-                <v-sheet elevation="2" rounded="lg">
-                    <v-form @submit.prevent class="pa-5">
-                        <v-expansion-panels v-model="panel" multiple>
-                            <v-expansion-panel title="Basic Information (*Required)" class="text-primary">
-                                <v-expansion-panel-text class="text-black">
-                                    <v-text-field :rules="[v => !!v || 'Solute is required']" variant="outlined" label="Solute"></v-text-field>
-                                    <v-text-field :rules="[v => !!v || 'Solvent is required']" variant="outlined" label="Solvent"></v-text-field>
-                                    <v-text-field :rules="[v => !!v || 'Temperature is required']" variant="outlined" label="Temperature"></v-text-field>
-                                </v-expansion-panel-text>
-                            </v-expansion-panel>
-                            <v-expansion-panel title="Reference Information (Optional)" class="text-primary">
-                                <v-expansion-panel-text class="text-black">
-                                    <v-text-field variant="outlined" label="Ref. Solvent"></v-text-field>
-                                    <v-text-field variant="outlined" label="Ref. Solubility (log10(mol/L))"></v-text-field>
-                                    <v-text-field variant="outlined" label="Ref. Temperature (K)"></v-text-field>
-                                </v-expansion-panel-text>
-                            </v-expansion-panel>
-                            <v-expansion-panel title="Solute Information (Optional)" class="text-primary">
-                                <v-expansion-panel-text class="text-black">
-                                    <v-text-field variant="outlined" label="ΔHsub298 (kcal/mol)"></v-text-field>
-                                    <v-text-field variant="outlined" label="Cpg298 (cal/mol/K)"></v-text-field>
-                                    <v-text-field variant="outlined" label="Cps298 (cal/mol/K)"></v-text-field>
-                                </v-expansion-panel-text>
-                            </v-expansion-panel>
-                        </v-expansion-panels>
-                        <v-btn type="submit" block class="mt-4" color="success">Submit</v-btn>
-                    </v-form>
-                </v-sheet>
-            </v-col>
-        </v-row>
-        <v-row class="justify-center align-center">
-            <v-col v-if="false" cols="12">
-                <v-sheet elevation="2" rounded="lg">
-                    <v-data-table></v-data-table>
-                </v-sheet>
-            </v-col>
-            <v-col v-else cols="12" md="6">
-                <v-sheet elevation="2" rounded="lg" class="pa-5">
-                    No Data Available
-                </v-sheet>
-            </v-col>
-        </v-row>
-    </v-container>
+  <v-container fluid>
+    <v-row class="justify-center align-center">
+      <v-col cols="12" md="4">
+        <v-sheet elevation="2" rounded="lg">
+          <v-form @submit.prevent class="pa-5">
+            <v-expansion-panels v-model="panel" multiple>
+              <v-expansion-panel title="Basic Information (*Required)" class="text-primary">
+                <v-expansion-panel-text class="text-black">
+                  <v-text-field :rules="[v => !!v || 'Solute is required']" variant="outlined" label="Solute"
+                    v-model="solute" clearable></v-text-field>
+                  <div v-if="!!solute" class="my-3">
+                    <smiles-image :smiles="solute" height="100px"></smiles-image>
+                  </div>
+                  <v-text-field :rules="[v => !!v || 'Solvent is required']" variant="outlined" label="Solvent"
+                    v-model="solvent" clearable></v-text-field>
+                  <div v-if="!!solvent" class="my-3">
+                    <smiles-image :smiles="solvent" height="100px"></smiles-image>
+                  </div>
+                  <v-text-field :rules="[v => !!v || 'Temperature is required']" variant="outlined" label="Temperature"
+                    v-model="temperature" clearable></v-text-field>
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+              <v-expansion-panel title="Reference Information (Optional)" class="text-primary">
+                <v-expansion-panel-text class="text-black">
+                  <v-text-field variant="outlined" label="Ref. Solvent" v-model="refSolvent"></v-text-field>
+                  <div v-if="!!refSolvent" class="my-3">
+                    <smiles-image :smiles="refSolvent" height="100px"></smiles-image>
+                  </div>
+                  <v-text-field variant="outlined" label="Ref. Solubility (log10(mol/L))"
+                    v-model="refSolubility"></v-text-field>
+                  <v-text-field variant="outlined" label="Ref. Temperature (K)" v-model="refTemperature"></v-text-field>
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+              <v-expansion-panel title="Solute Information (Optional)" class="text-primary">
+                <v-expansion-panel-text class="text-black">
+                  <v-text-field variant="outlined" label="ΔHsub298 (kcal/mol)" v-model="soluteHsub"></v-text-field>
+                  <v-text-field variant="outlined" label="Cpg298 (cal/mol/K)" v-model="soluteCpg"></v-text-field>
+                  <v-text-field variant="outlined" label="Cps298 (cal/mol/K)" v-model="soluteCps"></v-text-field>
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+            </v-expansion-panels>
+            <v-btn type="submit" block class="mt-4" color="success" @click="predict">Submit</v-btn>
+          </v-form>
+        </v-sheet>
+      </v-col>
+    </v-row>
+    <v-row class="justify-center align-center">
+      <v-col v-if="results.length" cols="12">
+        <v-sheet elevation="2" rounded="lg">
+          <v-data-table
+          :headers="fields" :items="results"></v-data-table>
+        </v-sheet>
+      </v-col>
+      <v-col v-else cols="12" md="6">
+        <v-sheet elevation="2" rounded="lg" class="pa-5">
+          No Data Available
+        </v-sheet>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <!-- <template>
@@ -185,184 +199,184 @@ import { API } from "@/common/api";
 // import * as Papa from "papaparse";
 
 export default {
-    name: "SolubilityPrediction",
-    components: {
-        // LoadingButton,
-        // SettingInput,
-        SmilesImage,
-        SmilesInput,
+  name: "SolubilityPrediction",
+  components: {
+    // LoadingButton,
+    // SettingInput,
+    SmilesImage,
+    SmilesInput,
+  },
+  data() {
+    return {
+      panel: [0],
+      solvent: '',
+      solute: '',
+      temperature: 298,
+      refSolvent: null,
+      refSolubility: null,
+      refTemperature: null,
+      soluteHsub: null,
+      soluteCpg: null,
+      soluteCps: null,
+      results: [],
+      uploadFile: null,
+      selectedColumnCategories: [
+        'Solubility(T) [mg/mL]',
+        'Solubility(298) [mg/mL]',
+      ],
+      columnCategories: {
+        'Input Ref. Data': ['Ref. Solv', 'Ref. Solub', 'Ref. Temp'],
+        'Input Solute Data': ['Input Hsub298', 'Input Cpg298', 'Input Cps298'],
+        'logST': ['logST (method1) [log10(mol/L)]', 'logST (method2) [log10(mol/L)]'],
+        'Solubility(T) [mg/mL]': ['ST (method1) [mg/mL]', 'ST (method2) [mg/mL]'],
+        'dGsolvT': ['dGsolvT [kcal/mol]'],
+        'dHsolvT': ['dHsolvT [kcal/mol]'],
+        'dSsolvT': ['dSsolvT [cal/K/mol]'],
+        'logS298': ['logS298 [log10(mol/L)]', 'uncertainty logS298 [log10(mol/L)]'],
+        'Solubility(298) [mg/mL]': ['S298 [mg/mL]'],
+        'dGsolv298': ['dGsolv298 [kcal/mol]', 'uncertainty dGsolv298 [kcal/mol]'],
+        'dHsolv298': ['dHsolv298 [kcal/mol]', 'uncertainty dHsolv298 [kcal/mol]'],
+        'Pred. Solute Data': ['Pred. Hsub298 [kcal/mol]', 'Pred. Cpg298 [cal/K/mol]', 'Pred. Cps298 [cal/K/mol]'],
+        'Solute Abraham Parameters': ['E', 'S', 'A', 'B', 'L', 'V'],
+        'Messages': ['Error Message', 'Warning Message'],
+      },
+      loading: false,
+    }
+  },
+  computed: {
+    fields() {
+      const _fields = ['Solute', 'Solvent', 'Temp']
+      this.selectedColumnCategories.forEach((category) => {
+        _fields.push(...this.columnCategories[category])
+      })
+      return _fields.map((key) => ({ key: key, title: key, sortable: true }))
     },
-    data() {
-        return {
-            panel: [0],
-            solvent: '',
-            solute: '',
-            temperature: 298,
-            refSolvent: null,
-            refSolubility: null,
-            refTemperature: null,
-            soluteHsub: null,
-            soluteCpg: null,
-            soluteCps: null,
-            results: [],
-            uploadFile: null,
-            selectedColumnCategories: [
-                'Solubility(T) [mg/mL]',
-                'Solubility(298) [mg/mL]',
-            ],
-            columnCategories: {
-                'Input Ref. Data': ['Ref. Solv', 'Ref. Solub', 'Ref. Temp'],
-                'Input Solute Data': ['Input Hsub298', 'Input Cpg298', 'Input Cps298'],
-                'logST': ['logST (method1) [log10(mol/L)]', 'logST (method2) [log10(mol/L)]'],
-                'Solubility(T) [mg/mL]': ['ST (method1) [mg/mL]', 'ST (method2) [mg/mL]'],
-                'dGsolvT': ['dGsolvT [kcal/mol]'],
-                'dHsolvT': ['dHsolvT [kcal/mol]'],
-                'dSsolvT': ['dSsolvT [cal/K/mol]'],
-                'logS298': ['logS298 [log10(mol/L)]', 'uncertainty logS298 [log10(mol/L)]'],
-                'Solubility(298) [mg/mL]': ['S298 [mg/mL]'],
-                'dGsolv298': ['dGsolv298 [kcal/mol]', 'uncertainty dGsolv298 [kcal/mol]'],
-                'dHsolv298': ['dHsolv298 [kcal/mol]', 'uncertainty dHsolv298 [kcal/mol]'],
-                'Pred. Solute Data': ['Pred. Hsub298 [kcal/mol]', 'Pred. Cpg298 [cal/K/mol]', 'Pred. Cps298 [cal/K/mol]'],
-                'Solute Abraham Parameters': ['E', 'S', 'A', 'B', 'L', 'V'],
-                'Messages': ['Error Message', 'Warning Message'],
-            },
-            loading: false,
-        }
+    exportFileName() {
+      let baseName = 'askcos'
+      if (this.uploadFile) {
+        const inputName = this.uploadFile.name
+        baseName = inputName.substring(0, inputName.lastIndexOf('.'))
+      }
+      return baseName + '_solubility_export'
     },
-    computed: {
-        fields() {
-            const _fields = ['Solvent', 'Solute', 'Temp']
-            this.selectedColumnCategories.forEach((category) => {
-                _fields.push(...this.columnCategories[category])
-            })
-            return _fields.map((key) => ({ key: key, label: key, sortable: true }))
-        },
-        exportFileName() {
-            let baseName = 'askcos'
-            if (this.uploadFile) {
-                const inputName = this.uploadFile.name
-                baseName = inputName.substring(0, inputName.lastIndexOf('.'))
-            }
-            return baseName + '_solubility_export'
-        },
-    },
-    created() {
-        // Prompt user before going back to previous page
-        window.addEventListener('beforeunload', (e) => {
-            if (this.results.length) {
-                // Cancel the event
-                e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
-                // Chrome requires returnValue to be set
-                e.returnValue = '';
-            }
-        });
+  },
+  created() {
+    // Prompt user before going back to previous page
+    window.addEventListener('beforeunload', (e) => {
+      if (this.results.length) {
+        // Cancel the event
+        e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+        // Chrome requires returnValue to be set
+        e.returnValue = '';
+      }
+    });
 
-        let urlParams = new URLSearchParams(window.location.search);
-        let solute = urlParams.get('solute')
-        if (solute) {
-            this.solute = solute
-        }
-        let solvent = urlParams.get('solvent')
-        if (solvent) {
-            this.solvent = solvent
-        }
+    let urlParams = new URLSearchParams(window.location.search);
+    let solute = urlParams.get('solute')
+    if (solute) {
+      this.solute = solute
+    }
+    let solvent = urlParams.get('solvent')
+    if (solvent) {
+      this.solvent = solvent
+    }
+  },
+  methods: {
+    predict() {
+      this.loading = true
+      const url = '/api/v2/solubility/'
+      const body = {
+        solvent: this.solvent,
+        solute: this.solute,
+        temp: this.temperature,
+        ref_solvent: this.refSolvent || null,
+        ref_solubility: this.refSolubility || null,
+        ref_temp: this.refTemperature || null,
+        hsub298: this.soluteHsub || null,
+        cp_gas_298: this.soluteCpg || null,
+        cp_solid_298: this.soluteCps || null,
+      }
+      API.runCeleryTask(url, body)
+        .then(output => {
+          this.results.push(...output)
+        })
+        .catch(error => {
+          alert('There was an error predicting solubility: ' + error)
+        })
+        .finally(() => this.loading = false)
     },
-    methods: {
-        predict() {
-            this.loading = true
-            const url = '/api/v2/solubility/'
-            const body = {
-                solvent: this.solvent,
-                solute: this.solute,
-                temp: this.temperature,
-                ref_solvent: this.refSolvent || null,
-                ref_solubility: this.refSolubility || null,
-                ref_temp: this.refTemperature || null,
-                hsub298: this.soluteHsub || null,
-                cp_gas_298: this.soluteCpg || null,
-                cp_solid_298: this.soluteCps || null,
-            }
-            API.runCeleryTask(url, body)
-                .then(output => {
-                    this.results.push(...output)
-                })
-                .catch(error => {
-                    alert('There was an error predicting solubility: ' + error)
-                })
-                .finally(() => this.loading = false)
-        },
-        predictBatch(data) {
-            this.loading = true
-            const url = '/api/v2/solubility/batch/'
-            const body = {
-                task_list: data,
-            }
-            API.runCeleryTask(url, body)
-                .then(output => {
-                    this.results.push(...output)
-                })
-                .catch(error => {
-                    alert('There was an error predicting solubility: ' + error)
-                })
-                .finally(() => this.loading = false)
-        },
-        handleUploadSubmit() {
-            let fileFormat
-            if (this.uploadFile) {
-                if (this.uploadFile.name.endsWith('.json')) {
-                    fileFormat = 'json'
-                } else if (this.uploadFile.name.endsWith('.csv')) {
-                    fileFormat = 'csv'
-                } else {
-                    alert('Unsupported file format! Expecting .csv or .json')
-                    return
-                }
-            }
-            let reader = new FileReader();
-            reader.onload = (e) => {
-                let rawData = e.target.result
-                let data
-                if (fileFormat === 'csv') {
-                    let result = Papa.parse(rawData, { header: true, skipEmptyLines: true, transform: (value) => value === '' ? null : value })
-                    if (result.errors.length) {
-                        alert(result.errors[0].message)
-                        return
-                    }
-                    data = result.data
-                } else if (fileFormat === 'json') {
-                    data = JSON.parse(rawData)
-                }
-                this.predictBatch(data)
-            }
+    predictBatch(data) {
+      this.loading = true
+      const url = '/api/v2/solubility/batch/'
+      const body = {
+        task_list: data,
+      }
+      API.runCeleryTask(url, body)
+        .then(output => {
+          this.results.push(...output)
+        })
+        .catch(error => {
+          alert('There was an error predicting solubility: ' + error)
+        })
+        .finally(() => this.loading = false)
+    },
+    handleUploadSubmit() {
+      let fileFormat
+      if (this.uploadFile) {
+        if (this.uploadFile.name.endsWith('.json')) {
+          fileFormat = 'json'
+        } else if (this.uploadFile.name.endsWith('.csv')) {
+          fileFormat = 'csv'
+        } else {
+          alert('Unsupported file format! Expecting .csv or .json')
+          return
+        }
+      }
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        let rawData = e.target.result
+        let data
+        if (fileFormat === 'csv') {
+          let result = Papa.parse(rawData, { header: true, skipEmptyLines: true, transform: (value) => value === '' ? null : value })
+          if (result.errors.length) {
+            alert(result.errors[0].message)
+            return
+          }
+          data = result.data
+        } else if (fileFormat === 'json') {
+          data = JSON.parse(rawData)
+        }
+        this.predictBatch(data)
+      }
 
-            reader.readAsText(this.uploadFile)
-        },
-        downloadCSV() {
-            if (!this.results.length) {
-                alert('There are no results to download!')
-                return
-            }
-            let downloadData = Papa.unparse(this.results)
-            let blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' })
-            saveAs(blob, this.exportFileName + '.csv')
-        },
-        downloadJSON() {
-            if (!this.results.length) {
-                alert('There are no results to download!')
-                return
-            }
-            let downloadData = JSON.stringify(this.results)
-            let blob = new Blob([downloadData], { type: 'data:text/json;charset=utf-8' })
-            saveAs(blob, this.exportFileName + '.json')
-        },
+      reader.readAsText(this.uploadFile)
     },
+    downloadCSV() {
+      if (!this.results.length) {
+        alert('There are no results to download!')
+        return
+      }
+      let downloadData = Papa.unparse(this.results)
+      let blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' })
+      saveAs(blob, this.exportFileName + '.csv')
+    },
+    downloadJSON() {
+      if (!this.results.length) {
+        alert('There are no results to download!')
+        return
+      }
+      let downloadData = JSON.stringify(this.results)
+      let blob = new Blob([downloadData], { type: 'data:text/json;charset=utf-8' })
+      saveAs(blob, this.exportFileName + '.json')
+    },
+  },
 }
 </script>
   
 <style scoped>
 #solubility-left-pane {
-    overflow-y: auto;
-    max-height: calc(100vh - 14rem);
+  overflow-y: auto;
+  max-height: calc(100vh - 14rem);
 }
 </style>
   

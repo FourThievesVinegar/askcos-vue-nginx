@@ -11,7 +11,7 @@
                         </template>
                     </v-text-field>
                     <div v-if="!!target" class="my-3">
-                        <smiles-image :smiles="target"></smiles-image>
+                        <smiles-image :smiles="target" height="100px"></smiles-image>
                     </div>
                     <div class="my-3">
                         <v-select id="retro-model-0" label="Model" :items="models" v-model="settings.model"
