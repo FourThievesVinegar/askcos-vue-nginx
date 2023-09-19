@@ -29,9 +29,15 @@ export default defineConfig({
   },
   base: './',
   server: {
+    host: '0.0.0.0',
     port: 3000,
     proxy: {
       // Proxy configuration
+      '/api/admin': {
+        target: "http://127.0.0.1:9100",
+        changeOrigin: true,
+        ws: true,
+      },
       '/api': {
         target: 'https://askcos-demo.mit.edu',
         changeOrigin: true,
