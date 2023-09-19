@@ -208,10 +208,6 @@ const routes = [
         },
       ],
   },
-  {
-    path: "/bug",
-    component: () => import(/* webpackChunkName: "TheSupportModal" */ "@/components/TheSupportModal.vue"),
-  },
 ];
 
 const router = createRouter({
