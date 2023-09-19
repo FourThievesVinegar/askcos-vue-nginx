@@ -75,7 +75,7 @@ import { ref, onMounted, computed, nextTick } from "vue";
 import TheSupportModal from "@/components/TheSupportModal.vue"
 
 const logoSrc = ref();
-const supportModalOpen= ref(false);
+const supportModalOpen = ref(false);
 const openGroups = ref([]);
 const route = useRoute();
 const backPressed = ref(false);
