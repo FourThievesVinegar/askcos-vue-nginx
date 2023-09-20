@@ -6,6 +6,13 @@ import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
 // Utilities
 import { defineConfig } from 'vite';
 
+const fastapiGatewayPtr = {
+  target: "http://3.16.7.29:9100",
+  changeOrigin: true,
+  ws: true,
+  secure: false
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -33,11 +40,13 @@ export default defineConfig({
     port: 3000,
     proxy: {
       // Proxy configuration
-      '/api/admin': {
-        target: "http://127.0.0.1:9100",
-        changeOrigin: true,
-        ws: true,
-      },
+      // FastAPI Docs Config
+      '/openapi.json': fastapiGatewayPtr,
+      '/docs': fastapiGatewayPtr,
+      // FastAPI Gateway
+      '/api/admin' : fastapiGatewayPtr,
+      // '/api' : fastapiGatewayPtr,
+      // Legacy Django Gateway
       '/api': {
         target: 'https://askcos-demo.mit.edu',
         changeOrigin: true,

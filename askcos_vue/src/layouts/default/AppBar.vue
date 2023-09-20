@@ -47,10 +47,10 @@
             <v-list-item v-bind="props" title="Utilities"></v-list-item>
           </template>
 
-          <v-list-item to="solprop?tab=solpred" prepend-icon="mdi-help-box" title="Solubility Prediction"
-            value="USP" :active="route.query.tab === 'solpred'"></v-list-item>
-          <v-list-item to="solprop?tab=solscreen" prepend-icon="mdi-help-box" title="Solvent Screening"
-            value="USS" :active="route.query.tab === 'solscreen'"></v-list-item>
+          <v-list-item to="solprop?tab=solpred" prepend-icon="mdi-help-box" title="Solubility Prediction" value="USP"
+            :active="route.query.tab === 'solpred'"></v-list-item>
+          <v-list-item to="solprop?tab=solscreen" prepend-icon="mdi-help-box" title="Solvent Screening" value="USS"
+            :active="route.query.tab === 'solscreen'"></v-list-item>
           <v-list-item to="buyables" prepend-icon="mdi-help-box" title="Buyable Look-up" value="UBLU"></v-list-item>
           <v-list-item prepend-icon="mdi-help-box" title="Drawing" value="UD"></v-list-item>
         </v-list-group>
@@ -60,8 +60,11 @@
         :active="route.path === '/status'"></v-list-item>
       <v-list-item prepend-icon="mdi-book-information-variant" title="Quick Reference" value="reference"></v-list-item>
       <v-divider></v-divider>
-      <v-list-item prepend-icon="mdi-book-open-variant" title="Wiki" value="wiki" :active="false" href="https://docusaurus.io/" target="_blank"/>
+      <v-list-item prepend-icon="mdi-book-open-variant" title="Wiki" value="wiki" :active="false"
+        href="https://docusaurus.io/" target="_blank" />
       <v-list-item prepend-icon="mdi-bug" title="Report a bug" value="bug" :active="false"></v-list-item>
+      <v-divider></v-divider>
+      <v-list-item to="login" prepend-icon="mdi-login" title="Login" :active="false"></v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>

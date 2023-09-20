@@ -77,14 +77,14 @@
                                     </v-row>
                                 </v-container>
                             </div>
-                            <v-text-field label="Username" variant="outlined" required></v-text-field>
-                            <v-text-field label="Password" variant="outlined" required></v-text-field>
+                            <v-text-field label="Username" variant="outlined" required v-model="username"></v-text-field>
+                            <v-text-field label="Password" variant="outlined" required type="password" v-model="password"></v-text-field>
 
                             <div class="d-flex flex-column">
                                 <v-container>
                                     <v-row wrap no-gutters>
                                         <v-col cols="6" class="text-center">
-                                            <v-btn color="primary" size="x-large">
+                                            <v-btn color="primary" size="x-large" @click="login">
                                                 Log In
                                             </v-btn>
                                         </v-col>
@@ -117,8 +117,13 @@
 import * as THREE from "three";
 import HALO from 'vanta/dist/vanta.halo.min'
 import { ref, onMounted } from 'vue';
+import { API } from "@/common/api";
+import { useRouter } from "vue-router";
 
 const vantaRef = ref(null);
+const username = ref(null);
+const password = ref(null);
+const router = useRouter();
 
 onMounted(() => {
     HALO({
@@ -132,6 +137,20 @@ onMounted(() => {
         backgroundColor: 0x2035b1,
     })
 })
+
+const login = () => {
+    const formData = new FormData();
+    formData.append("username", username.value);
+    formData.append("password", password.value);
+
+    API.post('/api/admin/token', formData).then(json => {
+        // Store the token in local storage
+        localStorage.setItem('accessToken', json.access_token);
+        // object with path
+        router.push({ path: '/' })
+    })
+}
+
 </script>
 
 <style lang="scss">
