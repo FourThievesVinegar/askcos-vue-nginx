@@ -36,8 +36,6 @@
                 <template v-slot:item.smiles="{ item }">
                     <smiles-image :smiles="item.columns.smiles" :reactingAtoms="item.columns.atom_scores"></smiles-image>
                 </template>
-
-
             </v-data-table>
         </v-sheet>
     </v-container>
@@ -46,6 +44,7 @@
 
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
+import KetcherMin from "@/components/KetcherMin.vue";
 import { ref } from 'vue'
 
 const showDialog = ref(false)

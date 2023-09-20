@@ -46,7 +46,7 @@
               <v-slider hide-details v-model="simThresh" label="Similarity Threshold" min="0" max="1" step="0.0001"
                 color="primary">
                 <template v-slot:append>
-                  <v-text-field v-model="simThresh" type="number" style="width: 80px" density="compact" hide-details
+                  <v-text-field data-cy="similarity-input-element" v-model="simThresh" type="number" style="width: 80px" density="compact" hide-details
                     variant="outlined"></v-text-field>
                 </template>
               </v-slider>
@@ -55,7 +55,7 @@
               <v-slider hide-details v-model="searchLimit" label="Limit Results" min="1" max="100" step="1"
                 color="primary">
                 <template v-slot:append>
-                  <v-text-field v-model="searchLimit" type="number" style="width: 80px" density="compact" hide-details
+                  <v-text-field data-cy="result-input-element" v-model="searchLimit" type="number" style="width: 80px" density="compact" hide-details
                     variant="outlined"></v-text-field>
                 </template>
               </v-slider>
@@ -64,7 +64,7 @@
                 @click="showSourcesDialog = true" height="40px" color="primary" variant="tonal">
                 Select Sources
               </v-btn>
-              <v-btn color="success" @click="showAddModal = !showAddModal" icon="mdi-plus" class="mr-3">
+              <v-btn color="success" data-cy="add-compound-button" @click="showAddModal = !showAddModal" icon="mdi-plus" class="mr-3">
               </v-btn>
               <v-btn color="info" @click="showUploadModal = !showUploadModal" icon="mdi-file-upload">
               </v-btn>
@@ -100,7 +100,7 @@
         Select Sources
       </v-card-title>
       <v-card-text>
-        <v-checkbox v-model="buyablesSourceAll" @change="searchSourceQuery = []" label="All"></v-checkbox>
+        <v-checkbox data-cy="all-sources-checkbox" v-model="buyablesSourceAll" @change="searchSourceQuery = []" label="All"></v-checkbox>
         <v-checkbox v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery" :value="source"
           :disabled="buyablesSourceAll" :label="source === NO_SOURCE ? NO_SOURCE_TEXT : source"></v-checkbox>
       </v-card-text>
@@ -121,19 +121,19 @@
         <v-container>
           <v-row>
             <v-col cols="12">
-              <v-text-field label="SMILES" v-model="addBuyableSmiles"></v-text-field>
+              <v-text-field data-cy="smiles-input" label="SMILES" v-model="addBuyableSmiles"></v-text-field>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
-              <v-text-field label="Price per gram" v-model="addBuyablePrice"></v-text-field>
+              <v-text-field id="pricePerGram" label="Price per gram" v-model="addBuyablePrice"></v-text-field>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
-              <v-text-field label="Source" v-model="addBuyableSource"></v-text-field>
+              <v-text-field id="source" label="Source" v-model="addBuyableSource"></v-text-field>
             </v-col>
           </v-row>
 

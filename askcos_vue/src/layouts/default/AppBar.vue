@@ -60,9 +60,10 @@
         :active="route.path === '/status'"></v-list-item>
       <v-list-item prepend-icon="mdi-book-information-variant" title="Quick Reference" value="reference"></v-list-item>
       <v-divider></v-divider>
-      <v-list-item prepend-icon="mdi-book-open-variant" title="Wiki" value="wiki" :active="false"
-        href="https://docusaurus.io/" target="_blank" />
-      <v-list-item prepend-icon="mdi-bug" title="Report a bug" value="bug" :active="false"></v-list-item>
+      <v-list-item prepend-icon="mdi-book-open-variant" title="Wiki" value="wiki" :active="false" href="https://docusaurus.io/" target="_blank"/>
+      <v-list-item prepend-icon="mdi-bug" title="Report a bug" value="bug"  @click="supportModalOpen = true" :active="false">
+        <TheSupportModal v-model="supportModalOpen"/>
+      </v-list-item>
       <v-divider></v-divider>
       <v-list-item to="login" prepend-icon="mdi-login" title="Login" :active="false"></v-list-item>
     </v-list>
@@ -73,8 +74,10 @@
 import logo from "@/assets/logo.svg";
 import { useRoute } from "vue-router";
 import { ref, onMounted, computed, nextTick } from "vue";
+import TheSupportModal from "@/components/TheSupportModal.vue"
 
 const logoSrc = ref();
+const supportModalOpen = ref(false);
 const openGroups = ref([]);
 const route = useRoute();
 const backPressed = ref(false);
