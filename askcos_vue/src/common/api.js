@@ -8,25 +8,39 @@ const API = {
   pollIntervalLong: 2000,
 
   getHeaders(data) {
+    const accessToken = localStorage.getItem('accessToken');
     const headers = {
-      'X-CSRFToken': Cookies.get('csrftoken'),
+      'accept': 'application/json'
     };
-    if (data && !(data instanceof FormData)) {
-      headers['Content-Type'] = 'application/json';
+
+    if (!accessToken) {
+      headers['X-CSRFToken'] = Cookies.get('csrftoken');
+      if (data && !(data instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+      }
+    } else {
+      headers['Authorization'] = 'Bearer ' + accessToken;
+      headers['accept'] = 'application/json'
     }
+
     return headers;
   },
 
+
   fetchHandler(response) {
     if (response.ok) {
-      return response.json();
-    }
-    return response.json().catch(() =>
-      // Status not ok, and there is no json body
-      Promise.reject(new Error(response.statusText))).then((json) =>
+      return response.json()
+    } else {
+      return response.json().catch(() => {
+        // Status not ok, and there is no json body
+        return Promise.reject(new Error(response.statusText))
+      }).then(json => {
         // Status not ok, but there is a json body
-        Promise.reject(new Error(json.error)));
+        return Promise.reject(new Error(json.error))
+      })
+    }
   },
+
 
   get(endpoint, params) {
     if (!endpoint.endsWith('/')) {
@@ -38,10 +52,13 @@ const API = {
       }
       endpoint += `?${params.toString()}`;
     }
+
     return fetch(endpoint, {
       method: 'GET',
+      headers: this.getHeaders(),
     }).then(this.fetchHandler);
   },
+
 
   post(endpoint, data) {
     if (!endpoint.endsWith('/')) {

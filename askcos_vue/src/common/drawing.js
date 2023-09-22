@@ -66,7 +66,7 @@ function getImageUrl({
   if (size !== undefined) {
     params.append('size', size);
   }
-  return `/api/v2/draw/?${params.toString()}`;
+  return `/api/draw/?${params.toString()}`;
 }
 
 function getMolImageUrl(precursor, highlight, transparent, reference, annotate, size) {
