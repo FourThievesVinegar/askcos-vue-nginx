@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialogVisible" max-width="600px">
+    <v-dialog v-model="dialog" activator="parent" max-width="600px">
         <v-card>
             <v-card-title class="mt-2">
                 <v-col cols="12">Send support email</v-col></v-card-title>
@@ -36,8 +36,8 @@
             </v-card-text>
             <v-card-actions class="mb-2">
                 <v-spacer></v-spacer>
-                <v-btn color="success" @click="submitSupport">Submit</v-btn>
-                <v-btn text @click="dialogVisible = !dialogVisible">Cancel</v-btn>
+                <v-btn color="success" @click="submitSupport, dialog = false">Submit</v-btn>
+                <v-btn text @click="dialog = false">Cancel</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -46,7 +46,7 @@
 <script setup>
 import { ref } from "vue";
 
-const dialogVisible = ref(false);
+const dialog = ref(false);
 const selectedModule = ref({ key: "onestep", title: "One-step Retrosynthesis" });
 const selectedCategory = ref({ key: "bug", title: "Report a bug" });
 const moduleOptions = ref([

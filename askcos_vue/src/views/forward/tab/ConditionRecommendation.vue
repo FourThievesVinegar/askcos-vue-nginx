@@ -213,7 +213,6 @@ const emitGoToForward = (index) => {
 
 const handleClick = () => {
     emits('evaluate');
-    console.log("was clicked")
 }
 
 </script>
