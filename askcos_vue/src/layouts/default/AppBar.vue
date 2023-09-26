@@ -65,7 +65,8 @@
         <TheSupportModal />
       </v-list-item>
       <v-divider></v-divider>
-      <v-list-item to="login" prepend-icon="mdi-login" title="Login" :active="false"></v-list-item>
+      <v-list-item v-if=!isLoggedIn to="login" prepend-icon="mdi-login" title="Login" :active="false"></v-list-item>
+      <v-list-item v-if=isLoggedIn @click="logout" prepend-icon="mdi-logout" title="Logout" :active="false"></v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -84,6 +85,15 @@ const activeModules = computed(() => {
   const shouldBeActiveModules = ['/network', '/buyables', '/forward', '/solprop']
   return shouldBeActiveModules.some(el => route.path.includes(el));
 })
+
+const isLoggedIn = computed(() => {
+  const accessToken = localStorage.getItem('accessToken');
+  return accessToken ? true : false;
+})
+
+function logout() {
+  
+}
 
 function onDrawerCollapse(value) {
   if (value) {
