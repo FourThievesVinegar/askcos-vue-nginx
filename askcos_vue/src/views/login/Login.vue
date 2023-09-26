@@ -8,7 +8,7 @@
                             style="text-decoration: wavy underline lime;">simplified</span></p>
                 </v-col>
                 <v-col cols="12" md="5" class="align-self-end">
-                    <p class="text-h6 text-white font-weight-black">Trusted by</p>
+                    <p class="text-h6 text-white font-weight-black">Used by</p>
                     <div class="slider">
                         <div class="slide-track">
                             <div class="slide">
