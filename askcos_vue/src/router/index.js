@@ -85,19 +85,19 @@ const routes = [
     ],
   },
   {
-  path: '/results',
-  component: () => import('@/layouts/default/Default.vue'),
-  children: [
-    {
-      path: '',
-      name: 'My Results',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "buyables" */ '@/views/results/Results.vue'),
-    },
-  ],
-},
+    path: '/results',
+    component: () => import('@/layouts/default/Default.vue'),
+    children: [
+      {
+        path: '',
+        name: 'My Results',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "buyables" */ '@/views/results/Results.vue'),
+      },
+    ],
+  },
   {
     path: '/banlist',
     component: () => import('@/layouts/default/Default.vue'),
@@ -112,101 +112,115 @@ const routes = [
       },
     ],
   },
-{
-  path: "/forward",
-    component: () => import("@/layouts/default/Default.vue"),
-      children: [
-        {
-          path: "",
-          query: {
-            tab: "context",
-          },
-          name: "forward",
-          // route level code-splitting
-          // this generates a separate chunk (about.[hash].js) for this route
-          // which is lazy-loaded when the route is visited.
-          component: () =>
-            import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
-        },
-        {
-          path: "",
-          query: {
-            tab: "forward",
-          },
-          name: "forward",
-          // route level code-splitting
-          // this generates a separate chunk (about.[hash].js) for this route
-          // which is lazy-loaded when the route is visited.
-          component: () =>
-            import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
-        },
-        {
-          path: "",
-          query: {
-            tab: "impurity",
-          },
-          name: "forward",
-          // route level code-splitting
-          // this generates a separate chunk (about.[hash].js) for this route
-          // which is lazy-loaded when the route is visited.
-          component: () =>
-            import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
-        },
-        {
-          path: "",
-          query: {
-            tab: "selectivity",
-          },
-          name: "forward",
-          // route level code-splitting
-          // this generates a separate chunk (about.[hash].js) for this route
-          // which is lazy-loaded when the route is visited.
-          component: () =>
-            import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
-        },
-        {
-          path: "",
-          query: {
-            tab: "sites",
-          },
-          name: "forward",
-          // route level code-splitting
-          // this generates a separate chunk (about.[hash].js) for this route
-          // which is lazy-loaded when the route is visited.
-          component: () =>
-            import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
-        },
-      ],
+  {
+    path: '/profile',
+    component: () => import('@/layouts/default/Default.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Profile',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "buyables" */ '@/views/profile/Profile.vue'),
+      },
+    ],
   },
-{
-  path: "/solprop",
+  {
+    path: "/forward",
     component: () => import("@/layouts/default/Default.vue"),
-      children: [
-        {
-          path: "",
-          query: {
-            tab: "solpred",
-          },
-          name: "SolProp",
-          // route level code-splitting
-          // this generates a separate chunk (about.[hash].js) for this route
-          // which is lazy-loaded when the route is visited.
-          component: () =>
-            import(/* webpackChunkName: "home" */ "@/views/solprop/SolProp.vue"),
+    children: [
+      {
+        path: "",
+        query: {
+          tab: "context",
         },
-        {
-          path: "",
-          query: {
-            tab: "solscreen",
-          },
-          name: "SolProp",
-          // route level code-splitting
-          // this generates a separate chunk (about.[hash].js) for this route
-          // which is lazy-loaded when the route is visited.
-          component: () =>
-            import(/* webpackChunkName: "home" */ "@/views/solprop/SolProp.vue"),
+        name: "forward",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
+      },
+      {
+        path: "",
+        query: {
+          tab: "forward",
         },
-      ],
+        name: "forward",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
+      },
+      {
+        path: "",
+        query: {
+          tab: "impurity",
+        },
+        name: "forward",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
+      },
+      {
+        path: "",
+        query: {
+          tab: "selectivity",
+        },
+        name: "forward",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
+      },
+      {
+        path: "",
+        query: {
+          tab: "sites",
+        },
+        name: "forward",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
+      },
+    ],
+  },
+  {
+    path: "/solprop",
+    component: () => import("@/layouts/default/Default.vue"),
+    children: [
+      {
+        path: "",
+        query: {
+          tab: "solpred",
+        },
+        name: "SolProp",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/solprop/SolProp.vue"),
+      },
+      {
+        path: "",
+        query: {
+          tab: "solscreen",
+        },
+        name: "SolProp",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/solprop/SolProp.vue"),
+      },
+    ],
   },
 ];
 

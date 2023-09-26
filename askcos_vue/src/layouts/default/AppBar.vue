@@ -65,25 +65,38 @@
         <TheSupportModal />
       </v-list-item>
       <v-divider></v-divider>
-      <v-list-item to="login" prepend-icon="mdi-login" title="Login" :active="false"></v-list-item>
+      <v-list-item v-if=!isLoggedIn to="login" prepend-icon="mdi-login" title="Login" :active="false"></v-list-item>
+      <v-list-item v-if=isLoggedIn to="profile" prepend-icon="mdi-account-circle" title="Profile" :active="false"></v-list-item>
+      <v-list-item v-if=isLoggedIn @click="logout" prepend-icon="mdi-logout" title="Logout" :active="false"></v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
 
 <script setup>
 import logo from "@/assets/logo.svg";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted, computed, nextTick } from "vue";
 import TheSupportModal from "@/components/TheSupportModal.vue"
 
 const logoSrc = ref();
 const openGroups = ref([]);
 const route = useRoute();
+const router = useRouter();
 const backPressed = ref(false);
 const activeModules = computed(() => {
   const shouldBeActiveModules = ['/network', '/buyables', '/forward', '/solprop']
   return shouldBeActiveModules.some(el => route.path.includes(el));
 })
+
+const isLoggedIn = computed(() => {
+  const accessToken = localStorage.getItem('accessToken');
+  return accessToken ? true : false;
+})
+
+function logout() {
+  localStorage.removeItem("accessToken");
+  router.push({path: '/login'})
+}
 
 function onDrawerCollapse(value) {
   if (value) {

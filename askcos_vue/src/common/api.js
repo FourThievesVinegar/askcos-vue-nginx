@@ -3,27 +3,50 @@
  */
 import Cookies from 'js-cookie';
 
+const authMigratedAPI = ["/api/banlist"];
+
 const API = {
   pollInterval: 1000,
   pollIntervalLong: 2000,
 
-  getHeaders(data) {
-    const accessToken = localStorage.getItem('accessToken');
-    const headers = {
-      'accept': 'application/json'
-    };
+  getHeaders(data, endpoint) {
+    // const accessToken = localStorage.getItem('accessToken');
+    // const headers = {
+    //   'accept': 'application/json'
+    // };
 
-    if (!accessToken) {
-      headers['X-CSRFToken'] = Cookies.get('csrftoken');
-      if (data && !(data instanceof FormData)) {
-        headers['Content-Type'] = 'application/json';
+    // if (!accessToken) {
+    //   headers['X-CSRFToken'] = Cookies.get('csrftoken');
+    //   if (data && !(data instanceof FormData)) {
+    //     headers['Content-Type'] = 'application/json';
+    //   }
+    // } else {
+    //   headers['Authorization'] = 'Bearer ' + accessToken;
+    //   headers['accept'] = 'application/json'
+    // }
+
+    // return headers;
+    console.log(endpoint)
+
+    let headers = {};
+    
+    if (authMigratedAPI.some(api => endpoint.startsWith(api))) {
+      const accessToken = localStorage.getItem('accessToken');
+      headers = {
+        'accept': 'application/json',
+        'Authorization': 'Bearer ' + accessToken
+      };
+    }
+    else {
+      headers = {
+        'X-CSRFToken': Cookies.get('csrftoken'),
       }
-    } else {
-      headers['Authorization'] = 'Bearer ' + accessToken;
-      headers['accept'] = 'application/json'
+      if (data && !(data instanceof FormData)) {
+        headers['Content-Type'] = 'application/json'
+      }
     }
 
-    return headers;
+    return headers
   },
 
 
@@ -43,7 +66,7 @@ const API = {
 
 
   get(endpoint, params) {
-    if (!endpoint.endsWith('/')) {
+    if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
       endpoint += '/';
     }
     if (params) {
@@ -55,40 +78,40 @@ const API = {
 
     return fetch(endpoint, {
       method: 'GET',
-      headers: this.getHeaders(),
+      headers: this.getHeaders(null, endpoint),
     }).then(this.fetchHandler);
   },
 
 
   post(endpoint, data) {
-    if (!endpoint.endsWith('/')) {
+    if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
       endpoint += '/';
     }
     return fetch(endpoint, {
       method: 'POST',
-      headers: this.getHeaders(data),
+      headers: this.getHeaders(data, endpoint),
       body: data instanceof FormData ? data : JSON.stringify(data),
     }).then(this.fetchHandler);
   },
 
   put(endpoint, data) {
-    if (!endpoint.endsWith('/')) {
+    if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
       endpoint += '/';
     }
     return fetch(endpoint, {
       method: 'PUT',
-      headers: this.getHeaders(data),
+      headers: this.getHeaders(data, endpoint),
       body: data instanceof FormData ? data : JSON.stringify(data),
     }).then(this.fetchHandler);
   },
 
   delete(endpoint) {
-    if (!endpoint.endsWith('/')) {
+    if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
       endpoint += '/';
     }
     return fetch(endpoint, {
       method: 'DELETE',
-      headers: this.getHeaders(),
+      headers: this.getHeaders(null, endpoint),
     }).then(this.fetchHandler);
   },
 
