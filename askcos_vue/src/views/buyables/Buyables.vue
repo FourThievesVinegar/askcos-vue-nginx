@@ -80,7 +80,7 @@
                   </copy-tooltip>
                 </template>
                 <template v-slot:item.delete="{ item }">
-                  <v-icon @click="deleteBuyable(item._id)" class="text-center">mdi-delete</v-icon>
+                  <v-icon @click="deleteBuyable(item.raw._id)" class="text-center">mdi-delete</v-icon>
                 </template>
               </v-data-table>
             </v-col>
@@ -370,11 +370,13 @@ const deleteBuyable = (_id) => {
     .then(json => {
       if (json.error) {
         alert(json.error)
+        console.log(json.error)
       }
       if (json['success']) {
         for (let i = 0; i < buyables.value.length; i++) {
           if (buyables.value[i]['_id'] === _id) {
-            buyables.value.splice(i, 1)
+            buyables.value = buyables.value.filter(b => b._id !== _id)
+             console.log(buyables.value[i]['_id'])
           }
         }
       }
