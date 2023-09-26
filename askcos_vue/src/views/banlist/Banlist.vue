@@ -39,7 +39,9 @@
                   <!-- <pre>{{ tabItems }}</pre> -->
                   <v-data-table :headers="headers" :items="tabItems" :items-per-page="10" height="400px">
                     <template v-slot:item.active="{ item }">
-                      <v-btn @click="item.columns.active = !item.columns.active" small>
+                      <v-btn @click="toggleActivation(item, activeTab === 0 ? 'chemicals' : 'reactions')" small>
+                        <v-icon v-if="item.columns.active">mdi-check-circle</v-icon>
+                        <v-icon v-else>mdi-cancel</v-icon>
                         {{ item.columns.active ? 'Active' : 'Inactive' }}
                       </v-btn>
                     </template>
@@ -49,6 +51,7 @@
                       </copy-tooltip>
                     </template>
                     <template v-slot:item.delete="{ item }">
+                      <pre>{{ item.key }}</pre>
                       <v-icon @click="activeTab === 0 ? deleteChemical(item.key) : deleteReaction(item.key)"
                         class="text-center">mdi-delete</v-icon>
                     </template>
@@ -200,7 +203,7 @@ const addEntry = () => {
     })
     .catch(error => console.log(error))
     .finally(() => {
-      loadCollection(newType.value === 'chemicals'? 'chemicals': 'reactions');
+      loadCollection(newType.value === 'chemicals' ? 'chemicals' : 'reactions');
       showModal.value = false;
       nextTick(() => {
         if (newType.value === 'chemicals') {
@@ -208,7 +211,7 @@ const addEntry = () => {
         } else {
           activeTab.value = 1;
         }
-      pendingTasks.value--;
+        pendingTasks.value--;
       });
     })
 }
@@ -245,26 +248,25 @@ const deleteReaction = (id) => {
   loadCollection('reactions');
 }
 
-// const toggleActivation = (id, category, action) => {
-//   pendingTasks.value++;
-//   API.get(`/api/v2/banlist/${category}/${encodeURIComponent(id)}/${action}/`)
-//     .then(json => {
-//       if (json['success']) {
-//         const updatedEntry = json['data'];
-//         updatedEntry.created = dayjs(updatedEntry.created).format('MMMM D, YYYY h:mm A');
-//         const collection = category === 'chemicals' ? chemicals.value : reactions.value
-//         for (let i = 0; i < collection.length; i++) {
-//           if (collection[i]['id'] === id) {
-//             collection.splice(i, 1, updatedEntry)
-//             break
-//           }
-//         }
-//       }
-//     })
-//     .finally(() => {
-//       pendingTasks.value--;
-//     })
-// }
+const toggleActivation = async (item, category) => {
+  const action = item.columns.active ? 'deactivate' : 'activate';
+  try {
+    const response = await API.get(`/api/banlist/${category}/${action}`, {
+      _id: item.raw.id
+    });
+    const data = await response.json();
+    if (data.success) {
+      item.columns.active = !item.columns.active;
+      loadCollection(category)
+    } else {
+      console.error("Failed to toggle activation:", data.message);
+    }
+  } catch (error) {
+    console.error("Error toggling activation:", error);
+    console.log(item.raw.id)
+  }
+};
+
 
 // const activateChemical = (id) => {
 //   toggleActivation(id, 'chemicals', 'activate')
