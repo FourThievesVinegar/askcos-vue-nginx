@@ -46,7 +46,7 @@
           </div>
           <div v-else>No strategy added</div>
           <v-divider class="border-opacity-75 mx-2" vertical></v-divider>
-          <v-btn variant="tonal" color="primary" prepend-icon="mdi mdi-cog">Strategy Settings</v-btn>
+          <v-btn variant="tonal" color="primary" prepend-icon="mdi mdi-cog" @click="settingsVisible=true">Strategy Settings</v-btn>
         </v-row>
       </v-container>
     </v-toolbar>
@@ -217,6 +217,8 @@
 
   <NodeDetail :visible="nodeDetailVisible" :enable-resolver="enableResolver" :selected="selected" @close="closeNodeDetail"
     @expandNode="expandNode" @updatePendingTasks="pendingTasksHandler" ref="node-detail" />
+
+  <SettingsModal :visible="settingsVisible" @update:settingsVisible="settingsVisible = $event"/>
 </template>
 
 <script>
@@ -235,12 +237,15 @@ import { Network } from "vis-network";
 import { getPaths } from "@/common/graph";
 import { useConfirm } from 'vuetify-use-dialog';
 import NodeDetail from "@/components/network/NodeDetail";
+import SettingsModal from "@/components/network/SettingsModal";
+
 const BG_OPACITY = 0.2; // Background opacity
 export default {
   name: "NetworkView",
   components: {
     SmilesImage,
     NodeDetail,
+    SettingsModal
   },
   props: {
     tabActive: {
@@ -282,6 +287,7 @@ export default {
       },
       selected: null,
       nodeDetailVisible: false,
+      settingsVisible: false,
       pendingTasks: 0, // Counter for displaying loading spinner
       infoPanelOptions: {
         id: "infoPanel",
@@ -1324,6 +1330,9 @@ export default {
       // this.selected = null;
       this.nodeDetailVisible = false;
       this.hideHoverBtn();
+    },
+    closeSettings() {
+      this.settingsVisible = false;
     },
     collapseNode() {
       let selected = this.network.getSelectedNodes();
