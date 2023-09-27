@@ -10,22 +10,6 @@ const API = {
   pollIntervalLong: 2000,
 
   getHeaders(data, endpoint) {
-    // const accessToken = localStorage.getItem('accessToken');
-    // const headers = {
-    //   'accept': 'application/json'
-    // };
-
-    // if (!accessToken) {
-    //   headers['X-CSRFToken'] = Cookies.get('csrftoken');
-    //   if (data && !(data instanceof FormData)) {
-    //     headers['Content-Type'] = 'application/json';
-    //   }
-    // } else {
-    //   headers['Authorization'] = 'Bearer ' + accessToken;
-    //   headers['accept'] = 'application/json'
-    // }
-
-    // return headers;
     console.log(endpoint)
 
     let headers = {};
