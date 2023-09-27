@@ -34,9 +34,10 @@
               <v-tab>Reactions</v-tab>
             </v-tabs>
             <v-sheet width="100%" class="pa-6">
+              <v-select  v-if="tabItems.length || filterActive !== 'all'" v-model="filterActive" :items="filterOptions" item-text="title" item-value="key" label="Filter by status" density="comfortable" variant="outlined" hide-details
+                              clearable></v-select>
               <v-row v-if="tabItems.length">
                 <v-col cols="12">
-                  <!-- <pre>{{ tabItems }}</pre> -->
                   <v-data-table :headers="headers" :items="tabItems" :items-per-page="10" height="400px">
                     <template v-slot:item.active="{ item }">
                       <v-btn @click="toggleActivation(item, activeTab === 0 ? 'chemicals' : 'reactions')" small>
@@ -51,7 +52,6 @@
                       </copy-tooltip>
                     </template>
                     <template v-slot:item.delete="{ item }">
-                      <pre>{{ item.key }}</pre>
                       <v-icon @click="activeTab === 0 ? deleteChemical(item.key) : deleteReaction(item.key)"
                         class="text-center">mdi-delete</v-icon>
                     </template>
@@ -109,7 +109,7 @@
 
 <script setup>
 import banlist from "@/assets/banlist.svg";
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import SmilesImage from "@/components/SmilesImage.vue";
 import CopyTooltip from "@/components/CopyTooltip";
 import { API } from "@/common/api";
@@ -126,9 +126,9 @@ const newType = ref("chemicals");
 const filterActive = ref('all');
 const pendingTasks = ref(0);
 const filterOptions = ref([
-  { text: 'All', value: 'all' },
-  { text: 'Active', value: 'active' },
-  { text: 'Inactive', value: 'inactive' },
+  { key: 'all', title: 'All' },
+  { key: 'active', title: 'Active' },
+  { key: 'inactive', title: 'Inactive' },
 ]);
 const headers = ref([
   { key: 'active', title: 'Active' },
@@ -161,27 +161,17 @@ onMounted(() => {
   loadCollection('reactions');
 });
 
+
 const tabItems = computed(() => {
-  return activeTab.value === 0 ? chemicals.value : reactions.value;
-});
-
-const filteredChemicals = computed(() => {
-  if (filterActive.value === 'active') {
-    return chemicals.value.filter(entry => entry.active)
-  } else if (filterActive.value === 'inactive') {
-    return chemicals.value.filter(entry => !entry.active)
-  } else {
-    return chemicals.value
-  }
-});
-
-const filteredReactions = computed(() => {
-  if (filterActive.value === 'active') {
-    return reactions.value.filter(entry => entry.active)
-  } else if (filterActive.value === 'inactive') {
-    return reactions.value.filter(entry => !entry.active)
-  } else {
-    return reactions.value
+let items = activeTab.value === 0 ? chemicals.value : reactions.value;
+ console.log(items)
+  switch (filterActive.value) {
+    case 'active':
+      return items.filter(item => item.active === true);
+    case 'inactive':
+      return items.filter(item => item.active === false);
+    default:
+      return items;
   }
 });
 
@@ -215,8 +205,6 @@ const addEntry = () => {
       });
     })
 }
-
-
 
 const deleteEntry = (id, category) => {
   pendingTasks.value++;
@@ -257,32 +245,15 @@ const toggleActivation = async (item, category) => {
     const data = await response.json();
     if (data.success) {
       item.columns.active = !item.columns.active;
-      loadCollection(category)
     } else {
       console.error("Failed to toggle activation:", data.message);
     }
   } catch (error) {
     console.error("Error toggling activation:", error);
-    console.log(item.raw.id)
   }
+  item.columns.active = !item.columns.active;
+  loadCollection(category);
 };
-
-
-// const activateChemical = (id) => {
-//   toggleActivation(id, 'chemicals', 'activate')
-// }
-
-// const deactivateChemical = (id) => {
-//   toggleActivation(id, 'chemicals', 'deactivate')
-// }
-
-// const activateReaction = (id) => {
-//   toggleActivation(id, 'reactions', 'activate')
-// }
-
-// const deactivateReaction = (id) => {
-//   toggleActivation(id, 'reactions', 'deactivate')
-// }
 
 </script>
 
