@@ -60,11 +60,15 @@
               </v-row>
               <v-row v-else class="px-10 py-10">
                 <v-col cols="12" class="d-flex justify-center align-center">
-                  <div class="text-center">
+                  <div v-if="filterActive == 'all'" class="text-center">
                     <v-img :width="400" cover :src="banlist"></v-img>
                     <h2 class="mt-6">No Ban Items</h2>
-                    <p class="text-body-1">Please check back later</p>
+                    <p class="text-body-1"  >Please check back later</p>
                   </div>
+                   <div v-else class="text-center">
+                      <v-img :width="400" cover :src="banlist"></v-img>
+                      <h2 class="mt-6">No Ban Items</h2>
+                    </div>
                 </v-col>
               </v-row>
             </v-sheet>

@@ -15,8 +15,8 @@
         <v-sheet elevation="2" rounded="lg">
           <v-row class="px-5 pt-4 justify-center">
             <v-col cols="12" md="11">
-              <v-text-field prepend-inner-icon="mdi mdi-flask" density="comfortable" variant="outlined"
-                label="Search Result Descriptions" hide-details clearable>
+              <v-text-field v-model="searchQuery" prepend-inner-icon="mdi mdi-flask" density="comfortable"
+                variant="outlined" label="Search Result Descriptions" hide-details clearable>
                 <template v-slot:append>
                   <v-btn color="primary" size="large">
                     Search
@@ -30,7 +30,7 @@
             <v-col cols="12" md="11">
               <v-row class="px-5 py-4 justify-space-between">
                 <v-btn icon class="bg-red">
-                  <v-icon bg-purple-darken-2>mdi-trash-can-outline</v-icon>
+                  <v-icon white>mdi-delete</v-icon>
                 </v-btn>
                 <v-btn icon class="bg-teal-lighten-3 white">
                   <v-icon>mdi-refresh</v-icon>
@@ -42,9 +42,44 @@
 
           <v-divider class="border-opacity-30"></v-divider>
           <v-card>
-            <v-row v-if="buyables.length">
+             <v-sheet width="100%" class="pa-6">
+            <v-row v-if="allResults.length">
               <v-col cols="12">
-                //datatable
+                <v-data-table :headers="headers" item-value="description" :items="allResults" show-select
+                  v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10" height="400px">
+                                    <template v-slot:item.delete="{ item }">
+                      <v-icon @click="deleteResult(item.key)"
+                        class="text-center">mdi-delete</v-icon>
+                    </template>
+                  <template #item.public="{ item }">
+                    <v-icon  v-if="item.columns.public===true" >
+                      mdi-share
+                    </v-icon>
+                  </template>
+                  <template v-slot:expanded-row="{ columns, item }">
+                  <tr>
+                    <td :colspan="columns.length">
+                        <div class="d-flex justify-space-evenly my-3">
+                           <span class="text-center">Found {{ item.columns.description }} Tree</span>
+                          <v-btn color="primary" variant="tonal">
+                            View trees
+                          </v-btn>
+                          <v-btn color="primary" variant="tonal">
+                            View in IPP
+                          </v-btn>
+                          <v-btn color="primary" variant="tonal">
+                            View Settings
+                          </v-btn>
+                          <v-btn class="bg-teal-lighten-3" variant="tonal">
+                            <v-icon color="white">
+                              mdi-share
+                            </v-icon>
+                          </v-btn>
+                        </div>
+                      </td>
+                    </tr>
+                  </template>
+                </v-data-table>
               </v-col>
             </v-row>
             <v-row v-else class="px-10 py-10">
@@ -52,10 +87,10 @@
                 <div class="text-center">
                   <v-img :width="400" cover :src="results"></v-img>
                   <h2 class="mt-6">No Results Yet...</h2>
-                  <p class="text-body-1">Please check back later</p>
                 </div>
               </v-col>
             </v-row>
+            </v-sheet>
           </v-card>
         </v-sheet>
       </v-col>
@@ -64,168 +99,101 @@
 </template>
 
 <script setup>
-// import results from "@/assets/results.svg";
-// import { ref, watch, computed, onMounted } from "vue";
-// import ThePage from "@/components/ThePage";
-// import CopyTooltip from "@/components/CopyTooltip";
-// import TbSettingsTable from "@/components/TbSettingsTable";
-// import { API } from "@/common/api";
-// import { tbSettingsPyToApi } from "@/common/tb-settings";
-// import dayjs from "dayjs";
+import { ref, onMounted, watch } from 'vue';
+import results from "@/assets/results.svg";
+import { API } from "@/common/api";
+import dayjs from "dayjs";
+
+const allResults = ref([]);
+const totalItems = ref(1);
+const pendingTasks = ref(0);
+const selection = ref([]);
+const selectAll = ref(false);
+const expanded = ref([]);
+const searchQuery = ref("");
+
+const headers = ref([
+  { key: 'description', title: 'Result' },
+  { key: 'modified', title: 'Modified' },
+  { key: 'result_state', title: 'State' },
+  { key: 'result_type', title: 'Type' },
+  { key: 'public', title: 'Shared' },
+  { key: 'delete', title: 'Delete' },
+]);
+
+onMounted(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  // let sharedId = urlParams.get("shared");
+  // if (sharedId) {
+  //   await addSharedResult(sharedId);
+  //   await update();
+  //   showSharedResultModal.value = true;
+  // } else {
+  update();
+  // }
+});
+
+watch(selectAll, (newVal) => {
+  if (newVal) {
+    selection.value = allResults.value.map((res) => res.result_id);
+  } else {
+    selection.value = [];
+  }
+});
 
 
-// const allResults = ref([]);
-// const selection = ref([]);
-// const selectAll = ref(false);
-// const fields = ref([
-//   "selected",
-//   { key: "description", label: "Result", sortable: true },
-//   { key: "modified", label: "Modified", sortable: true, formatter: (val) => val.format("MMMM D, YYYY h:mm A") },
-//   { key: "state", label: "State", sortable: true, formatter: (val) => val || "N/A" },
-//   { key: "type", label: "Type", sortable: true },
-//   { key: "public", label: "Shared", sortable: true, class: "text-center" },
-// ]);
-// const currentPage = ref(1);
-// const totalItems = ref(1);
-// const itemsPerPage = ref(50);
-// const pendingTasks = ref(0);
-// const searchQuery = ref("");
-// const shareLink = ref("");
-// const sharedResult = ref(null);
-// const showShareModal = ref(false);
-// const showSharedResultModal = ref(false);
-// const viewSettings = ref(null);
+const update = async () => {
+  pendingTasks.value += 1;
+  try {
+    const response = await API.get("/api/results/list");
+    if (Array.isArray(response)) {
+      response.forEach(function (doc) {
+        doc.created = dayjs(doc.created).format('MMMM D, YYYY h:mm A');
+        doc.modified = dayjs(doc.modified).format('MMMM D, YYYY h:mm A');
+      });
+      allResults.value = response;
+      console.log(allResults.value)
+      totalItems.value = response.length;
+    } else {
+      console.error("API did not return an array as expected:", response);
+    }
+  } catch (error) {
+    console.error("Error fetching results:", error);
+  } finally {
+    pendingTasks.value -= 1;
+  }
+}
 
-// const showLoader = computed(() => pendingTasks.value > 0);
+const deleteSelection = () => {
+  if (window.confirm(`This will permanently delete ${selection.value.length} results. Continue?`)) {
+    pendingTasks.value += 1;
+    for (const id of selection.value) {
+      deleteResult(id, true);
+    }
+    selection.value = [];
+    pendingTasks.value -= 1;
+  }
+}
 
-// watch(selectAll, (newVal) => {
-//   if (newVal) {
-//     // Box was checked
-//     selection.value = allResults.value.map((res) => res.id);
-//   } else {
-//     // Box was unchecked
-//     selection.value = [];
-//   }
-// });
+const deleteResult = (id, skipConfirm = false) => {
+  if (skipConfirm || window.confirm('Click "OK" to confirm deleting this result')) {
+    pendingTasks.value += 1;
+    try {
+      const json = API.delete(`/api/results/destroy?result_id=${id}/`);
+      if (json.success) {
+        for (let i = 0; i < allResults.value.length; i++) {
+          if (allResults.value[i]["id"] === id) {
+            allResults.value.splice(i, 1);
+          }
+        }
+      }
+    } finally {
+      pendingTasks.value -= 1;
+    }
+  }
+  update()
+}
 
-// onMounted(async () => {
-//   const urlParams = new URLSearchParams(window.location.search);
-//   let sharedId = urlParams.get("shared");
-//   if (sharedId) {
-//     await addSharedResult(sharedId);
-//     await update();
-//     showSharedResultModal.value = true;
-//   } else {
-//     await update();
-//   }
-// });
-
-// async function update() {
-//   pendingTasks.value += 1;
-//   try {
-//     const json = await API.get("/api/v2/results/");
-//     json.results.forEach(function (doc) {
-//       doc.created = dayjs(doc.created);
-//       doc.modified = dayjs(doc.modified);
-//     });
-//     allResults.value = json.results;
-//     totalItems.value = json.results.length;
-//   } finally {
-//     pendingTasks.value -= 1;
-//   }
-// }
-
-// async function deleteResult(id, skipConfirm = false) {
-//   if (skipConfirm || window.confirm('Click "OK" to confirm deleting this result')) {
-//     pendingTasks.value += 1;
-//     try {
-//       const json = await API.delete(`/api/v2/results/${id}/`);
-//       if (json.success) {
-//         for (let i = 0; i < allResults.value.length; i++) {
-//           if (allResults.value[i]["id"] === id) {
-//             allResults.value.splice(i, 1);
-//           }
-//         }
-//       }
-//     } finally {
-//       pendingTasks.value -= 1;
-//     }
-//   }
-// }
-
-// async function shareResult(id) {
-//   pendingTasks.value += 1;
-//   try {
-//     const json = await API.get(`/api/v2/results/${id}/share/`);
-//     shareLink.value = json.url;
-//     showShareModal.value = true;
-//     for (const res of allResults.value) {
-//       if (res.id === id) {
-//         res.public = true;
-//         break;
-//       }
-//     }
-//   } catch (error) {
-//     alert("Could not share result: " + error);
-//   } finally {
-//     pendingTasks.value -= 1;
-//   }
-// }
-
-// async function addSharedResult(id) {
-//   pendingTasks.value += 1;
-//   try {
-//     const json = await API.get(`/api/v2/results/${id}/add/`);
-//     json.result.created = dayjs(json.result.created);
-//     json.result.modified = dayjs(json.result.modified);
-//     sharedResult.value = json.result;
-//   } catch (error) {
-//     alert("Could not add shared result: " + error);
-//   } finally {
-//     pendingTasks.value -= 1;
-//   }
-// }
-
-// async function deleteSelection() {
-//   if (window.confirm(`This will permanently delete ${selection.value.length} results. Continue?`)) {
-//     pendingTasks.value += 1;
-//     for (const id of selection.value) {
-//       await deleteResult(id, true);
-//     }
-//     selection.value = [];
-//     pendingTasks.value -= 1;
-//   }
-// }
-
-// function onFiltered(items) {
-//   totalItems.value = items.length;
-// }
-
-// function sortCompare(aObj, bObj, field) {
-//   const a = aObj[field];
-//   const b = bObj[field];
-//   if (field === "created" || field === "modified") {
-//     return a.isAfter(b) - a.isBefore(b);
-//   } else {
-//     return (a > b) - (a < b);
-//   }
-// }
-
-// async function sendTreeBuilderJob(description, settings) {
-//   const url = "/api/v2/tree-builder/";
-//   const body = {
-//     description: description,
-//     store_results: true,
-//     json_format: "nodelink",
-//   };
-//   Object.assign(body, tbSettingsPyToApi(settings));
-//   try {
-//     await API.post(url, body);
-//     await update();
-//   } catch (error) {
-//     alert("Failed to submit tree builder job: " + error);
-//   }
-// }
 </script>
 
 <style scoped>

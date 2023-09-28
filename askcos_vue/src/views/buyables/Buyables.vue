@@ -252,7 +252,7 @@ const showLoader = computed(() => {
 
 
 onMounted(() => {
-  API.get('/api/v2/buyables/sources/')
+  API.get('/api/buyables/sources/')
     .then(json => {
       buyablesSources.value = json.sources
     });
@@ -275,6 +275,7 @@ const search = () => {
   )
     .then(json => {
       buyables.value = json['result'];
+      console.log(buyables.value)
     })
     .finally(() => {
       pendingTasks.value--
@@ -292,7 +293,7 @@ const handleUploadSubmit = () => {
   formData.append('file', uploadFile.value);
   formData.append('format', uploadFileFormat.value);
   formData.append('allowOverwrite', allowOverwrite.value);
-  API.post('/api/v2/buyables/upload/', formData)
+  API.post('/api/buyables/upload/', formData)
     .then(json => {
       if (json.error) {
         alert(json.error)
@@ -333,7 +334,7 @@ const addBuyable = () => {
     source: addBuyableSource.value,
     allowOverwrite: allowOverwrite.value,
   };
-  API.post('/api/v2/buyables/', body)
+  API.post('/api/buyables/', body)
     .then(json => {
       if (json.error || !json.success) {
         alert('Error adding buyable compound')
@@ -366,7 +367,7 @@ const deleteBuyable = (_id) => {
   }
 
   pendingTasks.value++;
-  API.delete(`/api/v2/buyables/${encodeURIComponent(_id)}`)
+  API.delete(`/api/buyables/${encodeURIComponent(_id)}`)
     .then(json => {
       if (json.error) {
         alert(json.error)
