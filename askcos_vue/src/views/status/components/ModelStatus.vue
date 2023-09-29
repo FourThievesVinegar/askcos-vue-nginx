@@ -27,16 +27,16 @@
           <v-icon :color="item.ready ? 'error' : 'success'"
             :icon="item.ready ? 'mdi-alert-circle' : 'mdi-check-circle'" />
         </template>
-  <template v-slot:item.available_model_names="{ item }">
-    <div v-if="item.columns.available_model_names && item.columns.available_model_names.length > 0">
-      <div v-for="modelName in item.columns.available_model_names" :key="modelName" class="my-2">
-        {{ modelName.trim() }}
-      </div>
-    </div>
-    <div v-else>
-      No available model names
-    </div>
-  </template>
+        <template v-slot:item.available_model_names="{ item }">
+          <div v-if="item.columns.available_model_names && item.columns.available_model_names.length > 0">
+            <div v-for="modelName in item.columns.available_model_names" :key="modelName" class="my-2">
+              {{ modelName.trim() }}
+            </div>
+          </div>
+          <div v-else>
+            No available model names
+          </div>
+        </template>
       </v-data-table>
     </div>
     <div v-if="loading">
@@ -68,7 +68,6 @@ const getStatus = async () => {
     const json = await API.get('/api/admin/get_backend_status');
     data.value = json['modules'];
     date.value = new Date();
-    console.log(data.value)
   } catch (error) {
     console.error(error);
   } finally {
