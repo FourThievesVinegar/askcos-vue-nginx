@@ -51,9 +51,10 @@ const getStatus = async () => {
   loading.value = true
 
   try {
-    const json = await API.get('/api/v2/status/celery/');
+    const json = await API.get('/api/status/celery/get');
     data.value = json['queues'];
     date.value = new Date();
+    console.log(data.value)
   } catch (error) {
     console.error(error)
   } finally {
