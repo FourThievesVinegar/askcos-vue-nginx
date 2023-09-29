@@ -77,8 +77,9 @@ const date = ref(new Date())
 const getStatus = async () => {
   loading.value = true;
   try {
-    const json = await API.get('/api/v2/status/database/');
+    const json = await API.get('/api/status/database/get');
     data.value = json['collections'];
+    console.log(data.value)
     date.value = new Date();
   } catch (error) {
     console.error(error)
