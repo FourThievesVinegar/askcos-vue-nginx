@@ -218,7 +218,7 @@
   <NodeDetail :visible="nodeDetailVisible" :enable-resolver="enableResolver" :selected="selected" @close="closeNodeDetail"
     @expandNode="expandNode" @updatePendingTasks="pendingTasksHandler" ref="node-detail" />
 
-  <SettingsModal :visible="settingsVisible" @update:settingsVisible="settingsVisible = $event"/>
+  <SettingsModal :visible="settingsVisible" @update:settingsVisible="settingsVisible = $event" :template-attributes="templateAttributes" :template-sets="templateSets"/>
 </template>
 
 <script>
