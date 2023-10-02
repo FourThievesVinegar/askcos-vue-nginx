@@ -30,7 +30,7 @@
             <v-col cols="12" md="11">
               <v-row class="px-5 py-4 justify-space-between">
                 <v-btn icon class="bg-red">
-                  <v-icon white>mdi-delete</v-icon>
+                  <v-icon white @click="deleteSelection" :disabled="selection.length === 0" >mdi-delete</v-icon>
                 </v-btn>
                 <v-btn icon class="bg-teal-lighten-3 white">
                   <v-icon>mdi-refresh</v-icon>
@@ -45,10 +45,10 @@
              <v-sheet width="100%" class="pa-6">
             <v-row v-if="allResults.length">
               <v-col cols="12">
-                <v-data-table :headers="headers" item-value="description" :items="allResults" show-select
+                <v-data-table :headers="headers" item-value="result_id" :items="allResults" show-select
                   v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10" height="400px">
                                     <template v-slot:item.delete="{ item }">
-                      <v-icon @click="deleteResult(item.key)"
+                      <v-icon @click="deleteResult(item.raw.result_id)"
                         class="text-center">mdi-delete</v-icon>
                     </template>
                   <template #item.public="{ item }">
@@ -179,7 +179,7 @@ const deleteResult = (id, skipConfirm = false) => {
   if (skipConfirm || window.confirm('Click "OK" to confirm deleting this result')) {
     pendingTasks.value += 1;
     try {
-      const json = API.delete(`/api/results/destroy?result_id=${id}/`);
+      const json = API.delete(`/api/results/destroy?result_id=${id}`);
       if (json.success) {
         for (let i = 0; i < allResults.value.length; i++) {
           if (allResults.value[i]["id"] === id) {
