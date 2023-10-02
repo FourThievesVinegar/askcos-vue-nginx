@@ -186,44 +186,42 @@
                                                                                         <tr v-for="(filter, afIdx) in prioritizer.attribute_filter"
                                                                                             :key="`p-${idx}-${pIdx}-f-${afIdx}`">
                                                                                             <td style="width: 30%">
-                                                                                                <b-form-select class="mr-2"
-                                                                                                    size="sm"
-                                                                                                    :options="templateAttributes[strategy.templatePrioritizers[pIdx]['template_set']]"
+                                                                                                <v-select class="mr-2"
+                                                                                                    variant="outlined"
+                                                                                                    density="compact"
+                                                                                                    :items="templateAttributes[strategy.templatePrioritizers[pIdx]['template_set']]"
                                                                                                     :value="filter.name"
-                                                                                                    @input="updateAttributeFilter(idx, pIdx, afIdx, 'name', $event)">
-                                                                                                </b-form-select>
+                                                                                                    @input="updateAttributeFilter(idx, pIdx, afIdx, 'name', $event)"
+                                                                                                    hide-details>
+                                                                                                </v-select>
                                                                                             </td>
                                                                                             <td style="width: 30%">
-                                                                                                <b-form-select class="mr-2"
-                                                                                                    size="sm"
+                                                                                                <v-select class="mr-2"
+                                                                                                    variant="outlined"
+                                                                                                    density="compact"
+                                                                                                    :items="['>', '>=', '&lt;', '&le;', '==']"
                                                                                                     :value="filter.logic"
-                                                                                                    @input="updateAttributeFilter(idx, pIdx, afIdx, 'logic', $event)">
-                                                                                                    <b-form-select-option
-                                                                                                        value=">">&gt;</b-form-select-option>
-                                                                                                    <b-form-select-option
-                                                                                                        value=">=">&ge;</b-form-select-option>
-                                                                                                    <b-form-select-option
-                                                                                                        value="<">&lt;</b-form-select-option>
-                                                                                                    <b-form-select-option
-                                                                                                        value="<=">&le;</b-form-select-option>
-                                                                                                    <b-form-select-option
-                                                                                                        value="==">=</b-form-select-option>
-                                                                                                </b-form-select>
+                                                                                                    @input="updateAttributeFilter(idx, pIdx, afIdx, 'logic', $event)"
+                                                                                                    hide-details>
+                                                                                                </v-select>
                                                                                             </td>
                                                                                             <td style="width: 30%">
-                                                                                                <b-form-input class="mr-2"
-                                                                                                    size="sm" type="number"
+                                                                                                <v-text-field class="mr-2"
+                                                                                                    variant="outlined"
+                                                                                                    size="small"
+                                                                                                    density="compact"
+                                                                                                    type="number"
                                                                                                     :value="filter.value"
-                                                                                                    @input="updateAttributeFilter(idx, pIdx, afIdx, 'value', $event)"></b-form-input>
+                                                                                                    @input="updateAttributeFilter(idx, pIdx, afIdx, 'value', $event)"
+                                                                                                    hide-details></v-text-field>
                                                                                             </td>
                                                                                             <td style="width: 10%">
-                                                                                                <b-button variant="link"
-                                                                                                    size="sm"
-                                                                                                    class="text-danger"
+                                                                                                <v-btn variant="plain"
+                                                                                                    size="small"
+                                                                                                    density="compact"
+                                                                                                    icon="mdi-close"
                                                                                                     @click="deleteAttributeFilter(idx, pIdx, afIdx)">
-                                                                                                    <i
-                                                                                                        class="fas fa-times"></i>
-                                                                                                </b-button>
+                                                                                                </v-btn>
                                                                                             </td>
                                                                                         </tr>
                                                                                     </tbody>
@@ -232,7 +230,6 @@
                                                                         </tr>
                                                                     </template>
                                                                 </tbody>
-
                                                             </table>
                                                         </div>
                                                     </div>
@@ -1067,9 +1064,7 @@ export default {
 };
 </script>
   
-<style>
-.modal-right {
+<style>.modal-right {
     margin: 1.75rem 1.75rem 1.75rem auto !important;
-}
-</style>
+}</style>
   

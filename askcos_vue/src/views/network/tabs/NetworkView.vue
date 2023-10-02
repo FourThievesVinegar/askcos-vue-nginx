@@ -39,7 +39,7 @@
             </v-text-field></v-col>
         </v-row>
         <v-row class="justify-center align-center"><span class="text-overline">Using model(s):</span>
-          <div v-if="settingsStore.tbSettings.strategies.length !== 0" class="pa-0">
+          <div v-if="settingsStore.tbSettings.strategies.length !== 0" class="pa-0 test">
             <v-chip v-for="(strategy, idx) in settingsStore.tbSettings.strategies" :key="idx" class="text-overline">
               {{ strategy.model }}
             </v-chip>
@@ -1896,6 +1896,13 @@ export default {
 </script>
 
 <style>
+.test{
+  max-width: 800px;
+
+  white-space: nowrap;
+  overflow-x: auto; /* Enable horizontal scrollbar for overflow */
+}
+
 .target-input .v-input__control {
   background-color: white;
 }
