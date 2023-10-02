@@ -46,6 +46,9 @@ export default defineConfig({
       // FastAPI Gateway
       '/api/admin' : fastapiGatewayPtr,
       '/api/banlist': fastapiGatewayPtr,
+      '/api/buyables': fastapiGatewayPtr, 
+      '/api/results': fastapiGatewayPtr,
+      '/api/status': fastapiGatewayPtr,
       // Legacy Django Gateway
       '/api': {
         target: 'https://askcos-demo.mit.edu',

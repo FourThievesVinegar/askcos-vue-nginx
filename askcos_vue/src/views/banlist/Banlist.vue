@@ -34,12 +34,15 @@
               <v-tab>Reactions</v-tab>
             </v-tabs>
             <v-sheet width="100%" class="pa-6">
+              <v-select  v-if="tabItems.length || filterActive !== 'all'" v-model="filterActive" :items="filterOptions" item-text="title" item-value="key" label="Filter by status" density="comfortable" variant="outlined" hide-details
+                              clearable></v-select>
               <v-row v-if="tabItems.length">
                 <v-col cols="12">
-                  <!-- <pre>{{ tabItems }}</pre> -->
                   <v-data-table :headers="headers" :items="tabItems" :items-per-page="10" height="400px">
                     <template v-slot:item.active="{ item }">
-                      <v-btn @click="item.columns.active = !item.columns.active" small>
+                      <v-btn @click="toggleActivation(item, activeTab === 0 ? 'chemicals' : 'reactions')" small>
+                        <v-icon v-if="item.columns.active">mdi-check-circle</v-icon>
+                        <v-icon v-else>mdi-cancel</v-icon>
                         {{ item.columns.active ? 'Active' : 'Inactive' }}
                       </v-btn>
                     </template>
@@ -57,11 +60,15 @@
               </v-row>
               <v-row v-else class="px-10 py-10">
                 <v-col cols="12" class="d-flex justify-center align-center">
-                  <div class="text-center">
+                  <div v-if="filterActive == 'all'" class="text-center">
                     <v-img :width="400" cover :src="banlist"></v-img>
                     <h2 class="mt-6">No Ban Items</h2>
-                    <p class="text-body-1">Please check back later</p>
+                    <p class="text-body-1"  >Please check back later</p>
                   </div>
+                   <div v-else class="text-center">
+                      <v-img :width="400" cover :src="banlist"></v-img>
+                      <h2 class="mt-6">No Ban Items</h2>
+                    </div>
                 </v-col>
               </v-row>
             </v-sheet>
@@ -106,7 +113,7 @@
 
 <script setup>
 import banlist from "@/assets/banlist.svg";
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import SmilesImage from "@/components/SmilesImage.vue";
 import CopyTooltip from "@/components/CopyTooltip";
 import { API } from "@/common/api";
@@ -123,9 +130,9 @@ const newType = ref("chemicals");
 const filterActive = ref('all');
 const pendingTasks = ref(0);
 const filterOptions = ref([
-  { text: 'All', value: 'all' },
-  { text: 'Active', value: 'active' },
-  { text: 'Inactive', value: 'inactive' },
+  { key: 'all', title: 'All' },
+  { key: 'active', title: 'Active' },
+  { key: 'inactive', title: 'Inactive' },
 ]);
 const headers = ref([
   { key: 'active', title: 'Active' },
@@ -158,27 +165,17 @@ onMounted(() => {
   loadCollection('reactions');
 });
 
+
 const tabItems = computed(() => {
-  return activeTab.value === 0 ? chemicals.value : reactions.value;
-});
-
-const filteredChemicals = computed(() => {
-  if (filterActive.value === 'active') {
-    return chemicals.value.filter(entry => entry.active)
-  } else if (filterActive.value === 'inactive') {
-    return chemicals.value.filter(entry => !entry.active)
-  } else {
-    return chemicals.value
-  }
-});
-
-const filteredReactions = computed(() => {
-  if (filterActive.value === 'active') {
-    return reactions.value.filter(entry => entry.active)
-  } else if (filterActive.value === 'inactive') {
-    return reactions.value.filter(entry => !entry.active)
-  } else {
-    return reactions.value
+let items = activeTab.value === 0 ? chemicals.value : reactions.value;
+ console.log(items)
+  switch (filterActive.value) {
+    case 'active':
+      return items.filter(item => item.active === true);
+    case 'inactive':
+      return items.filter(item => item.active === false);
+    default:
+      return items;
   }
 });
 
@@ -200,7 +197,7 @@ const addEntry = () => {
     })
     .catch(error => console.log(error))
     .finally(() => {
-      loadCollection(newType.value === 'chemicals'? 'chemicals': 'reactions');
+      loadCollection(newType.value === 'chemicals' ? 'chemicals' : 'reactions');
       showModal.value = false;
       nextTick(() => {
         if (newType.value === 'chemicals') {
@@ -208,12 +205,10 @@ const addEntry = () => {
         } else {
           activeTab.value = 1;
         }
-      pendingTasks.value--;
+        pendingTasks.value--;
       });
     })
 }
-
-
 
 const deleteEntry = (id, category) => {
   pendingTasks.value++;
@@ -245,42 +240,24 @@ const deleteReaction = (id) => {
   loadCollection('reactions');
 }
 
-// const toggleActivation = (id, category, action) => {
-//   pendingTasks.value++;
-//   API.get(`/api/v2/banlist/${category}/${encodeURIComponent(id)}/${action}/`)
-//     .then(json => {
-//       if (json['success']) {
-//         const updatedEntry = json['data'];
-//         updatedEntry.created = dayjs(updatedEntry.created).format('MMMM D, YYYY h:mm A');
-//         const collection = category === 'chemicals' ? chemicals.value : reactions.value
-//         for (let i = 0; i < collection.length; i++) {
-//           if (collection[i]['id'] === id) {
-//             collection.splice(i, 1, updatedEntry)
-//             break
-//           }
-//         }
-//       }
-//     })
-//     .finally(() => {
-//       pendingTasks.value--;
-//     })
-// }
-
-// const activateChemical = (id) => {
-//   toggleActivation(id, 'chemicals', 'activate')
-// }
-
-// const deactivateChemical = (id) => {
-//   toggleActivation(id, 'chemicals', 'deactivate')
-// }
-
-// const activateReaction = (id) => {
-//   toggleActivation(id, 'reactions', 'activate')
-// }
-
-// const deactivateReaction = (id) => {
-//   toggleActivation(id, 'reactions', 'deactivate')
-// }
+const toggleActivation = async (item, category) => {
+  const action = item.columns.active ? 'deactivate' : 'activate';
+  try {
+    const response = await API.get(`/api/banlist/${category}/${action}`, {
+      _id: item.raw.id
+    });
+    const data = await response.json();
+    if (data.success) {
+      item.columns.active = !item.columns.active;
+    } else {
+      console.error("Failed to toggle activation:", data.message);
+    }
+  } catch (error) {
+    console.error("Error toggling activation:", error);
+  }
+  item.columns.active = !item.columns.active;
+  loadCollection(category);
+};
 
 </script>
 

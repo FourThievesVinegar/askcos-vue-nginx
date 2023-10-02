@@ -3,7 +3,7 @@
  */
 import Cookies from 'js-cookie';
 
-const authMigratedAPI = ["/api/banlist"];
+const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/status"];
 
 const API = {
   pollInterval: 1000,
