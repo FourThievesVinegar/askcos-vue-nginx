@@ -94,7 +94,7 @@
             <v-tab @click="replaceRoute('forward')" value="forward">Synthesis Prediction</v-tab>
             <v-tab @click="replaceRoute('impurity')" value="impurity">Impurity Prediction</v-tab>
             <v-tab @click="replaceRoute('selectivity')" value="selectivity">Regioselectivity Prediction</v-tab>
-            <v-tab @click="replaceRoute('sites')" value="sites">Site Selectivity Prediction</v-tab>
+            <v-tab @click="replaceRoute('sites')" value="sites" disabled>Site Selectivity Prediction</v-tab>
           </v-tabs>
         </v-sheet>
 
@@ -271,14 +271,14 @@ const contextResults = ref([]);
 
 const contextV2ModelType = ref('fp-small');
 const contextV2ModelVersion = ref('20191118');
-const forwardModel = ref('wln_forward');
-const forwardModelTrainingSet = ref('uspto_500k');
-const forwardModelVersion = ref('1');
+const forwardModel = ref('wldn5');
+const forwardModelTrainingSet = ref("pistachio");
+// const forwardModelVersion = ref('1');
 const numContextResults = ref(10);
 const numForwardResults = ref(100);
 const impurityTopk = ref(3);
 const inspectionThreshold = ref(0.1);
-const inspectionModel = ref('WLN forward inspector');
+const inspectionModel = ref('Reaxys inspector');
 const impurityCheckMapping = ref(true);
 const absoluteReagents = ref(true);
 const forwardResults = ref([])
@@ -459,18 +459,17 @@ const mode = computed(() => {
 })
 
 const forwardModels = computed(() => {
-  const models = new Set()
-  const types = ['wln_forward', 'graph2smiles']
+  const models = new Set();
+  const types = ["forward_augmented_transformer", "forward_graph2smiles", "forward_wldn5"];
+
   modelStatus.value
-    .filter(item => types.includes(item['type']) && item['ready'])
+    .filter(item => types.includes(item['name']) && item['ready'])
     .forEach(item => {
-      if (item['name'].startsWith('wln_forward')) {
-        models.add('wln_forward')
-      } else {
-        models.add(item['name'])
-      }
-    })
-  return Array.from(models).sort()
+      let modelName = item['name'].replace('forward_', '');
+      models.add(modelName);
+    });
+
+  return Array.from(models).sort();
 });
 
 const goToForward = (index) => {
@@ -508,22 +507,26 @@ const goToImpurity = (smiles) => {
 
 const forwardModelTrainingSets = computed(() => {
   const sets = new Set();
+  let modelNameWithPrefix = forwardModel.value.replace('', 'forward_');
   modelStatus.value
-    .filter(item => item.name.startsWith(forwardModel.value) && item.ready)
+    .filter(item => item.name.startsWith(modelNameWithPrefix) && item.ready)
     .forEach(item => {
-      sets.add(item.training_set);
+      if (Array.isArray(item.available_model_names)) {
+        item.available_model_names.forEach(modelName => {
+          sets.add(modelName);
+        });
+      }
     });
+
   return Array.from(sets).sort();
 });
 
-const forwardModelVersions = computed(() => {
-  const versions = new Set();
-  modelStatus.value
-    .filter(item => item.name.startsWith(forwardModel.value) && item.training_set === forwardModelTrainingSet.value && item.ready)
-    .forEach(item => {
-      item.versions.forEach(v => versions.add(v));
-    });
-  return Array.from(versions).sort();
+watch(forwardModel, () => {
+  if (forwardModelTrainingSets.value.length > 0) {
+    forwardModelTrainingSet.value = forwardModelTrainingSets.value[0];
+  } else {
+    forwardModelTrainingSet.value = null;
+  }
 });
 
 
@@ -606,8 +609,9 @@ const impurityPredict = () => {
     impurityProgress.value.message = 'Impurity prediction failed!';
   };
 
-  API.runCeleryTask('/api/v2/impurity/', postData, progress)
+  API.runCeleryTask('/api/impurity_predictor/call_async', postData, progress)
     .then(output => {
+      console.log(output)
       complete(output);
 
     })
@@ -622,25 +626,27 @@ const impurityPredict = () => {
 
 const constructImpurityPostData = () => {
   let data = {
-    reactants: reactants.value,
-    training_set: forwardModelTrainingSet.value,
-    model_version: forwardModelVersion.value,
-    top_k: impurityTopk.value,
-    threshold: inspectionThreshold.value,
+    rct_smi: reactants.value,
+    predictor_model_name: forwardModelTrainingSet.value,
+    predictor_backend: forwardModel.value,
+    topn_outcome: impurityTopk.value,
     check_mapping: impurityCheckMapping.value,
-    inspector: inspectionModel.value
+    insp_threshold: inspectionThreshold.value,
+    inspector: inspectionModel.value,
+    atom_map_backend: "indigo",
+     priority: numForwardResults.value
   };
 
   if (product.value) {
-    data.products = product.value;
+    data.prd_smi = product.value;
   }
 
   if (reagents.value) {
-    data.reagents = reagents.value;
+    data.rea_smi = reagents.value;
   }
 
   if (solvent.value) {
-    data.solvent = solvent.value;
+    data.sol_smi = solvent.value;
   }
 
   return data;
@@ -674,9 +680,10 @@ const updateFromURL = () => {
 };
 
 onMounted(() => {
-  API.get('/api/v2/status/ml/')
+  API.get('/api/admin/get_backend_status')
     .then(json => {
-      modelStatus.value = json['models'];
+      console.log(json['modules'])
+      modelStatus.value = json['modules'];
     });
   updateFromURL();
   if (reactants.value) {
@@ -695,8 +702,9 @@ const forwardPredict = async () => {
   }
   const postData = constructForwardPostData(reagents.value, solvent.value);
   try {
-    const output = await API.runCeleryTask('/api/v2/forward/', postData);
-    forwardResults.value = output;
+    const output = await API.runCeleryTask('/api/forward/controller/call_async', postData);
+    forwardResults.value = output.result[0];
+     console.log(forwardResults.value)
   } catch (error) {
     console.error('Error in forward prediction:', error);
   } finally {
@@ -706,11 +714,10 @@ const forwardPredict = async () => {
 
 const constructForwardPostData = (reagents, solvent) => {
   let data = reactive({
-    reactants: reactants.value,
-    model_name: forwardModel.value,
-    training_set: forwardModelTrainingSet.value,
-    model_version: forwardModelVersion.value,
-    num_results: numForwardResults.value
+    smiles: [reactants.value],
+    backend: forwardModel.value,
+    model_name: forwardModelTrainingSet.value,
+    priority: numForwardResults.value  
   });
 
   if (reagents) {
@@ -906,14 +913,6 @@ const getMolImgUrl = (smiles, highlight, reactingAtoms) => {
   return url;
 };
 
-// watch(forwardModel, (newValue) => {
-//   forwardModelTrainingSet.value = forwardModelTrainingSets.value[0];
-// });
-
-
-// watch(() => settings.value.forwardModelTrainingSet, (newValue) => {
-//   forwardModelVersion.value = forwardModelVersions.value[0];
-// });
 
 </script>
 

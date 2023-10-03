@@ -4,7 +4,7 @@
 
 import Cookies from 'js-cookie';
 
-const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/status", "/api/tree_search"];
+const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/status", "/api/tree_search", "/api/impurity_predictor", "/api/forward", "/api/legacy" ];
 
 const API = {
   pollInterval: 1000,
@@ -117,7 +117,14 @@ const API = {
 
   runCeleryTask(endpoint, data, progress) {
     return this.post(endpoint, data)
-      .then((json) => this.pollCeleryResult(json, progress));
+      .then((json) => {
+        if (json.task_id) {
+          return this.pollCeleryResult(json.task_id, progress);
+        }
+        else {
+          return this.pollCeleryResult(json, progress);
+        }
+      });
   },
 
   pollCeleryResult(taskId, progress) {

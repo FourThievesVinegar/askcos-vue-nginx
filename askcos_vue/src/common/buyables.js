@@ -39,7 +39,7 @@ function getBuyables(smiles, sources, regex, returnLimit, tanSim) {
   // Convenience function for GET requests to buyables endpoint
   // smiles should be array SMILES string
   // sources should be array of sources or comma delimited string (optional)
-  const url = '/api/buyables/';
+  const url = '/api/buyables/list_buyables/';
   const params = new URLSearchParams();
   if (smiles) {
     params.append('q', smiles);
@@ -64,7 +64,7 @@ function lookupBuyables(smiles, sources, canonicalize) {
   // Convenience function for POST requests to buyables lookup endpoint
   // smiles should be array of SMILES strings
   // sources should be array of sources or comma delimited string (optional)
-  const url = '/api/buyables/lookup/';
+  const url = '/api/buyables/lookup';
   const body = { smiles };
   if (sources) {
     body.source = processSources(sources);

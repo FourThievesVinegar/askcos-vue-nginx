@@ -32,7 +32,7 @@
                 <v-btn icon class="bg-red">
                   <v-icon white @click="deleteSelection" :disabled="selection.length === 0" >mdi-delete</v-icon>
                 </v-btn>
-                <v-btn icon class="bg-teal-lighten-3 white">
+                <v-btn icon class="bg-teal-lighten-3 white" @click="update">
                   <v-icon>mdi-refresh</v-icon>
                 </v-btn>
               </v-row>
@@ -46,31 +46,31 @@
             <v-row v-if="allResults.length">
               <v-col cols="12">
                 <v-data-table :headers="headers" item-value="result_id" :items="allResults" show-select
-                  v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10" height="400px">
+                  v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10" height="400px" :search ="searchQuery">
                                     <template v-slot:item.delete="{ item }">
                       <v-icon @click="deleteResult(item.raw.result_id)"
                         class="text-center">mdi-delete</v-icon>
                     </template>
                   <template #item.public="{ item }">
                     <v-icon  v-if="item.columns.public===true" >
-                      mdi-share
+                     mdi-check
                     </v-icon>
                   </template>
                   <template v-slot:expanded-row="{ columns, item }">
                   <tr>
                     <td :colspan="columns.length">
-                        <div class="d-flex justify-space-evenly my-3">
-                           <span class="text-center">Found {{ item.columns.description }} Tree</span>
-                          <v-btn color="primary" variant="tonal">
+                        <div class="d-flex justify-space-evenly my-3" >
+                           <span class="text-center" v-if="item.columns.num_trees !== undefined">Found {{ item.columns.description }} Tree</span>
+                          <v-btn color="primary" variant="tonal"   v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'">
                             View trees
                           </v-btn>
                           <v-btn color="primary" variant="tonal">
                             View in IPP
                           </v-btn>
-                          <v-btn color="primary" variant="tonal">
+                          <v-btn color="primary" variant="tonal" v-if="item.columns.result_type === 'tree_builder'" @click="sendTreeBuilderJob(data.item.description, data.item.settings)">
                             View Settings
                           </v-btn>
-                          <v-btn class="bg-teal-lighten-3" variant="tonal">
+                          <v-btn class="bg-teal-lighten-3" variant="tonal" @click="showShareModal = !showShareModal">
                             <v-icon color="white">
                               mdi-share
                             </v-icon>
@@ -96,10 +96,24 @@
       </v-col>
     </v-row>
   </v-container>
+
+    <v-dialog v-model="showShareModal" max-width="600px">
+      <v-card>
+        <v-card-title class="headline">Share Result</v-card-title>
+        <v-card-text>
+          <p>Use the following link to share this result:</p>
+          <v-text-field :value="shareLink" readonly append-icon="mdi-content-copy" @click:append="copyToClipboard"></v-text-field>
+          <v-alert type="warning">Please note that shared results cannot be edited and saved simultaneously by multiple users.</v-alert>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn text @click="showShareModal = false">Ok</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import results from "@/assets/results.svg";
 import { API } from "@/common/api";
 import dayjs from "dayjs";
@@ -111,6 +125,12 @@ const selection = ref([]);
 const selectAll = ref(false);
 const expanded = ref([]);
 const searchQuery = ref("");
+const showSharedResultModal = ref(false);
+const showShareModal = ref(false);
+const shareLink = ref("");
+const sharedResult = ref(null);
+
+const showLoader = computed(() => pendingTasks.value > 0);
 
 const headers = ref([
   { key: 'description', title: 'Result' },
@@ -121,16 +141,16 @@ const headers = ref([
   { key: 'delete', title: 'Delete' },
 ]);
 
-onMounted(() => {
+onMounted(async () => {
   const urlParams = new URLSearchParams(window.location.search);
-  // let sharedId = urlParams.get("shared");
-  // if (sharedId) {
-  //   await addSharedResult(sharedId);
-  //   await update();
-  //   showSharedResultModal.value = true;
-  // } else {
-  update();
-  // }
+  let sharedId = urlParams.get("shared");
+  if (sharedId) {
+    await addSharedResult(sharedId);
+    await update();
+    showSharedResultModal.value = true;
+  } else {
+    await update();
+  }
 });
 
 watch(selectAll, (newVal) => {
@@ -140,6 +160,41 @@ watch(selectAll, (newVal) => {
     selection.value = [];
   }
 });
+
+async function shareResult(id) {
+  pendingTasks.value += 1;
+  try {
+    const params = new URLSearchParams();
+    params.append('result_id', id);
+    const json = await API.get(`/api/results/share?${params.toString()}`);
+    shareLink.value = json.url;
+    showShareModal.value = true;
+    for (const res of allResults.value) {
+      if (res.id === id) {
+        res.public = true;
+        break;
+      }
+    }
+  } catch (error) {
+    alert("Could not share result: " + error);
+  } finally {
+    pendingTasks.value -= 1;
+  }
+}
+
+async function addSharedResult(id) {
+  pendingTasks.value += 1;
+  try {
+    const json = await API.get(`/api/v2/results/${id}/add/`);
+    json.result.created = dayjs(json.result.created);
+    json.result.modified = dayjs(json.result.modified);
+    sharedResult.value = json.result;
+  } catch (error) {
+    alert("Could not add shared result: " + error);
+  } finally {
+    pendingTasks.value -= 1;
+  }
+}
 
 
 const update = async () => {
@@ -152,7 +207,6 @@ const update = async () => {
         doc.modified = dayjs(doc.modified).format('MMMM D, YYYY h:mm A');
       });
       allResults.value = response;
-      console.log(allResults.value)
       totalItems.value = response.length;
     } else {
       console.error("API did not return an array as expected:", response);
@@ -194,6 +248,22 @@ const deleteResult = (id, skipConfirm = false) => {
   update()
 }
 
+// const sendTreeBuilderJob = (description, settings) => {
+//   const url = "/api/tree_search/mcts/call_async";
+//   const body = {
+//     description: description,
+//     store_results: true,
+//     json_format: "nodelink",
+//   };
+//   Object.assign(body, tbSettingsPyToApi(settings));
+//   try {
+//      API.post(url, body);
+//      update();
+//   } catch (error) {
+//     alert("Failed to submit tree builder job: " + error);
+//   }
+// }
+
 </script>
 
 <style scoped>
@@ -202,3 +272,4 @@ const deleteResult = (id, skipConfirm = false) => {
   text-justify: inter-word;
 }
 </style>
+

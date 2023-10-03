@@ -149,8 +149,6 @@ import { ref, watch } from 'vue'
 
 const showDialog = ref(false)
 
-console.log('Initial models:', models);
-
 const { results, models, pending } = defineProps({
     inheritAttrs: false,
     results: {

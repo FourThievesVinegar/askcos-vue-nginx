@@ -80,7 +80,8 @@
                   </copy-tooltip>
                 </template>
                 <template v-slot:item.delete="{ item }">
-                  <v-icon @click="deleteBuyable(item.raw._id)" class="text-center">mdi-delete</v-icon>
+                  <pre>{{ item }}</pre>
+                  <v-icon @click="deleteBuyable(item.index)" class="text-center">mdi-delete</v-icon>
                 </template>
               </v-data-table>
             </v-col>
@@ -274,8 +275,8 @@ const search = () => {
     simThresh.value
   )
     .then(json => {
+      console.log(json)
       buyables.value = json['result'];
-      console.log(buyables.value)
     })
     .finally(() => {
       pendingTasks.value--
@@ -367,7 +368,7 @@ const deleteBuyable = (_id) => {
   }
 
   pendingTasks.value++;
-  API.delete(`/api/buyables/${encodeURIComponent(_id)}`)
+  API.delete(`/api/buyables/destroy/${encodeURIComponent(_id)}`)
     .then(json => {
       if (json.error) {
         alert(json.error)
