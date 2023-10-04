@@ -41,7 +41,7 @@
         <v-row class="justify-center align-center"><span class="text-overline">Using model(s):</span>
           <div v-if="settingsStore.tbSettings.strategies.length !== 0" class="pa-0 test">
             <v-chip v-for="(strategy, idx) in settingsStore.tbSettings.strategies" :key="idx" class="text-overline">
-              {{ strategy.model }}
+              {{ strategy.retro_backend }}
             </v-chip>
           </div>
           <div v-else>No strategy added</div>
@@ -319,7 +319,7 @@ export default {
       }
     });
 
-    API.get("/api/v2/template/sets/").then((json) => {
+    API.get("/api/template/sets/").then((json) => {
       this.templateAttributes = json.attributes;
       for (let templateSet of json["template_sets"]) {
         this.templateSets[templateSet] = [];

@@ -78,8 +78,8 @@ export const useSettingsStore = defineStore("settings", {
       this[key] = value;
     },
     // Mutations for individual options
-    addAttributeFilter({ strategyIndex, prioritizerIndex, item }) {
-      this.tbSettings.strategies[strategyIndex].templatePrioritizers[prioritizerIndex]["attribute_filter"].push(item);
+    addAttributeFilter({ strategyIndex, item }) {
+      this.tbSettings.strategies[strategyIndex]["attribute_filter"].push(item);
     },
     deleteAttributeFilter({ strategyIndex, prioritizerIndex, attrFilterIndex }) {
       this.tbSettings.strategies[strategyIndex].templatePrioritizers[prioritizerIndex]["attribute_filter"].splice(attrFilterIndex, 1);

@@ -85,153 +85,126 @@
                                                     <setting-input label="Model"
                                                         help-text="Select model to use for this strategy" class="mb-2">
                                                         <v-select :items="models" variant="outlined" density="compact"
-                                                            hide-details v-model="strategy.model"></v-select>
+                                                            hide-details :model-value="strategy.retro_backend"
+                                                            @update:modelValue="($event) => {
+                                                                updateStrategy(idx, 'retro_backend', $event);
+                                                                updateStrategy(idx, 'trainingSet', trainingSets($event)[0]);
+                                                            }
+                                                                "></v-select>
                                                     </setting-input>
-                                                    <setting-input v-if="strategy.model !== 'template_relevance'"
+                                                    <setting-input v-if="strategy.retro_backend !== 'template_relevance'"
                                                         label="Training Set"
                                                         help-text="By specifiying this you can change the type of the model used for prediction"
                                                         class="mb-2">
                                                         <v-select density="compact" hide-details
-                                                            @input="($event) => updateStrategy(idx, 'trainingSet', $event)"
-                                                            :value="strategy.trainingSet" variant="outlined">
-                                                            <!-- <b-form-select-option
-                                                                v-for="trainingSet in trainingSets(strategy.model)"
-                                                                :value="trainingSet" :key="trainingSet">{{ trainingSet
-                                                                }}</b-form-select-option> -->
+                                                            :model-value="strategy.trainingSet" variant="outlined"
+                                                            @update:modelValue="($event) => updateStrategy(idx, 'trainingSet', $event)"
+                                                            :items="trainingSets(strategy.retro_backend)">
                                                         </v-select>
                                                     </setting-input>
                                                     <div v-else class="mt-4">
-                                                        <setting-input label="Template prioritizers" help-text="Specify the template prioritizers you wish to use for one-step retro predictions.
+                                                        <setting-input label="Template Set" help-text="Specify the template prioritizers you wish to use for one-step retro predictions.
                           If multiple prioritizers are selected, their predictions will be combined.
                           All prioritizers selected here are subject to the remaining template options.">
-                                                            <v-btn @click="addTemplatePrioritizer(idx)"> Add <i
-                                                                    class="fas fa-plus"></i> </v-btn>
+                                                            <v-select class="mr-2" density="compact" variant="outlined"
+                                                                :items="Object.keys(templateSets).filter((key) => templateSets[key].length)"
+                                                                :model-value="strategy.retro_model_name"
+                                                                @update:modelValue="($event) => updateStrategy(idx, 'retro_model_name', $event)"
+                                                                hide-details>
+                                                            </v-select>
                                                         </setting-input>
                                                         <div class="ml-3 mt-6">
-                                                            <table class="table table-borderless table-sm"
-                                                                style="table-layout: fixed; width:100%">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <td style="width: 10%"></td>
-                                                                        <td style="width: 54%">
-                                                                            Template Set
-                                                                            <i v-b-tooltip class="fas fa-info-circle mr-1"
-                                                                                title="The source of the template set data for the template prioritizer model, depending on what models are available."></i>
-                                                                        </td>
-                                                                        <td style="width: 27%">
-                                                                            Version
-                                                                            <i v-b-tooltip class="fas fa-info-circle mr-1"
-                                                                                title="The version of template prioritizer model, depending on what models are available."></i>
-                                                                        </td>
-                                                                        <td style="width: 9%"></td>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <!-- eslint-disable-next-line vue/no-v-for-template-key -->
-                                                                    <template
-                                                                        v-for="(prioritizer, pIdx) in strategy.templatePrioritizers"
-                                                                        :key="pIdx">
-                                                                        <tr class="border-top">
-                                                                            <td class="align-middle">{{ pIdx + 1 }}</td>
-                                                                            <td>
-                                                                                <v-select class="mr-2" density="compact"
-                                                                                    variant="outlined"
-                                                                                    :items="Object.keys(templateSets).filter((key) => templateSets[key].length)"
-                                                                                    :model-value="prioritizer.template_set"
-                                                                                    @update:modelValue="resetTemplateSetVersion(idx, pIdx, $event)"
-                                                                                    hide-details>
-                                                                                </v-select>
-                                                                            </td>
-                                                                            <td>
-                                                                                <v-select class="mr-2" density="compact"
-                                                                                    variant="outlined"
-                                                                                    :items="templateSets[prioritizer.template_set]"
-                                                                                    :value="prioritizer.version"
-                                                                                    @input="updateTemplatePrioritizer(idx, pIdx, 'version', $event)"
-                                                                                    hide-details>
-                                                                                </v-select>
-                                                                            </td>
-                                                                            <td>
-                                                                                <v-btn size="small" density="compact"
-                                                                                    variant="plain"
-                                                                                    @click="deleteTemplatePrioritizer(idx, pIdx)"
-                                                                                    icon="mdi-close">
-                                                                                </v-btn>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr v-if="templateAttributes && templateAttributes[prioritizer.template_set] && templateAttributes[prioritizer.template_set].length"
-                                                                            :key="`p-${pIdx}-t`">
-                                                                            <td></td>
-                                                                            <td class="align-middle">
-                                                                                Template attribute filters
-                                                                                <i class="fas fa-info-circle mr-1" title="Filter templates based on pre-computed attributes prior to application to the target molecule.
+                                                                    <div v-if="templateAttributes && templateAttributes[strategy.retro_model_name] && templateAttributes[strategy.retro_model_name].length"
+                                                                        :key="`p-${pIdx}-t`">
+                                                                        <div class="align-middle">
+                                                                            Template attribute filters
+                                                                            <i class="fas fa-info-circle mr-1" title="Filter templates based on pre-computed attributes prior to application to the target molecule.
                                     Max. num. templates. and Max cum. prob. are applied after filtering."></i>
-                                                                            </td>
-                                                                            <td>
-                                                                                <v-btn variant="link" size="sm"
-                                                                                    @click="addAttributeFilter(idx, pIdx)">
-                                                                                    Add <i class="fas fa-plus"></i>
-                                                                                </v-btn>
-                                                                            </td>
-                                                                            <td></td>
-                                                                        </tr>
-                                                                        <tr v-if="prioritizer.attribute_filter && prioritizer.attribute_filter.length"
-                                                                            :key="`p-${pIdx}-f`">
-                                                                            <td></td>
-                                                                            <td colspan="3" class="p-0">
-                                                                                <table
-                                                                                    class="table table-borderless table-sm m-0"
-                                                                                    style="table-layout: fixed">
-                                                                                    <tbody>
-                                                                                        <tr v-for="(filter, afIdx) in prioritizer.attribute_filter"
-                                                                                            :key="`p-${idx}-${pIdx}-f-${afIdx}`">
-                                                                                            <td style="width: 30%">
-                                                                                                <v-select class="mr-2"
-                                                                                                    variant="outlined"
-                                                                                                    density="compact"
-                                                                                                    :items="templateAttributes[strategy.templatePrioritizers[pIdx]['template_set']]"
-                                                                                                    :value="filter.name"
-                                                                                                    @input="updateAttributeFilter(idx, pIdx, afIdx, 'name', $event)"
-                                                                                                    hide-details>
-                                                                                                </v-select>
-                                                                                            </td>
-                                                                                            <td style="width: 30%">
-                                                                                                <v-select class="mr-2"
-                                                                                                    variant="outlined"
-                                                                                                    density="compact"
-                                                                                                    :items="['>', '>=', '&lt;', '&le;', '==']"
-                                                                                                    :value="filter.logic"
-                                                                                                    @input="updateAttributeFilter(idx, pIdx, afIdx, 'logic', $event)"
-                                                                                                    hide-details>
-                                                                                                </v-select>
-                                                                                            </td>
-                                                                                            <td style="width: 30%">
-                                                                                                <v-text-field class="mr-2"
-                                                                                                    variant="outlined"
-                                                                                                    size="small"
-                                                                                                    density="compact"
-                                                                                                    type="number"
-                                                                                                    :value="filter.value"
-                                                                                                    @input="updateAttributeFilter(idx, pIdx, afIdx, 'value', $event)"
-                                                                                                    hide-details></v-text-field>
-                                                                                            </td>
-                                                                                            <td style="width: 10%">
-                                                                                                <v-btn variant="plain"
-                                                                                                    size="small"
-                                                                                                    density="compact"
-                                                                                                    icon="mdi-close"
-                                                                                                    @click="deleteAttributeFilter(idx, pIdx, afIdx)">
-                                                                                                </v-btn>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                </table>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </template>
-                                                                </tbody>
-                                                            </table>
+                                                                        </div>
+                                                                        <div>
+                                                                            <v-btn variant="link" size="sm"
+                                                                                @click="addAttributeFilter(idx, pIdx)">
+                                                                                Add <i class="fas fa-plus"></i>
+                                                                            </v-btn>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div v-if="strategy.attribute_filter && strategy.attribute_filter.length"
+                                                                        :key="`p-${pIdx}-f`">
+                                                                            <table
+                                                                                class="table table-borderless table-sm m-0"
+                                                                                style="table-layout: fixed">
+                                                                                <tbody>
+                                                                                    <tr v-for="(filter, afIdx) in strategy.attribute_filter"
+                                                                                        :key="`p-${idx}-${pIdx}-f-${afIdx}`">
+                                                                                        <td style="width: 30%">
+                                                                                            <v-select class="mr-2"
+                                                                                                variant="outlined"
+                                                                                                density="compact"
+                                                                                                :items="templateAttributes[strategy['retro_model_name']]"
+                                                                                                :value="filter.name"
+                                                                                                @input="updateAttributeFilter(idx, pIdx, afIdx, 'name', $event)"
+                                                                                                hide-details>
+                                                                                            </v-select>
+                                                                                        </td>
+                                                                                        <td style="width: 30%">
+                                                                                            <v-select class="mr-2"
+                                                                                                variant="outlined"
+                                                                                                density="compact"
+                                                                                                :items="['>', '>=', '&lt;', '&le;', '==']"
+                                                                                                :value="filter.logic"
+                                                                                                @input="updateAttributeFilter(idx, pIdx, afIdx, 'logic', $event)"
+                                                                                                hide-details>
+                                                                                            </v-select>
+                                                                                        </td>
+                                                                                        <td style="width: 30%">
+                                                                                            <v-text-field class="mr-2"
+                                                                                                variant="outlined"
+                                                                                                size="small"
+                                                                                                density="compact"
+                                                                                                type="number"
+                                                                                                :value="filter.value"
+                                                                                                @input="updateAttributeFilter(idx, pIdx, afIdx, 'value', $event)"
+                                                                                                hide-details></v-text-field>
+                                                                                        </td>
+                                                                                        <td style="width: 10%">
+                                                                                            <v-btn variant="plain"
+                                                                                                size="small"
+                                                                                                density="compact"
+                                                                                                icon="mdi-close"
+                                                                                                @click="deleteAttributeFilter(idx, pIdx, afIdx)">
+                                                                                            </v-btn>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                      
+                                                                    </div>
                                                         </div>
+                                                        <div class="mb-4">
+                                                            <p>
+                                                                <em>Note: Template attribute filters are not supported by
+                                                                    the tree builder.</em>
+                                                            </p>
+                                                        </div>
+                                                        <setting-input label="Max. num. templates"
+                                                            label-for="max_num_templates"
+                                                            help-text="This is the maximum number of reaction rules/templates to try to apply to your target. Depending on the value of maximum cumulative probability (below), a fewer number of templates may actually be applied.">
+                                                            <v-text-field id="max_num_templates" density="compact"
+                                                                variant="outlined" type="number"
+                                                                @input="($event) => updateStrategy(idx, 'max_num_templates', $event)"
+                                                                :value="strategy.max_num_templates"
+                                                                hide-details></v-text-field>
+                                                        </setting-input>
+                                                        <setting-input label="Max. cum. prob." label-for="max_cum_prob"
+                                                            help-text="This is the cumulative template score after which templates will stop being applied to your target.
+                            For example, if the sum of the scores of the top two templates exceeds this value, only those two template application results will be returned.
+                            For computational efficiency, this value is limited to a maximum value of 0.99999. Please directly use the asynchronous API if you need to apply all templates.">
+                                                            <v-text-field id="max_cum_prob" density="compact"
+                                                                variant="outlined" type="number" min="0" max="1"
+                                                                step="0.000001"
+                                                                @input="($event) => updateStrategy(idx, 'max_cum_prob', Math.min(0.99999, $event))"
+                                                                :value="strategy.max_cum_prob" hide-details></v-text-field>
+                                                        </setting-input>
                                                     </div>
                                                 </v-card-text>
                                             </v-card>
@@ -325,17 +298,7 @@ export default {
         },
         models() {
             // List of available models for selection
-            const models = new Set();
-            const types = ["template_prioritizer", "openretro"];
-            this.modelStatus
-                .filter((item) => types.includes(item["type"]) && item["ready"])
-                .forEach((item) => {
-                    if (item["name"].startsWith("template_relevance")) {
-                        models.add("template_relevance");
-                    } else {
-                        models.add(item["name"]);
-                    }
-                });
+            const models = new Set(this.modelStatus.filter((item) => item.name.startsWith("retro_") && item.ready).map(item => item.name.replace('retro_', '')));
             return Array.from(models).sort();
         },
         buyablesSourceDisplay() {
@@ -946,14 +909,14 @@ export default {
         ...mapStores(useResultsStore, useSettingsStore),
     },
     created() {
-        API.get("/api/v2/buyables/sources/").then((json) => {
+        API.get("/api/buyables/sources/").then((json) => {
             this.buyablesSources = json.sources;
         });
-        API.get("/api/v2/template/sets/").then((json) => {
+        API.get("/api/template/sets").then((json) => {
             this.templateSetsList = json["template_sets"];
         });
-        API.get("/api/v2/status/ml/").then((json) => {
-            this.modelStatus = json["models"];
+        API.get("/api/admin/get_backend_status").then((json) => {
+            this.modelStatus = json["modules"];
         });
     },
     methods: {
@@ -964,10 +927,10 @@ export default {
             // List of available training sets based on the selected model
             const sets = new Set();
             this.modelStatus
-                .filter((item) => item["name"].startsWith(model) && item["ready"])
+                .filter((item) => item.name.startsWith(model) && item.ready)
                 .forEach((item) => {
-                    if (model !== "template_relevance" || this.templateSetsList.includes(item["training_set"])) {
-                        sets.add(item["training_set"]);
+                    if (model !== "template_relevance") {
+                        item.available_model_names.forEach((trainingSet) => sets.add(trainingSet))
                     }
                 });
             return Array.from(sets).sort();
@@ -977,9 +940,8 @@ export default {
             console.log("Prior: ", this.templateSets);
             this.settingsStore.addAttributeFilter({
                 strategyIndex: strategyIndex,
-                prioritizerIndex: prioritizerIndex,
                 item: {
-                    name: this.templateAttributes[this.strategies[strategyIndex].templatePrioritizers[prioritizerIndex]["template_set"]][0],
+                    name: this.templateAttributes[this.strategies[strategyIndex]["template_set"]],
                     logic: ">",
                     value: 0.5,
                 },
@@ -1020,7 +982,6 @@ export default {
         updateTemplatePrioritizer(strategyIndex, prioritizerIndex, key, value) {
             this.settingsStore.updateTemplatePrioritizer({
                 strategyIndex: strategyIndex,
-                prioritizerIndex: prioritizerIndex,
                 key: key,
                 value: value,
             });
@@ -1028,11 +989,11 @@ export default {
         addStrategy() {
             this.settingsStore.addStrategy({
                 item: {
-                    model: "template_relevance",
+                    retro_backend: "template_relevance",
                     trainingSet: "",
                     templatePrioritizers: [{ template_set: "reaxys", version: 1, attribute_filter: [] }],
-                    numTemplates: 1000,
-                    maxCumProb: 0.999,
+                    max_num_templates: 1000,
+                    max_cum_prob: 0.999,
                 },
             });
         },
@@ -1042,7 +1003,7 @@ export default {
             });
         },
         updateStrategy(strategyIndex, key, value) {
-            if (key === "numTemplates") {
+            if (key === "max_num_templates") {
                 value = parseInt(value, 10);
             }
             console.log(typeof value);
@@ -1056,15 +1017,17 @@ export default {
             this.settingsStore.resetSettings();
         },
         resetTemplateSetVersion(strategyIndex, prioritizerIndex, value) {
-            this.updateTemplatePrioritizer(strategyIndex, prioritizerIndex, 'template_set', value)
-            this.updateTemplatePrioritizer(strategyIndex, prioritizerIndex, "version", this.templateSets[value][0]);
-            this.updateTemplatePrioritizer(strategyIndex, prioritizerIndex, "attribute_filter", []);
-        }
+            this.updateStrategy(strategyIndex, 'retro_model_value', $event)
+            // this.updateTemplatePrioritizer(strategyIndex, prioritizerIndex, 'template_set', value)
+            // this.updateTemplatePrioritizer(strategyIndex, prioritizerIndex, "attribute_filter", []);
+        },
     },
 };
 </script>
   
-<style>.modal-right {
+<style>
+.modal-right {
     margin: 1.75rem 1.75rem 1.75rem auto !important;
-}</style>
+}
+</style>
   

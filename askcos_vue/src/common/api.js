@@ -3,7 +3,7 @@
  */
 import Cookies from 'js-cookie';
 
-const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/status"];
+const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/status", "/api/tree_search"];
 
 const API = {
   pollInterval: 1000,
@@ -17,7 +17,7 @@ const API = {
     if (authMigratedAPI.some(api => endpoint.startsWith(api))) {
       const accessToken = localStorage.getItem('accessToken');
       headers = {
-        'accept': 'application/json',
+        'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + accessToken
       };
     }
@@ -101,12 +101,12 @@ const API = {
 
   runCeleryTask(endpoint, data, progress) {
     return this.post(endpoint, data)
-      .then((json) => this.pollCeleryResult(json.task_id, progress));
+      .then((json) => this.pollCeleryResult(json, progress));
   },
 
   pollCeleryResult(taskId, progress) {
     const check = (resolve, reject) => {
-      this.get(`/api/v2/celery/task/${taskId}/`)
+      this.get(`/api/legacy/celery/task/${taskId}/`)
         .then((json) => {
           if (json.complete) {
             return resolve(json.output);

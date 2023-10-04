@@ -370,31 +370,31 @@ export const useResultsStore = defineStore("results", {
       let newNodes = [];
       let newEdges = [];
       for (let reaction of data) {
-        let reactionSmiles = reaction["smiles"] + ">>" + parentSmiles;
+        let reactionSmiles = reaction["outcome"] + ">>" + parentSmiles;
         let existingNode = this.dataGraph.nodes.get(reactionSmiles);
         if (existingNode) {
           // Reaction already exists, update metadata
           existingNode["retroScore"] = Math.max(
-            existingNode["retroScore"],
+            existingNode["model_score"],
             reaction["score"]
           );
-          if (existingNode["templateScore"] <= reaction["template_score"]) {
-            existingNode["templateRank"] = reaction["template_rank"];
-            existingNode["templateScore"] = reaction["template_score"];
+          if (existingNode["templateScore"] <= reaction["template"]["template_score"]) {
+            existingNode["templateRank"] = reaction["template"]["template_rank"];
+            existingNode["templateScore"] = reaction["template"]["template_score"];
           }
           let isNew = false;
-          if (reaction["templates"]) {
-            reaction["templates"].forEach((tid) => {
-              if (
-                existingNode["templateIds"] !== undefined &&
-                !existingNode["templateIds"].includes(tid)
-              ) {
-                isNew = true;
-                existingNode["templateIds"].push(tid);
-                templateIds.push(tid);
-              }
-            });
-          }
+          // if (reaction["templates"]) {
+          //   reaction["templates"].forEach((tid) => {
+          //     if (
+          //       existingNode["templateIds"] !== undefined &&
+          //       !existingNode["templateIds"].includes(tid)
+          //     ) {
+          //       isNew = true;
+          //       existingNode["templateIds"].push(tid);
+          //       templateIds.push(tid);
+          //     }
+          //   });
+          // }
           if (isNew && reaction["num_examples"]) {
             existingNode["numExamples"] += reaction["num_examples"];
           }
@@ -415,15 +415,15 @@ export const useResultsStore = defineStore("results", {
           // Create new reaction and precursor nodes
           addedReactions.push(reactionSmiles);
           if (reaction["smiles_split"] === undefined) {
-            reaction["smiles_split"] = reaction["smiles"].split(".");
+            reaction["smiles_split"] = reaction["outcome"].split(".");
           }
           let node = {
             id: reactionSmiles,
             model: strategy.model,
-            ...(strategy.model !== "template_relevance" && {
+            ...(strategy.model !== "retro_template_relevance" && {
               trainingSet: strategy.trainingSet,
             }),
-            ...(strategy.model === "template_relevance" && {
+            ...(strategy.model === "retro_template_relevance" && {
               templatePrioritizers: strategy.templatePrioritizers,
             }),
             rank: reaction["rank"],
@@ -436,7 +436,7 @@ export const useResultsStore = defineStore("results", {
             clusterName: reaction["group_name"],
             clusterRep: !clusterTracker.has(reaction["group_id"]), // Tag first result in each cluster as the representative
             precursors: reaction["smiles_split"],
-            precursorSmiles: reaction["smiles"],
+            precursorSmiles: reaction["outcome"],
             numExamples: reaction["num_examples"],
             necessaryReagent: reaction["necessary_reagent"],
             mappedSmiles: reaction["mapped_smiles"],
@@ -837,33 +837,28 @@ export const useResultsStore = defineStore("results", {
       });
       this.updateDispNodes(updatedDispNodes);
     },
-    requestRetro({ smiles, strategyIndex }) {
+    requestRetro({ smiles, strategies }) {
       const settings = useSettingsStore();
-      const url = "/api/v2/retro/";
-      const strategy = settings.tbSettings.strategies[strategyIndex];
+      const url = "/api/tree_search/expand_one/call_async";
       const body = {
-        model: strategy.model,
-        ...(strategy.model !== "template_relevance" && {
-          training_set: strategy.trainingSet,
-        }),
-        ...(strategy.model === "template_relevance" && {
-          template_prioritizers: strategy.templatePrioritizers,
-          num_templates: strategy.numTemplates,
-          max_cum_prob: strategy.maxCumProb,
-        }),
-        target: smiles,
-        precursor_prioritizer: settings.tbSettings.precursorScoring,
-        filter_threshold: settings.tbSettings.minPlausibility,
-        cluster_method: settings.clusterOptions.cluster_method,
-        cluster_feature: settings.clusterOptions.feature,
-        cluster_fp_type: settings.clusterOptions.fingerprint,
-        cluster_fp_length: settings.clusterOptions.fpBits,
-        cluster_fp_radius: settings.clusterOptions.fpRadius,
-        selec_check: settings.tbSettings.allowSelec,
+        smiles: smiles,
+        retro_backend_options: settings.tbSettings.strategies,
+        retro_rerank_backend: settings.tbSettings.precursorScoring,
+        use_fast_filter: true,
+        fast_filter_threshold: settings.tbSettings.minPlausibility,
+        cluster_precursors: true,
+        cluster_settings: {
+          feature: settings.clusterOptions.feature,
+          fp_type: settings.clusterOptions.fingerprint,
+          fp_length: settings.clusterOptions.fpBits,
+          fp_radius: settings.clusterOptions.fpRadius,
+        },
+        selectivity_check: settings.tbSettings.allowSelec,
       };
-      if (strategy.model === "template_relevance") {
-        checkTemplatePrioritizers(body["template_prioritizers"]);
-      }
+      body.retro_backend_options[0].retro_model_name = "reaxys"
+      // if (strategy.model === "template_relevance") {
+      //   checkTemplatePrioritizers(body["template_prioritizers"]);
+      // }
       return API.runCeleryTask(url, body);
     },
     async expand(nodeId) {
@@ -889,10 +884,10 @@ export const useResultsStore = defineStore("results", {
       }
 
       const strategyPromises = [];
-      for (const idx in settings.tbSettings.strategies) {
-        strategyPromises.push(
+
+      strategyPromises.push(
           new Promise((resolve, reject) => {
-            this.requestRetro({ smiles: smiles, strategyIndex: idx }).then(
+            this.requestRetro({ smiles: smiles }).then(
               (precursor) => {
                 if (precursor.length === 0) {
                   reject(new Error("No precursors found!"));
@@ -902,20 +897,19 @@ export const useResultsStore = defineStore("results", {
               }
             );
           })
-        );
-      }
+      );
 
       try {
         const strategyPrecursors = await Promise.all(strategyPromises);
         for (const [idx, precursors] of strategyPrecursors.entries()) {
-          let strategy = settings.tbSettings.strategies[idx];
+          let strategy = settings.tbSettings.strategies[0];
           const addedReactions = await this.addRetroResultToDataGraph({
-            data: precursors,
+            data: precursors.result,
             parentSmiles: smiles,
             strategy: strategy,
           });
           let reactionsToAdd = [];
-          if (strategy.model === "template_relevance") {
+          if (strategy.model === "retro_template_relevance") {
             reactionsToAdd = addedReactions
               .filter((reactionSmiles) => {
                 return (

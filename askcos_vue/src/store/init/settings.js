@@ -5,11 +5,11 @@
 const tbSettingsDefault = {
   strategies: [
     {
-      model: "USPTO_50k_retroxpert",
-      trainingSet: "USPTO_50k",
-      templatePrioritizers: [{ template_set: "reaxys", version: 1, attribute_filter: [] }],
-      numTemplates: 1000,
-      maxCumProb: 0.999,
+      retro_backend: "template_relevance",
+      retro_model_name: 'reaxys',
+      max_num_templates: 1000,
+      max_cum_prob: 0.999,
+      attribute_filter: [],
     },
   ],
   quick: "normal",
@@ -39,7 +39,7 @@ const tbSettingsDefault = {
   returnFirst: false,
   maxTrees: 500,
   templatePrioritizers: [{ template_set: "reaxys", version: 1, attribute_filter: [] }],
-  precursorScoring: "RelevanceHeuristic",
+  precursorScoring: "relevance_heuristic",
   numTemplates: 1000,
   maxCumProb: 0.999,
   minPlausibility: 0.1,
