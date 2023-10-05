@@ -69,7 +69,7 @@
               </v-col>
               <v-col cols="6" class="d-flex justify-center">
                 <smiles-image :smiles="solvent" width="200"></smiles-image>
-                                  
+
               </v-col>
             </v-row>
 
@@ -101,21 +101,23 @@
         <v-window v-model="tab" class="elevation-2">
           <v-window-item value="context" rounded="lg">
             <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel"
-                           :pending="pendingTasks" :pendingRank="pendingRank" :evaluating="evaluating" @go-to-forward="goToForward" :score="reactionScore" @evaluate="evaluate"/> 
+              :pending="pendingTasks" :pendingRank="pendingRank" :evaluating="evaluating" @go-to-forward="goToForward"
+              :score="reactionScore" @evaluate="evaluate" />
           </v-window-item>
           <v-window-item value="forward">
             <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel"
-              :pending="pendingTasks" @download-forward="downloadForwardResults" @go-to-impurities="goToImpurity"/>
+              :pending="pendingTasks" @download-forward="downloadForwardResults" @go-to-impurities="goToImpurity" />
           </v-window-item>
           <v-window-item value="impurity">
             <ImpurityPrediction value="impurity" rounded="lg" :results="impurityResults" :pending="pendingTasks"
-              :progress="impurityProgress" @download-impurity="downloadImpurityResults"/>
+              :progress="impurityProgress" @download-impurity="downloadImpurityResults" />
           </v-window-item>
           <v-window-item value="selectivity">
             <Regioselectivity value="selectivity" rounded="lg" />
           </v-window-item>
           <v-window-item value="sites">
-            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" :reactingAtoms="reactingAtoms" :pending="pendingTasks"/>
+            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" :reactingAtoms="reactingAtoms"
+              :pending="pendingTasks" />
           </v-window-item>
         </v-window>
       </v-col>
@@ -136,12 +138,16 @@
                 <v-row class="my-6">
                   <v-col cols="12">
                     <v-select label="Condition recommendation model" density="comfortable" variant="outlined" hide-details
-                      clearable v-model="contextModel" :items="[{ key: 'neuralnetwork', title: 'Neural Network' },  { key: 'neuralnetworkv2', title: 'Neural Network v2 (Quantity Prediction)' }]" item-text="title" item-value="key">
+                      clearable v-model="contextModel"
+                      :items="[{ key: 'neuralnetwork', title: 'Neural Network' }, { key: 'neuralnetworkv2', title: 'Neural Network v2 (Quantity Prediction)' }]"
+                      item-text="title" item-value="key">
                     </v-select>
                   </v-col>
                   <v-col cols="12" v-if="contextModel === 'neuralnetworkv2'">
                     <v-select label="Neural Network v2 model type" density="comfortable" variant="outlined" hide-details
-                      clearable v-model="contextV2ModelType" :items="[{ key: 'graph', title: 'Graph' }, { key: 'fp-small', title: 'Fingerprint (small)' }]" item-text="title" item-value="key"></v-select>
+                      clearable v-model="contextV2ModelType"
+                      :items="[{ key: 'graph', title: 'Graph' }, { key: 'fp-small', title: 'Fingerprint (small)' }]"
+                      item-text="title" item-value="key"></v-select>
                   </v-col>
 
                   <v-col cols="12" v-if="contextModel === 'neuralnetworkv2'">
@@ -269,7 +275,7 @@ const reagents = ref('');
 const solvent = ref('');
 const contextResults = ref([]);
 
-const contextV2ModelType = ref('fp-small');
+const contextV2ModelType = ref('graph');
 const contextV2ModelVersion = ref('20191118');
 const forwardModel = ref('wldn5');
 const forwardModelTrainingSet = ref("pistachio");
@@ -335,13 +341,13 @@ const evaluate = async () => {
   pendingRank.value++;
   evaluating.value = true;
   const postData = constructFastFilterPostData();
-  
+
   contextResults.value.forEach((item, index) => {
     evaluateIndex(index)
   })
-  
+
   try {
-    const output = await API.runCeleryTask('/api/v2/fast-filter/', postData);
+    const output = await API.runCeleryTask('/api/legacy/fast_filter/', postData);
     reactionScore.value = output;
   } catch (error) {
     console.error("An error occurred during evaluation:", error);
@@ -375,7 +381,7 @@ const evaluateIndex = async (index) => {
   let solvent = contextResults.value[index].solvent;
   const postData = constructForwardPostData(reagents, solvent);
   try {
-    const output = await API.runCeleryTask('/api/v2/forward/', postData);
+    const output = await API.runCeleryTask('/api/forward/controller/call_async', postData);
     for (let i = 0; i < output.length; i++) {
       const outcome = output[i];
       if (outcome.smiles === product.value) {
@@ -494,16 +500,17 @@ const goToForward = (index) => {
 };
 
 
-const goToImpurity = (smiles) => {
+const goToImpurity = (index) => {
   canonicalizeAll()
     .then(() => {
-      product.value = smiles;
-      console.log(smiles)
+      product.value = index;
+      console.log(index)
       changeMode('impurity');
       tab.value = 'impurity';
       impurityPredict();
     });
 };
+
 
 const forwardModelTrainingSets = computed(() => {
   const sets = new Set();
@@ -595,7 +602,8 @@ const impurityPredict = () => {
   let complete = (output) => {
     impurityProgress.value.percent = 1.0;
     impurityProgress.value.message = 'Prediction complete!';
-    impurityResults.value = output['predict_expand'];
+    impurityResults.value = output['result']['predict_expand'];
+    console.log(impurityResults.value)
   };
 
   let progress = (json) => {
@@ -611,9 +619,7 @@ const impurityPredict = () => {
 
   API.runCeleryTask('/api/impurity_predictor/call_async', postData, progress)
     .then(output => {
-      console.log(output)
       complete(output);
-
     })
     .catch(error => {
       failed(error);
@@ -634,7 +640,7 @@ const constructImpurityPostData = () => {
     insp_threshold: inspectionThreshold.value,
     inspector: inspectionModel.value,
     atom_map_backend: "indigo",
-     priority: numForwardResults.value
+    priority: numForwardResults.value
   };
 
   if (product.value) {
@@ -704,7 +710,7 @@ const forwardPredict = async () => {
   try {
     const output = await API.runCeleryTask('/api/forward/controller/call_async', postData);
     forwardResults.value = output.result[0];
-     console.log(forwardResults.value)
+    console.log(output.result[0])
   } catch (error) {
     console.error('Error in forward prediction:', error);
   } finally {
@@ -713,11 +719,12 @@ const forwardPredict = async () => {
 };
 
 const constructForwardPostData = (reagents, solvent) => {
+  let _smile = reactants.value
   let data = reactive({
-    smiles: [reactants.value],
+    smiles: [_smile],
     backend: forwardModel.value,
     model_name: forwardModelTrainingSet.value,
-    priority: numForwardResults.value  
+    priority: numForwardResults.value
   });
 
   if (reagents) {
@@ -784,7 +791,7 @@ const contextV1Predict = async () => {
   contextResults.value = []
   evaluating.value = false
   let postData = constructContextV1PostData()
-  API.runCeleryTask('/api/v2/context/', postData)
+  API.runCeleryTask('/api/legacy/context/', postData)
     .then(output => {
       contextResults.value = output
       console.log(contextResults.value)
@@ -797,7 +804,8 @@ const constructContextV1PostData = () => {
   return {
     reactants: reactants.value,
     products: product.value,
-    return_scores: true,
+    with_smiles: false,
+    return_scores: false,
     num_results: numContextResults.value
   }
 }
@@ -818,24 +826,12 @@ const postprocessContextV2 = (output) => {
   contextResults.value = processedResults;
 };
 
-const constructContextV2PostData = () => {
-  const _reagents = []; // a list of string, each of them is a reagent
-  return {
-    reactants: reactants.value,
-    products: product.value,
-    reagents: _reagents,
-    model: `${contextV2ModelType.value}-${contextV2ModelVersion.value}`,
-    num_results: numContextResults.value,
-  };
-};
-
-
 const contextV2Predict = () => {
   pendingTasks.value++;
   contextResults.value = [];
   evaluating.value = false;
   const postData = constructContextV2PostData();
-  API.runCeleryTask('/api/v2/context-v2/', postData)
+  API.runCeleryTask('/api/legacy/context_v2/', postData)
     .then((output) => {
       postprocessContextV2(output);
       console.log(contextResults.value)
@@ -844,6 +840,18 @@ const contextV2Predict = () => {
       pendingTasks.value--;
     });
 };
+
+const constructContextV2PostData = () => {
+  const reagents = [];
+  return {
+    reactants: reactants.value,
+    products: product.value,
+    reagents: reagents,
+    model: contextV2ModelType.value,
+    num_results: numContextResults.value,
+  };
+};
+
 
 const clearSelectivity = () => {
   selectivityResults.value = [];
