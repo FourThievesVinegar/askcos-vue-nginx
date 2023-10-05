@@ -81,20 +81,14 @@ export const useSettingsStore = defineStore("settings", {
     addAttributeFilter({ strategyIndex, item }) {
       this.tbSettings.strategies[strategyIndex]["attribute_filter"].push(item);
     },
-    deleteAttributeFilter({ strategyIndex, prioritizerIndex, attrFilterIndex }) {
-      this.tbSettings.strategies[strategyIndex].templatePrioritizers[prioritizerIndex]["attribute_filter"].splice(attrFilterIndex, 1);
+    deleteAttributeFilter({ strategyIndex, attrFilterIndex }) {
+      this.tbSettings.strategies[strategyIndex]["attribute_filter"].splice(attrFilterIndex, 1);
     },
-    updateAttributeFilter({ strategyIndex, prioritizerIndex, attrFilterIndex, key, value }) {
-      this.tbSettings.strategies[strategyIndex].templatePrioritizers[prioritizerIndex]["attribute_filter"][attrFilterIndex][key] = value;
+    updateAttributeFilter({ strategyIndex, attrFilterIndex, key, value }) {
+      this.tbSettings.strategies[strategyIndex]["attribute_filter"][attrFilterIndex][key] = value;
     },
     addTemplatePrioritizer({ strategyIndex, item }) {
       this.tbSettings.strategies[strategyIndex].templatePrioritizers.push(item);
-    },
-    deleteTemplatePrioritizer({ strategyIndex, prioritizerIndex }) {
-      this.tbSettings.strategies[strategyIndex].templatePrioritizers.splice(prioritizerIndex, 1);
-    },
-    updateTemplatePrioritizer({ strategyIndex, prioritizerIndex, key, value }) {
-      this.tbSettings.strategies[strategyIndex].templatePrioritizers[prioritizerIndex][key] = value;
     },
     addStrategy({ item }) {
       this.tbSettings.strategies.push(item);

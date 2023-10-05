@@ -846,7 +846,7 @@ export const useResultsStore = defineStore("results", {
         retro_rerank_backend: settings.tbSettings.precursorScoring,
         use_fast_filter: true,
         fast_filter_threshold: settings.tbSettings.minPlausibility,
-        cluster_precursors: true,
+        cluster_precursors: false,
         cluster_settings: {
           feature: settings.clusterOptions.feature,
           fp_type: settings.clusterOptions.fingerprint,
@@ -855,7 +855,6 @@ export const useResultsStore = defineStore("results", {
         },
         selectivity_check: settings.tbSettings.allowSelec,
       };
-      body.retro_backend_options[0].retro_model_name = "reaxys"
       // if (strategy.model === "template_relevance") {
       //   checkTemplatePrioritizers(body["template_prioritizers"]);
       // }
@@ -886,17 +885,17 @@ export const useResultsStore = defineStore("results", {
       const strategyPromises = [];
 
       strategyPromises.push(
-          new Promise((resolve, reject) => {
-            this.requestRetro({ smiles: smiles }).then(
-              (precursor) => {
-                if (precursor.length === 0) {
-                  reject(new Error("No precursors found!"));
-                } else {
-                  resolve(precursor);
-                }
+        new Promise((resolve, reject) => {
+          this.requestRetro({ smiles: smiles }).then(
+            (precursor) => {
+              if (precursor.length === 0) {
+                reject(new Error("No precursors found!"));
+              } else {
+                resolve(precursor);
               }
-            );
-          })
+            }
+          );
+        })
       );
 
       try {

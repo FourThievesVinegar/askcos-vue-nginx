@@ -88,7 +88,7 @@
                                                             hide-details :model-value="strategy.retro_backend"
                                                             @update:modelValue="($event) => {
                                                                 updateStrategy(idx, 'retro_backend', $event);
-                                                                updateStrategy(idx, 'trainingSet', trainingSets($event)[0]);
+                                                                updateStrategy(idx, 'retro_model_name', trainingSets($event)[0]);
                                                             }
                                                                 "></v-select>
                                                     </setting-input>
@@ -97,8 +97,8 @@
                                                         help-text="By specifiying this you can change the type of the model used for prediction"
                                                         class="mb-2">
                                                         <v-select density="compact" hide-details
-                                                            :model-value="strategy.trainingSet" variant="outlined"
-                                                            @update:modelValue="($event) => updateStrategy(idx, 'trainingSet', $event)"
+                                                            :model-value="strategy.retro_model_name" variant="outlined"
+                                                            @update:modelValue="($event) => updateStrategy(idx, 'retro_model_name', $event)"
                                                             :items="trainingSets(strategy.retro_backend)">
                                                         </v-select>
                                                     </setting-input>
@@ -109,80 +109,67 @@
                                                             <v-select class="mr-2" density="compact" variant="outlined"
                                                                 :items="Object.keys(templateSets).filter((key) => templateSets[key].length)"
                                                                 :model-value="strategy.retro_model_name"
-                                                                @update:modelValue="($event) => updateStrategy(idx, 'retro_model_name', $event)"
+                                                                @update:modelValue="($event) => updateTemplateSet(idx, $event)"
                                                                 hide-details>
                                                             </v-select>
                                                         </setting-input>
-                                                        <div class="ml-3 mt-6">
-                                                                    <div v-if="templateAttributes && templateAttributes[strategy.retro_model_name] && templateAttributes[strategy.retro_model_name].length"
-                                                                        :key="`p-${pIdx}-t`">
-                                                                        <div class="align-middle">
-                                                                            Template attribute filters
-                                                                            <i class="fas fa-info-circle mr-1" title="Filter templates based on pre-computed attributes prior to application to the target molecule.
-                                    Max. num. templates. and Max cum. prob. are applied after filtering."></i>
-                                                                        </div>
-                                                                        <div>
-                                                                            <v-btn variant="link" size="sm"
-                                                                                @click="addAttributeFilter(idx, pIdx)">
-                                                                                Add <i class="fas fa-plus"></i>
-                                                                            </v-btn>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div v-if="strategy.attribute_filter && strategy.attribute_filter.length"
-                                                                        :key="`p-${pIdx}-f`">
-                                                                            <table
-                                                                                class="table table-borderless table-sm m-0"
-                                                                                style="table-layout: fixed">
-                                                                                <tbody>
-                                                                                    <tr v-for="(filter, afIdx) in strategy.attribute_filter"
-                                                                                        :key="`p-${idx}-${pIdx}-f-${afIdx}`">
-                                                                                        <td style="width: 30%">
-                                                                                            <v-select class="mr-2"
-                                                                                                variant="outlined"
-                                                                                                density="compact"
-                                                                                                :items="templateAttributes[strategy['retro_model_name']]"
-                                                                                                :value="filter.name"
-                                                                                                @input="updateAttributeFilter(idx, pIdx, afIdx, 'name', $event)"
-                                                                                                hide-details>
-                                                                                            </v-select>
-                                                                                        </td>
-                                                                                        <td style="width: 30%">
-                                                                                            <v-select class="mr-2"
-                                                                                                variant="outlined"
-                                                                                                density="compact"
-                                                                                                :items="['>', '>=', '&lt;', '&le;', '==']"
-                                                                                                :value="filter.logic"
-                                                                                                @input="updateAttributeFilter(idx, pIdx, afIdx, 'logic', $event)"
-                                                                                                hide-details>
-                                                                                            </v-select>
-                                                                                        </td>
-                                                                                        <td style="width: 30%">
-                                                                                            <v-text-field class="mr-2"
-                                                                                                variant="outlined"
-                                                                                                size="small"
-                                                                                                density="compact"
-                                                                                                type="number"
-                                                                                                :value="filter.value"
-                                                                                                @input="updateAttributeFilter(idx, pIdx, afIdx, 'value', $event)"
-                                                                                                hide-details></v-text-field>
-                                                                                        </td>
-                                                                                        <td style="width: 10%">
-                                                                                            <v-btn variant="plain"
-                                                                                                size="small"
-                                                                                                density="compact"
-                                                                                                icon="mdi-close"
-                                                                                                @click="deleteAttributeFilter(idx, pIdx, afIdx)">
-                                                                                            </v-btn>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                            </table>
-                                                                      
-                                                                    </div>
+                                                        <div
+                                                            v-if="templateAttributes && templateAttributes[strategy.retro_model_name] && templateAttributes[strategy.retro_model_name].length">
+                                                            <setting-input label="Template attribute filters" help-text="Filter templates based on pre-computed attributes prior to application to the target molecule.
+                                    Max. num. templates. and Max cum. prob. are applied after filtering." class="my-5">
+                                                                <v-btn variant="link" size="sm"
+                                                                    @click="addAttributeFilter(idx)">
+                                                                    Add <i class="fas fa-plus"></i>
+                                                                </v-btn>
+                                                            </setting-input>
+                                                            <div
+                                                                v-if="strategy.attribute_filter && strategy.attribute_filter.length">
+                                                                <table class="table table-borderless table-sm m-0"
+                                                                    style="table-layout: fixed">
+                                                                    <tbody>
+                                                                        <tr v-for="(filter, afIdx) in strategy.attribute_filter"
+                                                                            :key="`p-${idx}-f-${afIdx}`">
+                                                                            <td style="width: 30%">
+                                                                                <v-select class="mr-2" variant="outlined"
+                                                                                    density="compact"
+                                                                                    :items="templateAttributes[strategy['retro_model_name']]"
+                                                                                    :model-value="filter.name"
+                                                                                    @update:modelValue="updateAttributeFilter(idx, afIdx, 'name', $event)"
+                                                                                    hide-details>
+                                                                                </v-select>
+                                                                            </td>
+                                                                            <td style="width: 30%">
+                                                                                <v-select class="mr-2" variant="outlined"
+                                                                                    density="compact"
+                                                                                    :items="['>', '>=', '&lt;', '&le;', '==']"
+                                                                                    :model-value="filter.logic"
+                                                                                    @update:modelValue="updateAttributeFilter(idx, afIdx, 'logic', $event)"
+                                                                                    hide-details>
+                                                                                </v-select>
+                                                                            </td>
+                                                                            <td style="width: 30%">
+                                                                                <v-text-field class="mr-2"
+                                                                                    variant="outlined" size="small"
+                                                                                    density="compact" type="number"
+                                                                                    :model-value="filter.value"
+                                                                                    @update:modelValue="updateAttributeFilter(idx, afIdx, 'value', $event)"
+                                                                                    hide-details></v-text-field>
+                                                                            </td>
+                                                                            <td style="width: 10%">
+                                                                                <v-btn variant="plain" size="small"
+                                                                                    density="compact" icon="mdi-close" color="red"
+                                                                                    @click="deleteAttributeFilter(idx, afIdx)">
+                                                                                </v-btn>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
                                                         </div>
-                                                        <div class="mb-4">
+                                                        <div class="my-4">
                                                             <p>
-                                                                <em>Note: Template attribute filters are not supported by
+                                                                <em>Note: Template attribute filters are not supported
+                                                                    by
                                                                     the tree builder.</em>
                                                             </p>
                                                         </div>
@@ -927,61 +914,41 @@ export default {
             // List of available training sets based on the selected model
             const sets = new Set();
             this.modelStatus
-                .filter((item) => item.name.startsWith(model) && item.ready)
+                .filter((item) => item.name.startsWith("retro_" + model) && item.ready)
                 .forEach((item) => {
-                    if (model !== "template_relevance") {
+                    if (model !== "retro_template_relevance") {
                         item.available_model_names.forEach((trainingSet) => sets.add(trainingSet))
                     }
                 });
+            console.log(Array.from(sets).sort())
             return Array.from(sets).sort();
         },
-        addAttributeFilter(strategyIndex, prioritizerIndex) {
+        updateTemplateSet(strategyIndex, value) {
+            this.updateStrategy(strategyIndex, 'retro_model_name', value)
+            this.updateStrategy(strategyIndex, 'attribute_filter', [])
+        },
+        addAttributeFilter(strategyIndex) {
             console.log("Attr: ", this.templateAttributes);
             console.log("Prior: ", this.templateSets);
             this.settingsStore.addAttributeFilter({
                 strategyIndex: strategyIndex,
                 item: {
-                    name: this.templateAttributes[this.strategies[strategyIndex]["template_set"]],
+                    name: this.templateAttributes[this.strategies[strategyIndex]["retro_model_name"]][0],
                     logic: ">",
                     value: 0.5,
                 },
             });
         },
-        deleteAttributeFilter(strategyIndex, prioritizerIndex, attrFilterIndex) {
+        deleteAttributeFilter(strategyIndex, attrFilterIndex) {
             this.settingsStore.deleteAttributeFilter({
                 strategyIndex: strategyIndex,
-                prioritizerIndex: prioritizerIndex,
                 attrFilteriIndex: attrFilterIndex,
             });
         },
-        updateAttributeFilter(strategyIndex, prioritizerIndex, attrFilterIndex, key, value) {
+        updateAttributeFilter(strategyIndex, attrFilterIndex, key, value) {
             this.settingsStore.updateAttributeFilter({
                 strategyIndex: strategyIndex,
-                prioritizerIndex: prioritizerIndex,
                 attrFilterIndex: attrFilterIndex,
-                key: key,
-                value: value,
-            });
-        },
-        addTemplatePrioritizer(strategyIndex) {
-            this.settingsStore.addTemplatePrioritizer({
-                strategyIndex: strategyIndex,
-                item: {
-                    template_set: "reaxys",
-                    version: 1,
-                    attribute_filter: [],
-                },
-            });
-        },
-        deleteTemplatePrioritizer(strategyIndex, prioritizerIndex) {
-            this.settingsStore.deleteTemplatePrioritizer({
-                strategyIndex: strategyIndex,
-                prioritizerIndex: prioritizerIndex,
-            });
-        },
-        updateTemplatePrioritizer(strategyIndex, prioritizerIndex, key, value) {
-            this.settingsStore.updateTemplatePrioritizer({
-                strategyIndex: strategyIndex,
                 key: key,
                 value: value,
             });
@@ -990,8 +957,8 @@ export default {
             this.settingsStore.addStrategy({
                 item: {
                     retro_backend: "template_relevance",
-                    trainingSet: "",
-                    templatePrioritizers: [{ template_set: "reaxys", version: 1, attribute_filter: [] }],
+                    retro_model_name: "reaxys",
+                    attribute_filter: [],
                     max_num_templates: 1000,
                     max_cum_prob: 0.999,
                 },
@@ -1015,11 +982,6 @@ export default {
         },
         resetSettings() {
             this.settingsStore.resetSettings();
-        },
-        resetTemplateSetVersion(strategyIndex, prioritizerIndex, value) {
-            this.updateStrategy(strategyIndex, 'retro_model_value', $event)
-            // this.updateTemplatePrioritizer(strategyIndex, prioritizerIndex, 'template_set', value)
-            // this.updateTemplatePrioritizer(strategyIndex, prioritizerIndex, "attribute_filter", []);
         },
     },
 };
