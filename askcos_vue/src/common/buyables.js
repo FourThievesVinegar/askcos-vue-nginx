@@ -72,6 +72,8 @@ function lookupBuyables(smiles, sources, canonicalize) {
   if (canonicalize) {
     body.canonicalize = canonicalize;
   }
+
+  console.log(body)
   return API.post(url, body);
 }
 

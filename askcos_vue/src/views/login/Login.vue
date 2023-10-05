@@ -7,55 +7,6 @@
                     <p class="text-h5 text-grey-lighten-3">software tools for Organic Chemistry, <span
                             style="text-decoration: wavy underline lime;">simplified</span></p>
                 </v-col>
-                <v-col cols="12" md="5" class="align-self-end">
-                    <p class="text-h6 text-white font-weight-black">Used by</p>
-                    <div class="slider">
-                        <div class="slide-track">
-                            <div class="slide">
-                                <img src="@/assets/basf.png" height="100" width="250" alt="" />
-                            </div>
-                            <div class="slide">
-                                <img src="@/assets/bms.png" height="100" width="250" alt="" />
-                            </div>
-                            <div class="slide">
-                                <img src="@/assets/corteva.png" height="100" width="250" alt="" />
-                            </div>
-                            <div class="slide">
-                                <img src="@/assets/janssen.png" height="100" width="250" alt="" />
-                            </div>
-                            <div class="slide">
-                                <img src="@/assets/lilly.png" height="100" width="250" alt="" />
-                            </div>
-                            <div class="slide">
-                                <img src="@/assets/corteva.png" height="100" width="250" alt="" />
-                            </div>
-                            <div class="slide">
-                                <img src="@/assets/bms.png" height="100" width="250" alt="" />
-                            </div>
-                            <div class="slide">
-                                <img src="@/assets/basf.png" height="100" width="250" alt="" />
-                            </div>
-                            <div class="slide">
-                                <img src="@/assets/bms.png" height="100" width="250" alt="" />
-                            </div>
-                            <div class="slide">
-                                <img src="@/assets/corteva.png" height="100" width="250" alt="" />
-                            </div>
-                            <div class="slide">
-                                <img src="@/assets/janssen.png" height="100" width="250" alt="" />
-                            </div>
-                            <div class="slide">
-                                <img src="@/assets/lilly.png" height="100" width="250" alt="" />
-                            </div>
-                            <div class="slide">
-                                <img src="@/assets/corteva.png" height="100" width="250" alt="" />
-                            </div>
-                            <div class="slide">
-                                <img src="@/assets/bms.png" height="100" width="250" alt="" />
-                            </div>
-                        </div>
-                    </div>
-                </v-col>
                 <v-col cols="12" md="3">
                     <v-sheet elevation="10" rounded="lg">
                         <v-form ref="form" class="pa-5">
