@@ -383,18 +383,18 @@ export const useResultsStore = defineStore("results", {
             existingNode["templateScore"] = reaction["template"]["template_score"];
           }
           let isNew = false;
-          // if (reaction["templates"]) {
-          //   reaction["templates"].forEach((tid) => {
-          //     if (
-          //       existingNode["templateIds"] !== undefined &&
-          //       !existingNode["templateIds"].includes(tid)
-          //     ) {
-          //       isNew = true;
-          //       existingNode["templateIds"].push(tid);
-          //       templateIds.push(tid);
-          //     }
-          //   });
-          // }
+          if (reaction["templates"]) {
+            reaction["templates"].forEach((tid) => {
+              if (
+                existingNode["templateIds"] !== undefined &&
+                !existingNode["templateIds"].includes(tid)
+              ) {
+                isNew = true;
+                existingNode["templateIds"].push(tid);
+                templateIds.push(tid);
+              }
+            });
+          }
           if (isNew && reaction["num_examples"]) {
             existingNode["numExamples"] += reaction["num_examples"];
           }
@@ -852,6 +852,7 @@ export const useResultsStore = defineStore("results", {
           fp_radius: settings.clusterOptions.fpRadius,
         },
         selectivity_check: settings.tbSettings.allowSelec,
+        group_by_strategy: true
       };
       // if (strategy.model === "template_relevance") {
       //   checkTemplatePrioritizers(body["template_prioritizers"]);
@@ -882,11 +883,11 @@ export const useResultsStore = defineStore("results", {
 
       const strategyPromise = new Promise((resolve, reject) => {
         this.requestRetro({ smiles: smiles }).then(
-          (precursor) => {
-            if (precursor.length === 0) {
+          (response) => {
+            if (response.length === 0) {
               reject(new Error("No precursors found!"));
             } else {
-              resolve(precursor);
+              resolve(response);
             }
           }
         );
@@ -894,34 +895,35 @@ export const useResultsStore = defineStore("results", {
 
       await strategyPromise.then(
         async (response) => {
-          const addedReactions = await this.addRetroResultToDataGraph({
-            data: response.result,
-            parentSmiles: smiles,
-          });
+          for (const [idx, precursor] of Object.entries(response.result)) {
+            const addedReactions = await this.addRetroResultToDataGraph({
+              data: precursor,
+              parentSmiles: smiles,
+            });
 
-          let reactionsToAdd = [];
-          if (settings.tbSettings.strategies[0].retro_backend === "template_relevance") {
-            reactionsToAdd = addedReactions
-              .filter((reactionSmiles) => {
-                return (
-                  !settings.allowCluster ||
-                  this.dataGraph.nodes.get(reactionSmiles).clusterRep
-                );
-              })
-              .slice(0, settings.reactionLimit);
-          } else {
-            reactionsToAdd = addedReactions.slice(0, settings.reactionLimit);
+            let reactionsToAdd = [];
+            if (settings.tbSettings.strategies[idx].retro_backend === "template_relevance") {
+              reactionsToAdd = addedReactions
+                .filter((reactionSmiles) => {
+                  return (
+                    !settings.allowCluster ||
+                    this.dataGraph.nodes.get(reactionSmiles).clusterRep
+                  );
+                })
+                .slice(0, settings.reactionLimit);
+            } else {
+              reactionsToAdd = addedReactions.slice(0, settings.reactionLimit);
+            }
+            this.addRetroResultToDispGraph({
+              data: reactionsToAdd,
+              parentId: nodeId,
+            });
           }
-          this.addRetroResultToDispGraph({
-            data: reactionsToAdd,
-            parentId: nodeId,
-          });
         },
         (error) => {
           console.error(error);
           alert("Error occurred while expanding: ", error.message);
         });
-
     },
     templateRelevance(smiles) {
       const settings = useSettingsStore();
@@ -997,15 +999,15 @@ export const useResultsStore = defineStore("results", {
         .sort(retroScoreDescending);
       let outcomes = rxns.map((rxn) => rxn["precursorSmiles"]);
       let scores = rxns.map((rxn) => rxn["retroScore"] || 0);
-      let url = "/api/v2/cluster/";
+      let url = "/api/cluster/call_async";
       let body = {
         original: smiles,
         outcomes: outcomes,
         feature: settings.clusterOptions.feature,
-        fp_name: settings.clusterOptions.fingerprint,
-        fpradius: settings.clusterOptions.fpRadius,
-        fpnbits: settings.clusterOptions.fpBits,
-        clustermethod: settings.clusterOptions.cluster_method,
+        cluster_method: settings.clusterOptions.cluster_method,
+        fp_type: settings.clusterOptions.fingerprint,
+        fp_length: settings.clusterOptions.fpBits,
+        fp_radius: settings.clusterOptions.fpRadius,
         scores: scores,
       };
       return API.runCeleryTask(url, body)
@@ -1013,11 +1015,11 @@ export const useResultsStore = defineStore("results", {
           let clusterTracker = new Set();
           let updateData = [];
           rxns.forEach((rxn, i) => {
-            let cid = json.output[i];
+            let cid = json.result[0][i];
             updateData.push({
               id: rxn.id,
               clusterId: cid,
-              clusterName: json.names[cid],
+              clusterName: json.result[1][cid],
               clusterRep: !clusterTracker.has(cid),
             });
             clusterTracker.add(cid);

@@ -52,6 +52,7 @@ export default defineConfig({
       '/api/status': fastapiGatewayPtr,
       '/api/tree_search': fastapiGatewayPtr,
       '/api/template': fastapiGatewayPtr,
+      '/api/cluster': fastapiGatewayPtr,
       // Legacy Django Gateway
       '/api/': {
         target: 'https://askcos-demo.mit.edu',
