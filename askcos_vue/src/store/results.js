@@ -837,7 +837,7 @@ export const useResultsStore = defineStore("results", {
       });
       this.updateDispNodes(updatedDispNodes);
     },
-    requestRetro({ smiles, strategies }) {
+    requestRetro({ smiles }) {
       const settings = useSettingsStore();
       const url = "/api/tree_search/expand_one/call_async";
       const body = {
@@ -900,7 +900,7 @@ export const useResultsStore = defineStore("results", {
 
       try {
         const strategyPrecursors = await Promise.all(strategyPromises);
-        for (const [idx, precursors] of strategyPrecursors.entries()) {
+        for (const [_idx, precursors] of strategyPrecursors.entries()) {
           let strategy = settings.tbSettings.strategies[0];
           const addedReactions = await this.addRetroResultToDataGraph({
             data: precursors.result,
