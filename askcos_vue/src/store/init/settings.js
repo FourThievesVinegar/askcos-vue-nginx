@@ -53,7 +53,7 @@ const tbSettingsDefault = {
 };
 
 const ippSettingsDefault = {
-  allowCluster: true,
+  allowCluster: false,
   filterReactingAtoms: false,
   allowResolve: false,
   isHighlightAtom: true,

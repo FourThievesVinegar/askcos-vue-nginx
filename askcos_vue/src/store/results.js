@@ -344,7 +344,7 @@ export const useResultsStore = defineStore("results", {
       }
       return Promise.all(promises);
     },
-    addRetroResultToDataGraph({ data, parentSmiles, strategy, update = true }) {
+    async addRetroResultToDataGraph({ data, parentSmiles, update = true }) {
       // Add results as reaction and chemical nodes under the specified parent chemical
       // Arguments should be list of outcome objects and the SMILES of the parent node
       if (!this.dataGraph.nodes.get(parentSmiles)) {
@@ -419,12 +419,9 @@ export const useResultsStore = defineStore("results", {
           }
           let node = {
             id: reactionSmiles,
-            model: strategy.model,
-            ...(strategy.model !== "retro_template_relevance" && {
-              trainingSet: strategy.trainingSet,
-            }),
-            ...(strategy.model === "retro_template_relevance" && {
-              templatePrioritizers: strategy.templatePrioritizers,
+            model: reaction["retro_backend"],
+            ...(reaction["retro_backend"] !== "template_relevance" && {
+              trainingSet: reaction["retro_model_name"],
             }),
             rank: reaction["rank"],
             ffScore: reaction["plausibility"],
@@ -510,7 +507,8 @@ export const useResultsStore = defineStore("results", {
         this.apiTemplateCount(templateIds);
         this.apiTemplateSet(templateIds);
       }
-      return Promise.all(promises).then(() => addedReactions);
+      await Promise.all(promises);
+      return addedReactions;
     },
     addRetroResultToDispGraph({ data, parentId }) {
       // Add reaction and chemical nodes with display properties under the specified parent chemical
@@ -882,33 +880,27 @@ export const useResultsStore = defineStore("results", {
         return;
       }
 
-      const strategyPromises = [];
-
-      strategyPromises.push(
-        new Promise((resolve, reject) => {
-          this.requestRetro({ smiles: smiles }).then(
-            (precursor) => {
-              if (precursor.length === 0) {
-                reject(new Error("No precursors found!"));
-              } else {
-                resolve(precursor);
-              }
+      const strategyPromise = new Promise((resolve, reject) => {
+        this.requestRetro({ smiles: smiles }).then(
+          (precursor) => {
+            if (precursor.length === 0) {
+              reject(new Error("No precursors found!"));
+            } else {
+              resolve(precursor);
             }
-          );
-        })
-      );
+          }
+        );
+      })
 
-      try {
-        const strategyPrecursors = await Promise.all(strategyPromises);
-        for (const [_idx, precursors] of strategyPrecursors.entries()) {
-          let strategy = settings.tbSettings.strategies[0];
+      await strategyPromise.then(
+        async (response) => {
           const addedReactions = await this.addRetroResultToDataGraph({
-            data: precursors.result,
+            data: response.result,
             parentSmiles: smiles,
-            strategy: strategy,
           });
+
           let reactionsToAdd = [];
-          if (strategy.model === "retro_template_relevance") {
+          if (settings.tbSettings.strategies[0].retro_backend === "template_relevance") {
             reactionsToAdd = addedReactions
               .filter((reactionSmiles) => {
                 return (
@@ -920,15 +912,16 @@ export const useResultsStore = defineStore("results", {
           } else {
             reactionsToAdd = addedReactions.slice(0, settings.reactionLimit);
           }
-          await this.addRetroResultToDispGraph({
+          this.addRetroResultToDispGraph({
             data: reactionsToAdd,
             parentId: nodeId,
           });
-        }
-      } catch (error) {
-        console.error(error);
-        alert("Error occurred while expanding: ", error.message);
-      }
+        },
+        (error) => {
+          console.error(error);
+          alert("Error occurred while expanding: ", error.message);
+        });
+
     },
     templateRelevance(smiles) {
       const settings = useSettingsStore();
