@@ -30,6 +30,9 @@
                                 :rules="usernameRules"></v-text-field>
                             <v-text-field label="Password" variant="outlined" required type="password" v-model="password"
                                 :rules="passwordRules"></v-text-field>
+                            <div v-if="loginFailure" class="text-red text-center text-subtitle-1">
+                                <p>Either username or password is incorrect</p>
+                            </div>
                             <div class="d-flex flex-column">
                                 <v-container>
                                     <v-row wrap no-gutters>
@@ -100,6 +103,7 @@ const password = ref(null);
 const showSignupDialog = ref(false);
 const createdAccount = ref(false);
 const creationFailure = ref(false);
+const loginFailure = ref(false);
 const router = useRouter();
 
 const usernameRules = ref([
@@ -135,6 +139,7 @@ const login = () => {
     if (!username.value || !password.value) {
         return
     }
+    loginFailure.value = false;
     const formData = new FormData();
     formData.append("username", username.value);
     formData.append("password", password.value);
@@ -144,6 +149,8 @@ const login = () => {
         localStorage.setItem('accessToken', json.access_token);
         // object with path
         router.push({ path: '/' })
+    }).catch(() => {
+        loginFailure.value = true;
     })
 }
 
