@@ -1,6 +1,7 @@
 /*
  * ASKCOS API client library
  */
+
 import Cookies from 'js-cookie';
 
 const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/status", "/api/tree_search"];
@@ -13,7 +14,7 @@ const API = {
     console.log(endpoint)
 
     let headers = {};
-    
+
     if (authMigratedAPI.some(api => endpoint.startsWith(api))) {
       const accessToken = localStorage.getItem('accessToken');
       headers = {
@@ -36,14 +37,18 @@ const API = {
 
   fetchHandler(response) {
     if (response.ok) {
-      return response.json()
+      return response.json().then(json => {
+        return json
+      }).catch(() => {
+        return response.statusText
+      })
     } else {
       return response.json().catch(() => {
         // Status not ok, and there is no json body
         return Promise.reject(new Error(response.statusText))
       }).then(json => {
         // Status not ok, but there is a json body
-        return Promise.reject(new Error(json.error))
+        return Promise.reject(new Error(JSON.stringify(json)))
       })
     }
   },
@@ -67,15 +72,26 @@ const API = {
   },
 
 
-  post(endpoint, data) {
+  async post(endpoint, data, query = false) {
     if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
       endpoint += '/';
     }
-    return fetch(endpoint, {
-      method: 'POST',
-      headers: this.getHeaders(data, endpoint),
-      body: data instanceof FormData ? data : JSON.stringify(data),
-    }).then(this.fetchHandler);
+
+    let response = null;
+    if (!query) {
+      response = await fetch(endpoint, {
+        method: 'POST',
+        headers: this.getHeaders(data, endpoint),
+        body: data instanceof FormData ? data : JSON.stringify(data),
+      });
+    }
+    else {
+      response = await fetch(endpoint + "?" + new URLSearchParams(data).toString(), {
+        method: 'POST',
+      })
+    }
+    return this.fetchHandler(response);
+
   },
 
   put(endpoint, data) {

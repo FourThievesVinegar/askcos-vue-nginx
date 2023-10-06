@@ -4,12 +4,10 @@
             <v-row class="d-flex justify-space-between align-center px-16">
                 <v-col cols="12" md="4">
                     <h1 class="text-h1 font-weight-bold text-white">ASKCOS.</h1>
-                    <p class="text-h5 text-grey-lighten-3">software tools for Organic Chemistry, <span
-                            style="text-decoration: wavy underline lime;">simplified</span></p>
                 </v-col>
                 <v-col cols="12" md="3">
                     <v-sheet elevation="10" rounded="lg">
-                        <v-form ref="form" class="pa-5">
+                        <v-form ref="form" class="pa-5" @submit.prevent>
                             <div class="d-flex flex-column">
                                 <v-btn color="green" size="x-large" block>
                                     SSO Login
@@ -28,25 +26,26 @@
                                     </v-row>
                                 </v-container>
                             </div>
-                            <v-text-field label="Username" variant="outlined" required v-model="username"></v-text-field>
-                            <v-text-field label="Password" variant="outlined" required type="password" v-model="password"></v-text-field>
-
+                            <v-text-field label="Username" variant="outlined" v-model="username"
+                                :rules="usernameRules"></v-text-field>
+                            <v-text-field label="Password" variant="outlined" required type="password" v-model="password"
+                                :rules="passwordRules"></v-text-field>
                             <div class="d-flex flex-column">
                                 <v-container>
                                     <v-row wrap no-gutters>
                                         <v-col cols="6" class="text-center">
-                                            <v-btn color="primary" size="x-large" @click="login">
+                                            <v-btn color="primary" size="x-large" @click="login" type="submit">
                                                 Log In
                                             </v-btn>
                                         </v-col>
                                         <v-col cols="6" class="text-center">
-                                            <v-btn color="primary" size="x-large">
+                                            <v-btn color="primary" size="x-large" @click="signup" type="submit">
                                                 Sign Up
                                             </v-btn>
                                         </v-col>
                                     </v-row>
                                 </v-container>
-                                <v-btn color="primary" size="x-large" block variant="plain">
+                                <v-btn color="primary" size="x-large" block variant="plain" disabled>
                                     Reset Password
                                 </v-btn>
                                 <v-divider class="my-4">
@@ -60,8 +59,32 @@
                 </v-col>
             </v-row>
         </v-container>
-
     </div>
+    <v-dialog v-model="showSignupDialog" width="auto">
+        <v-sheet elevation="2" max-width="600" rounded="lg" width="100%" class="pa-4 text-center mx-auto">
+            <div v-if="!createdAccount && !creationFailure">
+                <v-progress-linear indeterminate color="green"></v-progress-linear>
+                <h2 class="text-h5 my-6">Setting up your account, few moments...</h2>
+            </div>
+            <div v-if="createdAccount && !creationFailure">
+                <v-icon class="mb-5" color="success" icon="mdi-check-circle" size="112"></v-icon>
+                <h2 class="text-h5 mb-6">Signup was successful!</h2>
+            </div>
+            <div v-if="creationFailure">
+                <v-icon class="mb-5" color="warning" icon="mdi-alert-circle" size="112"></v-icon>
+                <h2 class="text-h5 mb-6">Signup has failed!</h2>
+            </div>
+
+            <v-divider class="mb-4"></v-divider>
+
+            <div class="text-end">
+                <v-btn class="text-none" color="success" variant="flat" width="90"
+                    :disabled="!createdAccount && !creationFailure" @click="closeSignup">
+                    Done
+                </v-btn>
+            </div>
+        </v-sheet>
+    </v-dialog>
 </template>
   
 <script setup>
@@ -74,7 +97,26 @@ import { useRouter } from "vue-router";
 const vantaRef = ref(null);
 const username = ref(null);
 const password = ref(null);
+const showSignupDialog = ref(false);
+const createdAccount = ref(false);
+const creationFailure = ref(false);
 const router = useRouter();
+
+const usernameRules = ref([
+    value => {
+        if (value) return true
+
+        return 'Username is required'
+    },
+])
+
+const passwordRules = ref([
+    value => {
+        if (value) return true
+
+        return 'Password is required'
+    },
+])
 
 onMounted(() => {
     HALO({
@@ -90,6 +132,9 @@ onMounted(() => {
 })
 
 const login = () => {
+    if (!username.value || !password.value) {
+        return
+    }
     const formData = new FormData();
     formData.append("username", username.value);
     formData.append("password", password.value);
@@ -102,67 +147,39 @@ const login = () => {
     })
 }
 
+const signup = () => {
+    if (!username.value || !password.value) {
+        return
+    }
+
+    // show dialog for creation of user
+    createdAccount.value = false;
+    creationFailure.value = false;
+    showSignupDialog.value = true;
+
+    const formData = new FormData();
+    formData.append("username", username.value);
+    formData.append("password", password.value);
+
+    // For creating a superuser
+    let is_superuser = false;
+    if (username.value.startsWith("admin_")) {
+        is_superuser = true;
+    }
+
+    formData.append("is_superuser", is_superuser);
+
+    API.post('/api/user/register', formData, true).then(json => {
+        createdAccount.value = true;
+    }).catch(() => {
+        creationFailure.value = true;
+    })
+}
+
+const closeSignup = () => {
+    showSignupDialog.value = false;
+}
+
 </script>
 
-<style lang="scss">
-@mixin white-gradient {
-    background: linear-gradient(to right, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);
-}
-
-$animationSpeed: 20s;
-
-// Animation
-@keyframes scroll {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(calc(-250px * 7))
-    }
-}
-
-
-// Styling
-.slider {
-    box-shadow: 0 10px 20px -5px rgba(0, 0, 0, .125);
-    height: 100px;
-    margin: auto;
-    overflow: hidden;
-    position: relative;
-    width: auto;
-    border-radius: 10px;
-
-    &::before,
-    &::after {
-        @include white-gradient;
-        content: "";
-        height: 100px;
-        position: absolute;
-        width: 200px;
-        z-index: 2;
-    }
-
-    &::after {
-        right: 0;
-        top: 0;
-        transform: rotateZ(180deg);
-    }
-
-    &::before {
-        left: 0;
-        top: 0;
-    }
-
-    .slide-track {
-        animation: scroll $animationSpeed linear infinite;
-        display: flex;
-        width: calc(250px * 14);
-    }
-
-    .slide {
-        height: 100px;
-        width: 250px;
-    }
-}
-</style>
+<style lang="scss"></style>
