@@ -26,8 +26,8 @@
                                     </v-row>
                                 </v-container>
                             </div>
-                            <v-text-field label="Username" variant="outlined" v-model="username"
-                                :rules="usernameRules" clearable></v-text-field>
+                            <v-text-field label="Username" variant="outlined" v-model="username" :rules="usernameRules"
+                                clearable></v-text-field>
                             <v-text-field label="Password" variant="outlined" required type="password" v-model="password"
                                 :rules="passwordRules" clearable></v-text-field>
                             <div v-if="loginFailure" class="text-red text-center text-subtitle-1">
@@ -162,6 +162,7 @@ const signup = () => {
     // show dialog for creation of user
     createdAccount.value = false;
     creationFailure.value = false;
+    loginFailure.value = false;
     showSignupDialog.value = true;
 
     const formData = new FormData();
