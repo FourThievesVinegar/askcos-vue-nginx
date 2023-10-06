@@ -46,7 +46,7 @@
                                         </v-col>
                                     </v-row>
                                 </v-container>
-                                <v-btn color="primary" size="x-large" block variant="plain">
+                                <v-btn color="primary" size="x-large" block variant="plain" disabled>
                                     Reset Password
                                 </v-btn>
                                 <v-divider class="my-4">
