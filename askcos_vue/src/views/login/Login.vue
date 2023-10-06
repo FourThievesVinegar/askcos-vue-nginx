@@ -27,9 +27,9 @@
                                 </v-container>
                             </div>
                             <v-text-field label="Username" variant="outlined" v-model="username"
-                                :rules="usernameRules"></v-text-field>
+                                :rules="usernameRules" clearable></v-text-field>
                             <v-text-field label="Password" variant="outlined" required type="password" v-model="password"
-                                :rules="passwordRules"></v-text-field>
+                                :rules="passwordRules" clearable></v-text-field>
                             <div v-if="loginFailure" class="text-red text-center text-subtitle-1">
                                 <p>Either username or password is incorrect</p>
                             </div>
