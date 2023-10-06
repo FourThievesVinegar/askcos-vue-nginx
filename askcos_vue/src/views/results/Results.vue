@@ -61,7 +61,8 @@
                     <td :colspan="columns.length">
                         <div class="d-flex justify-space-evenly my-3" >
                            <span class="text-center" v-if="item.columns.num_trees !== undefined">Found {{ item.columns.description }} Tree</span>
-                          <v-btn color="primary" variant="tonal"   v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'">
+                           <span class="text-center" v-if="item.columns.result_type == 'ipp'">Tags:</span>
+                          <v-btn color="primary" variant="tonal" v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'">
                             View trees
                           </v-btn>
                           <v-btn color="primary" variant="tonal">

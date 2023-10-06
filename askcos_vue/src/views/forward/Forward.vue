@@ -793,6 +793,7 @@ const contextV1Predict = async () => {
   let postData = constructContextV1PostData()
   API.runCeleryTask('/api/legacy/context/', postData)
     .then(output => {
+      console.log(output)
       contextResults.value = output
       console.log(contextResults.value)
     })
