@@ -178,8 +178,8 @@
                                                             help-text="This is the maximum number of reaction rules/templates to try to apply to your target. Depending on the value of maximum cumulative probability (below), a fewer number of templates may actually be applied.">
                                                             <v-text-field id="max_num_templates" density="compact"
                                                                 variant="outlined" type="number"
-                                                                @input="($event) => updateStrategy(idx, 'max_num_templates', $event)"
-                                                                :value="strategy.max_num_templates"
+                                                                @update:modelValue="($event) => updateStrategy(idx, 'max_num_templates', $event)"
+                                                                :model-value="strategy.max_num_templates"
                                                                 hide-details></v-text-field>
                                                         </setting-input>
                                                         <setting-input label="Max. cum. prob." label-for="max_cum_prob"
@@ -189,8 +189,8 @@
                                                             <v-text-field id="max_cum_prob" density="compact"
                                                                 variant="outlined" type="number" min="0" max="1"
                                                                 step="0.000001"
-                                                                @input="($event) => updateStrategy(idx, 'max_cum_prob', Math.min(0.99999, $event))"
-                                                                :value="strategy.max_cum_prob" hide-details></v-text-field>
+                                                                @update:modelValue="($event) => updateStrategy(idx, 'max_cum_prob', Math.min(0.99999, $event))"
+                                                                :model-value="strategy.max_cum_prob" hide-details></v-text-field>
                                                         </setting-input>
                                                     </div>
                                                 </v-card-text>
@@ -225,7 +225,7 @@
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn variant="tonal" @click="clearEmit">Close</v-btn>
-                <v-btn variant="tonal" color="red">Reset</v-btn>
+                <v-btn variant="tonal" color="red" @click="resetSettings">Reset</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
