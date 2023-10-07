@@ -22,7 +22,7 @@
       </v-row>
     </v-card-title>
     <div v-if="!loading">
-      <v-data-table v-model:expanded="expanded" :headers="headers" :items="data" show-expand item-value="name">
+      <v-data-table v-model:expanded="expanded" :headers="headers" :items="data" show-expand item-value="name" :items-per-page="1000" :disable-pagination="true" :hide-default-footer="true">
         <template v-slot:item.url="{ item }">
           <router-link v-if="item.columns.url" :to="item.columns.url">
             <v-btn color="primary">

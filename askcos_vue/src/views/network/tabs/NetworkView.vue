@@ -1646,7 +1646,7 @@ export default {
       };
       if (!this.resultsStore.savedResultInfo) {
               console.error('savedResultInfo is not initialized.');
-              return;  // exit the function early
+              return;  
             }
       console.log("saveResult started");
       console.log('savedResultInfo:', this.resultsStore.savedResultInfo);
@@ -1664,8 +1664,8 @@ export default {
       API[method](url, body)
         .then((json) => {
           if (json.success) {
-            this.updateSavedResultInfo({
-              id: json["id"],
+            this.resultsStore.updateSavedResultInfo({
+              result_id: json["id"],
               user: localStorage.getItem('username'),
               modified: json["modified"],
               modifiedDisp: dayjs(json["modified"]).format(
@@ -1692,6 +1692,7 @@ export default {
               footerClass: "p-2",
             });
           }
+           this.resultDialogVisible = false
         })
         .catch((error) => {
           alert(
@@ -1706,6 +1707,7 @@ export default {
               footerClass: "p-2",
             }
           );
+          this.resultDialogVisible = false
         })
         .finally(() => {
           this.pendingTasks -= 1;
