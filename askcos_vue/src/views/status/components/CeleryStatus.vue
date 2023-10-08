@@ -22,7 +22,9 @@
       </v-row>
     </v-card-title>
     <div v-if="!loading">
-      <v-data-table :headers="headers" :items="data"></v-data-table>
+      <v-data-table :headers="headers" :items="data" :items-per-page="100" >
+        <template #bottom></template>
+      </v-data-table>
     </div>
     <div v-if="loading">
       <v-skeleton-loader class="mx-auto" min-height="100px" type="table">

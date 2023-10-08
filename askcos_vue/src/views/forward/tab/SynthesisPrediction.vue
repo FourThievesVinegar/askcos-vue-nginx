@@ -50,11 +50,11 @@
 
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" v-show="results.length > 0"
                 :items-per-page="10" height="600px">
-                <template #item.smiles="{ item }">
+                <template #item.outcome="{ item }">
                     <v-tooltip activator="parent" location="top">
-                        <span>{{ item.columns.smiles }}</span>
+                        <span>{{ item.columns.outcome }}</span>
                     </v-tooltip>
-                    <smiles-image :smiles="item.columns.smiles" height="80px"></smiles-image>
+                    <smiles-image :smiles="item.columns.outcome" height="80px"></smiles-image>
                 </template>
                 <template #item.prob="{ item }">
                     {{ item.columns.prob.toFixed(4) }}
@@ -66,7 +66,8 @@
                     {{ item.columns.mol_wt.toFixed(1) }}
                 </template>
                 <template #item.predict_impurities="{ item, index }">
-                    <v-btn variant="tonal" @click="emitGoToImpurity(item.columns.smiles)" :id="'predict-impurities-' + index"
+                    <!-- <pre>{{item.columns.outcome}}</pre> -->
+                    <v-btn variant="tonal" @click="emitGoToImpurity(item.columns.outcome)" :id="'predict-impurities-' + index"
                         title="Predict products">
                         <v-icon>mdi-arrow-right</v-icon>
                     </v-btn>
@@ -106,8 +107,8 @@ const { results, models, pending } = defineProps({
 
 const showDialog = ref(false)
 const headers = ref([
-    { key: 'rank', title: 'Rank', align: 'center', },
-    { key: 'smiles', title: 'Product', align: 'center', width: '300px' },
+    // { key: 'rank', title: 'Rank', align: 'center', },
+    { key: 'outcome', title: 'Product', align: 'center', width: '300px' },
     { key: 'prob', title: 'Probability', align: 'center' },
     { key: 'score', title: 'Max. Score', align: 'center' },
     { key: 'mol_wt', title: 'Molecular Weight', align: 'center' },
@@ -121,11 +122,12 @@ const emitDownloadForward = () => {
     emits('download-forward')
 }
 
-const emitGoToImpurity = (smiles) => {
-    emits('go-to-impurities', smiles);
+const emitGoToImpurity = (index) => {
+    emits('go-to-impurities', index);
+    console.log(index)
 }
 
-const goToSelectivity = (index) => {
-    emits('go-to-selectivity', index);
-}
+// const goToSelectivity = (index) => {
+//     emits('go-to-selectivity', index);
+// }
 </script>

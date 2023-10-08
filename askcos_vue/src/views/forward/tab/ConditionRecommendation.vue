@@ -119,6 +119,9 @@
                         ({{ amount.toFixed(2) }})
                     </div>
                 </template>
+                 <template #item.temperature="{ item }">
+                        {{ Math.round(item.columns.temperature) }} &deg;C
+                    </template>
                 <template v-slot:item.reagents="{ item }">
                     <div v-if="!!item.columns.reagents" class="text-center" v-for="(amount, rgt) in item.columns.reagents"
                         :key="rgt">
@@ -148,8 +151,6 @@ import SmilesImage from "@/components/SmilesImage.vue";
 import { ref, watch } from 'vue'
 
 const showDialog = ref(false)
-
-console.log('Initial models:', models);
 
 const { results, models, pending } = defineProps({
     inheritAttrs: false,
@@ -196,6 +197,7 @@ const headersAlt = ref([
     { key: 'evaluation', title: 'Rank', align: 'center', },
     { key: 'reactants', title: 'Reactants (Amount)', align: 'center', },
     { key: 'reagents', title: 'Reagents (Amount)', align: 'center', },
+    { key: 'temperature', title: 'Temperature', align: 'center', },
     { key: 'predict', title: 'Predict with conditions', align: 'center', }
 ])
 

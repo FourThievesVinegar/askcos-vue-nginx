@@ -69,7 +69,7 @@
               </v-col>
               <v-col cols="6" class="d-flex justify-center">
                 <smiles-image :smiles="solvent" width="200"></smiles-image>
-                                  
+
               </v-col>
             </v-row>
 
@@ -94,28 +94,30 @@
             <v-tab @click="replaceRoute('forward')" value="forward">Synthesis Prediction</v-tab>
             <v-tab @click="replaceRoute('impurity')" value="impurity">Impurity Prediction</v-tab>
             <v-tab @click="replaceRoute('selectivity')" value="selectivity">Regioselectivity Prediction</v-tab>
-            <v-tab @click="replaceRoute('sites')" value="sites">Site Selectivity Prediction</v-tab>
+            <v-tab @click="replaceRoute('sites')" value="sites" disabled>Site Selectivity Prediction</v-tab>
           </v-tabs>
         </v-sheet>
 
         <v-window v-model="tab" class="elevation-2">
           <v-window-item value="context" rounded="lg">
             <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel"
-                           :pending="pendingTasks" :pendingRank="pendingRank" :evaluating="evaluating" @go-to-forward="goToForward" :score="reactionScore" @evaluate="evaluate"/> 
+              :pending="pendingTasks" :pendingRank="pendingRank" :evaluating="evaluating" @go-to-forward="goToForward"
+              :score="reactionScore" @evaluate="evaluate" />
           </v-window-item>
           <v-window-item value="forward">
             <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel"
-              :pending="pendingTasks" @download-forward="downloadForwardResults" @go-to-impurities="goToImpurity"/>
+              :pending="pendingTasks" @download-forward="downloadForwardResults" @go-to-impurities="goToImpurity" />
           </v-window-item>
           <v-window-item value="impurity">
             <ImpurityPrediction value="impurity" rounded="lg" :results="impurityResults" :pending="pendingTasks"
-              :progress="impurityProgress" @download-impurity="downloadImpurityResults"/>
+              :progress="impurityProgress" @download-impurity="downloadImpurityResults" />
           </v-window-item>
           <v-window-item value="selectivity">
             <Regioselectivity value="selectivity" rounded="lg" />
           </v-window-item>
           <v-window-item value="sites">
-            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" :reactingAtoms="reactingAtoms" :pending="pendingTasks"/>
+            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" :reactingAtoms="reactingAtoms"
+              :pending="pendingTasks" />
           </v-window-item>
         </v-window>
       </v-col>
@@ -136,12 +138,16 @@
                 <v-row class="my-6">
                   <v-col cols="12">
                     <v-select label="Condition recommendation model" density="comfortable" variant="outlined" hide-details
-                      clearable v-model="contextModel" :items="[{ key: 'neuralnetwork', title: 'Neural Network' },  { key: 'neuralnetworkv2', title: 'Neural Network v2 (Quantity Prediction)' }]" item-text="title" item-value="key">
+                      clearable v-model="contextModel"
+                      :items="[{ key: 'neuralnetwork', title: 'Neural Network' }, { key: 'neuralnetworkv2', title: 'Neural Network v2 (Quantity Prediction)' }]"
+                      item-text="title" item-value="key">
                     </v-select>
                   </v-col>
                   <v-col cols="12" v-if="contextModel === 'neuralnetworkv2'">
                     <v-select label="Neural Network v2 model type" density="comfortable" variant="outlined" hide-details
-                      clearable v-model="contextV2ModelType" :items="[{ key: 'graph', title: 'Graph' }, { key: 'fp-small', title: 'Fingerprint (small)' }]" item-text="title" item-value="key"></v-select>
+                      clearable v-model="contextV2ModelType"
+                      :items="[{ key: 'graph', title: 'Graph' }, { key: 'fp-small', title: 'Fingerprint (small)' }]"
+                      item-text="title" item-value="key"></v-select>
                   </v-col>
 
                   <v-col cols="12" v-if="contextModel === 'neuralnetworkv2'">
@@ -269,16 +275,16 @@ const reagents = ref('');
 const solvent = ref('');
 const contextResults = ref([]);
 
-const contextV2ModelType = ref('fp-small');
+const contextV2ModelType = ref('graph');
 const contextV2ModelVersion = ref('20191118');
-const forwardModel = ref('wln_forward');
-const forwardModelTrainingSet = ref('uspto_500k');
-const forwardModelVersion = ref('1');
+const forwardModel = ref('wldn5');
+const forwardModelTrainingSet = ref("pistachio");
+// const forwardModelVersion = ref('1');
 const numContextResults = ref(10);
 const numForwardResults = ref(100);
 const impurityTopk = ref(3);
 const inspectionThreshold = ref(0.1);
-const inspectionModel = ref('WLN forward inspector');
+const inspectionModel = ref('Reaxys inspector');
 const impurityCheckMapping = ref(true);
 const absoluteReagents = ref(true);
 const forwardResults = ref([])
@@ -335,13 +341,13 @@ const evaluate = async () => {
   pendingRank.value++;
   evaluating.value = true;
   const postData = constructFastFilterPostData();
-  
+
   contextResults.value.forEach((item, index) => {
     evaluateIndex(index)
   })
-  
+
   try {
-    const output = await API.runCeleryTask('/api/v2/fast-filter/', postData);
+    const output = await API.runCeleryTask('/api/legacy/fast_filter/', postData);
     reactionScore.value = output;
   } catch (error) {
     console.error("An error occurred during evaluation:", error);
@@ -375,7 +381,7 @@ const evaluateIndex = async (index) => {
   let solvent = contextResults.value[index].solvent;
   const postData = constructForwardPostData(reagents, solvent);
   try {
-    const output = await API.runCeleryTask('/api/v2/forward/', postData);
+    const output = await API.runCeleryTask('/api/forward/controller/call_async', postData);
     for (let i = 0; i < output.length; i++) {
       const outcome = output[i];
       if (outcome.smiles === product.value) {
@@ -459,18 +465,17 @@ const mode = computed(() => {
 })
 
 const forwardModels = computed(() => {
-  const models = new Set()
-  const types = ['wln_forward', 'graph2smiles']
+  const models = new Set();
+  const types = ["forward_augmented_transformer", "forward_graph2smiles", "forward_wldn5"];
+
   modelStatus.value
-    .filter(item => types.includes(item['type']) && item['ready'])
+    .filter(item => types.includes(item['name']) && item['ready'])
     .forEach(item => {
-      if (item['name'].startsWith('wln_forward')) {
-        models.add('wln_forward')
-      } else {
-        models.add(item['name'])
-      }
-    })
-  return Array.from(models).sort()
+      let modelName = item['name'].replace('forward_', '');
+      models.add(modelName);
+    });
+
+  return Array.from(models).sort();
 });
 
 const goToForward = (index) => {
@@ -495,35 +500,40 @@ const goToForward = (index) => {
 };
 
 
-const goToImpurity = (smiles) => {
+const goToImpurity = (index) => {
   canonicalizeAll()
     .then(() => {
-      product.value = smiles;
-      console.log(smiles)
+      product.value = index;
+      console.log(index)
       changeMode('impurity');
       tab.value = 'impurity';
       impurityPredict();
     });
 };
 
+
 const forwardModelTrainingSets = computed(() => {
   const sets = new Set();
+  let modelNameWithPrefix = forwardModel.value.replace('', 'forward_');
   modelStatus.value
-    .filter(item => item.name.startsWith(forwardModel.value) && item.ready)
+    .filter(item => item.name.startsWith(modelNameWithPrefix) && item.ready)
     .forEach(item => {
-      sets.add(item.training_set);
+      if (Array.isArray(item.available_model_names)) {
+        item.available_model_names.forEach(modelName => {
+          sets.add(modelName);
+        });
+      }
     });
+
   return Array.from(sets).sort();
 });
 
-const forwardModelVersions = computed(() => {
-  const versions = new Set();
-  modelStatus.value
-    .filter(item => item.name.startsWith(forwardModel.value) && item.training_set === forwardModelTrainingSet.value && item.ready)
-    .forEach(item => {
-      item.versions.forEach(v => versions.add(v));
-    });
-  return Array.from(versions).sort();
+watch(forwardModel, () => {
+  if (forwardModelTrainingSets.value.length > 0) {
+    forwardModelTrainingSet.value = forwardModelTrainingSets.value[0];
+  } else {
+    forwardModelTrainingSet.value = null;
+  }
 });
 
 
@@ -592,7 +602,8 @@ const impurityPredict = () => {
   let complete = (output) => {
     impurityProgress.value.percent = 1.0;
     impurityProgress.value.message = 'Prediction complete!';
-    impurityResults.value = output['predict_expand'];
+    impurityResults.value = output['result']['predict_expand'];
+    console.log(impurityResults.value)
   };
 
   let progress = (json) => {
@@ -606,10 +617,9 @@ const impurityPredict = () => {
     impurityProgress.value.message = 'Impurity prediction failed!';
   };
 
-  API.runCeleryTask('/api/v2/impurity/', postData, progress)
+  API.runCeleryTask('/api/impurity_predictor/call_async', postData, progress)
     .then(output => {
       complete(output);
-
     })
     .catch(error => {
       failed(error);
@@ -622,25 +632,27 @@ const impurityPredict = () => {
 
 const constructImpurityPostData = () => {
   let data = {
-    reactants: reactants.value,
-    training_set: forwardModelTrainingSet.value,
-    model_version: forwardModelVersion.value,
-    top_k: impurityTopk.value,
-    threshold: inspectionThreshold.value,
+    rct_smi: reactants.value,
+    predictor_model_name: forwardModelTrainingSet.value,
+    predictor_backend: forwardModel.value,
+    topn_outcome: impurityTopk.value,
     check_mapping: impurityCheckMapping.value,
-    inspector: inspectionModel.value
+    insp_threshold: inspectionThreshold.value,
+    inspector: inspectionModel.value,
+    atom_map_backend: "indigo",
+    priority: numForwardResults.value
   };
 
   if (product.value) {
-    data.products = product.value;
+    data.prd_smi = product.value;
   }
 
   if (reagents.value) {
-    data.reagents = reagents.value;
+    data.rea_smi = reagents.value;
   }
 
   if (solvent.value) {
-    data.solvent = solvent.value;
+    data.sol_smi = solvent.value;
   }
 
   return data;
@@ -674,9 +686,10 @@ const updateFromURL = () => {
 };
 
 onMounted(() => {
-  API.get('/api/v2/status/ml/')
+  API.get('/api/admin/get_backend_status')
     .then(json => {
-      modelStatus.value = json['models'];
+      console.log(json['modules'])
+      modelStatus.value = json['modules'];
     });
   updateFromURL();
   if (reactants.value) {
@@ -695,8 +708,9 @@ const forwardPredict = async () => {
   }
   const postData = constructForwardPostData(reagents.value, solvent.value);
   try {
-    const output = await API.runCeleryTask('/api/v2/forward/', postData);
-    forwardResults.value = output;
+    const output = await API.runCeleryTask('/api/forward/controller/call_async', postData);
+    forwardResults.value = output.result[0];
+    console.log(output.result[0])
   } catch (error) {
     console.error('Error in forward prediction:', error);
   } finally {
@@ -705,12 +719,12 @@ const forwardPredict = async () => {
 };
 
 const constructForwardPostData = (reagents, solvent) => {
+  let _smile = reactants.value
   let data = reactive({
-    reactants: reactants.value,
-    model_name: forwardModel.value,
-    training_set: forwardModelTrainingSet.value,
-    model_version: forwardModelVersion.value,
-    num_results: numForwardResults.value
+    smiles: [_smile],
+    backend: forwardModel.value,
+    model_name: forwardModelTrainingSet.value,
+    priority: numForwardResults.value
   });
 
   if (reagents) {
@@ -777,8 +791,9 @@ const contextV1Predict = async () => {
   contextResults.value = []
   evaluating.value = false
   let postData = constructContextV1PostData()
-  API.runCeleryTask('/api/v2/context/', postData)
+  API.runCeleryTask('/api/legacy/context/', postData)
     .then(output => {
+      console.log(output)
       contextResults.value = output
       console.log(contextResults.value)
     })
@@ -790,7 +805,8 @@ const constructContextV1PostData = () => {
   return {
     reactants: reactants.value,
     products: product.value,
-    return_scores: true,
+    with_smiles: false,
+    return_scores: false,
     num_results: numContextResults.value
   }
 }
@@ -811,24 +827,12 @@ const postprocessContextV2 = (output) => {
   contextResults.value = processedResults;
 };
 
-const constructContextV2PostData = () => {
-  const _reagents = []; // a list of string, each of them is a reagent
-  return {
-    reactants: reactants.value,
-    products: product.value,
-    reagents: _reagents,
-    model: `${contextV2ModelType.value}-${contextV2ModelVersion.value}`,
-    num_results: numContextResults.value,
-  };
-};
-
-
 const contextV2Predict = () => {
   pendingTasks.value++;
   contextResults.value = [];
   evaluating.value = false;
   const postData = constructContextV2PostData();
-  API.runCeleryTask('/api/v2/context-v2/', postData)
+  API.runCeleryTask('/api/legacy/context_v2/', postData)
     .then((output) => {
       postprocessContextV2(output);
       console.log(contextResults.value)
@@ -837,6 +841,18 @@ const contextV2Predict = () => {
       pendingTasks.value--;
     });
 };
+
+const constructContextV2PostData = () => {
+  const reagents = [];
+  return {
+    reactants: reactants.value,
+    products: product.value,
+    reagents: reagents,
+    model: contextV2ModelType.value,
+    num_results: numContextResults.value,
+  };
+};
+
 
 const clearSelectivity = () => {
   selectivityResults.value = [];
@@ -906,14 +922,6 @@ const getMolImgUrl = (smiles, highlight, reactingAtoms) => {
   return url;
 };
 
-// watch(forwardModel, (newValue) => {
-//   forwardModelTrainingSet.value = forwardModelTrainingSets.value[0];
-// });
-
-
-// watch(() => settings.value.forwardModelTrainingSet, (newValue) => {
-//   forwardModelVersion.value = forwardModelVersions.value[0];
-// });
 
 </script>
 

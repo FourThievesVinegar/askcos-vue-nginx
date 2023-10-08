@@ -46,7 +46,8 @@
           </div>
           <div v-else>No strategy added</div>
           <v-divider class="border-opacity-75 mx-2" vertical></v-divider>
-          <v-btn variant="tonal" color="primary" prepend-icon="mdi mdi-cog" @click="settingsVisible=true">Strategy Settings</v-btn>
+          <v-btn variant="tonal" color="primary" prepend-icon="mdi mdi-cog" @click="settingsVisible = true">Strategy
+            Settings</v-btn>
         </v-row>
       </v-container>
     </v-toolbar>
@@ -135,7 +136,7 @@
 
           <v-list>
             <v-list-item>My PC</v-list-item>
-            <v-list-item>My Account</v-list-item>
+            <v-list-item @click="resultDialogVisible = true">My Account</v-list-item>
           </v-list>
         </v-menu>
       </div>
@@ -199,6 +200,33 @@
     </v-card>
   </v-dialog>
 
+  <v-dialog v-model="resultDialogVisible" max-width="600px" persistent>
+    <v-card>
+      <v-card-title class="headline">Save IPP network</v-card-title>
+      <v-card-text>
+        <v-text-field v-model="savedResultDescription" label="Description" outlined></v-text-field>
+        <v-text-field v-model="savedResultTags" label="Tags" outlined delimiter=",;"></v-text-field>
+        <template v-if="!!resultsStore.savedResultInfo.id">
+          <template v-if="resultsStore.savedResultInfo.type === 'ipp'">
+            <v-checkbox v-model="savedResultOverwrite" label="Overwrite" class="my-3"></v-checkbox>
+            <v-alert v-if="savedResultOverwrite" dense type="info">The previous version of this saved result will be
+              overwritten.</v-alert>
+            <v-alert v-else dense type="info">A new saved result will be created.</v-alert>
+          </template>
+          <template v-else>
+            <v-alert dense type="info">A new IPP result will be created from the current tree builder result.</v-alert>
+          </template>
+        </template>
+      </v-card-text>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="red darken-1" text @click="resultDialogVisible = false">Cancel</v-btn>
+        <v-btn color="green darken-1" text @click="saveResult">Save</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
   <v-dialog v-model="showImportNetwork" width="auto" min-width="500px">
     <v-card>
       <v-card-title>Load Network JSON</v-card-title>
@@ -218,7 +246,8 @@
   <NodeDetail :visible="nodeDetailVisible" :enable-resolver="enableResolver" :selected="selected" @close="closeNodeDetail"
     @expandNode="expandNode" @updatePendingTasks="pendingTasksHandler" ref="node-detail" />
 
-  <SettingsModal :visible="settingsVisible" @update:settingsVisible="settingsVisible = $event" :template-attributes="templateAttributes" :template-sets="templateSets"/>
+  <SettingsModal :visible="settingsVisible" @update:settingsVisible="settingsVisible = $event"
+    :template-attributes="templateAttributes" :template-sets="templateSets" />
 </template>
 
 <script>
@@ -306,6 +335,7 @@ export default {
       isCanvasEmpty: true,
       validSmiles: true,
       emptyCanvas: emptyCanvas,
+      resultDialogVisible: false,
     };
   },
   created() {
@@ -318,6 +348,8 @@ export default {
         e.returnValue = "";
       }
     });
+
+    console.log("Directly from the store:", this.resultsStore.savedResultInfo);
 
     API.get("/api/template/sets/").then((json) => {
       this.templateAttributes = json.attributes;
@@ -445,6 +477,7 @@ export default {
       },
       set(value) {
         this.resultsStore.updateSavedResultInfo({ description: value });
+        console.log(this.resultsStore.savedResultInfo)
       },
     },
     savedResultTags: {
@@ -1607,32 +1640,39 @@ export default {
           dispGraph: this.resultsStore.dispGraph.toJSON(),
         },
         settings: this.getAllSettings(),
-        description: this.savedResultInfo.description,
-        tags: this.savedResultInfo.tags.join(","),
-        result_type: "ipp",
+        description: this.resultsStore.savedResultInfo.description,
+        tags: this.resultsStore.savedResultInfo.tags.join(","),
+        type: "ipp",
       };
-      let url = `/api/v2/results/`;
+      if (!this.resultsStore.savedResultInfo) {
+              console.error('savedResultInfo is not initialized.');
+              return;  
+            }
+      console.log("saveResult started");
+      console.log('savedResultInfo:', this.resultsStore.savedResultInfo);
+      let url = `/api/results/create`;
       let method = "post";
       if (
-        !!this.savedResultInfo.id &&
-        this.savedResultInfo.type === "ipp" &&
-        this.savedResultOverwrite
+        !!this.resultsStore.savedResultInfo.id &&
+        this.resultsStore.savedResultInfo.type === "ipp" &&
+        this.resultsStore.savedResultOverwrite
       ) {
-        url += this.savedResultInfo.id + "/";
-        body["check_date"] = this.savedResultInfo.modified;
+        url += this.resultsStore.savedResultInfo.id + "/";
+        body["check_date"] = this.resultsStore.savedResultInfo.modified;
         method = "put";
       }
       API[method](url, body)
         .then((json) => {
           if (json.success) {
-            this.updateSavedResultInfo({
-              id: json["id"],
+            this.resultsStore.updateSavedResultInfo({
+              result_id: json["id"],
+              user: localStorage.getItem('username'),
               modified: json["modified"],
               modifiedDisp: dayjs(json["modified"]).format(
                 "MMMM D, YYYY h:mm A"
               ),
             });
-            this.$bvModal.msgBoxOk("Result saved successfully!", {
+            alert("Result saved successfully!", {
               title: "Success",
               size: "sm",
               okVariant: "success",
@@ -1642,7 +1682,7 @@ export default {
               footerClass: "p-2",
             });
           } else {
-            this.$bvModal.msgBoxOk("Unable to save result.", {
+            alert("Unable to save result.", {
               title: "Alert",
               size: "sm",
               okVariant: "danger",
@@ -1652,9 +1692,10 @@ export default {
               footerClass: "p-2",
             });
           }
+           this.resultDialogVisible = false
         })
         .catch((error) => {
-          this.$bvModal.msgBoxOk(
+          alert(
             "Error while attempting to save result: " + error.message,
             {
               title: "Alert",
@@ -1666,9 +1707,11 @@ export default {
               footerClass: "p-2",
             }
           );
+          this.resultDialogVisible = false
         })
         .finally(() => {
           this.pendingTasks -= 1;
+          console.log("saveResult finished");
         });
     },
     init() {
@@ -1892,15 +1935,22 @@ export default {
       }
     },
   },
+  'resultsStore.savedResultInfo': {
+    deep: true,
+      handler(newValue, oldValue) {
+      console.log('savedResultInfo changed:', oldValue, '->', newValue);
+    }
+  }
 };
 </script>
 
 <style>
-.test{
+.test {
   max-width: 800px;
 
   white-space: nowrap;
-  overflow-x: auto; /* Enable horizontal scrollbar for overflow */
+  overflow-x: auto;
+  /* Enable horizontal scrollbar for overflow */
 }
 
 .target-input .v-input__control {

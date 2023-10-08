@@ -4,6 +4,7 @@
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
                     <h3 class="text-h5">Impurity Prediction</h3>
+                    <p v-if="!!pending">Progress: {{ progress.message }}</p>
                 </v-col>
                 
                 <v-spacer></v-spacer>
@@ -55,9 +56,10 @@
                         </template>
                     </v-data-table>
 
-                      <p v-if="!!pending">Progress: {{ progress.message }}</p>
+                  
+                    <v-skeleton-loader v-if="!!pending" class="mx-auto my-auto" min-height="80px" type="table">
+                          </v-skeleton-loader>
                 </v-col>
-
             </v-row>
         </v-sheet>
     </v-container>
@@ -88,7 +90,7 @@ const { results, models, progress } = defineProps({
 const headers = ref([
     { key: 'no', title: 'No.', align: 'center', },
     { key: 'prd_smiles', title: 'Predicted Impurities', align: 'center', },
-    { key: 'modes_name', title: 'Possible Mechanisms', align: 'center', },
+    // { key: 'modes_name', title: 'Possible Mechanisms', align: 'center', },
     { key: 'avg_insp_score', title: 'Inspector Score', align: 'center', },
     { key: 'similarity_to_major', title: 'Similarity Score', align: 'center', },
     { key: 'prd_mw', title: 'Molecular Weight', align: 'center', },

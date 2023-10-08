@@ -147,6 +147,7 @@ const login = () => {
     API.post('/api/admin/token', formData).then(json => {
         // Store the token in local storage
         localStorage.setItem('accessToken', json.access_token);
+        localStorage.setItem('username', username.value);
         // object with path
         router.push({ path: '/' })
     }).catch(() => {
