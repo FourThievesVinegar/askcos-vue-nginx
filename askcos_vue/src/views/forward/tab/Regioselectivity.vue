@@ -26,6 +26,18 @@
                     <v-divider></v-divider>
                 </v-card>
             </v-dialog>
+
+            <v-row>
+                <v-col cols="12">
+                    <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" :items-per-page="10"
+                        height="600px">
+                    </v-data-table>
+
+
+                    <v-skeleton-loader v-if="!!pending" class="mx-auto my-auto" min-height="80px" type="table">
+                    </v-skeleton-loader>
+                </v-col>
+            </v-row>
         </v-sheet>
     </v-container>
 </template>
@@ -33,7 +45,14 @@
 
 <script setup>
 import { ref } from "vue";
+import SmilesImage from "@/components/SmilesImage.vue";
 
 const showDialog = ref(false)
+
+const headers = ref([
+    { key: 'avg_insp_score', title: 'Inspector Score', align: 'center', },
+    { key: 'similarity_to_major', title: 'Similarity Score', align: 'center', },
+    { key: 'prd_mw', title: 'Molecular Weight', align: 'center', },
+])
 
 </script>

@@ -13,21 +13,9 @@
     <v-row class="justify-center">
       <v-col cols="12" md="10">
         <v-sheet elevation="2" rounded="lg">
-          <v-row class="mb-2 px-5 pt-2">
-            <v-col cols="12">
-              <p class="text-body-1 left-justify">
-                The chemicals and prices stored in our database are taken from Reaxys and are originally from
-                eMolecules, LabNetwork, or Sigma Aldrich. All compounds with an average price per gram listed at $100
-                or lower were included. Please note that prices in the database are unfortunately rounded to the
-                nearest integer. That is, the cheapest compounds are still listed as $1/g.
-              </p>
-              <p class="mdi mdi-information text-subtitle-2">
-                The first search performed may take longer than expected.
-              </p>
-            </v-col>
-          </v-row>
-          <v-row class="mb-2 px-5 justify-center">
-            <v-col cols="12" md="10">
+          
+          <v-row class="px-5 pt-5 justify-center">
+            <v-col cols="12" md="10" my="10">
               <v-text-field v-model="searchSmilesQuery" placeholder="SMILES/SMARTS" prepend-inner-icon="mdi mdi-flask"
                 density="comfortable" variant="outlined" label="Enter SMILES/SMART to explore" hide-details clearable>
                 <template v-slot:append>
@@ -37,17 +25,24 @@
                   <v-checkbox-btn v-model="searchRegex" label="Use SMARTS" hide-details>
                   </v-checkbox-btn>
                 </template>
+                <template v-slot:append-inner>
+                  <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
+                    @click="openKetcher(searchSmilesQuery)">Draw</v-btn>
+                </template>
               </v-text-field>
             </v-col>
           </v-row>
 
-          <v-row class="mb-2 px-5">
+          <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="searchSmilesQuery" @input="showKetcher = false"
+            @update:smiles="updateSmiles" />
+
+          <v-row class="mb-2 px-5 pt-5">
             <v-col cols="12" md="4">
               <v-slider hide-details v-model="simThresh" label="Similarity Threshold" min="0" max="1" step="0.0001"
                 color="primary">
                 <template v-slot:append>
-                  <v-text-field data-cy="similarity-input-element" v-model="simThresh" type="number" style="width: 80px" density="compact" hide-details
-                    variant="outlined"></v-text-field>
+                  <v-text-field data-cy="similarity-input-element" v-model="simThresh" type="number" style="width: 80px"
+                    density="compact" hide-details variant="outlined"></v-text-field>
                 </template>
               </v-slider>
             </v-col>
@@ -55,8 +50,8 @@
               <v-slider hide-details v-model="searchLimit" label="Limit Results" min="1" max="100" step="1"
                 color="primary">
                 <template v-slot:append>
-                  <v-text-field data-cy="result-input-element" v-model="searchLimit" type="number" style="width: 80px" density="compact" hide-details
-                    variant="outlined"></v-text-field>
+                  <v-text-field data-cy="result-input-element" v-model="searchLimit" type="number" style="width: 80px"
+                    density="compact" hide-details variant="outlined"></v-text-field>
                 </template>
               </v-slider>
             </v-col>
@@ -64,7 +59,8 @@
                 @click="showSourcesDialog = true" height="40px" color="primary" variant="tonal">
                 Select Sources
               </v-btn>
-              <v-btn color="success" data-cy="add-compound-button" @click="showAddModal = !showAddModal" icon="mdi-plus" class="mr-3">
+              <v-btn color="success" data-cy="add-compound-button" @click="showAddModal = !showAddModal" icon="mdi-plus"
+                class="mr-3">
               </v-btn>
               <v-btn color="info" @click="showUploadModal = !showUploadModal" icon="mdi-file-upload">
               </v-btn>
@@ -80,7 +76,7 @@
                   </copy-tooltip>
                 </template>
                 <template v-slot:item.delete="{ item }">
-                  <pre>{{ item }}</pre>
+                  <!-- <pre>{{ item }}</pre> -->
                   <v-icon @click="deleteBuyable(item.index)" class="text-center">mdi-delete</v-icon>
                 </template>
               </v-data-table>
@@ -95,57 +91,64 @@
       </v-col>
     </v-row>
   </v-container>
+
   <v-dialog v-model="showSourcesDialog" max-width="600px">
     <v-card>
-      <v-card-title>
-        Select Sources
+      <v-card-title class="mt-2">
+        <v-col cols="12">Select Sources</v-col>
       </v-card-title>
-      <v-card-text>
-        <v-checkbox data-cy="all-sources-checkbox" v-model="buyablesSourceAll" @change="searchSourceQuery = []" label="All"></v-checkbox>
-        <v-checkbox v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery" :value="source"
-          :disabled="buyablesSourceAll" :label="source === NO_SOURCE ? NO_SOURCE_TEXT : source"></v-checkbox>
+      <v-card-text class="text-justify">
+        <v-row>
+          <v-col cols="12">
+            <v-checkbox data-cy="all-sources-checkbox" v-model="buyablesSourceAll" @change="searchSourceQuery = []"
+              label="All"></v-checkbox>
+            <v-checkbox v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery" :value="source"
+              :disabled="buyablesSourceAll" :label="source === NO_SOURCE ? NO_SOURCE_TEXT : source"></v-checkbox>
+          </v-col>
+        </v-row>
       </v-card-text>
-      <v-card-actions>
-        <v-btn @click="showSourcesDialog = false">
-          Select
+      <v-card-actions class="mb-2">
+        <v-spacer></v-spacer>
+        <v-btn color="success" @click="showSourcesDialog = false">
+          OK
         </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
+
   <v-dialog v-model="showAddModal" max-width="600px">
     <v-card>
-      <v-card-title>
-        <span class="headline">Add new buyable compound</span>
-      </v-card-title>
-
+        <v-card-title class="mt-2">
+          <v-col cols="12">Add new buyable compound</v-col>
+        </v-card-title>
       <v-card-text>
-        <v-container>
           <v-row>
             <v-col cols="12">
-              <v-text-field data-cy="smiles-input" label="SMILES" v-model="addBuyableSmiles"></v-text-field>
+              <v-text-field data-cy="smiles-input" label="SMILES" v-model="addBuyableSmiles" density="comfortable" variant="outlined" hide-details
+                              clearable></v-text-field>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
-              <v-text-field id="pricePerGram" label="Price per gram" v-model="addBuyablePrice"></v-text-field>
+              <v-text-field id="pricePerGram" label="Price per gram" v-model="addBuyablePrice" density="comfortable" variant="outlined" hide-details
+                              clearable></v-text-field>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
-              <v-text-field id="source" label="Source" v-model="addBuyableSource"></v-text-field>
+              <v-text-field id="source" label="Source" v-model="addBuyableSource" density="comfortable" variant="outlined" hide-details
+                              clearable></v-text-field>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
-              <v-checkbox label="Allow overwrite" v-model="allowOverwrite"></v-checkbox>
+              <v-checkbox label="Allow overwriting exisiting result" v-model="allowOverwrite"></v-checkbox>
             </v-col>
           </v-row>
-        </v-container>
       </v-card-text>
-
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="blue darken-1" text @click="showAddModal = false">Close</v-btn>
@@ -156,15 +159,13 @@
 
   <v-dialog v-model="showUploadModal" max-width="600px">
     <v-card>
-      <v-card-title>
-        <span class="headline">Upload buyable compound file</span>
-      </v-card-title>
-
+          <v-card-title class="mt-2">
+            <v-col cols="12">Upload buyable compound file</v-col>
+          </v-card-title>
       <v-card-text>
-        <v-container>
           <v-row>
-            <v-col cols="12">
-              <p>
+            <v-col cols="12" class="mb-2">
+              <span>
                 File uploads should be in CSV format containing "smiles", "ppg", and "source" columns or
                 in
                 JSON format as an
@@ -173,28 +174,29 @@
                 objects
                 with "name" and
                 "value" fields.
-              </p>
+              </span>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
-              <v-file-input label="File" v-model="uploadFile"></v-file-input>
+              <v-file-input label="File" v-model="uploadFile" density="comfortable" variant="outlined" hide-details
+                                clearable></v-file-input>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
-              <v-select label="Format" v-model="uploadFileFormat" :items="['json', 'csv']"></v-select>
+              <v-select label="Format" v-model="uploadFileFormat" :items="['json', 'csv']" density="comfortable" variant="outlined" hide-details
+                                clearable></v-select>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
-              <v-checkbox label="Allow overwrite" v-model="allowOverwrite"></v-checkbox>
+              <v-checkbox label="Allow overwriting exisiting result" v-model="allowOverwrite"></v-checkbox>
             </v-col>
           </v-row>
-        </v-container>
       </v-card-text>
 
       <v-card-actions>
@@ -213,6 +215,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import SmilesImage from "@/components/SmilesImage.vue";
 import CopyTooltip from "@/components/CopyTooltip";
 import emptyCart from "@/assets/emptyCart.svg";
+import KetcherModal from "@/components/KetcherModal";
 
 const showSourcesDialog = ref(false);
 const buyables = ref([]);
@@ -231,6 +234,8 @@ const addBuyableSource = ref('');
 const uploadFileFormat = ref('json');
 const pendingTasks = ref(0);
 const buyablesSources = ref([]);
+const showKetcher = ref(false);
+const ketcherRef = ref(null);
 
 const headers = computed(() => {
   let headers = [
@@ -251,6 +256,15 @@ const showLoader = computed(() => {
   return pendingTasks.value > 0
 });
 
+const openKetcher = (source) => {
+  searchSmilesQuery.value = source;
+  showKetcher.value = true;
+  ketcherRef.value.smilesToKetcher();
+};
+
+const updateSmiles = (newSmiles) => {
+  searchSmilesQuery.value = newSmiles;
+}
 
 onMounted(() => {
   API.get('/api/buyables/sources/')
@@ -277,6 +291,7 @@ const search = () => {
     .then(json => {
       console.log(json)
       buyables.value = json['result'];
+      console.log(json['result'])
     })
     .finally(() => {
       pendingTasks.value--
@@ -378,7 +393,7 @@ const deleteBuyable = (_id) => {
         for (let i = 0; i < buyables.value.length; i++) {
           if (buyables.value[i]['_id'] === _id) {
             buyables.value = buyables.value.filter(b => b._id !== _id)
-             console.log(buyables.value[i]['_id'])
+            console.log(buyables.value[i]['_id'])
           }
         }
       }

@@ -85,7 +85,6 @@
               </v-btn>
             </v-row>
           </v-form>
-
         </v-sheet>
 
         <v-sheet elevation="2" class="my-6 ">
@@ -94,11 +93,11 @@
             <v-tab @click="replaceRoute('forward')" value="forward">Synthesis Prediction</v-tab>
             <v-tab @click="replaceRoute('impurity')" value="impurity">Impurity Prediction</v-tab>
             <v-tab @click="replaceRoute('selectivity')" value="selectivity">Regioselectivity Prediction</v-tab>
-            <v-tab @click="replaceRoute('sites')" value="sites" disabled>Site Selectivity Prediction</v-tab>
+            <v-tab @click="replaceRoute('sites')" value="sites" disabled>Aromatic C-H Functionalization</v-tab>
           </v-tabs>
         </v-sheet>
 
-        <v-window v-model="tab" class="elevation-2">
+        <v-window v-model="tab" class="elevation-2 my-6">
           <v-window-item value="context" rounded="lg">
             <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel"
               :pending="pendingTasks" :pendingRank="pendingRank" :evaluating="evaluating" @go-to-forward="goToForward"
