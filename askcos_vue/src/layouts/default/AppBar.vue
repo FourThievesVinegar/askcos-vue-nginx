@@ -38,7 +38,7 @@
             :active="route.query.tab === 'impurity'"></v-list-item>
           <v-list-item to="forward?tab=selectivity" prepend-icon="mdi-help-box" title="Regio-selectivity Prediction"
             value="selectivity" :active="route.query.tab === 'selectivity'"></v-list-item>
-          <v-list-item to="forward?tab=sites" prepend-icon="mdi-help-box" title="Aromatic Site Selectivity" value="sites"
+          <v-list-item to="forward?tab=sites" prepend-icon="mdi-help-box" title="Aromatic C-H Functionalization" value="sites"
             :active="route.query.tab === 'sites'"></v-list-item>
         </v-list-group>
 

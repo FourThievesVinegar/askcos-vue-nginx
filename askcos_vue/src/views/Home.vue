@@ -7,7 +7,7 @@
         </h1>
         <v-expand-transition>
           <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6" v-show="show">
-            <h2 class="my-6">🧪 This is ASKCOS!</h2>
+            <h2 class="my-3">This is ASKCOS</h2>
 
             <v-divider></v-divider>
             <p class="mt-6 text-body-1">
@@ -52,7 +52,7 @@
         </v-expand-transition>
         <v-expand-transition>
           <v-sheet elevation="2" rounded="lg" width="100%" class="my-6 pa-6" v-show="show">
-            <h2 class="my-6">🚀 Getting Started!</h2>
+            <h2 class="my-3">Quick start</h2>
             <v-divider></v-divider>
             <LaunchPad></LaunchPad>
           </v-sheet>
