@@ -14,22 +14,29 @@
                 <v-btn variant="flat" color="green-darken-1" prepend-icon="mdi mdi-play" class="mr-2"
                   :disabled="!resultsStore.target" @click="changeTarget">One Step</v-btn>
                 <v-btn-group density="compact" color="primary" divided>
-                  <v-btn prepend-icon="mdi mdi-family-tree" :disabled="!isAuth">Build Tree</v-btn>
-                  <v-menu location="bottom">
+                  <v-btn prepend-icon="mdi mdi-family-tree" :disabled="isAuth" id="tb-submit"
+                    @click="treeBuilderModalShow = !treeBuilderModalShow">Build Tree</v-btn>
+                  <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
                     <template v-slot:activator="{ props }">
-                      <v-btn v-bind="props" icon="mdi mdi-menu-down" :disabled="!isAuth" />
+                      <v-btn v-bind="props" icon="mdi mdi-menu-down" :disabled="isAuth" />
                     </template>
-                    <v-list>
-                      <v-list-item>
-                        <v-list-item-title>Option 1</v-list-item-title>
-                      </v-list-item>
-                      <v-list-item>
-                        <v-list-item-title>Option 2</v-list-item-title>
-                      </v-list-item>
-                      <v-list-item>
-                        <v-list-item-title>Option 3</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
+                    <v-card width="auto" min-width="250px">
+                      <v-text-field v-model="tb.taskName" label="Job name/description" variant="outlined" hide-details
+                        class="pa-3"></v-text-field>
+                      <v-divider class="ma-2" :thickness="2"></v-divider>
+                      <p class="text-subtitle-2 pl-3">Quick Settings</p>
+                      <v-list density="compact">
+                        <v-list-item v-for="(value, name) in tb.modes" :key="name" @click="applyTbPreset(name)">
+                          <v-list-item-title>
+                            <v-icon v-if="isTbQuickSettingsMode(name)" icon="mdi-check"></v-icon>
+                            {{ value.label }}
+                            <i class="fas fa-question-circle" :title="value.info"></i>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                      <v-divider class="ma-2" :thickness="2"></v-divider>
+                      <v-btn variant="plain">Advanced...</v-btn>
+                    </v-card>
                   </v-menu>
                 </v-btn-group>
                 <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-application-import" class="ml-2"
@@ -243,6 +250,75 @@
     </v-card>
   </v-dialog>
 
+  <v-dialog v-model="treeBuilderModalShow" width="auto" min-width="300px">
+    <v-card>
+      <v-card-title>Please select a strategy for tree builder
+      </v-card-title>
+      <v-divider></v-divider>
+      <v-list>
+        <v-list-item v-for="(strategy, idx) in settingsStore.tbSettings.strategies" v-bind:key="idx">
+          <v-card variant="outlined">
+            <v-card-title>
+              <div class="d-flex">
+                {{ "Strategy " + (idx + 1) }}<v-spacer></v-spacer><v-btn variant="tonal" color="success"
+                  v-if="strategy.retro_backend === 'template_relevance'" @click="sendTreeBuilderJob(idx)">Run</v-btn>
+              </div>
+            </v-card-title>
+            <v-card-text>
+              <div class="mb-2">
+                Model: <v-chip>{{ strategy.retro_backend }}</v-chip>
+              </div>
+              <div v-if="strategy.retro_backend === 'template_relevance'" class="mb-2">
+                Template Set: <v-chip>{{ strategy.retro_model_name }}</v-chip>
+                <span v-if="strategy.attribute_filter.length">
+                  with {{ strategy.attribute_filter.length }} attribute filter(s)
+                </span>
+              </div>
+              <div v-else class="mb-2">
+                Training Set: <v-chip>{{ strategy.retro_model_name }}</v-chip>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-list-item>
+      </v-list>
+    </v-card>
+  </v-dialog>
+
+  <!-- <b-modal title="Please select a strategy for tree builder" v-model="treeBuilderModalShow">
+      <b-list-group v-for="(strategy, idx) in tbSettings.strategies" v-bind:key="idx">
+        <b-list-group-item class="flex-column align-items-start mb-1">
+          <div class="d-flex w-100 justify-content-between">
+            <h5>{{ "Strategy " + (idx + 1) }}</h5>
+            <b-button v-b-tooltip title="Click to start tree builder for this strategy" v-if="strategy.model === 'template_relevance'" variant="success" @click="sendTreeBuilderJob(idx)"
+              >Run!</b-button
+            >
+            <b-button disabled v-b-tooltip title="Template free models not yet supported" v-else variant="success">Run!</b-button>
+          </div>
+          <div>
+            Model: <b-badge variant="primary">{{ strategy.model }}</b-badge>
+            <div v-if="strategy.model === 'template_relevance'">
+              Template Prioritizer:
+              <b-badge v-for="(prioritizer, pIdx) in strategy.templatePrioritizers" :key="pIdx" class="mr-1">
+                {{ prioritizer.template_set }} (v{{ prioritizer.version
+                }}<template v-if="prioritizer.attribute_filter.length"> with {{ prioritizer.attribute_filter.length }} attribute filters</template>)
+              </b-badge>
+            </div>
+            <div v-else>
+              Training Set: <b-badge>{{ strategy.trainingSet }}</b-badge>
+            </div>
+          </div>
+        </b-list-group-item>
+      </b-list-group>
+      <template #modal-footer>
+        <div class="w-100">
+          <b-button variant="danger" class="float-right" @click="treeBuilderModalShow = false">
+            Close
+          </b-button>
+        </div>
+      </template>
+    </b-modal> -->
+
+
   <NodeDetail :visible="nodeDetailVisible" :enable-resolver="enableResolver" :selected="selected" @close="closeNodeDetail"
     @expandNode="expandNode" @updatePendingTasks="pendingTasksHandler" ref="node-detail" />
 
@@ -267,6 +343,7 @@ import { getPaths } from "@/common/graph";
 import { useConfirm } from 'vuetify-use-dialog';
 import NodeDetail from "@/components/network/NodeDetail";
 import SettingsModal from "@/components/network/SettingsModal";
+import { tbSettingsJsToApi } from "@/common/tb-settings";
 
 const BG_OPACITY = 0.2; // Background opacity
 export default {
@@ -644,7 +721,7 @@ export default {
     },
     applyTbPreset(mode) {
       if (Object.keys(this.tb.modes).includes(mode)) {
-        this.settingsStore.settingsStore(this.tb.modes[mode].settings);
+        this.settingsStore.setTbSettings(this.tb.modes[mode].settings);
       }
     },
     isTbQuickSettingsMode(mode) {
@@ -658,23 +735,23 @@ export default {
       return true;
     },
     sendTreeBuilderJob(strategyIndex) {
-      if (!this.isAuth) {
-        this.$bvModal.msgBoxOk(
-          "Error: must be logged in to start tree builder",
-          {
-            title: "Alert",
-            size: "sm",
-            okVariant: "danger",
-            okTitle: "Ok",
-            hideHeaderClose: true,
-            centered: true,
-            footerClass: "p-2",
-          }
-        );
-        return;
-      }
+      // if (!this.isAuth) {
+      //   this.$bvModal.msgBoxOk(
+      //     "Error: must be logged in to start tree builder",
+      //     {
+      //       title: "Alert",
+      //       size: "sm",
+      //       okVariant: "danger",
+      //       okTitle: "Ok",
+      //       hideHeaderClose: true,
+      //       centered: true,
+      //       footerClass: "p-2",
+      //     }
+      //   );
+      //   return;
+      // }
       if (this.tb.taskName === "") {
-        this.$set(this.tb, "taskName", this.resultsStore.target);
+        this.tb.taskName = this.resultsStore.target;
       }
       this.validatesmiles(this.resultsStore.target, !this.allowResolve)
         .then((isvalidsmiles) => {
@@ -722,7 +799,7 @@ export default {
         this.settingsStore.tbSettings.strategies[
           strategyIndex
         ].templatePrioritizers;
-      checkTemplatePrioritizers(body["template_prioritizers"]);
+      // checkTemplatePrioritizers(body["template_prioritizers"]);
       console.log(body);
       API.post(url, body)
         .then((json) => {
@@ -1645,9 +1722,9 @@ export default {
         type: "ipp",
       };
       if (!this.resultsStore.savedResultInfo) {
-              console.error('savedResultInfo is not initialized.');
-              return;  
-            }
+        console.error('savedResultInfo is not initialized.');
+        return;
+      }
       console.log("saveResult started");
       console.log('savedResultInfo:', this.resultsStore.savedResultInfo);
       let url = `/api/results/create`;
@@ -1692,7 +1769,7 @@ export default {
               footerClass: "p-2",
             });
           }
-           this.resultDialogVisible = false
+          this.resultDialogVisible = false
         })
         .catch((error) => {
           alert(
@@ -1937,7 +2014,7 @@ export default {
   },
   'resultsStore.savedResultInfo': {
     deep: true,
-      handler(newValue, oldValue) {
+    handler(newValue, oldValue) {
       console.log('savedResultInfo changed:', oldValue, '->', newValue);
     }
   }
