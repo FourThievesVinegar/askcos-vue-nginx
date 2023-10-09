@@ -17,9 +17,9 @@
                                 hide-details variant="outlined"
                                 @update:modelValue="setDefaultSortOrder(sortInput)"></v-select>
                             <template v-slot:append>
-                                <v-icon>mdi-close</v-icon>
-                                <v-btn icon="mdi-close" size="small" density="compact"
-                                    @click="deleteSortField(index)"></v-btn>
+                                <v-btn icon="mdi-sort-ascending" rounded variant="tonal" density="comfortable"></v-btn>
+                                <v-btn icon="mdi-close" size="small" density="compact" @click="deleteSortField(index)"
+                                    variant="tonal" color="red" class="ml-2"></v-btn>
                             </template>
                         </v-input>
                     </div>

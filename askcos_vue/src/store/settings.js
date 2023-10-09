@@ -2,7 +2,7 @@
 import { defineStore } from "pinia";
 
 import { updateObj } from "@/common/utils";
-import { ippSettingsDefault, tbSettingsDefault, visjsOptionsDefault, getVisjsUserOptions } from "@/store/init/settings";
+import { tree_builder_settings_default, ippSettingsDefault, tbSettingsDefault, visjsOptionsDefault, getVisjsUserOptions } from "@/store/init/settings";
 
 export const useSettingsStore = defineStore("settings", {
   state: () => ({
@@ -16,6 +16,7 @@ export const useSettingsStore = defineStore("settings", {
     selectivityModel: ippSettingsDefault.selectivityModel,
     sortingCategory: ippSettingsDefault.sortingCategory,
     sortOrderAscending: ippSettingsDefault.sortOrderAscending,
+    tree_builder_settings: JSON.parse(JSON.stringify(tree_builder_settings_default)),
     tbSettings: JSON.parse(JSON.stringify(tbSettingsDefault)),
     visjsOptions: JSON.parse(JSON.stringify(visjsOptionsDefault)),
   }),
@@ -40,6 +41,7 @@ export const useSettingsStore = defineStore("settings", {
   },
   actions: {
     resetSettings() {
+      this.tree_builder_settings = JSON.parse(JSON.stringify(tree_builder_settings_default));
       this.tbSettings = JSON.parse(JSON.stringify(tbSettingsDefault));
       this.visjsOptions = JSON.parse(JSON.stringify(visjsOptionsDefault));
       updateObj(this, JSON.parse(JSON.stringify(ippSettingsDefault)));
@@ -50,6 +52,9 @@ export const useSettingsStore = defineStore("settings", {
         options.sortingCategory = "retroScore";
       }
       updateObj(this, options);
+    },
+    setTreeBuilderSettings(options) {
+      updateObj(this.tree_builder_settings, options)
     },
     setTbSettings(options) {
       // Check for old template prioritizer settings
