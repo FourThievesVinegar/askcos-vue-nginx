@@ -649,6 +649,7 @@ export default {
                     data.nodes.map((node) => {
                         let dataNode = this.resultsStore.dataGraph.nodes.get(node["smiles"]);
                         if (node["type"] === "chemical") {
+                            console.log(dataNode)
                             return makeChemicalDisplayNode({
                                 id: node["id"],
                                 data: dataNode,
@@ -701,15 +702,17 @@ export default {
             return graph;
         },
         buildTree() {
-            if (!this.tabActive || !this.currentTree) {
-                return;
-            }
+            // if (!this.tabActive || !this.currentTree) {
+            //     return;
+            // }
+            console.log("Called")
             this.clearSelection();
             const elem = document.getElementById("graph");
             this.networkData = this.loadNodeLinkGraph(this.currentTree, true);
             this.network = initializeNetwork(this.networkData, elem, true);
             this.network.on("selectNode", this.showNode);
             this.network.on("deselectNode", this.clearSelection);
+            console.log(this.currentTree)
         },
         addSortField() {
             this.treeSortInput.push({
@@ -1085,7 +1088,7 @@ export default {
     watch: {
         allTrees(newVal) {
             if (newVal.length) {
-                this.initializeFilterData();
+                // this.initializeFilterData();
             }
         },
         cluster() {

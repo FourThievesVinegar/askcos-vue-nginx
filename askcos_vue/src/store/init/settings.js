@@ -38,7 +38,7 @@ const tree_builder_settings_default = {
   },
   enumerate_paths_options: {
     path_format: "json",
-    json_format: "treedata",
+    json_format: "nodelink",
     sorting_metric: "plausibility",
     validate_paths: true,
     score_trees: false,

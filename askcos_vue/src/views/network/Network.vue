@@ -6,7 +6,7 @@
           <v-tabs v-model="tab" color="primary" align-tabs="center" grow class="mb-4">
             <v-tab @click="replaceRoute('IPP')" value="IPP">Interactive Path Planner</v-tab>
             <v-tab @click="replaceRoute('RP')" value="RP">Retro Synthesis</v-tab>
-            <v-tab @click="replaceRoute('TE')" value="TE">Tree Explorer</v-tab>
+            <v-tab @click="replaceRoute('TE')" value="TE" :disabled="!treeViewVisible">Tree Explorer</v-tab>
           </v-tabs>
         </v-sheet>
         <v-window v-model="tab" :class="tab === 'IPP' ? 'elevation-2' : 'elevation-0'">

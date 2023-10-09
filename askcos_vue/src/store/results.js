@@ -176,8 +176,8 @@ export const useResultsStore = defineStore("results", {
       });
     },
     loadResult({ resultId, numTrees }) {
-      let url = `/api/v2/results/${resultId}/ipp/`;
-      return API.get(url).then((json) => {
+      let url = `/api/results/retrieve/`;
+      return API.get(url, { result_id: resultId }).then((json) => {
         if (json.error) {
           alert(json.error);
         }
@@ -236,8 +236,9 @@ export const useResultsStore = defineStore("results", {
     },
     importTreeBuilderResult({ data, numTrees }) {
       const settings = useSettingsStore();
-      let resultObj = data["result"];
-      let target = resultObj["settings"]["smiles"];
+      let resultObj = data;
+      console.log(resultObj)
+      let target = "CCCCCC";
       this.setTarget(target);
       // Disable precusrsor clustering by default for tree builder results
       settings.setOption({ key: "allowCluster", value: false }, { root: true });
@@ -256,7 +257,8 @@ export const useResultsStore = defineStore("results", {
         ),
         tbSettings: resultObj["settings"],
       };
-      let status = resultObj["result"]["status"];
+      let status = null
+      // let status = resultObj["result"]["stats"];
       let stats = resultObj["result"]["stats"];
       if (status) {
         savedResultInfo["tbStats"] = {
@@ -268,8 +270,8 @@ export const useResultsStore = defineStore("results", {
       }
       this.updateSavedResultInfo(savedResultInfo);
       // Import settings
-      let tbSettings = tbSettingsPyToJs(resultObj["settings"]);
-      settings.setTbSettings(tbSettings, { root: true });
+      // let tbSettings = tbSettingsPyToJs(resultObj["settings"]);
+      // settings.setTbSettings(tbSettings, { root: true });
       // Import result graphs
       let dataGraph = resultObj["result"]["dataGraph"];
       let paths = resultObj["result"]["paths"];

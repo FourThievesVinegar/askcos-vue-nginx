@@ -789,7 +789,7 @@ export default {
         smiles: this.resultsStore.target,
       };
       Object.assign(body, this.settingsStore.tree_builder_settings);
-      body["retro_backend_options"] = this.settingsStore.strategies
+      body["expand_one_options"]["retro_backend_options"] = this.settingsStore.tbSettings.strategies;
       // Object.assign(body, tbSettingsJsToApi(this.settingsStore.tbSettings));
       // body["template_count"] =
       //   this.settingsStore.tbSettings.strategies[strategyIndex].numTemplates;
