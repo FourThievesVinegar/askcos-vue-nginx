@@ -41,11 +41,11 @@
           <v-divider class="border-opacity-30"></v-divider>
           <v-card>
             <v-sheet width="100%" class="pa-6">
-              <v-row>
-                <v-col cols="12" class="d-flex justify-center align-center">
-                  <v-data-table :headers="headers" item-value="result_id" :items="sortedAllResults" show-select
-                    v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10" :search="searchQuery"
-                    sort-by.sync="modified" sort-desc.sync="true" v-if="allResults.length">
+              <v-row v-if="allResults.length">
+                <v-col cols="12">
+                  <v-data-table :headers="headers" item-value="result_id" :items="allResults" show-select
+                    v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10" height="400px"
+                    :search="searchQuery">
                     <template v-slot:item.delete="{ item }">
                       <!-- <pre>{{ item }}</pre> -->
                       <v-icon @click="deleteResult(item.raw.result_id)" class="text-center">mdi-delete</v-icon>
@@ -83,10 +83,13 @@
                       </tr>
                     </template>
                   </v-data-table>
-                  <div class="text-center" v-else>
-                    <v-img :width="400" cover :src="emptyResults"></v-img>
-                    <h6 class="text-h6 mt-6">No Results</h6>
-                    <p class="text-body-1">All IPP/Tree-Builder job status shows here</p>
+                </v-col>
+              </v-row>
+              <v-row v-else class="px-10 py-10">
+                <v-col cols="12" class="d-flex justify-center align-center">
+                  <div class="text-center">
+                    <v-img :width="400" cover :src="results"></v-img>
+                    <h2 class="mt-6">No Results Yet...</h2>
                   </div>
                 </v-col>
               </v-row>
@@ -125,7 +128,8 @@
 
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
-import emptyResults from "@/assets/emptyResults.svg";
+import CopyTooltip from "@/components/CopyTooltip";
+import results from "@/assets/results.svg";
 import { API } from "@/common/api";
 import dayjs from "dayjs";
 

@@ -3,16 +3,7 @@
         <v-sheet elevation="2" width="100%" class="pa-6">
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
-                    <p class="my-4">
-                        Predict reagents, catalysts, solvents and temperature for a desired transformation using a
-                        neural
-                        network model.
-                        <a href="https://doi.org/10.1021/acscentsci.8b00357">(ACS Cent. Sci., 2018, 4, 1465-1476)</a>
-                    </p>
-                    <p class="my-4">
-                        <b>New in 2021.01:</b> Quantitative condition predictions now available using neural network v2
-                        model. Select in <a>settings menu.</a>
-                    </p>
+                    <!-- <h3 class="text-h5">Condition Recommendation</h3> -->
                     <b v-if=!!score>Reaction score: {{ score.toFixed(3) }}</b>
                 </v-col>
                 <v-spacer></v-spacer>
