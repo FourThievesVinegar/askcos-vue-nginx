@@ -19,17 +19,17 @@
           </h1>
         </div>
 
-                <v-sheet elevation="2" class="my-6 ">
-            <v-tabs v-model="tab" color="primary" align-tabs="center" grow class="mb-4">
-              <v-tab @click="replaceRoute('context')" value="context">Condition Recommendation</v-tab>
-              <v-tab @click="replaceRoute('forward')" value="forward">Product Prediction</v-tab>
-              <v-tab @click="replaceRoute('impurity')" value="impurity">Impurity Prediction</v-tab>
-              <v-tab @click="replaceRoute('selectivity')" value="selectivity">Regioselectivity Prediction</v-tab>
-              <v-tab @click="replaceRoute('sites')" value="sites" disabled>Aromatic C-H Functionalization</v-tab>
-            </v-tabs>
-          </v-sheet>
-          
-        <v-sheet elevation="2" rounded="lg" class="pa-10">
+        <v-sheet elevation="2" class="my-6 ">
+          <v-tabs v-model="tab" color="primary" align-tabs="center" grow class="mb-4">
+            <v-tab @click="replaceRoute('context')" value="context">Condition Recommendation</v-tab>
+            <v-tab @click="replaceRoute('forward')" value="forward">Product Prediction</v-tab>
+            <v-tab @click="replaceRoute('impurity')" value="impurity">Impurity Prediction</v-tab>
+            <v-tab @click="replaceRoute('selectivity')" value="selectivity">Regioselectivity Prediction</v-tab>
+            <v-tab @click="replaceRoute('sites')" value="sites">Aromatic C-H Functionalization</v-tab>
+          </v-tabs>
+        </v-sheet>
+
+        <v-sheet elevation="2" class="pa-10">
           <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="currentSmiles" @input="showKetcher = false"
             @update:smiles="(ketcherSmiles) => updateSmiles(ketcherSmiles)" />
 
@@ -55,8 +55,14 @@
             </v-row>
 
             <v-row v-if="!!reactants" class="d-flex justify-center">
-              <v-col cols="12">
-                <smiles-image :smiles="reactants + '>>' + product"></smiles-image>
+              <v-col cols="3">
+                <smiles-image :smiles="reactants"></smiles-image>
+              </v-col>
+               <v-col cols="3" align="center" v-if="!!reactants && mode !== 'sites'" class="py-30">
+                  <smiles-image :smiles="'>>'"  width="200"></smiles-image>
+                </v-col>
+              <v-col cols="3"  v-if="mode !== 'sites'">
+                <smiles-image :smiles="product"></smiles-image>
               </v-col>
             </v-row>
 
@@ -85,10 +91,10 @@
               v-if="!!reagents && mode === 'forward' || !!reagents && mode === 'impurity' || !!reagents && mode === 'selectivity'"
               class="d-flex justify-center">
               <v-col cols="6" class="d-flex justify-center">
-                <smiles-image :smiles="reagents" width="200"></smiles-image>
+                <smiles-image :smiles="reagents" width="300"></smiles-image>
               </v-col>
               <v-col cols="6" class="d-flex justify-center">
-                <smiles-image :smiles="solvent" width="200"></smiles-image>
+                <smiles-image :smiles="solvent" width="300"></smiles-image>
 
               </v-col>
             </v-row>
@@ -98,10 +104,11 @@
               <v-col class="mr-5">
                 <v-btn type="submit" color="success" class="mr-5">
                   {{
-                    tab === 'context' ? 'Get Recommendations' :
-                    tab === 'forward' ? 'Get Predictions' :
-                      tab === 'impurity' ? 'Get Impurities' :
-                        tab === 'selectivity' ? 'Get Selectivity' :
+                    tab === 'context' ? 'Get Condition Recommendation' :
+                    tab === 'forward' ? 'Get Product Prediction' :
+                      tab === 'impurity' ? 'Get Impurity Prediction' :
+                        tab === 'selectivity' ? 'Get Regioselectivity Prediction' :
+                         tab === 'sites' ? 'Get Aromatic C-H Functionalization' :
                           'Submit'
                   }}
                 </v-btn>

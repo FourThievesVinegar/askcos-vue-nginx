@@ -1,9 +1,9 @@
 <template>
     <v-container fluid class="pa-0">
-        <v-sheet elevation="5" rounded="lg" width="100%" class="pa-6">
+        <v-sheet elevation="2" width="100%" class="pa-6">
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
-                    <h3 class="text-h5">Condition Recommendation</h3>
+                    <!-- <h3 class="text-h5">Condition Recommendation</h3> -->
                     <b v-if=!!score>Reaction score: {{ score.toFixed(3) }}</b>
                 </v-col>
                 <v-spacer></v-spacer>

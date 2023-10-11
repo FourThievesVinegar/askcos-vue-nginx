@@ -44,19 +44,17 @@
             <v-sheet width="100%" class="pa-6">
               <v-row v-if="allResults.length">
                 <v-col cols="12">
-                  <v-data-table :headers="headers" item-value="result_id" :items="sortedAllResults" show-select
-                    v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10"
-                    :search="searchQuery" sort-by.sync="modified" sort-desc.sync="true">
+                  <v-data-table :headers="headers" item-value="result_id" :items="allResults" show-select
+                    v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10" height="400px"
+                    :search="searchQuery">
                     <template v-slot:item.delete="{ item }">
+                      <!-- <pre>{{ item }}</pre> -->
                       <v-icon @click="deleteResult(item.raw.result_id)" class="text-center">mdi-delete</v-icon>
                     </template>
                     <template #item.public="{ item }">
                       <v-icon v-if="item.columns.public === true">
                         mdi-check
                       </v-icon>
-                    </template>
-                    <template v-slot:item.description="{ item }">
-                      {{ item.columns.description || "No Description" }}
                     </template>
                     <template v-slot:expanded-row="{ columns, item }">
                       <tr>
@@ -66,8 +64,7 @@
                               item.columns.description }} Tree</span>
                             <span class="text-center" v-if="item.columns.result_type == 'ipp'">Tags:</span>
                             <v-btn color="primary" variant="tonal"
-                              v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'"
-                              :href="`network?tab=TE&id=${item.raw.result_id}`">
+                              v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'">
                               View trees
                             </v-btn>
                             <v-btn color="primary" variant="tonal">
@@ -78,7 +75,7 @@
                               View Settings
                             </v-btn>
                             <v-btn class="bg-teal-lighten-3" variant="tonal" @click="showShareModal = !showShareModal">
-                              <v-icon color="white">
+                              <v-icon @click="shareResult(item.key)" color="white">
                                 mdi-share
                               </v-icon>
                             </v-btn>
@@ -93,7 +90,7 @@
                 <v-col cols="12" class="d-flex justify-center align-center">
                   <div class="text-center">
                     <v-img :width="400" cover :src="results"></v-img>
-                    <h2 class="mt-6">No Results</h2>
+                    <h2 class="mt-6">No Results Yet...</h2>
                   </div>
                 </v-col>
               </v-row>
@@ -106,13 +103,22 @@
 
   <v-dialog v-model="showShareModal" max-width="600px">
     <v-card>
-      <v-card-title class="headline">Share Result</v-card-title>
+      <v-card-title class="text-justify">
+        <v-col cols="12">Share Result</v-col></v-card-title>
       <v-card-text>
-        <p>Use the following link to share this result:</p>
-        <v-text-field :value="shareLink" readonly append-icon="mdi-content-copy"
-          @click:append="copyToClipboard"></v-text-field>
-        <v-alert type="warning">Please note that shared results cannot be edited and saved simultaneously by multiple
-          users.</v-alert>
+        <v-row>
+          <v-col cols="12">
+            <p>Use the following link to share this result:</p>
+            <v-text-field :value="shareLink" readonly append-icon="mdi-content-copy">
+              <div class="input-group-append">
+                <copy-tooltip class="btn btn-outline-secondary" :data="shareLink" no-highlight>
+                </copy-tooltip>
+              </div>
+            </v-text-field>
+            <v-alert type="warning">Please note that shared results cannot be edited and saved simultaneously by multiple
+              users.</v-alert>
+          </v-col>
+        </v-row>
       </v-card-text>
       <v-card-actions>
         <v-btn text @click="showShareModal = false">Ok</v-btn>
@@ -123,6 +129,7 @@
 
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
+import CopyTooltip from "@/components/CopyTooltip";
 import results from "@/assets/results.svg";
 import { API } from "@/common/api";
 import dayjs from "dayjs";
@@ -189,12 +196,15 @@ async function shareResult(id) {
     params.append('result_id', id);
     const json = await API.get(`/api/results/share?${params.toString()}`);
     shareLink.value = json.url;
+    console.log(json.url)
     showShareModal.value = true;
     for (const res of allResults.value) {
-      if (res.id === id) {
+      console.log(allResults.value)
+      if (res.result_id === id) {
         res.public = true;
         break;
       }
+      console.log(shareLink.value)
     }
   } catch (error) {
     alert("Could not share result: " + error);
