@@ -11,7 +11,7 @@
         </v-sheet>
         <v-window v-model="tab" :class="tab === 'IPP' ? 'elevation-2' : 'elevation-0'">
           <v-window-item value="IPP">
-            <NetworkView />
+            <NetworkView :tab-active="tab === 'IPP'" />
           </v-window-item>
           <v-window-item value="RP">
             <RetroView />

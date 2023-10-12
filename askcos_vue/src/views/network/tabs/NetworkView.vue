@@ -14,11 +14,10 @@
                 <v-btn variant="flat" color="green-darken-1" prepend-icon="mdi mdi-play" class="mr-2"
                   :disabled="!resultsStore.target" @click="changeTarget">One Step</v-btn>
                 <v-btn-group density="compact" color="primary" divided>
-                  <v-btn prepend-icon="mdi mdi-family-tree" :disabled="isAuth" id="tb-submit"
-                    @click="treeBuilderModalShow = !treeBuilderModalShow">Build Tree</v-btn>
+                  <v-btn prepend-icon="mdi mdi-family-tree" id="tb-submit" @click="sendTreeBuilderJob">Build Tree</v-btn>
                   <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
                     <template v-slot:activator="{ props }">
-                      <v-btn v-bind="props" icon="mdi mdi-menu-down" :disabled="isAuth" />
+                      <v-btn v-bind="props" icon="mdi mdi-menu-down" />
                     </template>
                     <v-card width="auto" min-width="250px">
                       <v-text-field v-model="tb.taskName" label="Job name/description" variant="outlined" hide-details
@@ -46,8 +45,8 @@
             </v-text-field></v-col>
         </v-row>
         <v-row class="justify-center align-center"><span class="text-overline">Using model(s):</span>
-          <div v-if="settingsStore.tbSettings.strategies.length !== 0" class="pa-0 test">
-            <v-chip v-for="(strategy, idx) in settingsStore.tbSettings.strategies" :key="idx" class="text-overline">
+          <div v-if="strategies.length !== 0" class="pa-0 test">
+            <v-chip v-for="(strategy, idx) in strategies" :key="idx" class="text-overline">
               {{ strategy.retro_backend }}
             </v-chip>
           </div>
@@ -250,75 +249,6 @@
     </v-card>
   </v-dialog>
 
-  <v-dialog v-model="treeBuilderModalShow" width="auto" min-width="300px">
-    <v-card>
-      <v-card-title>Please select a strategy for tree builder
-      </v-card-title>
-      <v-divider></v-divider>
-      <v-list>
-        <v-list-item v-for="(strategy, idx) in settingsStore.tbSettings.strategies" v-bind:key="idx">
-          <v-card variant="outlined">
-            <v-card-title>
-              <div class="d-flex">
-                {{ "Strategy " + (idx + 1) }}<v-spacer></v-spacer><v-btn variant="tonal" color="success"
-                  v-if="strategy.retro_backend === 'template_relevance'" @click="sendTreeBuilderJob(idx)">Run</v-btn>
-              </div>
-            </v-card-title>
-            <v-card-text>
-              <div class="mb-2">
-                Model: <v-chip>{{ strategy.retro_backend }}</v-chip>
-              </div>
-              <div v-if="strategy.retro_backend === 'template_relevance'" class="mb-2">
-                Template Set: <v-chip>{{ strategy.retro_model_name }}</v-chip>
-                <span v-if="strategy.attribute_filter.length">
-                  with {{ strategy.attribute_filter.length }} attribute filter(s)
-                </span>
-              </div>
-              <div v-else class="mb-2">
-                Training Set: <v-chip>{{ strategy.retro_model_name }}</v-chip>
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-list-item>
-      </v-list>
-    </v-card>
-  </v-dialog>
-
-  <!-- <b-modal title="Please select a strategy for tree builder" v-model="treeBuilderModalShow">
-      <b-list-group v-for="(strategy, idx) in tbSettings.strategies" v-bind:key="idx">
-        <b-list-group-item class="flex-column align-items-start mb-1">
-          <div class="d-flex w-100 justify-content-between">
-            <h5>{{ "Strategy " + (idx + 1) }}</h5>
-            <b-button v-b-tooltip title="Click to start tree builder for this strategy" v-if="strategy.model === 'template_relevance'" variant="success" @click="sendTreeBuilderJob(idx)"
-              >Run!</b-button
-            >
-            <b-button disabled v-b-tooltip title="Template free models not yet supported" v-else variant="success">Run!</b-button>
-          </div>
-          <div>
-            Model: <b-badge variant="primary">{{ strategy.model }}</b-badge>
-            <div v-if="strategy.model === 'template_relevance'">
-              Template Prioritizer:
-              <b-badge v-for="(prioritizer, pIdx) in strategy.templatePrioritizers" :key="pIdx" class="mr-1">
-                {{ prioritizer.template_set }} (v{{ prioritizer.version
-                }}<template v-if="prioritizer.attribute_filter.length"> with {{ prioritizer.attribute_filter.length }} attribute filters</template>)
-              </b-badge>
-            </div>
-            <div v-else>
-              Training Set: <b-badge>{{ strategy.trainingSet }}</b-badge>
-            </div>
-          </div>
-        </b-list-group-item>
-      </b-list-group>
-      <template #modal-footer>
-        <div class="w-100">
-          <b-button variant="danger" class="float-right" @click="treeBuilderModalShow = false">
-            Close
-          </b-button>
-        </div>
-      </template>
-    </b-modal> -->
-
-
   <NodeDetail :visible="nodeDetailVisible" :enable-resolver="enableResolver" :selected="selected" @close="closeNodeDetail"
     @expandNode="expandNode" @updatePendingTasks="pendingTasksHandler" ref="node-detail" />
 
@@ -343,7 +273,7 @@ import { getPaths } from "@/common/graph";
 import { useConfirm } from 'vuetify-use-dialog';
 import NodeDetail from "@/components/network/NodeDetail";
 import SettingsModal from "@/components/network/SettingsModal";
-import { tbSettingsJsToApi } from "@/common/tb-settings";
+// import { tbSettingsJsToApi } from "@/common/tb-settings";
 
 const BG_OPACITY = 0.2; // Background opacity
 export default {
@@ -431,18 +361,7 @@ export default {
     API.get("/api/template/sets/").then((json) => {
       this.templateAttributes = json.attributes;
       for (let templateSet of json["template_sets"]) {
-        this.templateSets[templateSet] = [];
-        API.get("/api/v2/retro/models/", { template_set: templateSet })
-          .then((json) => {
-            if (json.versions) {
-              this.templateSets[json.request.template_set] = json.versions.map(
-                (x) => Number(x)
-              );
-            }
-          })
-          .catch(() => {
-            console.log(`Model unavailable: ${templateSet}`);
-          });
+        this.templateSets[templateSet] = [1];
       }
     });
 
@@ -468,9 +387,6 @@ export default {
       return JSON.parse(document.getElementById("django-context").textContent);
     },
     enableResolver() {
-      return false;
-    },
-    isAuth() {
       return false;
     },
     showLoader() {
@@ -563,6 +479,14 @@ export default {
       },
       set(value) {
         this.resultsStore.updateSavedResultInfo({ overwrite: value });
+      },
+    },
+    strategies: {
+      get() {
+        return this.settingsStore.interactive_path_planner_settings.retro_backend_options;
+      },
+      set(value) {
+        this.settingsStore.interactive_path_planner_settings.retro_backend_options = value;
       },
     },
     ...mapStores(useResultsStore, useSettingsStore),
@@ -673,6 +597,7 @@ export default {
     getAllSettings() {
       return {
         network: this.settingsStore.visjsUserOptions,
+        interactive_path_planner: this.settingsStore.interactive_path_planner_settings,
         tree_builder: this.settingsStore.tree_builder_settings,
         tb: this.settingsStore.tbSettings,
         ipp: this.settingsStore.ippSettings,
@@ -684,6 +609,10 @@ export default {
       localStorage.setItem(
         "visjsOptions",
         encodeURIComponent(JSON.stringify(settings.network))
+      );
+      localStorage.setItem(
+        "interactive_path_planner_settings",
+        encodeURIComponent(JSON.stringify(settings.interactive_path_planner))
       );
       localStorage.setItem(
         "tree_builder_settings",
@@ -703,6 +632,7 @@ export default {
       this.settingsStore.setTbSettings(obj["tb"]);
       this.settingsStore.setIppSettings(obj["ipp"]);
       this.settingsStore.setTreeBuilderSettings(obj["tree_builder"]);
+      this.settingsStore.setInteractivePathPlannerSettings(obj["interactive_path_planner"]);
     },
     loadAllSettings() {
       if (!storageAvailable("localStorage")) return;
@@ -710,7 +640,8 @@ export default {
         network: getFromStorage("visjsOptions"),
         tb: getFromStorage("tbSettings"),
         ipp: getFromStorage("ippSettings"),
-        tree_builder: getFromStorage('tree_builder_settings')
+        tree_builder: getFromStorage('tree_builder_settings'),
+        interactive_path_planner: getFromStorage('interactive_path_planner_settings')
       };
       this.setAllSettings(settings);
     },
@@ -733,7 +664,7 @@ export default {
       }
       return true;
     },
-    sendTreeBuilderJob(strategyIndex) {
+    sendTreeBuilderJob() {
       // if (!this.isAuth) {
       //   this.$bvModal.msgBoxOk(
       //     "Error: must be logged in to start tree builder",
@@ -762,23 +693,23 @@ export default {
         })
         .then((smiles) => {
           this.resultsStore.target = smiles;
-          this.mctsTreeBuilderAPICall(strategyIndex);
+          this.mctsTreeBuilderAPICall();
         })
         .catch((error) => {
           let error_msg = error.message || error || "unknown error";
-          this.$bvModal.msgBoxOk(
-            "There was an error submitting the tree builder job with the supplied settings: " +
-            error_msg,
-            {
-              title: "Alert",
-              size: "sm",
-              okVariant: "danger",
-              okTitle: "Ok",
-              hideHeaderClose: true,
-              centered: true,
-              footerClass: "p-2",
-            }
-          );
+          // this.$bvModal.msgBoxOk(
+          //   "There was an error submitting the tree builder job with the supplied settings: " +
+          //   error_msg,
+          //   {
+          //     title: "Alert",
+          //     size: "sm",
+          //     okVariant: "danger",
+          //     okTitle: "Ok",
+          //     hideHeaderClose: true,
+          //     centered: true,
+          //     footerClass: "p-2",
+          //   }
+          // );
         });
     },
     mctsTreeBuilderAPICall() {
@@ -789,16 +720,8 @@ export default {
         smiles: this.resultsStore.target,
       };
       Object.assign(body, this.settingsStore.tree_builder_settings);
-      body["expand_one_options"]["retro_backend_options"] = this.settingsStore.tbSettings.strategies;
-      // Object.assign(body, tbSettingsJsToApi(this.settingsStore.tbSettings));
-      // body["template_count"] =
-      //   this.settingsStore.tbSettings.strategies[strategyIndex].numTemplates;
-      // body["max_cum_prob"] =
-      //   this.settingsStore.tbSettings.strategies[strategyIndex].maxCumProb;
-      // body["template_prioritizers"] =
-      //   this.settingsStore.tbSettings.strategies[
-      //     strategyIndex
-      //   ].templatePrioritizers;
+      body.expand_one_options = this.settingsStore.interactive_path_planner_settings
+      body.expand_one_options.group_by_strategy = false
       // checkTemplatePrioritizers(body["template_prioritizers"]);
       console.log(body);
       API.post(url, body)
@@ -868,18 +791,18 @@ export default {
     },
     makeNotification(title, options, callback) {
       if (!("Notification" in window)) {
-        this.$bvModal.msgBoxOk(
-          "This browser does not support desktop notifications! Notifications about tree builder submission and completion will not show.",
-          {
-            title: "Alert",
-            size: "sm",
-            okVariant: "danger",
-            okTitle: "Ok",
-            hideHeaderClose: true,
-            centered: true,
-            footerClass: "p-2",
-          }
-        );
+        // this.$bvModal.msgBoxOk(
+        //   "This browser does not support desktop notifications! Notifications about tree builder submission and completion will not show.",
+        //   {
+        //     title: "Alert",
+        //     size: "sm",
+        //     okVariant: "danger",
+        //     okTitle: "Ok",
+        //     hideHeaderClose: true,
+        //     centered: true,
+        //     footerClass: "p-2",
+        //   }
+        // );
       }
 
       // Let's check whether notification permissions have already been granted
@@ -1794,7 +1717,7 @@ export default {
       if (!this.network && this.resultsStore.dispGraph.nodes.length) {
         this.initializeNetwork();
       } else if (this.network) {
-        this.centerGraph();
+        // this.centerGraph();
       }
     },
     canonicalize(smiles, input) {

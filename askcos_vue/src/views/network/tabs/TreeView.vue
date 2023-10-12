@@ -25,8 +25,67 @@
                     </div>
                     <v-btn @click="addSortField">Add sort field</v-btn>
                 </div>
+                <div class="mt-2">
+                    <h6 class="text-h6">Filter trees</h6>
+                    <p>
+                        Show pathways which
+                        <v-btn id="filterInvertCheck" @click="filterInvert = !filterInvert" size="small">
+                            {{ filterInvert ? "do not" : "do" }}
+                        </v-btn>
+                        include
+                        <v-btn id="filterAnyCheck" @click="filterAny = !filterAny" size="small">
+                            {{ filterAny ? "any" : "all" }}
+                        </v-btn>
+                        of the selected components.
+                    </p>
+                    <!-- <a v-b-modal.starting-material-select-modal href="#" role="button">Select starting materials by
+                        image</a>
+                    <b-form-group label="Starting materials" v-slot="{ ariaDescribedby }">
+                        <div class="overflow-auto" style="max-height: 10rem">
+                            <b-form-checkbox-group v-model="selectedStartingMaterials" :options="startingMaterialOptions"
+                                :aria-describedby="ariaDescribedby" name="starting-materials"
+                                stacked></b-form-checkbox-group>
+                        </div>
+                    </b-form-group>
+                    <a v-b-modal.intermediate-select-modal href="#" role="button">Select intermediates by image</a>
+                    <b-form-group label="Intermediates" v-slot="{ ariaDescribedby }">
+                        <div class="overflow-auto" style="max-height: 10rem">
+                            <b-form-checkbox-group v-model="selectedIntermediates" :options="intermediateOptions"
+                                :aria-describedby="ariaDescribedby" name="intermediates" stacked></b-form-checkbox-group>
+                        </div>
+                    </b-form-group>
+                    <b-form-group v-if="reactionClassOptions.length" label="Reaction classes" v-slot="{ ariaDescribedby }">
+                        <div class="overflow-auto" style="max-height: 10rem">
+                            <b-form-checkbox-group v-model="selectedReactionClasses" :options="reactionClassOptions"
+                                :aria-describedby="ariaDescribedby" name="reaction-classes" stacked></b-form-checkbox-group>
+                        </div>
+                    </b-form-group> -->
+                </div>
             </v-col>
             <v-col cols="12" md="9" id="tree-view-right">
+                <div class="my-2 d-flex justify-space-around align-center">
+                    <v-btn-group variant="outlined" density="comfortable" divided :border="true">
+                        <v-btn icon="mdi mdi-chevron-double-left" @click="changeClusterId('first')"
+                            :disabled="!cluster"></v-btn>
+                        <v-btn icon="mdi mdi-chevron-left" @click="changeClusterId('prev')" :disabled="!cluster"></v-btn>
+                        <v-btn variant="tonal">{{ !cluster ? "Cluster N/A" : currentClusterId === -1 ? "Unclustered" :
+                            `Cluster
+                            ${currentClusterId + 1} of ${maxClusterId + 1}` }}</v-btn>
+                        <v-btn icon="mdi mdi-chevron-right" @click="changeClusterId('next')" :disabled="!cluster"></v-btn>
+                        <v-btn icon="mdi mdi-chevron-double-right" @click="changeClusterId('last')"
+                            :disabled="!cluster"></v-btn>
+                    </v-btn-group>
+
+                    <v-btn-group variant="outlined" density="comfortable" divided :border="true">
+                        <v-btn icon="mdi mdi-chevron-double-left" @click="changeTreeId('first')"></v-btn>
+                        <v-btn icon="mdi mdi-chevron-left" @click="changeTreeId('prev')"></v-btn>
+                        <v-btn variant="tonal">Tree {{ currentTreeId +
+                            1 }} of {{ trees.length }}</v-btn>
+                        <v-btn icon="mdi mdi-chevron-right" @click="changeTreeId('next')"></v-btn>
+                        <v-btn icon="mdi mdi-chevron-double-right" @click="changeTreeId('last')"></v-btn>
+                    </v-btn-group>
+                    <v-btn variant="tonal" @click="addTreeToIpp(currentTree)"> Add to IPP </v-btn>
+                </div>
                 <div class="position-relative">
                     <div id="graph"></div>
                     <div v-if="currentTreeData" id="tree-data-overlay">
@@ -631,8 +690,9 @@ export default {
             });
         },
         addTreeToIpp(tree) {
+            // console.log(tree)
             this.resultsStore.addTreeToDispGraph(tree);
-            this.$emit("switch-tab", "0");
+            this.$emit("switch-tab", "IPP");
         },
         addTreesToIpp() {
             let selected = this.numTreesInput ? this.trees.slice(0, this.numTreesInput) : this.trees;
@@ -647,6 +707,11 @@ export default {
                 /* For detail view, add extra visual attributes */
                 graph.nodes.update(
                     data.nodes.map((node) => {
+                        console.log(this.resultsStore.dataGraph.nodes.get())
+                        // this.resultsStore.dataGraph.nodes.map((node) => {
+                        //     console.log(node)
+                        // })
+                        // console.log(this.resultsStore.dataGraph.nodes)
                         let dataNode = this.resultsStore.dataGraph.nodes.get(node["smiles"]);
                         if (node["type"] === "chemical") {
                             console.log(dataNode)

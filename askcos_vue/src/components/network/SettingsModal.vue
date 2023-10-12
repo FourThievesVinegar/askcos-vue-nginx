@@ -619,13 +619,10 @@ export default {
         },
         strategies: {
             get() {
-                return this.settingsStore.tbSettings.strategies;
+                return this.settingsStore.interactive_path_planner_settings.retro_backend_options;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "strategies",
-                    value: value,
-                });
+                this.settingsStore.interactive_path_planner_settings.retro_backend_options = value;
             },
         },
         modelSelector: {

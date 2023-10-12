@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
   {
+    name: "Login",
     path: "/login",
     component: () => import(/* webpackChunkName: "login" */ "@/views/login/Login.vue")
   },
@@ -28,6 +29,14 @@ const routes = [
   {
     path: "/network",
     component: () => import("@/layouts/default/Default.vue"),
+    beforeEnter: (to, from, next) => {
+      if (!isAuthenticated()) {
+        next({ name: 'Login' })
+      }
+      else {
+        next()
+      }
+    },
     children: [
       {
         path: "",
@@ -45,6 +54,18 @@ const routes = [
         path: "",
         query: {
           tab: "RP",
+        },
+        name: "Network",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "network" */ "@/views/network/Network.vue"),
+      },
+      {
+        path: "",
+        query: {
+          tab: "TE",
         },
         name: "Network",
         // route level code-splitting
@@ -135,7 +156,7 @@ const routes = [
         query: {
           tab: "context",
         },
-        name: "forward",
+        name: "Forward",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -147,7 +168,7 @@ const routes = [
         query: {
           tab: "forward",
         },
-        name: "forward",
+        name: "Forward",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -159,7 +180,7 @@ const routes = [
         query: {
           tab: "impurity",
         },
-        name: "forward",
+        name: "Forward",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -171,7 +192,7 @@ const routes = [
         query: {
           tab: "selectivity",
         },
-        name: "forward",
+        name: "Forward",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -183,7 +204,7 @@ const routes = [
         query: {
           tab: "sites",
         },
-        name: "forward",
+        name: "Forward",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -222,11 +243,30 @@ const routes = [
       },
     ],
   },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: () => import('@/layouts/default/Default.vue'),
+    children: [
+      {
+        path: '',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "buyables" */ '@/views/notfound/NotFound.vue'),
+      },
+    ],
+  }
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
+
+const isAuthenticated = () => {
+  const accessToken = localStorage.getItem('accessToken');
+  return accessToken ? true : false
+};
 
 export default router;

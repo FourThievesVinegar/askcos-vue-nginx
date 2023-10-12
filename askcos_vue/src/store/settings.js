@@ -2,7 +2,7 @@
 import { defineStore } from "pinia";
 
 import { updateObj } from "@/common/utils";
-import { tree_builder_settings_default, ippSettingsDefault, tbSettingsDefault, visjsOptionsDefault, getVisjsUserOptions } from "@/store/init/settings";
+import { interactive_path_planner_settings_default, tree_builder_settings_default, ippSettingsDefault, tbSettingsDefault, visjsOptionsDefault, getVisjsUserOptions } from "@/store/init/settings";
 
 export const useSettingsStore = defineStore("settings", {
   state: () => ({
@@ -16,6 +16,7 @@ export const useSettingsStore = defineStore("settings", {
     selectivityModel: ippSettingsDefault.selectivityModel,
     sortingCategory: ippSettingsDefault.sortingCategory,
     sortOrderAscending: ippSettingsDefault.sortOrderAscending,
+    interactive_path_planner_settings: JSON.parse(JSON.stringify(interactive_path_planner_settings_default)),
     tree_builder_settings: JSON.parse(JSON.stringify(tree_builder_settings_default)),
     tbSettings: JSON.parse(JSON.stringify(tbSettingsDefault)),
     visjsOptions: JSON.parse(JSON.stringify(visjsOptionsDefault)),
@@ -40,13 +41,17 @@ export const useSettingsStore = defineStore("settings", {
     },
   },
   actions: {
+    // Mutations for entire options objects
     resetSettings() {
+      this.interactive_path_planner_settings = JSON.parse(JSON.stringify(interactive_path_planner_settings_default))
       this.tree_builder_settings = JSON.parse(JSON.stringify(tree_builder_settings_default));
       this.tbSettings = JSON.parse(JSON.stringify(tbSettingsDefault));
       this.visjsOptions = JSON.parse(JSON.stringify(visjsOptionsDefault));
       updateObj(this, JSON.parse(JSON.stringify(ippSettingsDefault)));
     },
-    // Mutations for entire options objects
+    setInteractivePathPlannerSettings(options) {
+      updateObj(this.interactive_path_planner_settings, options)
+    },
     setIppSettings(options) {
       if (options.sortingCategory === "score") {
         options.sortingCategory = "retroScore";
@@ -84,25 +89,25 @@ export const useSettingsStore = defineStore("settings", {
     },
     // Mutations for individual options
     addAttributeFilter({ strategyIndex, item }) {
-      this.tbSettings.strategies[strategyIndex]["attribute_filter"].push(item);
+      this.interactive_path_planner_settings.retro_backend_options[strategyIndex]["attribute_filter"].push(item);
     },
     deleteAttributeFilter({ strategyIndex, attrFilterIndex }) {
-      this.tbSettings.strategies[strategyIndex]["attribute_filter"].splice(attrFilterIndex, 1);
+      this.interactive_path_planner_settings.retro_backend_options[strategyIndex]["attribute_filter"].splice(attrFilterIndex, 1);
     },
     updateAttributeFilter({ strategyIndex, attrFilterIndex, key, value }) {
-      this.tbSettings.strategies[strategyIndex]["attribute_filter"][attrFilterIndex][key] = value;
+      this.interactive_path_planner_settings.retro_backend_options[strategyIndex]["attribute_filter"][attrFilterIndex][key] = value;
     },
     addTemplatePrioritizer({ strategyIndex, item }) {
-      this.tbSettings.strategies[strategyIndex].templatePrioritizers.push(item);
+      this.interactive_path_planner_settings.retro_backend_options[strategyIndex].templatePrioritizers.push(item);
     },
     addStrategy({ item }) {
-      this.tbSettings.strategies.push(item);
+      this.interactive_path_planner_settings.retro_backend_options.push(item);
     },
     deleteStrategy({ strategyIndex }) {
-      this.tbSettings.strategies.splice(strategyIndex, 1);
+      this.interactive_path_planner_settings.retro_backend_options.splice(strategyIndex, 1);
     },
     updateStrategy({ strategyIndex, key, value }) {
-      this.tbSettings.strategies[strategyIndex][key] = value;
+      this.interactive_path_planner_settings.retro_backend_options[strategyIndex][key] = value;
     },
     setVisSpringConstant(value) {
       this.visjsOptions.physics.barnesHut.springConstant = value;

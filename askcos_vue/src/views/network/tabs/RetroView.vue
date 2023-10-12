@@ -19,9 +19,6 @@
                         <v-select id="retro-training-set-0" label="Training Set" :items="trainingSets"
                             v-model="settings.trainingSet" variant="outlined" density="compact" hide-details
                             class="my-3"></v-select>
-                        <v-select id="retro-model-version-0" label="Version" :items="modelVersions"
-                            v-model="settings.modelVersion" variant="outlined" density="compact" hide-details
-                            class="my-3"></v-select>
                     </div>
                     <div class="text-center">
                         <v-btn color="success" @click="runRetro()" :disabled="!target || !validSmiles">Submit</v-btn>
@@ -62,16 +59,12 @@
                                                     <th class="text-left">
                                                         Training Set
                                                     </th>
-                                                    <th class="text-left">
-                                                        Model Version
-                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
                                                     <td>{{ item.model }}</td>
                                                     <td>{{ item.trainingSet }}</td>
-                                                    <td>{{ item.modelVersion }}</td>
                                                 </tr>
                                             </tbody>
                                         </v-table>
@@ -122,7 +115,6 @@
                                 </v-simple-table>
                             </div>
                             <div v-else>
-                                <!-- {{item}} -->
                                 <v-simple-table v-if="item.columns[header.key]" class="text-nowrap">
                                     <tbody>
                                         <tr>
@@ -187,8 +179,7 @@ import emptyVoid from "@/assets/void.svg";
 const defaultSettings = {
     model: "template_relevance",
     trainingSet: "reaxys",
-    modelVersion: 1,
-    precursorScoring: "RelevanceHeuristic",
+    precursorScoring: "relevance_heuristic",
     numTemplates: 1000,
     maxCumProb: 0.999,
     minPlausibility: 0.1,
@@ -240,40 +231,20 @@ export default {
 
         const models = computed(() => {
             // List of available models for selection
-            const modelsSet = new Set();
-            const types = ["template_prioritizer", "openretro"];
-            modelStatus.value
-                .filter((item) => types.includes(item["type"]) && item["ready"])
-                .forEach((item) => {
-                    if (item["name"].startsWith("template_relevance")) {
-                        modelsSet.add("template_relevance");
-                    } else {
-                        modelsSet.add(item["name"]);
-                    }
-                });
-            return Array.from(modelsSet).sort();
+            const models = new Set(modelStatus.value.filter((item) => item.name.startsWith("retro_") && item.ready).map(item => item.name.replace('retro_', '')));
+            return Array.from(models).sort();
         });
-
         const trainingSets = computed(() => {
             // List of available training sets based on the selected model
             const sets = new Set();
-            modelStatus.value
-                .filter((item) => item["name"].startsWith(settings.model) && item["ready"])
+            modelStatus.value.filter((item) => item.name.startsWith("retro_" + settings.model) && item.ready)
                 .forEach((item) => {
-                    if (settings.model !== "template_relevance" || templateSets.value.includes(item["training_set"])) {
-                        sets.add(item["training_set"]);
+                    if (settings.model !== "retro_template_relevance") {
+                        item.available_model_names.forEach((trainingSet) => sets.add(trainingSet))
                     }
                 });
+            console.log(Array.from(sets).sort())
             return Array.from(sets).sort();
-        });
-
-        const modelVersions = computed(() => {
-            // List of available model versions based on selected model and training set
-            const versions = new Set();
-            modelStatus.value
-                .filter((item) => item["name"].startsWith(settings.model) && item["training_set"] === settings.trainingSet && item["ready"])
-                .forEach((item) => item["versions"].forEach((v) => versions.add(v)));
-            return Array.from(versions).sort();
         });
 
         const precursors = computed(() => {
@@ -281,15 +252,16 @@ export default {
             const precursors = {};
             Object.entries(results.value).forEach(([index, resultsN]) => {
                 resultsN.forEach((res) => {
-                    if (res.smiles in precursors) {
-                        precursors[res.smiles][index] = res;
+                    console.log(res)
+                    if (res.outcome in precursors) {
+                        precursors[res.outcome][index] = res;
                     } else {
-                        precursors[res.smiles] = {};
-                        precursors[res.smiles][index] = res;
-                        precursors[res.smiles]["plausibility"] = res["plausibility"];
-                        precursors[res.smiles]["num_rings"] = res["num_rings"];
-                        precursors[res.smiles]["rms_molwt"] = res["rms_molwt"];
-                        precursors[res.smiles]["scscore"] = res["scscore"];
+                        precursors[res.outcome] = {};
+                        precursors[res.outcome][index] = res;
+                        precursors[res.outcome]["plausibility"] = res["plausibility"];
+                        precursors[res.outcome]["num_rings"] = res["num_rings"];
+                        precursors[res.outcome]["rms_molwt"] = res["rms_molwt"];
+                        precursors[res.outcome]["scscore"] = res["scscore"];
                     }
                 });
             });
@@ -342,12 +314,13 @@ export default {
         });
 
         onMounted(() => {
-            API.get("/api/v2/template/sets/").then((json) => {
-                templateAttributes.value = json["attributes"];
-                templateSets.value = json["template_sets"];
+            API.get("/api/template/sets/").then((json) => {
+                templateAttributes.value = json.attributes;
+                templateSets.value = json.template_sets
+
             });
-            API.get("/api/v2/status/ml/").then((json) => {
-                modelStatus.value = json["models"];
+            API.get("/api/admin/get_backend_status").then((json) => {
+                modelStatus.value = json["modules"];
             });
         });
 
@@ -391,19 +364,24 @@ export default {
             const newIndex = maxIndex.value + 1;
             console.log(maxIndex.value)
             carouselSlide.value = Object.keys(predictions.value).length;
-            const url = "/api/v2/retro/";
+
+            const url = "/api/tree_search/expand_one/call_async";
             const body = {
-                target: target.value,
-                model: settings.model,
-                training_set: settings.trainingSet,
-                model_version: settings.modelVersion,
-                precursor_prioritizer: settings.precursorScoring,
-                num_templates: settings.numTemplates,
-                max_cum_prob: settings.maxCumProb,
-                filter_threshold: settings.minPlausibility,
+                smiles: target.value,
+                retro_backend_options: [
+                    {
+                            retro_backend: settings.model,
+                            max_num_templates: settings.numTemplates,
+                            max_cum_prob: settings.maxCumProb,
+                            retro_model_name: settings.trainingSet,
+                    },
+                ],
+                retro_rerank_backend: settings.precursorScoring,
+                use_fast_filter: true,
+                fast_filter_threshold: settings.minPlausibility,
                 attribute_filter: settings.attributeFilter,
-                cluster: false,
-                selec_check: false,
+                cluster_precursors: false,
+                selectivity_check: settings.false,
             };
             // Make a deep copy of the settings object
             const settingsCopy = JSON.parse(JSON.stringify(settings));
@@ -414,7 +392,8 @@ export default {
             labels.value[newIndex] = `Prediction #${newIndex}`;
             API.runCeleryTask(url, body)
                 .then((output) => {
-                    results.value[newIndex] = output;
+                    console.log(output)
+                    results.value[newIndex] = output["result"];
                     /* eslint-disable */
                     nextTick(() => {
                         if (retroResultTable.value) {
@@ -530,7 +509,6 @@ export default {
         watch(
             () => settings.trainingSet,
             function () {
-                settings.modelVersion = modelVersions.value[0];
                 settings.attributeFilter = [];
             }
         );
@@ -558,7 +536,6 @@ export default {
             maxIndex,
             models,
             trainingSets,
-            modelVersions,
             precursors,
             shownPredictions,
             tableFields,
