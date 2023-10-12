@@ -1,23 +1,45 @@
 <template>
     <v-container fluid class="pa-0">
-        <v-sheet elevation="5" rounded="lg" width="100%" class="pa-6">
-            <v-row align="center" justify="space-between" class="mx-auto my-auto">
-                <v-col>
-                    <h3 class="text-h5">Synthesis Recommendation</h3>
+        <v-sheet elevation="2" width="100%" class="pa-3">
+            <v-row  align="center" justify="space-between" class="mx-auto my-2">
+                <v-col v-if="!results">
+                     <p class="my-4">
+                                Predict most likely outcomes of a chemical reaction using either
+                                <br />
+                                1) a template-free WLN model for predicting likely bond changes
+                                <a href="https://doi.org/10.1039/C8SC04228D">
+                                    (Chem. Sci., 2019, 10, 370-377)
+                                </a>
+                                , or
+                                <br />
+                                2) a template-free Graph2SMILES model for end-to-end prediction.
+                                <a href="https://doi.org/10.1021/acs.jcim.2c00321">
+                                    (J. Chem. Inf. Model. 2022, 62, 15, 3503–3513)
+                                </a>
+                            </p>
+                            <p class="my-4">
+                                <b>New in 2022.04:</b> Forward prediction model trained on Pistachio dataset. Select in
+                                settings menu.
+                            </p>
+                            <p class="my-4">
+                                <b>New in 2022.10:</b> Forward prediction model using Graph2SMILES. Select in
+                                <a>settings menu</a>. This new model is capable of making chirality-aware prediction, though it
+                                currently doesn't support impurity prediction.
+                            </p>
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
                     <v-btn v-show="!!results.length" @click="emitDownloadForward" height="30px" color="primary mx-2">
                         Export
                     </v-btn>
-                    <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
+                    <!-- <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
                         Reference
-                    </v-btn>
+                    </v-btn> -->
 
                 </v-col>
             </v-row>
 
-            <v-dialog v-model="showDialog" max-width="500px">
+            <!-- <v-dialog v-model="showDialog" max-width="500px">
                 <v-card>
                     <v-card-text class="px-8 py-8">
                         <p class="my-4">
@@ -46,7 +68,7 @@
                     </v-card-text>
                     <v-divider></v-divider>
                 </v-card>
-            </v-dialog>
+            </v-dialog> -->
 
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" v-show="results.length > 0"
                 :items-per-page="10" height="600px">
