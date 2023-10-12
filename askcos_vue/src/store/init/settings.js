@@ -2,6 +2,71 @@
  * Default settings for interactive path planner
  */
 
+const interactive_path_planner_settings_default = {
+  retro_backend_options: [
+    {
+      retro_backend: "template_relevance",
+      retro_model_name: "reaxys",
+      max_num_templates: 100,
+      max_cum_prob: 0.995,
+      attribute_filter: []
+    }
+  ],
+  banned_chemicals: [],
+  banned_reactions: [],
+  use_fast_filter: true,
+  fast_filter_threshold: 0.75,
+  retro_rerank_backend: "scscore",
+  cluster_precursors: false,
+  cluster_setting: {
+    feature: "original",
+    cluster_method: "hdbscan",
+    fp_type: "morgan",
+    fp_length: 512,
+    fp_radius: 1,
+    classification_threshold: 0.2
+  },
+  extract_template: false,
+  return_reacting_atoms: true,
+  selectivity_check: false,
+  group_by_strategy: true
+}
+
+const tree_builder_settings_default = {
+  expand_one_options: {
+    template_max_count: 100,
+    template_max_cum_prob: 0.995,
+    ...interactive_path_planner_settings_default
+  },
+  build_tree_options: {
+    expansion_time: 30,
+    max_branching: 25,
+    max_depth: 5,
+    exploration_weight: 1,
+    return_first: false,
+    max_trees: 500,
+    termination_logic: {
+      and: [
+        "buyable"
+      ]
+    }
+  },
+  enumerate_paths_options: {
+    path_format: "json",
+    json_format: "nodelink",
+    sorting_metric: "plausibility",
+    validate_paths: true,
+    score_trees: false,
+    cluster_trees: false,
+    cluster_method: "hdbscan",
+    min_samples: 5,
+    min_cluster_size: 5,
+    paths_only: false,
+    max_paths: 200
+  },
+  run_async: false,
+}
+
 const tbSettingsDefault = {
   strategies: [
     {
@@ -249,6 +314,6 @@ function getVisjsUserOptions(obj) {
   };
 }
 
-export { tbSettingsDefault, ippSettingsDefault, visjsOptionsDefault, visjsOptionsTreeDefault, visjsOptionsTreeCondensed, getVisjsUserOptions };
+export { interactive_path_planner_settings_default, tree_builder_settings_default, tbSettingsDefault, ippSettingsDefault, visjsOptionsDefault, visjsOptionsTreeDefault, visjsOptionsTreeCondensed, getVisjsUserOptions };
 
 

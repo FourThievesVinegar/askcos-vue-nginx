@@ -14,22 +14,28 @@
                 <v-btn variant="flat" color="green-darken-1" prepend-icon="mdi mdi-play" class="mr-2"
                   :disabled="!resultsStore.target" @click="changeTarget">One Step</v-btn>
                 <v-btn-group density="compact" color="primary" divided>
-                  <v-btn prepend-icon="mdi mdi-family-tree" :disabled="!isAuth">Build Tree</v-btn>
-                  <v-menu location="bottom">
+                  <v-btn prepend-icon="mdi mdi-family-tree" id="tb-submit" @click="sendTreeBuilderJob">Build Tree</v-btn>
+                  <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
                     <template v-slot:activator="{ props }">
-                      <v-btn v-bind="props" icon="mdi mdi-menu-down" :disabled="!isAuth" />
+                      <v-btn v-bind="props" icon="mdi mdi-menu-down" />
                     </template>
-                    <v-list>
-                      <v-list-item>
-                        <v-list-item-title>Option 1</v-list-item-title>
-                      </v-list-item>
-                      <v-list-item>
-                        <v-list-item-title>Option 2</v-list-item-title>
-                      </v-list-item>
-                      <v-list-item>
-                        <v-list-item-title>Option 3</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
+                    <v-card width="auto" min-width="250px">
+                      <v-text-field v-model="tb.taskName" label="Job name/description" variant="outlined" hide-details
+                        class="pa-3"></v-text-field>
+                      <v-divider class="ma-2" :thickness="2"></v-divider>
+                      <p class="text-subtitle-2 pl-3">Quick Settings</p>
+                      <v-list density="compact">
+                        <v-list-item v-for="(value, name) in tb.modes" :key="name" @click="applyTbPreset(name)">
+                          <v-list-item-title>
+                            <v-icon v-if="isTbQuickSettingsMode(name)" icon="mdi-check"></v-icon>
+                            {{ value.label }}
+                            <i class="fas fa-question-circle" :title="value.info"></i>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                      <v-divider class="ma-2" :thickness="2"></v-divider>
+                      <v-btn variant="plain">Advanced...</v-btn>
+                    </v-card>
                   </v-menu>
                 </v-btn-group>
                 <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-application-import" class="ml-2"
@@ -39,8 +45,8 @@
             </v-text-field></v-col>
         </v-row>
         <v-row class="justify-center align-center"><span class="text-overline">Using model(s):</span>
-          <div v-if="settingsStore.tbSettings.strategies.length !== 0" class="pa-0 test">
-            <v-chip v-for="(strategy, idx) in settingsStore.tbSettings.strategies" :key="idx" class="text-overline">
+          <div v-if="strategies.length !== 0" class="pa-0 test">
+            <v-chip v-for="(strategy, idx) in strategies" :key="idx" class="text-overline">
               {{ strategy.retro_backend }}
             </v-chip>
           </div>
@@ -267,6 +273,7 @@ import { getPaths } from "@/common/graph";
 import { useConfirm } from 'vuetify-use-dialog';
 import NodeDetail from "@/components/network/NodeDetail";
 import SettingsModal from "@/components/network/SettingsModal";
+// import { tbSettingsJsToApi } from "@/common/tb-settings";
 
 const BG_OPACITY = 0.2; // Background opacity
 export default {
@@ -354,18 +361,7 @@ export default {
     API.get("/api/template/sets/").then((json) => {
       this.templateAttributes = json.attributes;
       for (let templateSet of json["template_sets"]) {
-        this.templateSets[templateSet] = [];
-        API.get("/api/v2/retro/models/", { template_set: templateSet })
-          .then((json) => {
-            if (json.versions) {
-              this.templateSets[json.request.template_set] = json.versions.map(
-                (x) => Number(x)
-              );
-            }
-          })
-          .catch(() => {
-            console.log(`Model unavailable: ${templateSet}`);
-          });
+        this.templateSets[templateSet] = [1];
       }
     });
 
@@ -391,9 +387,6 @@ export default {
       return JSON.parse(document.getElementById("django-context").textContent);
     },
     enableResolver() {
-      return false;
-    },
-    isAuth() {
       return false;
     },
     showLoader() {
@@ -455,14 +448,6 @@ export default {
         this.settingsStore.setOption({ key: "allowResolve", value: value });
       },
     },
-    target: {
-      get() {
-        return this.resultsStore.target;
-      },
-      set(value) {
-        this.resultsStore.setTarget(value);
-      },
-    },
     trees: {
       get() {
         return this.resultsStore.trees;
@@ -494,6 +479,14 @@ export default {
       },
       set(value) {
         this.resultsStore.updateSavedResultInfo({ overwrite: value });
+      },
+    },
+    strategies: {
+      get() {
+        return this.settingsStore.interactive_path_planner_settings.retro_backend_options;
+      },
+      set(value) {
+        this.settingsStore.interactive_path_planner_settings.retro_backend_options = value;
       },
     },
     ...mapStores(useResultsStore, useSettingsStore),
@@ -604,6 +597,8 @@ export default {
     getAllSettings() {
       return {
         network: this.settingsStore.visjsUserOptions,
+        interactive_path_planner: this.settingsStore.interactive_path_planner_settings,
+        tree_builder: this.settingsStore.tree_builder_settings,
         tb: this.settingsStore.tbSettings,
         ipp: this.settingsStore.ippSettings,
       };
@@ -614,6 +609,14 @@ export default {
       localStorage.setItem(
         "visjsOptions",
         encodeURIComponent(JSON.stringify(settings.network))
+      );
+      localStorage.setItem(
+        "interactive_path_planner_settings",
+        encodeURIComponent(JSON.stringify(settings.interactive_path_planner))
+      );
+      localStorage.setItem(
+        "tree_builder_settings",
+        encodeURIComponent(JSON.stringify(settings.tree_builder))
       );
       localStorage.setItem(
         "tbSettings",
@@ -628,6 +631,8 @@ export default {
       this.settingsStore.setVisjsOptions(obj["network"]);
       this.settingsStore.setTbSettings(obj["tb"]);
       this.settingsStore.setIppSettings(obj["ipp"]);
+      this.settingsStore.setTreeBuilderSettings(obj["tree_builder"]);
+      this.settingsStore.setInteractivePathPlannerSettings(obj["interactive_path_planner"]);
     },
     loadAllSettings() {
       if (!storageAvailable("localStorage")) return;
@@ -635,6 +640,8 @@ export default {
         network: getFromStorage("visjsOptions"),
         tb: getFromStorage("tbSettings"),
         ipp: getFromStorage("ippSettings"),
+        tree_builder: getFromStorage('tree_builder_settings'),
+        interactive_path_planner: getFromStorage('interactive_path_planner_settings')
       };
       this.setAllSettings(settings);
     },
@@ -644,7 +651,7 @@ export default {
     },
     applyTbPreset(mode) {
       if (Object.keys(this.tb.modes).includes(mode)) {
-        this.settingsStore.settingsStore(this.tb.modes[mode].settings);
+        this.settingsStore.setTbSettings(this.tb.modes[mode].settings);
       }
     },
     isTbQuickSettingsMode(mode) {
@@ -657,24 +664,24 @@ export default {
       }
       return true;
     },
-    sendTreeBuilderJob(strategyIndex) {
-      if (!this.isAuth) {
-        this.$bvModal.msgBoxOk(
-          "Error: must be logged in to start tree builder",
-          {
-            title: "Alert",
-            size: "sm",
-            okVariant: "danger",
-            okTitle: "Ok",
-            hideHeaderClose: true,
-            centered: true,
-            footerClass: "p-2",
-          }
-        );
-        return;
-      }
+    sendTreeBuilderJob() {
+      // if (!this.isAuth) {
+      //   this.$bvModal.msgBoxOk(
+      //     "Error: must be logged in to start tree builder",
+      //     {
+      //       title: "Alert",
+      //       size: "sm",
+      //       okVariant: "danger",
+      //       okTitle: "Ok",
+      //       hideHeaderClose: true,
+      //       centered: true,
+      //       footerClass: "p-2",
+      //     }
+      //   );
+      //   return;
+      // }
       if (this.tb.taskName === "") {
-        this.$set(this.tb, "taskName", this.resultsStore.target);
+        this.tb.taskName = this.resultsStore.target;
       }
       this.validatesmiles(this.resultsStore.target, !this.allowResolve)
         .then((isvalidsmiles) => {
@@ -686,47 +693,40 @@ export default {
         })
         .then((smiles) => {
           this.resultsStore.target = smiles;
-          this.mctsTreeBuilderAPICall(strategyIndex);
+          this.mctsTreeBuilderAPICall();
         })
         .catch((error) => {
           let error_msg = error.message || error || "unknown error";
-          this.$bvModal.msgBoxOk(
-            "There was an error submitting the tree builder job with the supplied settings: " +
-            error_msg,
-            {
-              title: "Alert",
-              size: "sm",
-              okVariant: "danger",
-              okTitle: "Ok",
-              hideHeaderClose: true,
-              centered: true,
-              footerClass: "p-2",
-            }
-          );
+          // this.$bvModal.msgBoxOk(
+          //   "There was an error submitting the tree builder job with the supplied settings: " +
+          //   error_msg,
+          //   {
+          //     title: "Alert",
+          //     size: "sm",
+          //     okVariant: "danger",
+          //     okTitle: "Ok",
+          //     hideHeaderClose: true,
+          //     centered: true,
+          //     footerClass: "p-2",
+          //   }
+          // );
         });
     },
-    mctsTreeBuilderAPICall(strategyIndex) {
+    mctsTreeBuilderAPICall() {
       this.saveAllSettings();
       this.saveTarget();
-      const url = "/api/v2/tree-builder/";
+      const url = "/api/tree_search/mcts/call_async";
       const body = {
-        description: this.tb.taskName || this.resultsStore.target,
         smiles: this.resultsStore.target,
       };
-      Object.assign(body, tbSettingsJsToApi(this.settingsStore.tbSettings));
-      body["template_count"] =
-        this.settingsStore.tbSettings.strategies[strategyIndex].numTemplates;
-      body["max_cum_prob"] =
-        this.settingsStore.tbSettings.strategies[strategyIndex].maxCumProb;
-      body["template_prioritizers"] =
-        this.settingsStore.tbSettings.strategies[
-          strategyIndex
-        ].templatePrioritizers;
-      checkTemplatePrioritizers(body["template_prioritizers"]);
+      Object.assign(body, this.settingsStore.tree_builder_settings);
+      body.expand_one_options = this.settingsStore.interactive_path_planner_settings
+      body.expand_one_options.group_by_strategy = false
+      // checkTemplatePrioritizers(body["template_prioritizers"]);
       console.log(body);
       API.post(url, body)
         .then((json) => {
-          this.tb.taskId = json.task_id;
+          this.tb.taskId = json;
           // let notificationOptions = {
           //   requireInteraction: true,
           //   body: "The job will run in the background. You will see a new notification when the job completes.",
@@ -734,16 +734,17 @@ export default {
           // this.makeNotification("Tree builder job submitted!", notificationOptions, function() {
           //   this.close();
           // });
-          this.$bvModal.msgBoxOk("Tree Builder job submitted successfully!", {
-            title: "Success",
-            size: "sm",
-            buttonSize: "sm",
-            okVariant: "success",
-            headerClass: "p-2 border-bottom-0",
-            footerClass: "p-2 border-top-0",
-            centered: true,
-          });
-          return API.pollCeleryResult(json.task_id);
+          // this.$bvModal.msgBoxOk("Tree Builder job submitted successfully!", {
+          //   title: "Success",
+          //   size: "sm",
+          //   buttonSize: "sm",
+          //   okVariant: "success",
+          //   headerClass: "p-2 border-bottom-0",
+          //   footerClass: "p-2 border-top-0",
+          //   centered: true,
+          // });
+          console.log(json)
+          return API.pollCeleryResult(json);
         })
         .then(() => {
           let notificationOptions = {
@@ -790,18 +791,18 @@ export default {
     },
     makeNotification(title, options, callback) {
       if (!("Notification" in window)) {
-        this.$bvModal.msgBoxOk(
-          "This browser does not support desktop notifications! Notifications about tree builder submission and completion will not show.",
-          {
-            title: "Alert",
-            size: "sm",
-            okVariant: "danger",
-            okTitle: "Ok",
-            hideHeaderClose: true,
-            centered: true,
-            footerClass: "p-2",
-          }
-        );
+        // this.$bvModal.msgBoxOk(
+        //   "This browser does not support desktop notifications! Notifications about tree builder submission and completion will not show.",
+        //   {
+        //     title: "Alert",
+        //     size: "sm",
+        //     okVariant: "danger",
+        //     okTitle: "Ok",
+        //     hideHeaderClose: true,
+        //     centered: true,
+        //     footerClass: "p-2",
+        //   }
+        // );
       }
 
       // Let's check whether notification permissions have already been granted
@@ -1420,8 +1421,6 @@ export default {
           let newDisp = this.resultsStore.dispGraph.nodes.get(dispObj.id);
           this.selected.data = newData;
           this.selected.disp = newDisp;
-          // this.$set(this.selected, "data", newData);
-          // this.$set(this.selected, "disp", newDisp);
         });
       }
     },
@@ -1645,9 +1644,9 @@ export default {
         type: "ipp",
       };
       if (!this.resultsStore.savedResultInfo) {
-              console.error('savedResultInfo is not initialized.');
-              return;  
-            }
+        console.error('savedResultInfo is not initialized.');
+        return;
+      }
       console.log("saveResult started");
       console.log('savedResultInfo:', this.resultsStore.savedResultInfo);
       let url = `/api/results/create`;
@@ -1692,7 +1691,7 @@ export default {
               footerClass: "p-2",
             });
           }
-           this.resultDialogVisible = false
+          this.resultDialogVisible = false
         })
         .catch((error) => {
           alert(
@@ -1718,7 +1717,7 @@ export default {
       if (!this.network && this.resultsStore.dispGraph.nodes.length) {
         this.initializeNetwork();
       } else if (this.network) {
-        this.centerGraph();
+        // this.centerGraph();
       }
     },
     canonicalize(smiles, input) {
@@ -1937,7 +1936,7 @@ export default {
   },
   'resultsStore.savedResultInfo': {
     deep: true,
-      handler(newValue, oldValue) {
+    handler(newValue, oldValue) {
       console.log('savedResultInfo changed:', oldValue, '->', newValue);
     }
   }

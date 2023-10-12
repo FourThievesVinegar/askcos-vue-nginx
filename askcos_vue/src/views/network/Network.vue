@@ -6,17 +6,19 @@
           <v-tabs v-model="tab" color="primary" align-tabs="center" grow class="mb-4">
             <v-tab @click="replaceRoute('IPP')" value="IPP">Interactive Path Planner</v-tab>
             <v-tab @click="replaceRoute('RP')" value="RP">Retro Synthesis</v-tab>
-            <v-tab @click="replaceRoute('TE')" value="TE" disabled>Tree Explorer</v-tab>
+            <v-tab @click="replaceRoute('TE')" value="TE" :disabled="!treeViewVisible">Tree Explorer</v-tab>
           </v-tabs>
         </v-sheet>
         <v-window v-model="tab" :class="tab === 'IPP' ? 'elevation-2' : 'elevation-0'">
           <v-window-item value="IPP">
-            <NetworkView />
+            <NetworkView :tab-active="tab === 'IPP'" />
           </v-window-item>
           <v-window-item value="RP">
             <RetroView />
           </v-window-item>
-          <v-window-item value="TE"> TE </v-window-item>
+          <v-window-item value="TE">
+            <TreeView />
+          </v-window-item>
         </v-window>
       </v-col>
     </v-row>
@@ -27,14 +29,16 @@
 import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import NetworkView from "@/views/network/tabs/NetworkView";
-import RetroView from "@/views/network/tabs//RetroView";
+import RetroView from "@/views/network/tabs/RetroView";
+import TreeView from "@/views/network/tabs/TreeView";
 import { useResultsStore } from "@/store/results";
 
 export default {
   name: "Network",
   components: {
     NetworkView,
-    RetroView
+    RetroView,
+    TreeView
   },
   setup() {
     const route = useRoute();

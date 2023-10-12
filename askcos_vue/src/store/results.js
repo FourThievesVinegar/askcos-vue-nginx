@@ -3,7 +3,7 @@ import { RetroGraph, isChemical, isReaction } from "@/common/graph";
 import { lookupBuyables } from "@/common/buyables";
 import { v4 as uuidv4, NIL as NIL_UUID } from "uuid";
 import { API } from "@/common/api";
-import { tbSettingsPyToJs } from "@/common/tb-settings";
+// import { tbSettingsPyToJs } from "@/common/tb-settings";
 import { checkTemplatePrioritizers } from "@/views/network/utils";
 import {
   makeChemicalDisplayNode,
@@ -176,8 +176,8 @@ export const useResultsStore = defineStore("results", {
       });
     },
     loadResult({ resultId, numTrees }) {
-      let url = `/api/v2/results/${resultId}/ipp/`;
-      return API.get(url).then((json) => {
+      let url = `/api/results/retrieve/`;
+      return API.get(url, { result_id: resultId }).then((json) => {
         if (json.error) {
           alert(json.error);
         }
@@ -235,9 +235,10 @@ export const useResultsStore = defineStore("results", {
       return Promise.all(promises);
     },
     importTreeBuilderResult({ data, numTrees }) {
+      console.log("importTree")
       const settings = useSettingsStore();
-      let resultObj = data["result"];
-      let target = resultObj["settings"]["smiles"];
+      let resultObj = data;
+      let target = "CCCCCC";
       this.setTarget(target);
       // Disable precusrsor clustering by default for tree builder results
       settings.setOption({ key: "allowCluster", value: false }, { root: true });
@@ -256,7 +257,8 @@ export const useResultsStore = defineStore("results", {
         ),
         tbSettings: resultObj["settings"],
       };
-      let status = resultObj["result"]["status"];
+      let status = null
+      // let status = resultObj["result"]["stats"];
       let stats = resultObj["result"]["stats"];
       if (status) {
         savedResultInfo["tbStats"] = {
@@ -268,16 +270,17 @@ export const useResultsStore = defineStore("results", {
       }
       this.updateSavedResultInfo(savedResultInfo);
       // Import settings
-      let tbSettings = tbSettingsPyToJs(resultObj["settings"]);
-      settings.setTbSettings(tbSettings, { root: true });
+      // let tbSettings = tbSettingsPyToJs(resultObj["settings"]);
+      // settings.setTbSettings(tbSettings, { root: true });
       // Import result graphs
-      let dataGraph = resultObj["result"]["dataGraph"];
+      let dataGraph = resultObj["result"]["graph"];
       let paths = resultObj["result"]["paths"];
       let nodeMap = generateTreeNodeMap(paths);
       let edgeMap = assignEdgeIds(paths);
       this.setTreeNodeMap(nodeMap);
       this.setTreeEdgeMap(edgeMap);
       let promises = [];
+      console.log(dataGraph)
       if (dataGraph) {
         promises.push(this.addTreeBuilderResultToDataGraph(dataGraph));
       }
@@ -698,6 +701,7 @@ export const useResultsStore = defineStore("results", {
       this.updateDispNodes(
         newNodes.map((node) => {
           let dataObj = this.dataGraph.nodes.get(node["smiles"]);
+          console.log(dataObj)
           if (node.type === "chemical") {
             return makeChemicalDisplayNode({
               id: node["id"],
@@ -713,6 +717,7 @@ export const useResultsStore = defineStore("results", {
           }
         })
       );
+
       this.updateDispEdges(
         newEdges.map((edge) => {
           let from = this.dispGraph.nodes.get(edge["from"]);
@@ -737,6 +742,7 @@ export const useResultsStore = defineStore("results", {
           });
         })
       );
+      
     },
     addTreeBuilderResultToDataGraph(data) {
       let templateIds = [];
@@ -758,7 +764,9 @@ export const useResultsStore = defineStore("results", {
               type: node["type"],
             };
           } else {
-            templateIds.push(...node["tforms"]);
+            if(node["tforms"]){
+              templateIds.push(...node["tforms"]);
+            }
             return {
               id: node["id"],
               rank: node["rank"],
@@ -768,8 +776,8 @@ export const useResultsStore = defineStore("results", {
               templateScore: node["template_score"],
               templateIds: node["tforms"],
               templateSets: node["tsources"],
-              precursors: node["precursor_smiles"].split("."),
-              precursorSmiles: node["precursor_smiles"],
+              precursors: node["id"].split("."),
+              precursorSmiles: node["id"],
               numExamples: node["num_examples"],
               necessaryReagent: node["necessary_reagent"],
               numRings: node["num_rings"],

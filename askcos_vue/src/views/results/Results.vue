@@ -39,7 +39,6 @@
             </v-col>
           </v-row>
 
-
           <v-divider class="border-opacity-30"></v-divider>
           <v-card>
              <v-sheet width="100%" class="pa-6">
