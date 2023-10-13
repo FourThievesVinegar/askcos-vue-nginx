@@ -14,14 +14,15 @@
                 <v-btn variant="flat" color="green-darken-1" prepend-icon="mdi mdi-play" class="mr-2"
                   :disabled="!resultsStore.target" @click="changeTarget">One Step</v-btn>
                 <v-btn-group density="compact" color="primary" divided>
-                  <v-btn prepend-icon="mdi mdi-family-tree" id="tb-submit" @click="sendTreeBuilderJob">Build Tree</v-btn>
+                  <v-btn prepend-icon="mdi mdi-family-tree" id="tb-submit" @click="sendTreeBuilderJob"
+                    :disabled="!resultsStore.target">Build Tree</v-btn>
                   <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
                     <template v-slot:activator="{ props }">
                       <v-btn v-bind="props" icon="mdi mdi-menu-down" />
                     </template>
                     <v-card width="auto" min-width="250px">
                       <v-text-field v-model="tb.taskName" label="Job name/description" variant="outlined" hide-details
-                        class="pa-3"></v-text-field>
+                        class="pa-3" density="compact"></v-text-field>
                       <v-divider class="ma-2" :thickness="2"></v-divider>
                       <p class="text-subtitle-2 pl-3">Quick Settings</p>
                       <v-list density="compact">
@@ -270,7 +271,7 @@ import { useSettingsStore } from "@/store/settings";
 import dayjs from "dayjs";
 import { Network } from "vis-network";
 import { getPaths } from "@/common/graph";
-import { useConfirm } from 'vuetify-use-dialog';
+import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
 import NodeDetail from "@/components/network/NodeDetail";
 import SettingsModal from "@/components/network/SettingsModal";
 // import { tbSettingsJsToApi } from "@/common/tb-settings";
@@ -291,8 +292,10 @@ export default {
   },
   setup() {
     const createConfirm = useConfirm()
+    const createSnackbar = useSnackbar()
     return {
-      createConfirm
+      createConfirm,
+      createSnackbar
     }
   },
   data() {
@@ -538,15 +541,7 @@ export default {
       // Getting the current canvas element
       const canvas = document.getElementsByTagName("canvas")[0];
       if (canvas === undefined) {
-        this.$bvModal.msgBoxOk("No tree created yet to export as PNG", {
-          title: "Alert",
-          size: "sm",
-          okVariant: "danger",
-          okTitle: "Ok",
-          hideHeaderClose: true,
-          centered: true,
-          footerClass: "p-2",
-        });
+        this.createConfirm({ title: 'Alert', content: 'No tree created yet to export as PNG', dialogProps: { width: "auto" } })
         return;
       }
       // Creating new canvas element to get white background
@@ -554,15 +549,7 @@ export default {
       tempCanvas.width = canvas.width;
       tempCanvas.height = canvas.height;
       if (canvas.toDataURL() === tempCanvas.toDataURL()) {
-        this.$bvModal.msgBoxOk("Empty Interactive Path Planner canvas", {
-          title: "Alert",
-          size: "sm",
-          okVariant: "danger",
-          okTitle: "Ok",
-          hideHeaderClose: true,
-          centered: true,
-          footerClass: "p-2",
-        });
+        this.createConfirm({ title: 'Alert', content: 'Empty Interactive Path Planner canvas', dialogProps: { width: "auto" } })
         return;
       }
       const tempCtx = tempCanvas.getContext("2d");
@@ -665,21 +652,6 @@ export default {
       return true;
     },
     sendTreeBuilderJob() {
-      // if (!this.isAuth) {
-      //   this.$bvModal.msgBoxOk(
-      //     "Error: must be logged in to start tree builder",
-      //     {
-      //       title: "Alert",
-      //       size: "sm",
-      //       okVariant: "danger",
-      //       okTitle: "Ok",
-      //       hideHeaderClose: true,
-      //       centered: true,
-      //       footerClass: "p-2",
-      //     }
-      //   );
-      //   return;
-      // }
       if (this.tb.taskName === "") {
         this.tb.taskName = this.resultsStore.target;
       }
@@ -697,19 +669,7 @@ export default {
         })
         .catch((error) => {
           let error_msg = error.message || error || "unknown error";
-          // this.$bvModal.msgBoxOk(
-          //   "There was an error submitting the tree builder job with the supplied settings: " +
-          //   error_msg,
-          //   {
-          //     title: "Alert",
-          //     size: "sm",
-          //     okVariant: "danger",
-          //     okTitle: "Ok",
-          //     hideHeaderClose: true,
-          //     centered: true,
-          //     footerClass: "p-2",
-          //   }
-          // );
+          this.createConfirm({ title: 'Alert', content: "There was an error submitting the tree builder job with the supplied settings: " + error_msg, dialogProps: { width: "auto" } })
         });
     },
     mctsTreeBuilderAPICall() {
@@ -727,101 +687,42 @@ export default {
       API.post(url, body)
         .then((json) => {
           this.tb.taskId = json;
-          // let notificationOptions = {
-          //   requireInteraction: true,
-          //   body: "The job will run in the background. You will see a new notification when the job completes.",
-          // };
-          // this.makeNotification("Tree builder job submitted!", notificationOptions, function() {
-          //   this.close();
-          // });
-          // this.$bvModal.msgBoxOk("Tree Builder job submitted successfully!", {
-          //   title: "Success",
-          //   size: "sm",
-          //   buttonSize: "sm",
-          //   okVariant: "success",
-          //   headerClass: "p-2 border-bottom-0",
-          //   footerClass: "p-2 border-top-0",
-          //   centered: true,
-          // });
-          console.log(json)
+          this.createConfirm({ title: 'Success', content: 'Tree Builder job submitted successfully!', dialogProps: { width: "auto" } })
           return API.pollCeleryResult(json);
         })
         .then(() => {
-          let notificationOptions = {
-            requireInteraction: true,
-            body: "Click here to open a new tab with results.",
-          };
-          let app = this;
-          let notifyCallback = function (event) {
-            event.preventDefault(); // prevent the browser from focusing the Notification's tab
-            if (app.tbSettings.redirectToGraph) {
-              window.open(
-                `/retro/network/?view=25&id=${app.tb.taskId}`,
-                "_blank"
-              );
-              this.close();
-            } else {
-              window.open(
-                `/retro/network/?tab=2&id=${app.tb.taskId}`,
-                "_blank"
-              );
-              this.close();
-            }
-          };
-          this.makeNotification(
-            "Tree builder job complete!",
-            notificationOptions,
-            notifyCallback
-          );
+          this.createSnackbar({text: "Tree builder job complete! Visit results page for more details", snackbarProps: {timeout: -1, vertical: true} })
+          // let notificationOptions = {
+          //   requireInteraction: true,
+          //   body: "Click here to open a new tab with results.",
+          // };
+          // let app = this;
+          // let notifyCallback = function (event) {
+          //   event.preventDefault(); // prevent the browser from focusing the Notification's tab
+          //   if (app.tbSettings.redirectToGraph) {
+          //     window.open(
+          //       `/retro/network/?view=25&id=${app.tb.taskId}`,
+          //       "_blank"
+          //     );
+          //     this.close();
+          //   } else {
+          //     window.open(
+          //       `/retro/network/?tab=2&id=${app.tb.taskId}`,
+          //       "_blank"
+          //     );
+          //     this.close();
+          //   }
+          // };
+          // this.makeNotification(
+          //   "Tree builder job complete!",
+          //   notificationOptions,
+          //   notifyCallback
+          // );
         })
         .catch((error) => {
           console.error(error);
-          let notificationOptions = {
-            requireInteraction: true,
-            body: "Job failed. Try submitting a new job.",
-          };
-          this.makeNotification(
-            "Tree builder job failed.",
-            notificationOptions,
-            function () {
-              this.close();
-            }
-          );
+          this.createSnackbar({text: "Job failed. Try submitting a new job.", snackbarProps: {timeout: -1, vertical: true} })
         });
-    },
-    makeNotification(title, options, callback) {
-      if (!("Notification" in window)) {
-        // this.$bvModal.msgBoxOk(
-        //   "This browser does not support desktop notifications! Notifications about tree builder submission and completion will not show.",
-        //   {
-        //     title: "Alert",
-        //     size: "sm",
-        //     okVariant: "danger",
-        //     okTitle: "Ok",
-        //     hideHeaderClose: true,
-        //     centered: true,
-        //     footerClass: "p-2",
-        //   }
-        // );
-      }
-
-      // Let's check whether notification permissions have already been granted
-      else if (Notification.permission === "granted") {
-        // If it's okay let's create a notification
-        let notification = new Notification(title, options);
-        notification.onclick = callback;
-      }
-
-      // Otherwise, we need to ask the user for permission
-      else if (Notification.permission !== "denied") {
-        Notification.requestPermission().then(function (permission) {
-          // If the user accepts, let's create a notification
-          if (permission === "granted") {
-            let notification = new Notification(title, options);
-            notification.onclick = callback;
-          }
-        });
-      }
     },
     resolveChemName(name) {
       if (this.enableResolver && this.allowResolve) {
@@ -835,34 +736,15 @@ export default {
     validatesmiles(smiles, iswarning) {
       return API.post("/api/v2/rdkit/smiles/validate/", {
         smiles: smiles,
-      }).then((json) => {
+      }).then(async (json) => {
         if (!json["correct_syntax"]) {
           if (iswarning) {
-            this.$bvModal.msgBoxOk("Invalid SMILES entered: Invalid Syntax", {
-              title: "Alert",
-              size: "sm",
-              okVariant: "danger",
-              okTitle: "Ok",
-              hideHeaderClose: true,
-              centered: true,
-              footerClass: "p-2",
-            });
+            await this.createConfirm({ title: 'Alert', content: 'Invalid SMILES entered: Invalid Syntax', dialogProps: { width: "auto" } })
           }
           return false;
         } else if (!json["valid_chem_name"]) {
           if (iswarning) {
-            this.$bvModal.msgBoxOk(
-              "Invalid SMILES entered: Invalid Chemical Name",
-              {
-                title: "Alert",
-                size: "sm",
-                okVariant: "danger",
-                okTitle: "Ok",
-                hideHeaderClose: true,
-                centered: true,
-                footerClass: "p-2",
-              }
-            );
+            await this.createConfirm({ title: 'Alert', content: 'Invalid SMILES entered: Invalid Chemical Name', dialogProps: { width: "auto" } })
           }
           return false;
         } else {
@@ -883,23 +765,9 @@ export default {
     },
     async changeTarget() {
       if (this.resultsStore.dataGraph.nodes.length) {
-        await this.$bvModal
-          .msgBoxConfirm("This will clear existing results. Continue?", {
-            title: "Please Confirm",
-            size: "sm",
-            okVariant: "success",
-            okTitle: "Yes",
-            cancelTitle: "No",
-            footerClass: "p-2",
-            hideHeaderClose: false,
-            centered: true,
-          })
-          .then((value) => {
-            if (!value) return;
-          })
-          .catch(() => {
-            // An error occurred
-          });
+        const isConfirmed = await this.createConfirm({ title: 'Please Confirm', content: 'This will clear existing results. Continue?', dialogProps: { width: "auto" } })
+        if (!isConfirmed)
+          return
       }
       this.isCanvasEmpty = false;
       this.visible = false;
@@ -930,21 +798,10 @@ export default {
         .then(() => {
           this.initializeNetwork();
         })
-        .catch((error) => {
+        .catch(async (error) => {
           let error_msg = error.message || error || "unknown error";
-          this.$bvModal.msgBoxOk(
-            "There was an error fetching precursors for this target with the supplied settings: " +
-            error_msg,
-            {
-              title: "Alert",
-              size: "sm",
-              okVariant: "danger",
-              okTitle: "Ok",
-              hideHeaderClose: true,
-              centered: true,
-              footerClass: "p-2",
-            }
-          );
+          await this.createConfirm({ title: 'Alert', content: 'There was an error fetching precursors for this target with the supplied settings: ' + error_msg, dialogProps: { width: "auto" } })
+          this.clear(true)
         })
         .finally(() => {
           this.pendingTasks -= 1;
@@ -991,36 +848,12 @@ export default {
       if (this.isModalOpen() || typeof this.network == "undefined") {
         return;
       }
-
       let selected = this.network.getSelectedNodes();
-
       if (selected.length !== 1) {
         if (selected.length === 0) {
-          this.$bvModal.msgBoxOk(
-            "Please select a terminal chemical node to expand",
-            {
-              title: "Alert",
-              size: "sm",
-              okVariant: "danger",
-              okTitle: "Ok",
-              hideHeaderClose: true,
-              centered: true,
-              footerClass: "p-2",
-            }
-          );
+          this.createConfirm({ title: 'Alert', content: 'Please select a terminal chemical node to expand', dialogProps: { width: "auto" } })
         } else {
-          this.$bvModal.msgBoxOk(
-            "Please only select 1 node at a time to expand",
-            {
-              title: "Alert",
-              size: "sm",
-              okVariant: "danger",
-              okTitle: "Ok",
-              hideHeaderClose: true,
-              centered: true,
-              footerClass: "p-2",
-            }
-          );
+          this.createConfirm({ title: 'Alert', content: 'Please only select 1 node at a time to expand', dialogProps: { width: "auto" } })
         }
         return;
       }
@@ -1035,19 +868,7 @@ export default {
         })
         .catch((error) => {
           let error_msg = error.message || error || "unknown error";
-          this.$bvModal.msgBoxOk(
-            "There was an error fetching precursors for this target with the supplied settings: " +
-            error_msg,
-            {
-              title: "Alert",
-              size: "sm",
-              okVariant: "danger",
-              okTitle: "Ok",
-              hideHeaderClose: true,
-              centered: true,
-              footerClass: "p-2",
-            }
-          );
+          this.createConfirm({ title: 'Alert', content: 'There was an error fetching precursors for this target with the supplied settings: ' + error_msg, dialogProps: { width: "auto" } })
         })
         .finally(() => {
           this.pendingTasks -= 1;
@@ -1057,15 +878,7 @@ export default {
     selectAllOccur() {
       let selected = this.network.getSelectedNodes();
       if (selected.length === 0) {
-        this.$bvModal.msgBoxOk("Please select a node!", {
-          title: "Alert",
-          size: "sm",
-          okVariant: "danger",
-          okTitle: "Ok",
-          hideHeaderClose: true,
-          centered: true,
-          footerClass: "p-2",
-        });
+        this.createConfirm({ title: 'Alert', content: 'Please select a node!' + error_msg, dialogProps: { width: "auto" } })
         return;
       }
       let selectNodes = [];
@@ -1085,39 +898,22 @@ export default {
       }
       this.network.selectNodes(selectNodes);
     },
-    deleteChoice() {
+    async deleteChoice() {
       // for all selected nodes, delete reaction nodes and delete children of chemical nodes
-      this.$bvModal
-        .msgBoxConfirm(
-          "This will permanentlydelete all selected reaction nodes and all children of the selected chemical nodes. Continue?",
-          {
-            title: "Please Confirm",
-            size: "sm",
-            okVariant: "success",
-            okTitle: "Yes",
-            cancelTitle: "No",
-            footerClass: "p-2",
-            hideHeaderClose: false,
-            centered: true,
-          }
-        )
-        .then((value) => {
-          if (!value) return;
-          let selected = this.network.getSelectedNodes();
-          for (let nodeId of selected) {
-            let node = this.resultsStore.dispGraph.nodes.get(nodeId);
-            if (node === null) {
-              // the node does not exist, it may have already been deleted
-              continue;
-            }
-            this.resultsStore.deleteDispNode(node);
-          }
-          this.clearSelection();
-          this.hideHoverBtn();
-        })
-        .catch(() => {
-          // An error occurred
-        });
+      const isConfirmed = await this.createConfirm({ title: 'Please Confirm', content: 'This will permanently delete all selected reaction nodes and all children of the selected chemical nodes. Continue?', dialogProps: { width: "auto" } })
+      if (!isConfirmed)
+        return
+      let selected = this.network.getSelectedNodes();
+      for (let nodeId of selected) {
+        let node = this.resultsStore.dispGraph.nodes.get(nodeId);
+        if (node === null) {
+          // the node does not exist, it may have already been deleted
+          continue;
+        }
+        this.resultsStore.deleteDispNode(node);
+      }
+      this.clearSelection();
+      this.hideHoverBtn();
     },
     toggleResolver() {
       if (this.allowResolve) {
@@ -1157,47 +953,30 @@ export default {
       }
       return false;
     },
-    load() {
-      this.$bvModal
-        .msgBoxConfirm(
-          "This will clear all of your current results. Continue anyway?",
-          {
-            title: "Please Confirm",
-            size: "sm",
-            okVariant: "success",
-            okTitle: "Yes",
-            cancelTitle: "No",
-            footerClass: "p-2",
-            hideHeaderClose: false,
-            centered: true,
-          }
-        )
-        .then((value) => {
-          if (!value) return;
-          this.resultsStore.target = "";
-          this.selected = null;
-          this.resultsStore.clearDataGraph();
-          this.resultsStore.clearDispGraph();
-          this.resultsStore.clearRemovedReactions();
-          this.trees = [];
-          this.pendingTasks += 1;
-          this.isCanvasEmpty = false;
-          this.visible = false;
-          let reader = new FileReader();
-          reader.readAsText(this.uploadFile);
-          reader.onload = (e) => {
-            let data = JSON.parse(e.target.result);
-            if (data.version === 1.0) {
-              this.importDataV1(data);
-            } else {
-              this.importDataV0(data);
-            }
-            this.pendingTasks -= 1;
-          };
-        })
-        .catch(() => {
-          // An error occurred
-        });
+    async load() {
+      const isConfirmed = await this.createConfirm({ title: 'Please Confirm', content: 'This will clear all of your current results. Continue anyway?', dialogProps: { width: "auto" } })
+      if (!isConfirmed)
+        return
+      this.resultsStore.target = "";
+      this.selected = null;
+      this.resultsStore.clearDataGraph();
+      this.resultsStore.clearDispGraph();
+      this.resultsStore.clearRemovedReactions();
+      this.trees = [];
+      this.pendingTasks += 1;
+      this.isCanvasEmpty = false;
+      this.visible = false;
+      let reader = new FileReader();
+      reader.readAsText(this.uploadFile);
+      reader.onload = (e) => {
+        let data = JSON.parse(e.target.result);
+        if (data.version === 1.0) {
+          this.importDataV1(data);
+        } else {
+          this.importDataV0(data);
+        }
+        this.pendingTasks -= 1;
+      };
     },
     importDataV0(data) {
       // Parse old data download format, before version numbers were introduced
@@ -1543,30 +1322,6 @@ export default {
       res = res || this.showAddNewPrecursorModal;
       return res;
     },
-    startTour() {
-      this.$bvModal
-        .msgBoxConfirm(
-          "Starting the tutorial will clear all of your current results. Continue anyway?",
-          {
-            title: "Please Confirm",
-            size: "sm",
-            okVariant: "success",
-            okTitle: "Yes",
-            cancelTitle: "No",
-            footerClass: "p-2",
-            hideHeaderClose: false,
-            centered: true,
-          }
-        )
-        .then((value) => {
-          if (!value) return;
-          this.clear(true);
-          this.tour.start();
-        })
-        .catch(() => {
-          // An error occurred
-        });
-    },
     requestClusterId(smiles) {
       this.pendingTasks += 1;
       return this.recluster(smiles).finally(() => {
@@ -1598,34 +1353,14 @@ export default {
             );
             this.$set(this.selected, "data", newData);
           } else {
-            this.$bvModal.msgBoxOk(
-              "Could not predict selectivity for this reaction.",
-              {
-                title: "Alert",
-                size: "sm",
-                okVariant: "danger",
-                okTitle: "Ok",
-                hideHeaderClose: true,
-                centered: true,
-                footerClass: "p-2",
-              }
-            );
+            this.createConfirm({ title: 'Alert', content: 'Could not predict selectivity for this reaction.', dialogProps: { width: "auto" } })
           }
         })
         .catch((error) => {
-          this.$bvModal.msgBoxOk(
-            "There was an error predicting selectivity for this reaction: " +
-            error,
-            {
-              title: "Alert",
-              size: "sm",
-              okVariant: "danger",
-              okTitle: "Ok",
-              hideHeaderClose: true,
-              centered: true,
-              footerClass: "p-2",
-            }
-          );
+          this.createConfirm({
+            title: 'Alert', content: "There was an error predicting selectivity for this reaction: " +
+              error, dialogProps: { width: "auto" }
+          })
         })
         .finally(() => {
           this.pendingTasks -= 1;
