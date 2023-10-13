@@ -72,8 +72,8 @@
           <v-list-item v-bind="props" prepend-icon="mdi-account-circle" title="Profile" :active="activeProfile"
             :variant="activeProfile ? 'tonal' : 'text'"></v-list-item>
         </template>
-        <v-list-item prepend-icon="mdi-help-box" title="Results" value="result" to="results"></v-list-item>
-        <v-list-item prepend-icon="mdi-help-box" title="Banlist" value="banlist" to="banlist"></v-list-item>
+        <v-list-item prepend-icon="mdi-table" title="My Results" value="result" to="results"></v-list-item>
+        <v-list-item prepend-icon="mdi-cancel" title="My Banlist" value="banlist" to="banlist"></v-list-item>
       </v-list-group>
       <v-list-item v-if=isLoggedIn @click="logout" prepend-icon="mdi-logout" title="Logout" :active="false"></v-list-item>
     </v-list>
