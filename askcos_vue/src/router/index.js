@@ -134,20 +134,6 @@ const routes = [
     ],
   },
   {
-    path: '/profile',
-    component: () => import('@/layouts/default/Default.vue'),
-    children: [
-      {
-        path: '',
-        name: 'Profile',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "buyables" */ '@/views/profile/Profile.vue'),
-      },
-    ],
-  },
-  {
     path: "/forward",
     component: () => import("@/layouts/default/Default.vue"),
     children: [
@@ -255,6 +241,21 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import(/* webpackChunkName: "buyables" */ '@/views/notfound/NotFound.vue'),
+      },
+    ],
+  },
+  {
+    path: "/logs",
+    name: "Logs",
+    component: () => import('@/layouts/default/Default.vue'),
+    children: [
+      {
+        path: '',
+        name: "Logs",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "buyables" */ '@/views/logs/Logs.vue'),
       },
     ],
   }

@@ -1132,6 +1132,7 @@ export default {
       this.isCanvasEmpty = true;
       this.visible = true;
       this.treeViewEnabled = false;
+      this.$emit("update:treeViewVisible", false)
     },
     clearSelection() {
       let hoverBtnElem = document.getElementById("hoverBtn");

@@ -11,7 +11,7 @@
         </v-sheet>
         <v-window v-model="tab" :class="tab === 'IPP' ? 'elevation-2' : 'elevation-0'">
           <v-window-item value="IPP">
-            <NetworkView :tab-active="tab === 'IPP'" />
+            <NetworkView :tab-active="tab === 'IPP'" @update:treeViewVisible="($event) => treeViewVisible = $event" />
           </v-window-item>
           <v-window-item value="RP">
             <RetroView />
@@ -58,6 +58,7 @@ export default {
     };
 
     onMounted(() => {
+      treeViewVisible.value=false;
       let urlParams = route.query;
       let urlTab = urlParams.tab;
       if (urlTab) {

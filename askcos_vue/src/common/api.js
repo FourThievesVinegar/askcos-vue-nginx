@@ -3,16 +3,15 @@
  */
 
 import Cookies from 'js-cookie';
+import { useFastapiStore } from "@/store/fastapi";
 
-const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/status", "/api/tree_search", "/api/impurity_predictor", "/api/forward", "/api/legacy" ];
+const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/status", "/api/tree_search", "/api/impurity_predictor", "/api/forward", "/api/legacy"];
 
 const API = {
   pollInterval: 1000,
   pollIntervalLong: 2000,
 
   getHeaders(data, endpoint) {
-    console.log(endpoint)
-
     let headers = {};
 
     if (authMigratedAPI.some(api => endpoint.startsWith(api))) {
@@ -54,7 +53,8 @@ const API = {
   },
 
 
-  get(endpoint, params) {
+  async get(endpoint, params) {
+    const fastapiStore = useFastapiStore()
     if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
       endpoint += '/';
     }
@@ -65,14 +65,18 @@ const API = {
       endpoint += `?${params.toString()}`;
     }
 
-    return fetch(endpoint, {
+    const response = await fetch(endpoint, {
       method: 'GET',
       headers: this.getHeaders(null, endpoint),
-    }).then(this.fetchHandler);
+    });
+    const json = await this.fetchHandler(response);
+    fastapiStore.logs.unshift({ endpoint: endpoint, method: 'GET', request: params, response: json });
+    return json;
   },
 
 
   async post(endpoint, data, query = false) {
+    const fastapiStore = useFastapiStore()
     if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
       endpoint += '/';
     }
@@ -90,41 +94,45 @@ const API = {
         method: 'POST',
       })
     }
-    return this.fetchHandler(response);
-
+    const json = await this.fetchHandler(response);
+    fastapiStore.logs.unshift({ endpoint: endpoint, method: 'POST', request: data, response: json });
+    return json
   },
 
-  put(endpoint, data) {
+  async put(endpoint, data) {
+    const fastapiStore = useFastapiStore()
     if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
       endpoint += '/';
     }
-    return fetch(endpoint, {
+    const response = await fetch(endpoint, {
       method: 'PUT',
       headers: this.getHeaders(data, endpoint),
       body: data instanceof FormData ? data : JSON.stringify(data),
-    }).then(this.fetchHandler);
+    });
+    const json = await this.fetchHandler(response);
+    fastapiStore.logs.unshift({ endpoint: endpoint, method: 'PUT', request: data, response: json });
+    return json;
   },
 
-  delete(endpoint) {
+  async delete(endpoint) {
     if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
       endpoint += '/';
     }
-    return fetch(endpoint, {
+    const response = await fetch(endpoint, {
       method: 'DELETE',
       headers: this.getHeaders(null, endpoint),
-    }).then(this.fetchHandler);
+    });
+    return this.fetchHandler(response);
   },
 
-  runCeleryTask(endpoint, data, progress) {
-    return this.post(endpoint, data)
-      .then((json) => {
-        if (json.task_id) {
-          return this.pollCeleryResult(json.task_id, progress);
-        }
-        else {
-          return this.pollCeleryResult(json, progress);
-        }
-      });
+  async runCeleryTask(endpoint, data, progress) {
+    const json = await this.post(endpoint, data);
+    if (json.task_id) {
+      return this.pollCeleryResult(json.task_id, progress);
+    }
+    else {
+      return this.pollCeleryResult(json, progress);
+    }
   },
 
   pollCeleryResult(taskId, progress) {

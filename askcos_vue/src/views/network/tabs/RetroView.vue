@@ -22,7 +22,7 @@
                     </div>
                     <div class="text-center">
                         <v-btn color="success" @click="runRetro()" :disabled="!target || !validSmiles">Submit</v-btn>
-                        <v-btn v-b-modal.retro-advanced-modal variant="secondary" class="ml-2"
+                        <v-btn variant="plain" class="ml-2"
                             :disabled="!target || !validSmiles">Advanced...</v-btn>
                     </div>
                 </v-sheet>
@@ -99,7 +99,7 @@
                         <template v-for="header in headers" v-slot:[`item.${header.key}`]="{ item }">
                             <div v-if="header.key === 'smiles'">
                                 <smiles-image :smiles="item.raw.smiles" width="100px"></smiles-image>
-                                <v-simple-table>
+                                <table>
                                     <template v-if="item.raw.plausibility">
                                         <tbody>
                                             <tr>
@@ -112,10 +112,10 @@
                                             </tr>
                                         </tbody>
                                     </template>
-                                </v-simple-table>
+                                </table>
                             </div>
                             <div v-else>
-                                <v-simple-table v-if="item.columns[header.key]" class="text-nowrap">
+                                <table v-if="item.columns[header.key]" class="text-nowrap">
                                     <tbody>
                                         <tr>
                                             <th>Rank</th>
@@ -143,17 +143,16 @@
                                                     </p>
                                                 </template>
                                                 <template v-else>
-                                                    <b-button
-                                                        v-for="(template, index) in item.columns[header.key].templates"
-                                                        :key="template" size="sm" :class="{ 'ml-1': index > 0 }"
+                                                    <v-btn v-for="(template, index) in item.columns[header.key].templates"
+                                                        :key="template" size="small" :class="{ 'ml-1': index > 0 }"
                                                         @click="viewTemplate(template)">
                                                         {{ index + 1 }}
-                                                    </b-button>
+                                                    </v-btn>
                                                 </template>
                                             </td>
                                         </tr>
                                     </tbody>
-                                </v-simple-table>
+                                </table>
                                 <p v-else><strong>Not Predicted</strong></p>
                             </div>
                         </template>
@@ -370,10 +369,10 @@ export default {
                 smiles: target.value,
                 retro_backend_options: [
                     {
-                            retro_backend: settings.model,
-                            max_num_templates: settings.numTemplates,
-                            max_cum_prob: settings.maxCumProb,
-                            retro_model_name: settings.trainingSet,
+                        retro_backend: settings.model,
+                        max_num_templates: settings.numTemplates,
+                        max_cum_prob: settings.maxCumProb,
+                        retro_model_name: settings.trainingSet,
                     },
                 ],
                 retro_rerank_backend: settings.precursorScoring,
