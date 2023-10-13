@@ -38,8 +38,8 @@
             :active="route.query.tab === 'impurity'"></v-list-item>
           <v-list-item to="forward?tab=selectivity" prepend-icon="mdi-help-box" title="Regio-selectivity Prediction"
             value="selectivity" :active="route.query.tab === 'selectivity'"></v-list-item>
-          <v-list-item to="forward?tab=sites" prepend-icon="mdi-help-box" title="Aromatic C-H Functionalization" value="sites"
-            :active="route.query.tab === 'sites'"></v-list-item>
+          <v-list-item to="forward?tab=sites" prepend-icon="mdi-help-box" title="Aromatic C-H Functionalization"
+            value="sites" :active="route.query.tab === 'sites'"></v-list-item>
         </v-list-group>
 
         <v-list-group value="Utilities" subgroup>
@@ -55,18 +55,26 @@
           <v-list-item prepend-icon="mdi-help-box" title="Drawing" value="UD"></v-list-item>
         </v-list-group>
       </v-list-group>
-      <v-list-item prepend-icon="mdi-help-box" title="Help" value="help"></v-list-item>
       <v-list-item to="status" prepend-icon="mdi-list-status" title="Server Status" value="status"
         :active="route.path === '/status'"></v-list-item>
       <v-list-item prepend-icon="mdi-book-information-variant" title="Quick Reference" value="reference"></v-list-item>
       <v-divider></v-divider>
-      <v-list-item prepend-icon="mdi-book-open-variant" title="Wiki" value="wiki" :active="false" href="https://docusaurus.io/" target="_blank"/>
+      <v-list-item prepend-icon="mdi-book-open-variant" title="Wiki" value="wiki" :active="false"
+        href="https://docusaurus.io/" target="_blank" />
       <v-list-item prepend-icon="mdi-bug" title="Report a bug" value="bug" :active="false">
         <TheSupportModal />
       </v-list-item>
+      <v-list-item prepend-icon="mdi-code-json" title="Logs" value="logs" to="logs"></v-list-item>
       <v-divider></v-divider>
       <v-list-item v-if=!isLoggedIn to="login" prepend-icon="mdi-login" title="Login" :active="false"></v-list-item>
-      <v-list-item v-if=isLoggedIn to="profile" prepend-icon="mdi-account-circle" title="Profile" :active="false"></v-list-item>
+      <v-list-group v-if=isLoggedIn value="profile" no-action>
+        <template v-slot:activator="{ props }">
+          <v-list-item v-bind="props" prepend-icon="mdi-account-circle" title="Profile" :active="activeProfile"
+            :variant="activeProfile ? 'tonal' : 'text'"></v-list-item>
+        </template>
+        <v-list-item prepend-icon="mdi-help-box" title="Results" value="result" to="results"></v-list-item>
+        <v-list-item prepend-icon="mdi-help-box" title="Banlist" value="banlist" to="banlist"></v-list-item>
+      </v-list-group>
       <v-list-item v-if=isLoggedIn @click="logout" prepend-icon="mdi-logout" title="Logout" :active="false"></v-list-item>
     </v-list>
   </v-navigation-drawer>
@@ -88,6 +96,11 @@ const activeModules = computed(() => {
   return shouldBeActiveModules.some(el => route.path.includes(el));
 })
 
+const activeProfile = computed(() => {
+  const shouldBeActiveProfile = ['/results', '/banlist']
+  return shouldBeActiveProfile.some(el => route.path.includes(el));
+})
+
 const isLoggedIn = computed(() => {
   const accessToken = localStorage.getItem('accessToken');
   return accessToken ? true : false;
@@ -95,7 +108,7 @@ const isLoggedIn = computed(() => {
 
 function logout() {
   localStorage.removeItem("accessToken");
-  router.push({path: '/login'})
+  router.push({ path: '/login' })
 }
 
 function onDrawerCollapse(value) {
