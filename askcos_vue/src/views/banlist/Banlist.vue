@@ -5,7 +5,7 @@
         <div class="mt-8 mb-2">
           <v-breadcrumbs class="pa-0" :items="['Home', 'Banlist']"></v-breadcrumbs>
           <h1>
-            Your banned items
+            My Banlist
           </h1>
         </div>
       </v-col>
