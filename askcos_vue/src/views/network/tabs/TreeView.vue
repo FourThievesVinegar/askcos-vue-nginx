@@ -86,7 +86,8 @@
                     </v-btn-group>
                     <v-btn variant="tonal" @click="addTreeToIpp(currentTree)"> Add to IPP </v-btn>
                 </div>
-                <div class="position-relative">
+                <v-sheet class="position-relative elevation-2">
+
                     <div id="graph"></div>
                     <div v-if="currentTreeData" id="tree-data-overlay">
                         <table>
@@ -97,7 +98,7 @@
                         </table>
                     </div>
                     <!-- <network-legend></network-legend> -->
-                </div>
+                </v-sheet>
             </v-col>
         </v-row>
     </v-container>
