@@ -315,7 +315,7 @@ const absoluteReagents = ref(false);
 const atomMappingModel = ref('Transformer')
 const forwardResults = ref([])
 const selectivityResults = ref([])
-const selectivityModel = ref('qm_GNN')
+const selectivityModel = ref('GNN')
 const pendingTasks = ref(0)
 const reactionScore = ref(null)
 const evaluating = ref(false)
@@ -628,10 +628,14 @@ const constructSelectivityPostData = () => {
 
   if (reagents.value) {
     data.reagents = reagents.value
+  } else {
+    data.reagents = ""
   }
 
   if (solvent.value) {
     data.solvent = solvent.value
+  } else {
+    data.solvent = ""
   }
 
   return data
@@ -642,7 +646,7 @@ const selectivityPredict = () => {
 
   const postData = constructSelectivityPostData()
 
-  return API.runCeleryTask('/api/v2/general-selectivity/', postData)
+  return API.runCeleryTask('/api/legacy/general_selectivity', postData)
     .then(output => {
       if (typeof output === 'string') {
         alert('Error running selectivity prediction: ' + output)
