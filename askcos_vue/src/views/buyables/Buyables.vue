@@ -76,7 +76,7 @@
                   </copy-tooltip>
                 </template>
                 <template v-slot:item.delete="{ item }">
-                  <!-- <pre>{{ item }}</pre> -->
+                  <pre>{{ item }}</pre>
                   <v-icon @click="deleteBuyable(item.index)" class="text-center">mdi-delete</v-icon>
                 </template>
               </v-data-table>
@@ -267,7 +267,7 @@ const updateSmiles = (newSmiles) => {
 }
 
 onMounted(() => {
-  API.get('/api/buyables/sources/')
+  API.get('/api/buyables/sources')
     .then(json => {
       buyablesSources.value = json.sources
     });
@@ -291,7 +291,7 @@ const search = () => {
     .then(json => {
       console.log(json)
       buyables.value = json['result'];
-      console.log(json['result'])
+      console.log(buyables.value)
     })
     .finally(() => {
       pendingTasks.value--
@@ -350,7 +350,7 @@ const addBuyable = () => {
     source: addBuyableSource.value,
     allowOverwrite: allowOverwrite.value,
   };
-  API.post('/api/buyables/', body)
+  API.post('/api/buyables/create', body)
     .then(json => {
       if (json.error || !json.success) {
         alert('Error adding buyable compound')
