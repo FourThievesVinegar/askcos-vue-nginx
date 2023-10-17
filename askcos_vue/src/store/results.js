@@ -845,7 +845,7 @@ export const useResultsStore = defineStore("results", {
     },
     requestRetro({ smiles }) {
       const settings = useSettingsStore();
-      const url = "/api/tree_search/expand_one/call_async";
+      const url = "/api/tree-search/expand-one/call-async";
       const body = {
         smiles: smiles,
         retro_backend_options: settings.tbSettings.strategies,
@@ -853,7 +853,7 @@ export const useResultsStore = defineStore("results", {
         use_fast_filter: true,
         fast_filter_threshold: settings.tbSettings.minPlausibility,
         cluster_precursors: false,
-        cluster_settings: {
+        cluster_setting: {
           feature: settings.clusterOptions.feature,
           fp_type: settings.clusterOptions.fingerprint,
           fp_length: settings.clusterOptions.fpBits,

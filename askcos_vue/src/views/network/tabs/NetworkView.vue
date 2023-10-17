@@ -8,7 +8,7 @@
           <v-col cols="12" md="10"><v-text-field v-model="resultsStore.target" density="compact" variant="outlined"
               label="Target" placeholder="SMILES" type="text" clearable class="target-input" hide-details>
               <template v-slot:append-inner>
-                <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil">Draw</v-btn>
+                <v-btn variant="tonal" size="small" prepend-iconf="mdi-pencil">Draw</v-btn>
               </template>
               <template v-slot:append>
                 <v-btn variant="flat" color="green-darken-1" prepend-icon="mdi mdi-play" class="mr-2"
@@ -274,6 +274,7 @@ import { getPaths } from "@/common/graph";
 import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
 import NodeDetail from "@/components/network/NodeDetail";
 import SettingsModal from "@/components/network/SettingsModal";
+import { interpolateHexColor } from "@/common/color";
 // import { tbSettingsJsToApi } from "@/common/tb-settings";
 
 const BG_OPACITY = 0.2; // Background opacity
@@ -675,13 +676,14 @@ export default {
     mctsTreeBuilderAPICall() {
       this.saveAllSettings();
       this.saveTarget();
-      const url = "/api/tree_search/mcts/call_async";
+      const url = "/api/tree-search/mcts/call-async";
       const body = {
         smiles: this.resultsStore.target,
       };
       Object.assign(body, this.settingsStore.tree_builder_settings);
       body.expand_one_options = this.settingsStore.interactive_path_planner_settings
-      body.expand_one_options.group_by_strategy = false
+      delete body.expand_one_options.group_by_strategy;
+      delete body.expand_one_options.fast_filter_threshold;
       // checkTemplatePrioritizers(body["template_prioritizers"]);
       console.log(body);
       API.post(url, body)
@@ -1214,17 +1216,17 @@ export default {
             this.resultsStore.dataGraph.getSuccessors(dispObj.smiles).length > 0
           ) {
             const cmap = this.getReactingAtomColormap(dispObj.smiles);
-            // this.$refs["node-detail"].$refs["ketcher-min"].setSmiles(
-            //   dataObj.id,
-            //   undefined,
-            //   (k) => {
-            //     k.editor.applyColormap(cmap);
-            //   }
-            // );
+            this.$refs["node-detail"].$refs["ketcher-min"].setSmiles(
+              dataObj.id,
+              undefined,
+              (k) => {
+                k.editor.applyColormap(cmap);
+              }
+            );
           } else {
-            // this.$refs["node-detail"].$refs["ketcher-min"].setSmiles(
-            //   dataObj.id
-            // );
+            this.$refs["node-detail"].$refs["ketcher-min"].setSmiles(
+              dataObj.id
+            );
           }
         }
       });
@@ -1253,10 +1255,10 @@ export default {
           min: Math.min(...stats.clusters.values()),
           max: Math.max(...stats.clusters.values()),
         };
-        this.$set(this.selected, "stats", {
+        this.selected["stats"] = {
           reactions: rLimits,
           clusters: cLimits,
-        });
+        };
         const palette = ["#c0f0c0", "#005020"];
 
         for (let [atom, countR] of stats.reactions) {

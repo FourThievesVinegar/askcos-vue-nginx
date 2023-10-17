@@ -899,7 +899,7 @@ export default {
         API.get("/api/template/sets").then((json) => {
             this.templateSetsList = json["template_sets"];
         });
-        API.get("/api/admin/get_backend_status").then((json) => {
+        API.get("/api/admin/get-backend-status").then((json) => {
             this.modelStatus = json["modules"];
         });
     },

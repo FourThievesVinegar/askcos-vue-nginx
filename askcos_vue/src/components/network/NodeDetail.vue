@@ -1,83 +1,78 @@
 <template>
-    <div>
-      <js-panel :visible="!!selected && visible" :options="detailPanelOptions" @close="clearEmit">
-        <div id="details" class="overflow-auto">
-            start of node detail
-          <!-- <template v-if="selected">
-            <template v-if="selected.type === 'chemical'">
-              <div class="details-top text-center">
-                <copy-tooltip :data="selected.smiles">
-                  <i class="far fa-copy mr-1"></i>
-                  <b>Smiles: </b>
-                  {{ selected.smiles }}
-                </copy-tooltip>
-                <div><b>Price ($/g): </b>{{ selected.data.ppg }}</div>
-                <div v-if="selected.data.source"><b>Source: </b>{{ selected.data.source }}</div>
-                <ketcher-min id="ketcher-min-chemical" ref="ketcher-min" class="position-relative" @change="selectedAtoms = $event"></ketcher-min>
-                <div v-if="!!selected.stats">
-                  <p>
-                    <small>
-                      Circle size = # of reactions involving atom ({{ selected.stats.reactions.min }} - {{ selected.stats.reactions.max }})<br />
-                      Circle color = # of clusters involving atom (<span style="color: #c0f0c0">&cir;</span> {{ selected.stats.clusters.min }} - {{ selected.stats.clusters.max }}
-                      <span style="color: #005020">&cir;</span>)
-                    </small>
-                  </p>
-                </div>
+  <div>
+    <js-panel :visible="!!selected && visible" :options="detailPanelOptions" @close="clearEmit">
+      <div id="details" class="overflow-auto">
+        <template v-if="selected">
+          <template v-if="selected.type === 'chemical'">
+            <div class="details-top text-center">
+              <copy-tooltip :data="selected.smiles">
+                <i class="far fa-copy mr-1"></i>
+                <b>Smiles: </b>
+                {{ selected.smiles }}
+              </copy-tooltip>
+              <div><b>Price ($/g): </b>{{ selected.data.ppg }}</div>
+              <div v-if="selected.data.source"><b>Source: </b>{{ selected.data.source }}</div>
+              <ketcher-min id="ketcher-min-chemical" ref="ketcher-min" class="position-relative"
+                @change="selectedAtoms = $event"></ketcher-min>
+              <div v-if="!!selected.stats">
+                <p>
+                  <small>
+                    Circle size = # of reactions involving atom ({{ selected.stats.reactions.min }} - {{
+                      selected.stats.reactions.max }})<br />
+                    Circle color = # of clusters involving atom (<span style="color: #c0f0c0">&cir;</span> {{
+                      selected.stats.clusters.min }} - {{ selected.stats.clusters.max }}
+                    <span style="color: #005020">&cir;</span>)
+                  </small>
+                </p>
               </div>
-              <div class="d-flex align-items-center justify-content-between m-2">
-                <div>
-                  <h3 class="m-0">Precursors</h3>
-                </div>
-                <div class="d-flex flex-gap-2">
-                  <b-form-checkbox id="allowCluster" v-model="allowCluster" name="allow-cluster-switch" @change="resetSortingCategory" switch>
-                    Group Similar
-                    <i v-b-tooltip class="fas fa-question-circle" title="Toggle whether to group similar precursors using the selected cluster method."></i>
-                  </b-form-checkbox>
-                  <b-form-checkbox id="invertAtomFilter" v-model="invertAtomFilter" name="invert-atom-filter-switch" switch>
-                    Invert Atom Filter
-                    <i v-b-tooltip class="fas fa-question-circle" title="Invert the filter so that the displayed reactions do not affect the selected atoms."></i>
-                  </b-form-checkbox>
-                </div>
-              </div>
-              <div id="chemical-node-toolbar" class="d-flex justify-content-center flex-gap-2 flex-wrap m-2">
-                <b-button id="expand-btn-side" variant="success" @click="expandNode"> Expand Node </b-button>
-                <b-button data-cy="network-view_button_view-notes" id="notes" variant="outline-success" @click="dispNotes = !dispNotes"> View Notes </b-button>
-                <b-button id="add-precursor-btn" variant="outline-success" @click="openAddNewPrecursorModal()"> Add Precursor </b-button>
-                <b-button id="view-rec-templates-btn" v-b-modal.rec-templates-modal variant="outline-primary"> View Recommended Templates </b-button>
-                <ban-button id="ban-chemical-btn" :smiles="selected.smiles" :type="selected.type"></ban-button>
-                <b-input-group class="w-auto">
-                  <b-input-group-prepend>
-                    <b-input-group-text>Sort By</b-input-group-text>
-                  </b-input-group-prepend>
-                  <b-form-select id="sortingCategory" @change="selectSortingOrder" v-model="sortingCategory">
-                    <b-form-select-option value="retroScore">Score</b-form-select-option>
-                    <b-form-select-option value="scscore">Synthetic complexity</b-form-select-option>
-                    <b-form-select-option value="numExamples"># Examples</b-form-select-option>
-                    <b-form-select-option value="templateRank">Template rank</b-form-select-option>
-                    <b-form-select-option value="ffScore">Plausibility</b-form-select-option>
-                    <b-form-select-option value="rmsMolwt">Root mean square molecular weight</b-form-select-option>
-                    <b-form-select-option value="numRings">Number of rings</b-form-select-option>
-                  </b-form-select>
-                  <b-input-group-append @click="sortOrderAscending = !sortOrderAscending">
-                    <b-input-group-text v-if="sortOrderAscending"> Ascending <i class="fas fa-sort-amount-up ml-1"></i> </b-input-group-text>
-                    <b-input-group-text v-else> Descending <i class="fas fa-sort-amount-down ml-1"></i> </b-input-group-text>
-                  </b-input-group-append>
-                </b-input-group>
-              </div>
-              <div id="Notes" v-if="dispNotes" class="scroll-list">
+            </div>
+            <div class="d-flex flex-row align-center">
+              <h3>Precursors</h3>
+              <v-spacer></v-spacer>
+              <v-switch id="allowCluster" v-model="allowCluster" name="allow-cluster-switch"
+                @change="resetSortingCategory" label="Group Similar" density="compact" hide-details>
+              </v-switch>
+              <v-spacer></v-spacer>
+              <v-switch id="invertAtomFilter" v-model="invertAtomFilter" name="invert-atom-filter-switch"
+                label="Invert Atom Filter" density="compact" hide-details>
+              </v-switch>
+            </div>
+            <div id="chemical-node-toolbar" class="d-flex justify-center flex-gap-2 flex-wrap m-2">
+              <v-btn id="expand-btn-side" variant="success" @click="expandNode"> Expand Node </v-btn>
+              <v-btn data-cy="network-view_button_view-notes" id="notes" variant="outline-success"
+                @click="dispNotes = !dispNotes"> View Notes </v-btn>
+              <v-btn id="add-precursor-btn" variant="outline-success" @click="openAddNewPrecursorModal()"> Add Precursor
+              </v-btn>
+              <v-btn id="view-rec-templates-btn" v-b-modal.rec-templates-modal variant="outline-primary"> View Recommended
+                Templates </v-btn>
+              <ban-button id="ban-chemical-btn" :smiles="selected.smiles" :type="selected.type"></ban-button>
+              <v-select :items="sortingCategoryItems" label="Sort By" style="width: 100%" class="px-2" hide-details
+                variant="outlined" density="compact" @update:modelValue="selectSortingOrder" v-model="sortingCategory">
+                <template v-slot:append>
+                  <v-btn @click="sortOrderAscending = !sortOrderAscending" variant="tonal">
+                    <template v-slot:append>
+                      <v-icon v-if="sortOrderAscending">mdi-sort-ascending</v-icon>
+                      <v-icon v-else>mdi-sort-descending</v-icon>
+                    </template>
+                    {{ sortOrderAscending ? "Ascending" : "Descending" }}
+                  </v-btn>
+                </template>
+              </v-select>
+            </div>
+            <!-- <div id="Notes" v-if="dispNotes" class="scroll-list">
                 <div v-for="(note, idx) in selected.disp.notes" :key="note.date + idx">
                   <b-card :title="note.user" :sub-title="note.date" :data-cy="'network-view_card_note_' + idx">
                     <div v-if="editIdx !== idx">
                       <b-card-text>{{ note.comment }}</b-card-text>
                       <div class="d-flex flex-gap-2">
-                        <b-button
+                        <v-btn
                           data-cy="network-view_button_edit-note"
                           variant="outline-success"
                           @click="
                             editIdx = idx;
                             oldNote = note.comment;
                           "
-                          >Edit Note</b-button
+                          >Edit Note</v-btn
                         >
                       </div>
                     </div>
@@ -86,7 +81,7 @@
                         <textarea class="form-control" type="text" v-model="note.comment" maxlength="1000" />
                       </div>
                       <div class="d-flex flex-gap-2">
-                        <b-button
+                        <v-btn
                           data-cy="network-view_button_cancel-change-note"
                           variant="outline-success"
                           @click="
@@ -94,9 +89,9 @@
                             note.comment = oldNote;
                             oldNote = '';
                           "
-                          >Cancel Change</b-button
+                          >Cancel Change</v-btn
                         >
-                        <b-button
+                        <v-btn
                           data-cy="network-view_button_save-change-note"
                           variant="outline-success"
                           @click="
@@ -104,9 +99,9 @@
                             editIdx = -1;
                             oldNote = '';
                           "
-                          >Save Change</b-button
+                          >Save Change</v-btn
                         >
-                        <b-button
+                        <v-btn
                           data-cy="network-view_button_delete-note"
                           variant="outline-danger"
                           @click="
@@ -114,15 +109,15 @@
                             editIdx = -1;
                             oldNote = '';
                           "
-                          >Delete Note</b-button
+                          >Delete Note</v-btn
                         >
                       </div>
                     </div>
                   </b-card>
                 </div>
-                <b-button data-cy="network-view_button_add-note" id="addNote" class="m-2" variant="outline-success" @click="addNote = !addNote"> Add Note </b-button>
-              </div>
-              <div v-show="addNote" id="addNotes" class="m-2 p-2">
+                <v-btn data-cy="network-view_button_add-note" id="addNote" class="m-2" variant="outline-success" @click="addNote = !addNote"> Add Note </v-btn>
+              </div> -->
+            <!-- <div v-show="addNote" id="addNotes" class="m-2 p-2">
                 <div class="form-group">
                   <label for="usr">Name:</label>
                   <input type="text" v-model="noteUrsName" placeholder="Enter your name" class="form-control" id="note-user-name" data-cy="network-view_input_user-name" />
@@ -138,201 +133,210 @@
                     placeholder="Enter your comment here. There is a max. character length of 1000."
                     maxlength="1000"></textarea>
                 </div>
-                <b-button-group>
-                  <b-button data-cy="network-view_button_save-note" variant="outline-success" @click="saveNote">Save Note</b-button>
-                  <b-button data-cy="network-view_button_cancel-note" variant="outline-secondary" @click="clearNote">Cancel</b-button>
-                </b-button-group>
+                <v-btn-group>
+                  <v-btn data-cy="network-view_button_save-note" variant="outline-success" @click="saveNote">Save Note</v-btn>
+                  <v-btn data-cy="network-view_button_cancel-note" variant="outline-secondary" @click="clearNote">Cancel</v-btn>
+                </v-btn-group>
+              </div> -->
+            <div v-if="!resultsAvailable" class="text-center mt-5">
+              <p class="lead">Click Expand Node above to expand this node and predict precursors for this target.</p>
+              <div class="form-inline justify-content-center">
+                Add top
+                <v-input type="number" class="text-center mx-2" style="width: 3rem" v-model="reactionLimit"
+                  number></v-input>
+                {{ allowCluster ? "clusters" : "precursors" }} to the graph visualization
               </div>
-              <div v-if="!resultsAvailable" class="text-center mt-5">
-                <p class="lead">Click Expand Node above to expand this node and predict precursors for this target.</p>
-                <div class="form-inline justify-content-center">
-                  Add top
-                  <b-form-input type="number" class="text-center mx-2" style="width: 3rem" v-model="reactionLimit" number></b-form-input>
-                  {{ allowCluster ? "clusters" : "precursors" }} to the graph visualization
-                </div>
-              </div>
-              <div v-else class="scroll-list">
-                <div v-for="res in currentPrecursors" :key="res.rank">
-                  <b-card no-body class="custom-shadow text-center m-2 p-2">
-                    <div class="row no-gutters">
-                      <div class="col-sm">
-                        <b-img-lazy :src="getMolDrawEndPoint(res, true)" fluid></b-img-lazy>
-                      </div>
-                      <div class="col-sm">
-                        <table class="table table-sm table-bordered m-0">
-                          <tbody>
-                            <tr>
-                              <td>Rank</td>
-                              <td>#{{ res.rank }}</td>
-                            </tr>
-                            <tr>
-                              <td>Score</td>
-                              <td>{{ num2str(res.retroScore) }}</td>
-                            </tr>
-                            <tr>
-                              <td>Synthetic complexity</td>
-                              <td>{{ num2str(res.scscore) }}</td>
-                            </tr>
-                            <tr>
-                              <td># Examples</td>
-                              <td>{{ res.numExamples }}</td>
-                            </tr>
-                            <tr>
-                              <td>Template rank</td>
-                              <td>{{ res.templateRank }}</td>
-                            </tr>
-                            <tr>
-                              <td>Template score</td>
-                              <td>{{ num2str(res.templateScore) }}</td>
-                            </tr>
-                            <tr>
-                              <td>Plausibility</td>
-                              <td>{{ num2str(res.ffScore) }}</td>
-                            </tr>
-                            <tr>
-                              <td>Reaction cluster</td>
-                              <td>{{ res.clusterName }}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
+            </div>
+            <div v-else class="scroll-list">
+              <div v-for="res in currentPrecursors" :key="res.rank">
+                <v-card no-body class="custom-shadow text-center m-2 p-2">
+                  <v-row class="justify-center align-center">
+                    <v-col>
+                      <v-img :src="getMolDrawEndPoint(res, true)" fluid></v-img>
+                    </v-col>
+                    <v-col>
+                      <table class="table table-sm table-bordered m-0">
+                        <tbody>
+                          <tr>
+                            <td>Rank</td>
+                            <td>#{{ res.rank }}</td>
+                          </tr>
+                          <tr>
+                            <td>Score</td>
+                            <td>{{ num2str(res.retroScore) }}</td>
+                          </tr>
+                          <tr>
+                            <td>Synthetic complexity</td>
+                            <td>{{ num2str(res.scscore) }}</td>
+                          </tr>
+                          <tr>
+                            <td># Examples</td>
+                            <td>{{ res.numExamples }}</td>
+                          </tr>
+                          <tr>
+                            <td>Template rank</td>
+                            <td>{{ res.templateRank }}</td>
+                          </tr>
+                          <tr>
+                            <td>Template score</td>
+                            <td>{{ num2str(res.templateScore) }}</td>
+                          </tr>
+                          <tr>
+                            <td>Plausibility</td>
+                            <td>{{ num2str(res.ffScore) }}</td>
+                          </tr>
+                          <tr>
+                            <td>Reaction cluster</td>
+                            <td>{{ res.clusterName }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </v-col>
+                  </v-row>
+                  <div class="row no-gutters">
+                    <div class="col my-2">
+                      <v-btn v-show="!(selected.id in res.inVis)" variant="flat" color="green" class="addRes mr-1"
+                        :data-rank="res.rank" @click="addFromResults(selected, res)" icon="mdi-plus" density="compact">
+                      </v-btn>
+                      <v-btn v-show="selected.id in res.inVis" variant="flat" color="red" class="remRes mr-1" title="Remove node(s)"
+                        :data-rank="res.rank" @click="remFromResults(selected, res)" icon="mdi-minus" density="compact">
+                      </v-btn>
+                      <v-btn variant="flat" :data-rank="res.rank" title="Open cluser modal"
+                        @click="openClusterPopoutModal(selected, res)" icon="mdi-group" density="compact">
+                      </v-btn>
+                      <v-btn id="permanent-delete-btn" variant="flat" color="red" @click="deleteFromGraph(res)"
+                        title="Delete permanently" class="ml-1" density="compact" icon="mdi-delete">
+                      </v-btn>
                     </div>
-                    <div class="row no-gutters">
-                      <div class="col my-2">
-                        <b-button v-show="!(selected.id in res.inVis)" variant="success" class="addRes mr-1" title="Add node(s)" :data-rank="res.rank" @click="addFromResults(selected, res)">
-                          <i class="fas fa-plus"></i>
-                        </b-button>
-                        <b-button v-show="selected.id in res.inVis" variant="danger" class="remRes mr-1" title="Remove node(s)" :data-rank="res.rank" @click="remFromResults(selected, res)">
-                          <i class="fas fa-minus"></i>
-                        </b-button>
-                        <b-button variant="outline-dark" :data-rank="res.rank" title="Open cluser modal" @click="openClusterPopoutModal(selected, res)">
-                          <i class="fa fa-th-large"></i>
-                        </b-button>
-                        <b-button v-b-tooltip id="permanent-delete-btn" variant="danger" @click="deleteFromGraph(res)" title="Delete permanently" class="ml-1">
-                          <i class="fas fa-trash-alt"></i>
-                        </b-button>
-                      </div>
-                    </div>
-                  </b-card>
-                </div>
-              </div>
-            </template>
-            <template v-else-if="selected.type === 'reaction'">
-              <div class="details-top text-center">
-                <copy-tooltip :data="selected.smiles">
-                  <i class="far fa-copy mr-1"></i>
-                  <b>Smiles: </b>
-                  {{ selected.smiles }}
-                </copy-tooltip>
-                <smiles-image :smiles="selected.smiles" :align="settingsStore.ippSettings.alignPrecursorsToProduct"></smiles-image>
-                <div v-if="selected.data.model !== 'new'">
-                  <p class="h6 mb-2">
-                    <i class="fas fa-info-circle mr-1"></i>Reaction predicted by
-                    <b-badge variant="primary">
-                      {{ selected.data.model }}
-                      <div v-if="selected.data.model === 'template_relevance'">
-                        <b-badge v-for="(prioritizer, pIdx) in selected.data.templatePrioritizers" :key="pIdx" class="mx-1">
-                          {{ prioritizer.template_set }}
-                          (v{{ prioritizer.version }}<template v-if="prioritizer.attribute_filter.length"> with {{ prioritizer.attribute_filter.length }} attribute filters</template>)
-                        </b-badge>
-                      </div>
-                      <div v-else>
-                        <b-badge>
-                          {{ selected.data.trainingSet }}
-                        </b-badge>
-                      </div>
-                    </b-badge>
-                    model
-                  </p>
-                </div>
-                <b-button class="my-3" size="sm" variant="outline-secondary" :href="'/synth_interactive/?mode=context&rxnsmiles=' + encodeURIComponent(selected.smiles)" target="_blank"
-                  >Evaluate reaction</b-button
-                >
-                <div class="text-left mx-2">
-                  <table class="table table-sm table-striped table-borderless">
-                    <tbody>
-                      <tr>
-                        <th>Score</th>
-                        <td>{{ num2str(selected.data.retroScore) }}</td>
-                      </tr>
-                      <tr>
-                        <th>Template rank</th>
-                        <td>{{ selected.data.templateRank }}</td>
-                      </tr>
-                      <tr>
-                        <th>Template score</th>
-                        <td>{{ num2str(selected.data.templateScore) }}</td>
-                      </tr>
-                      <tr>
-                        <th>Plausibility</th>
-                        <td>{{ num2str(selected.data.ffScore) }}</td>
-                      </tr>
-                      <tr>
-                        <th># Examples</th>
-                        <td>{{ selected.data.numExamples }}</td>
-                      </tr>
-                      <tr>
-                        <th>Supporting templates</th>
-                        <td>
-                          <ul>
-                            <li v-for="id in selected.data.templateIds" :key="id">
-                              <a :href="'/template/?id=' + id" target="_blank"> {{ id }} ({{ resultsStore.templateSetSource[id] }}, {{ resultsStore.templateNumExamples[id] }} examples) </a>
-                            </li>
-                          </ul>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="btn-toolbar justify-content-end mx-2">
-                  <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button>
-                </div>
-              </div>
-              <div class="alert alert-warning m-2" v-if="selected.data.selecError">Could not check regio-selectivity for this reaction, possibly due to stereochemistry in the product.</div>
-              <template v-if="'outcomes' in selected.data">
-                <div class="m-2">
-                  <h3 class="m-0">Regio-selective Products</h3>
-                </div>
-                <div class="d-flex justify-content-center flex-gap-2 flex-wrap m-2">
-                  <b-button id="predict-selectivity" variant="outline-primary" @click="predictSelectivity"> Predict Selectivity </b-button>
-                </div>
-                <div class="scroll-list">
-                  <div class="grid-wrapper">
-                    <b-card v-for="(res, index) in selected.data.outcomes" no-body class="custom-shadow m-2 p-2" :key="index">
-                      <div class="container-fluid d-flex flex-column h-100 justify-content-between">
-                        <div class="row">
-                          <div class="col-sm">
-                            <img :src="getMolDrawEndPoint(res)" class="m-1" :class="res === selected.smiles.split('>>')[1] ? 'grey-border' : ''" style="max-width: 100%" />
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-sm" v-if="selected.data.selectivity[index]">
-                            Score {{ num2str(selected.data.selectivity[index]) }}
-                            <span v-if="selected.data.selectivity[index] === Math.max(...selected.data.selectivity)">
-                              <i class="fas fa-check"></i>
-                            </span>
-                            <span v-else>
-                              <i class="fas fa-times"></i>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </b-card>
                   </div>
+                </v-card>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="selected.type === 'reaction'">
+            <div class="details-top text-center">
+              <copy-tooltip :data="selected.smiles">
+                <i class="far fa-copy mr-1"></i>
+                <b>Smiles: </b>
+                {{ selected.smiles }}
+              </copy-tooltip>
+              <smiles-image :smiles="selected.smiles" :align="settingsStore.ippSettings.alignPrecursorsToProduct">
+              </smiles-image>
+              <div v-if="selected.data.model !== 'new'">
+                <p class="h6 mb-2">
+                  <i class="fas fa-info-circle mr-1"></i>Reaction predicted by
+                  <v-chip variant="tonal">
+                    {{ selected.data.model }}
+                    <div v-if="selected.data.model === 'template_relevance'">
+                      <v-chip v-for="(prioritizer, pIdx) in selected.data.templatePrioritizers" :key="pIdx" class="mx-1">
+                        {{ prioritizer.template_set }}
+                        (v{{ prioritizer.version }}<template v-if="prioritizer.attribute_filter.length"> with {{
+                          prioritizer.attribute_filter.length }} attribute filters</template>)
+                      </v-chip>
+                    </div>
+                    <div v-else>
+                      <v-chip>
+                        {{ selected.data.trainingSet }}
+                      </v-chip>
+                    </div>
+                  </v-chip>
+                  model
+                </p>
+              </div>
+              <v-btn class="my-3" variant="outlined"
+                :href="'/synth_interactive/?mode=context&rxnsmiles=' + encodeURIComponent(selected.smiles)"
+                target="_blank">Evaluate reaction</v-btn>
+              <div class="text-left mx-2">
+                <table class="table table-sm table-striped table-borderless">
+                  <tbody>
+                    <tr>
+                      <th>Score</th>
+                      <td>{{ num2str(selected.data.retroScore) }}</td>
+                    </tr>
+                    <tr>
+                      <th>Template rank</th>
+                      <td>{{ selected.data.templateRank }}</td>
+                    </tr>
+                    <tr>
+                      <th>Template score</th>
+                      <td>{{ num2str(selected.data.templateScore) }}</td>
+                    </tr>
+                    <tr>
+                      <th>Plausibility</th>
+                      <td>{{ num2str(selected.data.ffScore) }}</td>
+                    </tr>
+                    <tr>
+                      <th># Examples</th>
+                      <td>{{ selected.data.numExamples }}</td>
+                    </tr>
+                    <tr>
+                      <th>Supporting templates</th>
+                      <td>
+                        <ul>
+                          <li v-for="id in selected.data.templateIds" :key="id">
+                            <a :href="'/template/?id=' + id" target="_blank"> {{ id }} ({{
+                              resultsStore.templateSetSource[id] }}, {{ resultsStore.templateNumExamples[id] }} examples)
+                            </a>
+                          </li>
+                        </ul>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="btn-toolbar justify-content-end mx-2">
+                <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button>
+              </div>
+            </div>
+            <div class="alert alert-warning m-2" v-if="selected.data.selecError">Could not check regio-selectivity for
+              this reaction, possibly due to stereochemistry in the product.</div>
+            <template v-if="'outcomes' in selected.data">
+              <div class="m-2">
+                <h3 class="m-0">Regio-selective Products</h3>
+              </div>
+              <div class="d-flex justify-content-center flex-gap-2 flex-wrap m-2">
+                <v-btn id="predict-selectivity" variant="outline-primary" @click="predictSelectivity"> Predict Selectivity
+                </v-btn>
+              </div>
+              <div class="scroll-list">
+                <div class="grid-wrapper">
+                  <v-card v-for="(res, index) in selected.data.outcomes" class="custom-shadow m-2 p-2" :key="index">
+                    <div class="container-fluid d-flex flex-column h-100 justify-content-between">
+                      <div class="row">
+                        <div class="col-sm">
+                          <img :src="getMolDrawEndPoint(res)" class="m-1"
+                            :class="res === selected.smiles.split('>>')[1] ? 'grey-border' : ''"
+                            style="max-width: 100%" />
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm" v-if="selected.data.selectivity[index]">
+                          Score {{ num2str(selected.data.selectivity[index]) }}
+                          <span v-if="selected.data.selectivity[index] === Math.max(...selected.data.selectivity)">
+                            <i class="fas fa-check"></i>
+                          </span>
+                          <span v-else>
+                            <i class="fas fa-times"></i>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </v-card>
                 </div>
-              </template>
+              </div>
             </template>
-          </template> -->
-        </div>
-      </js-panel>
-  
-      <!-- <b-modal id="cluster-view-modal" title="View Cluster" size="xl" footer-class="justify-content-between" v-model="showClusterPopoutModal" @close="closeClusterPopoutModal">
+          </template>
+        </template>
+      </div>
+    </js-panel>
+
+    <!-- <b-modal id="cluster-view-modal" title="View Cluster" size="xl" footer-class="justify-content-between" v-model="showClusterPopoutModal" @close="closeClusterPopoutModal">
         <div class="btn-toolbar justify-content-center mb-3">
           <b-input-group>
             <b-input-group-prepend>
-              <b-button variant="outline-dark" @click="clusterPopoutModalDecGroupID()">
+              <v-btn variant="outline-dark" @click="clusterPopoutModalDecGroupID()">
                 <i class="fas fa-arrow-left"></i>
-              </b-button>
+              </v-btn>
             </b-input-group-prepend>
             <select id="clusterSelect" v-model="selectedClusterId" class="form-control" @change="clusterPopoutModalSetGroupID()">
               <option v-for="idx in resultsStore.clusteredResultsIndex[clusterPopoutModalData['selectedSmiles']]" :value="idx" :key="idx">
@@ -340,9 +344,9 @@
               </option>
             </select>
             <b-input-group-append>
-              <b-button variant="outline-dark" @click="clusterPopoutModalIncGroupID()">
+              <v-btn variant="outline-dark" @click="clusterPopoutModalIncGroupID()">
                 <i class="fas fa-arrow-right"></i>
-              </b-button>
+              </v-btn>
             </b-input-group-append>
           </b-input-group>
         </div>
@@ -402,14 +406,14 @@
         </div>
         <template #modal-footer="{ close }">
           <div>
-            <b-button
+            <v-btn
               variant="success"
               class="mr-1"
               @click="openAddNewPrecursorModal(clusterPopoutModalData['selectedSmiles'], clusterPopoutModalData['clusterId'], clusterPopoutModalData['clusterName'])"
               title="Add precursor">
               <i class="fas fa-plus"></i>
-            </b-button>
-            <b-button
+            </v-btn>
+            <v-btn
               variant="outline-dark"
               @click="
                 showClusterPopoutModal = false;
@@ -418,7 +422,7 @@
               "
               title="Edit clusters">
               <i class="fas fa-edit"></i>
-            </b-button>
+            </v-btn>
           </div>
           <div class="form-check-inline">
             <input class="form-check-input" id="cpShowScore" type="checkbox" v-model="clusterPopoutModalData.optionsDisplay.showScore" />
@@ -432,7 +436,7 @@
             <input class="form-check-input" id="cpShowPlaus" type="checkbox" v-model="clusterPopoutModalData.optionsDisplay.showPlausibility" />
             <label class="form-check-label mr-2" for="cpShowPlaus">Plausibility</label>
           </div>
-          <b-button variant="outline-secondary" @click="close()">Close</b-button>
+          <v-btn variant="outline-secondary" @click="close()">Close</v-btn>
         </template>
       </b-modal>
   
@@ -440,9 +444,9 @@
         <div class="btn-toolbar justify-content-center mb-3">
           <b-input-group>
             <b-input-group-prepend>
-              <b-button variant="outline-dark" @click="clusterEditModalDecGroupID()">
+              <v-btn variant="outline-dark" @click="clusterEditModalDecGroupID()">
                 <i class="fas fa-arrow-left"></i>
-              </b-button>
+              </v-btn>
             </b-input-group-prepend>
             <select id="clusterEditSelect" v-model="selectedClusterId" class="form-control" @change="clusterEditModalSetGroupID()">
               <option v-for="idx in resultsStore.clusteredResultsIndex[clusterEditModalData['selectedSmiles']]" :value="idx" :key="idx">
@@ -450,9 +454,9 @@
               </option>
             </select>
             <b-input-group-append>
-              <b-button variant="outline-dark" @click="clusterEditModalIncGroupID()">
+              <v-btn variant="outline-dark" @click="clusterEditModalIncGroupID()">
                 <i class="fas fa-arrow-right"></i>
-              </b-button>
+              </v-btn>
             </b-input-group-append>
           </b-input-group>
         </div>
@@ -551,16 +555,16 @@
   
         <template #modal-footer="{ close }">
           <div>
-            <b-button
+            <v-btn
               variant="success"
               class="mr-1"
               @click="openAddNewPrecursorModal(clusterEditModalData['selectedSmiles'], clusterEditModalData['clusterId'], clusterEditModalData['clusterName'])"
               title="Add precursor">
               <i class="fas fa-plus"></i>
-            </b-button>
-            <b-button v-b-modal.settings-modal variant="outline-dark" title="Open settings">
+            </v-btn>
+            <v-btn v-b-modal.settings-modal variant="outline-dark" title="Open settings">
               <i class="fas fa-cog"></i>
-            </b-button>
+            </v-btn>
           </div>
           <div class="form-check-inline">
             <input class="form-check-input" id="ceShowScore" type="checkbox" v-model="clusterEditModalData.optionsDisplay.showScore" />
@@ -575,8 +579,8 @@
             <label class="form-check-label mr-2" for="ceShowPlaus">Plausibility</label>
           </div>
           <div>
-            <b-button variant="info" class="mr-1" @click="requestClusterId(clusterEditModalData['selectedSmiles'])">Re-cluster</b-button>
-            <b-button variant="outline-secondary" @click="close()">Close</b-button>
+            <v-btn variant="info" class="mr-1" @click="requestClusterId(clusterEditModalData['selectedSmiles'])">Re-cluster</v-btn>
+            <v-btn variant="outline-secondary" @click="close()">Close</v-btn>
           </div>
         </template>
       </b-modal>
@@ -619,423 +623,248 @@
         </b-form-group>
   
         <template #modal-footer>
-          <b-button variant="secondary" @click="closeAddNewPrecursorModal()">Cancel</b-button>
-          <b-button variant="success" @click="addNewPrecursorModalSubmit()">Add Precursor</b-button>
+          <v-btn variant="secondary" @click="closeAddNewPrecursorModal()">Cancel</v-btn>
+          <v-btn variant="success" @click="addNewPrecursorModalSubmit()">Add Precursor</v-btn>
         </template>
       </b-modal> -->
-    </div>
-  </template>
+  </div>
+</template>
   
-  <script>
-    import JsPanel from "@/components/JsPanel";
-    // import BanButton from "@/components/BanButton";
-    import CopyTooltip from "@/components/CopyTooltip";
-    // import KetcherMin from "@/components/KetcherMin";
-    import SmilesImage from "@/components/SmilesImage";
-    import { num2str } from "@/common/utils";
-    import dayjs from "dayjs";
-    import { API } from "@/common/api";
-    import { getMolImageUrl } from "@/common/drawing";
-    import { mapStores } from "pinia";
-    import { useResultsStore } from "@/store/results";
-    import { useSettingsStore } from "@/store/settings";
-  
-    export default {
-      name: "NodeDetail",
-      components: {
-        JsPanel,
-        // BanButton,
-        CopyTooltip,
-        // KetcherMin,
-        SmilesImage,
+<script>
+import JsPanel from "@/components/JsPanel";
+// import BanButton from "@/components/BanButton";
+import CopyTooltip from "@/components/CopyTooltip";
+import KetcherMin from "@/components/KetcherMin";
+import SmilesImage from "@/components/SmilesImage";
+import { num2str } from "@/common/utils";
+import dayjs from "dayjs";
+import { API } from "@/common/api";
+import { getMolImageUrl } from "@/common/drawing";
+import { mapStores } from "pinia";
+import { useResultsStore } from "@/store/results";
+import { useSettingsStore } from "@/store/settings";
+
+export default {
+  name: "NodeDetail",
+  components: {
+    JsPanel,
+    // BanButton,
+    CopyTooltip,
+    KetcherMin,
+    SmilesImage,
+  },
+  props: {
+    selected: {
+      type: Object,
+      default: null,
+    },
+    enableResolver: {
+      type: Boolean,
+      default: false,
+    },
+    visible: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      editIdx: -1,
+      oldNote: "",
+      noteUrsName: "",
+      noteComment: "",
+      addNote: false,
+      dispNotes: false,
+      invertAtomFilter: false,
+      selectedAtoms: [],
+      detailPanelOptions: {
+        id: "detailPanel",
+        headerTitle: "Node Details",
+        headerControls: { size: "sm" },
+        position: { my: "right-top", at: "right-top", of: "#app" },
+        panelSize: { width: 500, height: "100vh" },
       },
-      props: {
-        selected: {
-          type: Object,
-          default: null,
-        },
-        enableResolver: {
-          type: Boolean,
-          default: false,
-        },
-        visible: {
-          type: Boolean,
-          default: false,
+      clusterPopoutModalData: {
+        optionsDisplay: {
+          showScore: false,
+          showSCScore: false,
+          showNumExample: true,
+          showTemplateScore: false,
+          showPlausibility: true,
+          showClusterId: false,
         },
       },
-      data() {
-        return {
-          editIdx: -1,
-          oldNote: "",
-          noteUrsName: "",
-          noteComment: "",
-          addNote: false,
-          dispNotes: false,
-          invertAtomFilter: false,
-          selectedAtoms: [],
-          detailPanelOptions: {
-            id: "detailPanel",
-            headerTitle: "Node Details",
-            headerControls: { size: "sm" },
-            position: { my: "right-top", at: "right-top", of: "#app" },
-            panelSize: { width: 500, height: "100vh" },
-          },
-          clusterPopoutModalData: {
-            optionsDisplay: {
-              showScore: false,
-              showSCScore: false,
-              showNumExample: true,
-              showTemplateScore: false,
-              showPlausibility: true,
-              showClusterId: false,
-            },
-          },
-          clusterEditModalData: {
-            optionsDisplay: {
-              showScore: false,
-              showNumExample: false,
-              showTemplateScore: false,
-              showPlausibility: false,
-              showClusterId: false,
-            },
-          },
-          showClusterPopoutModal: false,
-          selectedClusterId: 0,
-          showClusterEditModal: false,
-          showAddNewPrecursorModal: false,
-          addNewPrecursorModal: {},
-        };
+      clusterEditModalData: {
+        optionsDisplay: {
+          showScore: false,
+          showNumExample: false,
+          showTemplateScore: false,
+          showPlausibility: false,
+          showClusterId: false,
+        },
       },
-      methods: {
-        toggleResolver() {
-          if (this.allowResolve) {
-            this.allowResolve = false;
-          } else {
-            this.allowResolve = true;
-          }
-        },
-        clearEmit() {
-          this.selectedAtoms = [];
-          this.$emit("close");
-        },
-        resetSortingCategory() {
-          this.sortingCategory = "retroScore";
-          this.selectSortingOrder();
-        },
-        selectSortingOrder() {
-          this.sortOrderAscending =
-            ["rmsMolwt", "numRings", "scscore", "templateRank"].includes(this.sortingCategory) || (this.sortingCategory === "retroScore" && this.settingsStore.tbSettings.precursorScoring === "SCScore");
-        },
-        clearNote() {
-          this.noteUrsName = "";
-          this.noteComment = "";
-          if (this.selected.notes) {
-            console.log(this.selected.notes);
-          } else {
-            console.log("nope");
-          }
-          this.addNote = false;
-        },
-        saveNote() {
-          //stop adding notes if there are more then one node selected
-          let dispNode = this.selected.disp;
-          if (dispNode.notes == undefined) {
-            dispNode.notes = [];
-          }
-          let note = {
-            user: this.noteUrsName,
-            date: new Date().toLocaleString(),
-            comment: this.noteComment,
-          };
-          const h = this.$createElement;
-          const MesasgeVNode = h("div", [
-            h("p", { class: ["m-1"] }, "Please review your comment:"),
-            h("p", { class: ["m-1", "font-weight-bold"] }, this.noteComment),
-            h("p", { class: ["m-1"] }, "Do you wish to save your comment?"),
-          ]);
-          this.$bvModal
-            .msgBoxConfirm([MesasgeVNode], {
-              title: "Please Confirm",
-              size: "sm",
-              okVariant: "success",
-              okTitle: "Yes",
-              cancelTitle: "No",
-              footerClass: "p-2",
-              hideHeaderClose: false,
-              centered: true,
-            })
-            .then((value) => {
-              if (value) {
-                dispNode.notes.push(note);
-                this.addNote = false;
-                this.noteUrsName = "";
-                this.noteComment = "";
-                this.saveResult();
-              }
-            })
-            .catch(() => {
-              // An error occurred
-            });
-        },
-        async editNote(index, shouldDelete) {
-          let note = this.selected.disp.notes[index];
-          if (shouldDelete) {
-            await this.$bvModal
-              .msgBoxConfirm(`Are your sure that you want to delete \n ${note.comment}?`, {
-                title: "Please Confirm",
-                size: "sm",
-                okVariant: "success",
-                okTitle: "Yes",
-                cancelTitle: "No",
-                footerClass: "p-2",
-                hideHeaderClose: false,
-                centered: true,
-              })
-              .then((value) => {
-                if (value) {
-                  /* eslint-disable */
-                  this.selected.disp.notes.splice(index, 1);
-                  this.$forceUpdate();
-                  this.saveResult();
-                }
-              })
-              .catch(() => {
-                // An error occurred
-              });
-          } else {
-            note.date = new Date().toLocaleString();
+      showClusterPopoutModal: false,
+      selectedClusterId: 0,
+      showClusterEditModal: false,
+      showAddNewPrecursorModal: false,
+      addNewPrecursorModal: {},
+      sortingCategoryItems: [
+        { value: "retroScore", title: "Score" },
+        { value: "scscore", title: "Synthetic Complexity" },
+        { value: "numExamples", title: "Examples" },
+        { value: "templateRank", title: "Template Rank" },
+        { value: "ffscore", title: "Plausibility" },
+        { value: "rmsMolwt", title: "Root Mean Square Molecular Weight" },
+        { value: "numRings", title: "Number of Rings" }
+      ]
+    };
+  },
+  methods: {
+    toggleResolver() {
+      if (this.allowResolve) {
+        this.allowResolve = false;
+      } else {
+        this.allowResolve = true;
+      }
+    },
+    clearEmit() {
+      this.selectedAtoms = [];
+      this.$emit("close");
+    },
+    resetSortingCategory() {
+      this.sortingCategory = "retroScore";
+      this.selectSortingOrder();
+    },
+    selectSortingOrder() {
+      this.sortOrderAscending =
+        ["rmsMolwt", "numRings", "scscore", "templateRank"].includes(this.sortingCategory) || (this.sortingCategory === "retroScore" && this.settingsStore.tbSettings.precursorScoring === "SCScore");
+    },
+    clearNote() {
+      this.noteUrsName = "";
+      this.noteComment = "";
+      if (this.selected.notes) {
+        console.log(this.selected.notes);
+      } else {
+        console.log("nope");
+      }
+      this.addNote = false;
+    },
+    saveNote() {
+      //stop adding notes if there are more then one node selected
+      let dispNode = this.selected.disp;
+      if (dispNode.notes == undefined) {
+        dispNode.notes = [];
+      }
+      let note = {
+        user: this.noteUrsName,
+        date: new Date().toLocaleString(),
+        comment: this.noteComment,
+      };
+      const h = this.$createElement;
+      const MesasgeVNode = h("div", [
+        h("p", { class: ["m-1"] }, "Please review your comment:"),
+        h("p", { class: ["m-1", "font-weight-bold"] }, this.noteComment),
+        h("p", { class: ["m-1"] }, "Do you wish to save your comment?"),
+      ]);
+      this.$bvModal
+        .msgBoxConfirm([MesasgeVNode], {
+          title: "Please Confirm",
+          size: "sm",
+          okVariant: "success",
+          okTitle: "Yes",
+          cancelTitle: "No",
+          footerClass: "p-2",
+          hideHeaderClose: false,
+          centered: true,
+        })
+        .then((value) => {
+          if (value) {
+            dispNode.notes.push(note);
+            this.addNote = false;
+            this.noteUrsName = "";
+            this.noteComment = "";
             this.saveResult();
           }
+        })
+        .catch(() => {
+          // An error occurred
+        });
+    },
+    async editNote(index, shouldDelete) {
+      let note = this.selected.disp.notes[index];
+      if (shouldDelete) {
+        await this.$bvModal
+          .msgBoxConfirm(`Are your sure that you want to delete \n ${note.comment}?`, {
+            title: "Please Confirm",
+            size: "sm",
+            okVariant: "success",
+            okTitle: "Yes",
+            cancelTitle: "No",
+            footerClass: "p-2",
+            hideHeaderClose: false,
+            centered: true,
+          })
+          .then((value) => {
+            if (value) {
+              /* eslint-disable */
+              this.selected.disp.notes.splice(index, 1);
+              this.$forceUpdate();
+              this.saveResult();
+            }
+          })
+          .catch(() => {
+            // An error occurred
+          });
+      } else {
+        note.date = new Date().toLocaleString();
+        this.saveResult();
+      }
+    },
+    getAllSettings() {
+      return {
+        network: this.settingsStore.visjsUserOptions,
+        tb: this.settingsStore.tbSettings,
+        ipp: this.settingsStore.ippSettings,
+      };
+    },
+    saveResult() {
+      this.$emit("updatePendingTasks", "add");
+      const body = {
+        result: {
+          dataGraph: this.resultsStore.dataGraph.toJSON(),
+          dispGraph: this.resultsStore.dispGraph.toJSON(),
         },
-        getAllSettings() {
-          return {
-            network: this.settingsStore.visjsUserOptions,
-            tb: this.settingsStore.tbSettings,
-            ipp: this.settingsStore.ippSettings,
-          };
-        },
-        saveResult() {
-          this.$emit("updatePendingTasks", "add");
-          const body = {
-            result: {
-              dataGraph: this.resultsStore.dataGraph.toJSON(),
-              dispGraph: this.resultsStore.dispGraph.toJSON(),
-            },
-            settings: this.getAllSettings(),
-            description: this.resultsStore.savedResultInfo.description,
-            tags: this.resultsStore.savedResultInfo.tags.join(","),
-            result_type: "ipp",
-          };
-          let url = `/api/v2/results/`;
-          let method = "post";
-          if (!!this.resultsStore.savedResultInfo.id && this.resultsStore.savedResultInfo.type === "ipp" && this.savedResultOverwrite) {
-            url += this.resultsStore.savedResultInfo.id + "/";
-            body["check_date"] = this.resultsStore.savedResultInfo.modified;
-            method = "put";
-          }
-          API[method](url, body)
-            .then((json) => {
-              if (json.success) {
-                this.resultsStore.updateSavedResultInfo({
-                  id: json["id"],
-                  modified: json["modified"],
-                  modifiedDisp: dayjs(json["modified"]).format("MMMM D, YYYY h:mm A"),
-                });
-                this.$bvModal.msgBoxOk("Result saved successfully!", {
-                  title: "Success",
-                  size: "sm",
-                  okVariant: "success",
-                  okTitle: "Ok",
-                  hideHeaderClose: true,
-                  centered: true,
-                  footerClass: "p-2",
-                });
-              } else {
-                this.$bvModal.msgBoxOk("Unable to save result.", {
-                  title: "Alert",
-                  size: "sm",
-                  okVariant: "danger",
-                  okTitle: "Ok",
-                  hideHeaderClose: true,
-                  centered: true,
-                  footerClass: "p-2",
-                });
-              }
-            })
-            .catch((error) => {
-              this.$bvModal.msgBoxOk("Error while attempting to save result: " + error.message, {
-                title: "Alert",
-                size: "sm",
-                okVariant: "danger",
-                okTitle: "Ok",
-                hideHeaderClose: true,
-                centered: true,
-                footerClass: "p-2",
-              });
-            })
-            .finally(() => {
-              this.$emit("updatePendingTasks", "sub");
+        settings: this.getAllSettings(),
+        description: this.resultsStore.savedResultInfo.description,
+        tags: this.resultsStore.savedResultInfo.tags.join(","),
+        result_type: "ipp",
+      };
+      let url = `/api/v2/results/`;
+      let method = "post";
+      if (!!this.resultsStore.savedResultInfo.id && this.resultsStore.savedResultInfo.type === "ipp" && this.savedResultOverwrite) {
+        url += this.resultsStore.savedResultInfo.id + "/";
+        body["check_date"] = this.resultsStore.savedResultInfo.modified;
+        method = "put";
+      }
+      API[method](url, body)
+        .then((json) => {
+          if (json.success) {
+            this.resultsStore.updateSavedResultInfo({
+              id: json["id"],
+              modified: json["modified"],
+              modifiedDisp: dayjs(json["modified"]).format("MMMM D, YYYY h:mm A"),
             });
-        },
-        selectPopoutClusterName(clusterId) {
-          let allIds = this.resultsStore.clusteredResultsIndex[this.clusterPopoutModalData["selectedSmiles"]];
-          let idx = allIds.indexOf(clusterId);
-          return this.resultsStore.clusteredResults[this.clusterPopoutModalData["selectedSmiles"]][idx]["clusterName"];
-        },
-        selectEditClusterName(clusterId) {
-          let allIds = this.resultsStore.clusteredResultsIndex[this.clusterEditModalData["selectedSmiles"]];
-          let idx = allIds.indexOf(clusterId);
-          return this.resultsStore.clusteredResults[this.clusterEditModalData["selectedSmiles"]][idx]["clusterName"];
-        },
-        openAddNewPrecursorModal(selectedSmiles, clusterId = -1, clusterName = "") {
-          // clusterId == -1 is to add a new cluster
-          this.showAddNewPrecursorModal = true;
-          this.$set(this.addNewPrecursorModal, "selectedSmiles", selectedSmiles === undefined ? this.selected.smiles : selectedSmiles);
-          this.$set(this.addNewPrecursorModal, "clusterId", clusterId);
-          this.$set(this.addNewPrecursorModal, "clusterName", clusterName);
-          this.$set(this.addNewPrecursorModal, "newClusterName", "");
-          this.$set(this.addNewPrecursorModal, "newPrecursorSmiles", "");
-          this.$set(this.addNewPrecursorModal, "noDupCheck", false);
-        },
-        closeAddNewPrecursorModal() {
-          this.showAddNewPrecursorModal = false;
-          this.addNewPrecursorModal["selectedSmiles"] = "";
-          this.addNewPrecursorModal["clusterId"] = -1;
-          this.addNewPrecursorModal["clusterName"] = "";
-          this.addNewPrecursorModal["newClusterName"] = "";
-          this.addNewPrecursorModal["newPrecursorSmiles"] = "";
-          this.addNewPrecursorModal["noDupCheck"] = false;
-        },
-        checkDuplicatePrecursor(selectedSmiles, p) {
-          let existing = this.resultsStore.dataGraph.getSuccessors(selectedSmiles);
-          return existing.includes(p) ? this.resultsStore.dataGraph.nodes.get(p) : undefined;
-        },
-        addNewPrecursorModalSubmit() {
-          let gid = this.addNewPrecursorModal["clusterId"];
-          let smi = this.addNewPrecursorModal["newPrecursorSmiles"];
-          this.validatesmiles(smi, !this.allowResolve)
-            .then((isValid) => {
-              return isValid ? smi : this.resolveChemName(smi);
-            })
-            .then((smi) => this.canonicalize(smi, (res) => (this.addNewPrecursorModal["newPrecursorSmiles"] = res)))
-            .then(() => {
-              let selecSmi = this.addNewPrecursorModal["selectedSmiles"];
-              let newSmi = this.addNewPrecursorModal["newPrecursorSmiles"];
-              if (newSmi !== undefined) {
-                if (!this.addNewPrecursorModal["noDupCheck"]) {
-                  let s = this.checkDuplicatePrecursor(selecSmi, newSmi);
-                  if (s !== undefined) {
-                    this.$bvModal.msgBoxOk(
-                      "There may be a duplicated precursor: rank: " + s.rank + " cluster: " + s.clusterId + '. If you still want to proceed, please select "No duplicate check" option.',
-                      {
-                        title: "Alert",
-                        size: "sm",
-                        okVariant: "danger",
-                        okTitle: "Ok",
-                        hideHeaderClose: true,
-                        centered: true,
-                        footerClass: "p-2",
-                      }
-                    );
-                    return;
-                  }
-                }
-                this.clusterEditModalAddPrecursor(selecSmi, newSmi, gid);
-                this.closeAddNewPrecursorModal();
-              }
-            })
-            .catch((error) => {
-              var error_msg = "unknown error";
-              if ("message" in error) {
-                error_msg = error.name + ":" + error.message;
-              } else if (typeof error == "string") {
-                error_msg = error;
-              }
-              this.$bvModal.msgBoxOk("There was an error fetching precursors for this target with the supplied settings: " + error_msg, {
-                title: "Alert",
-                size: "sm",
-                okVariant: "danger",
-                okTitle: "Ok",
-                hideHeaderClose: true,
-                centered: true,
-                footerClass: "p-2",
-              });
-            });
-        },
-        addNewPrecursorModalName(clusterId) {
-          let allIds = this.resultsStore.clusteredResultsIndex[this.addNewPrecursorModal["selectedSmiles"]];
-          let idx = allIds.indexOf(clusterId);
-          return this.resultsStore.clusteredResults[this.addNewPrecursorModal["selectedSmiles"]][idx]["clusterName"];
-        },
-        getMolDrawEndPoint(precursor, align = false) {
-          //  precursor can be
-          //      1) a smiles string,
-          //      2) a object with properties "reactingAtoms" and "mappedSmiles"
-          //      3) a object with property "smiles"
-          //      4) an object with property "precursorSmiles"
-          const highlight = this.settingsStore.isHighlightAtom;
-          const transparent = false;
-          let reference;
-          if (align && this.selected && this.settingsStore.ippSettings.alignPrecursorsToProduct) {
-            reference = this.selected.smiles;
-          }
-          return getMolImageUrl(precursor, highlight, transparent, reference);
-        },
-        checkFilter(result) {
-          if (!this.selectedAtoms.length) {
-            return true;
-          }
-          let reactingAtoms = [];
-          if (result.reactingAtoms) {
-            reactingAtoms = result.reactingAtoms.map((el) => el - 1);
-          }
-          let filterResult = reactingAtoms.some((index) => this.selectedAtoms.includes(index));
-          if (this.invertAtomFilter) {
-            filterResult = !filterResult;
-          }
-          return filterResult;
-        },
-        remFromResults(selected, reaction) {
-          let node = this.resultsStore.dispGraph.nodes.get(reaction.inVis[selected.id]);
-          this.resultsStore.deleteDispNode(node);
-        },
-        addFromResults(selected, reaction) {
-          if (selected.id in reaction.inVis) {
-            return;
-          }
-          this.resultsStore.addRetroResultToDispGraph({ data: [reaction.id], parentId: selected.id });
-        },
-        deleteFromGraph(reaction) {
-          //removes from vuex store deletes from datagraph and removes from tree.
-          this.$bvModal
-            .msgBoxConfirm("This will be permanently deleted from the tree. Continue?", {
-              title: "Please Confirm",
+            this.$bvModal.msgBoxOk("Result saved successfully!", {
+              title: "Success",
               size: "sm",
               okVariant: "success",
-              okTitle: "Yes",
-              cancelTitle: "No",
-              footerClass: "p-2",
-              hideHeaderClose: false,
+              okTitle: "Ok",
+              hideHeaderClose: true,
               centered: true,
-            })
-            .then((value) => {
-              if (!value) return;
-              this.resultsStore.deleteDataNode(reaction);
-            })
-            .catch(() => {
-              // An error occurred
+              footerClass: "p-2",
             });
-        },
-        clusterPopoutModalSetGroupID() {
-          let allIds = this.resultsStore.clusteredResultsIndex[this.clusterPopoutModalData["selectedSmiles"]];
-          let idx = allIds.indexOf(this.selectedClusterId);
-          this.$set(this.clusterPopoutModalData, "clusterId", this.selectedClusterId);
-          let allResults = this.resultsStore.clusteredResults[this.clusterPopoutModalData["selectedSmiles"]];
-          this.$set(this.clusterPopoutModalData, "clusterName", allResults[idx]["clusterName"]);
-        },
-        openClusterPopoutModal(selected, res) {
-          if (selected === undefined) {
-            this.$bvModal.msgBoxOk("No target molecule selected. Please select a molecule in the tree.", {
+          } else {
+            this.$bvModal.msgBoxOk("Unable to save result.", {
               title: "Alert",
               size: "sm",
               okVariant: "danger",
@@ -1044,52 +873,421 @@
               centered: true,
               footerClass: "p-2",
             });
-            return;
           }
-          if (res.clusterId === undefined) {
-            this.$bvModal
-              .msgBoxConfirm("This precursor has not been clustered. Would you like to re-cluster the current list of precursors?", {
-                title: "Please Confirm",
-                size: "sm",
-                okVariant: "success",
-                okTitle: "Yes",
-                cancelTitle: "No",
-                footerClass: "p-2",
-                hideHeaderClose: false,
-                centered: true,
-              })
-              .then((value) => {
-                if (!value) return;
-                this.requestClusterId(selected.smiles).then(() => {
-                  // Retrieve updated res from dataGraph
-                  res = this.resulsStore.dataGraph.nodes.get(res.id);
-                  this.openClusterPopoutModal(selected, res);
-                });
-              })
-              .catch(() => {
-                // An error occurred
-              });
-          } else {
-            this.$set(this.clusterPopoutModalData, "selected", selected);
-            this.$set(this.clusterPopoutModalData, "selectedSmiles", selected.smiles);
-            this.$set(this.clusterPopoutModalData, "res", res);
-            this.$set(this.clusterPopoutModalData, "clusterId", res.clusterId);
-            this.$set(this.clusterPopoutModalData, "clusterName", res.clusterName);
-            this.selectedClusterId = res.clusterId;
-            this.showClusterPopoutModal = true;
+        })
+        .catch((error) => {
+          this.$bvModal.msgBoxOk("Error while attempting to save result: " + error.message, {
+            title: "Alert",
+            size: "sm",
+            okVariant: "danger",
+            okTitle: "Ok",
+            hideHeaderClose: true,
+            centered: true,
+            footerClass: "p-2",
+          });
+        })
+        .finally(() => {
+          this.$emit("updatePendingTasks", "sub");
+        });
+    },
+    selectPopoutClusterName(clusterId) {
+      let allIds = this.resultsStore.clusteredResultsIndex[this.clusterPopoutModalData["selectedSmiles"]];
+      let idx = allIds.indexOf(clusterId);
+      return this.resultsStore.clusteredResults[this.clusterPopoutModalData["selectedSmiles"]][idx]["clusterName"];
+    },
+    selectEditClusterName(clusterId) {
+      let allIds = this.resultsStore.clusteredResultsIndex[this.clusterEditModalData["selectedSmiles"]];
+      let idx = allIds.indexOf(clusterId);
+      return this.resultsStore.clusteredResults[this.clusterEditModalData["selectedSmiles"]][idx]["clusterName"];
+    },
+    openAddNewPrecursorModal(selectedSmiles, clusterId = -1, clusterName = "") {
+      // clusterId == -1 is to add a new cluster
+      this.showAddNewPrecursorModal = true;
+      this.$set(this.addNewPrecursorModal, "selectedSmiles", selectedSmiles === undefined ? this.selected.smiles : selectedSmiles);
+      this.$set(this.addNewPrecursorModal, "clusterId", clusterId);
+      this.$set(this.addNewPrecursorModal, "clusterName", clusterName);
+      this.$set(this.addNewPrecursorModal, "newClusterName", "");
+      this.$set(this.addNewPrecursorModal, "newPrecursorSmiles", "");
+      this.$set(this.addNewPrecursorModal, "noDupCheck", false);
+    },
+    closeAddNewPrecursorModal() {
+      this.showAddNewPrecursorModal = false;
+      this.addNewPrecursorModal["selectedSmiles"] = "";
+      this.addNewPrecursorModal["clusterId"] = -1;
+      this.addNewPrecursorModal["clusterName"] = "";
+      this.addNewPrecursorModal["newClusterName"] = "";
+      this.addNewPrecursorModal["newPrecursorSmiles"] = "";
+      this.addNewPrecursorModal["noDupCheck"] = false;
+    },
+    checkDuplicatePrecursor(selectedSmiles, p) {
+      let existing = this.resultsStore.dataGraph.getSuccessors(selectedSmiles);
+      return existing.includes(p) ? this.resultsStore.dataGraph.nodes.get(p) : undefined;
+    },
+    addNewPrecursorModalSubmit() {
+      let gid = this.addNewPrecursorModal["clusterId"];
+      let smi = this.addNewPrecursorModal["newPrecursorSmiles"];
+      this.validatesmiles(smi, !this.allowResolve)
+        .then((isValid) => {
+          return isValid ? smi : this.resolveChemName(smi);
+        })
+        .then((smi) => this.canonicalize(smi, (res) => (this.addNewPrecursorModal["newPrecursorSmiles"] = res)))
+        .then(() => {
+          let selecSmi = this.addNewPrecursorModal["selectedSmiles"];
+          let newSmi = this.addNewPrecursorModal["newPrecursorSmiles"];
+          if (newSmi !== undefined) {
+            if (!this.addNewPrecursorModal["noDupCheck"]) {
+              let s = this.checkDuplicatePrecursor(selecSmi, newSmi);
+              if (s !== undefined) {
+                this.$bvModal.msgBoxOk(
+                  "There may be a duplicated precursor: rank: " + s.rank + " cluster: " + s.clusterId + '. If you still want to proceed, please select "No duplicate check" option.',
+                  {
+                    title: "Alert",
+                    size: "sm",
+                    okVariant: "danger",
+                    okTitle: "Ok",
+                    hideHeaderClose: true,
+                    centered: true,
+                    footerClass: "p-2",
+                  }
+                );
+                return;
+              }
+            }
+            this.clusterEditModalAddPrecursor(selecSmi, newSmi, gid);
+            this.closeAddNewPrecursorModal();
           }
-        },
-        closeClusterPopoutModal() {
-          this.showClusterPopoutModal = false;
-          this.clusterPopoutModalData["selected"] = undefined;
-          this.clusterPopoutModalData["selectedSmiles"] = undefined;
-          this.clusterPopoutModalData["res"] = undefined;
-          this.clusterPopoutModalData["clusterId"] = undefined;
-          this.clusterPopoutModalData["clusterName"] = undefined;
-        },
-        openClusterEditModal(selected, clusterId, clusterName) {
-          if (selected === undefined) {
-            this.$bvModal.msgBoxOk("No target molecule selected. Please select a molecule in the tree.", {
+        })
+        .catch((error) => {
+          var error_msg = "unknown error";
+          if ("message" in error) {
+            error_msg = error.name + ":" + error.message;
+          } else if (typeof error == "string") {
+            error_msg = error;
+          }
+          this.$bvModal.msgBoxOk("There was an error fetching precursors for this target with the supplied settings: " + error_msg, {
+            title: "Alert",
+            size: "sm",
+            okVariant: "danger",
+            okTitle: "Ok",
+            hideHeaderClose: true,
+            centered: true,
+            footerClass: "p-2",
+          });
+        });
+    },
+    addNewPrecursorModalName(clusterId) {
+      let allIds = this.resultsStore.clusteredResultsIndex[this.addNewPrecursorModal["selectedSmiles"]];
+      let idx = allIds.indexOf(clusterId);
+      return this.resultsStore.clusteredResults[this.addNewPrecursorModal["selectedSmiles"]][idx]["clusterName"];
+    },
+    getMolDrawEndPoint(precursor, align = false) {
+      //  precursor can be
+      //      1) a smiles string,
+      //      2) a object with properties "reactingAtoms" and "mappedSmiles"
+      //      3) a object with property "smiles"
+      //      4) an object with property "precursorSmiles"
+      const highlight = this.settingsStore.isHighlightAtom;
+      const transparent = false;
+      let reference;
+      if (align && this.selected && this.settingsStore.ippSettings.alignPrecursorsToProduct) {
+        reference = this.selected.smiles;
+      }
+      return getMolImageUrl(precursor, highlight, transparent, reference);
+    },
+    checkFilter(result) {
+      if (!this.selectedAtoms.length) {
+        return true;
+      }
+      let reactingAtoms = [];
+      if (result.reactingAtoms) {
+        reactingAtoms = result.reactingAtoms.map((el) => el - 1);
+      }
+      let filterResult = reactingAtoms.some((index) => this.selectedAtoms.includes(index));
+      if (this.invertAtomFilter) {
+        filterResult = !filterResult;
+      }
+      return filterResult;
+    },
+    remFromResults(selected, reaction) {
+      let node = this.resultsStore.dispGraph.nodes.get(reaction.inVis[selected.id]);
+      this.resultsStore.deleteDispNode(node);
+    },
+    addFromResults(selected, reaction) {
+      if (selected.id in reaction.inVis) {
+        return;
+      }
+      this.resultsStore.addRetroResultToDispGraph({ data: [reaction.id], parentId: selected.id });
+    },
+    deleteFromGraph(reaction) {
+      //removes from vuex store deletes from datagraph and removes from tree.
+      this.$bvModal
+        .msgBoxConfirm("This will be permanently deleted from the tree. Continue?", {
+          title: "Please Confirm",
+          size: "sm",
+          okVariant: "success",
+          okTitle: "Yes",
+          cancelTitle: "No",
+          footerClass: "p-2",
+          hideHeaderClose: false,
+          centered: true,
+        })
+        .then((value) => {
+          if (!value) return;
+          this.resultsStore.deleteDataNode(reaction);
+        })
+        .catch(() => {
+          // An error occurred
+        });
+    },
+    clusterPopoutModalSetGroupID() {
+      let allIds = this.resultsStore.clusteredResultsIndex[this.clusterPopoutModalData["selectedSmiles"]];
+      let idx = allIds.indexOf(this.selectedClusterId);
+      this.$set(this.clusterPopoutModalData, "clusterId", this.selectedClusterId);
+      let allResults = this.resultsStore.clusteredResults[this.clusterPopoutModalData["selectedSmiles"]];
+      this.$set(this.clusterPopoutModalData, "clusterName", allResults[idx]["clusterName"]);
+    },
+    openClusterPopoutModal(selected, res) {
+      if (selected === undefined) {
+        this.$bvModal.msgBoxOk("No target molecule selected. Please select a molecule in the tree.", {
+          title: "Alert",
+          size: "sm",
+          okVariant: "danger",
+          okTitle: "Ok",
+          hideHeaderClose: true,
+          centered: true,
+          footerClass: "p-2",
+        });
+        return;
+      }
+      if (res.clusterId === undefined) {
+        this.$bvModal
+          .msgBoxConfirm("This precursor has not been clustered. Would you like to re-cluster the current list of precursors?", {
+            title: "Please Confirm",
+            size: "sm",
+            okVariant: "success",
+            okTitle: "Yes",
+            cancelTitle: "No",
+            footerClass: "p-2",
+            hideHeaderClose: false,
+            centered: true,
+          })
+          .then((value) => {
+            if (!value) return;
+            this.requestClusterId(selected.smiles).then(() => {
+              // Retrieve updated res from dataGraph
+              res = this.resulsStore.dataGraph.nodes.get(res.id);
+              this.openClusterPopoutModal(selected, res);
+            });
+          })
+          .catch(() => {
+            // An error occurred
+          });
+      } else {
+        this.$set(this.clusterPopoutModalData, "selected", selected);
+        this.$set(this.clusterPopoutModalData, "selectedSmiles", selected.smiles);
+        this.$set(this.clusterPopoutModalData, "res", res);
+        this.$set(this.clusterPopoutModalData, "clusterId", res.clusterId);
+        this.$set(this.clusterPopoutModalData, "clusterName", res.clusterName);
+        this.selectedClusterId = res.clusterId;
+        this.showClusterPopoutModal = true;
+      }
+    },
+    closeClusterPopoutModal() {
+      this.showClusterPopoutModal = false;
+      this.clusterPopoutModalData["selected"] = undefined;
+      this.clusterPopoutModalData["selectedSmiles"] = undefined;
+      this.clusterPopoutModalData["res"] = undefined;
+      this.clusterPopoutModalData["clusterId"] = undefined;
+      this.clusterPopoutModalData["clusterName"] = undefined;
+    },
+    openClusterEditModal(selected, clusterId, clusterName) {
+      if (selected === undefined) {
+        this.$bvModal.msgBoxOk("No target molecule selected. Please select a molecule in the tree.", {
+          title: "Alert",
+          size: "sm",
+          okVariant: "danger",
+          okTitle: "Ok",
+          hideHeaderClose: true,
+          centered: true,
+          footerClass: "p-2",
+        });
+        return;
+      }
+      if (clusterId === undefined) {
+        clusterId = 0;
+      }
+      this.$set(this.clusterEditModalData, "selected", selected);
+      this.$set(this.clusterEditModalData, "selectedSmiles", selected.smiles);
+      this.$set(this.clusterEditModalData, "clusterId", clusterId);
+      this.$set(this.clusterEditModalData, "clusterName", clusterName);
+      this.selectedClusterId = clusterId;
+      this.showClusterEditModal = true;
+    },
+    closeClusterEditModal() {
+      this.showClusterEditModal = false;
+      this.clusterEditModalData["selected"] = undefined;
+      this.clusterEditModalData["selectedSmiles"] = undefined;
+      this.clusterEditModalData["clusterId"] = undefined;
+      this.clusterEditModalData["clusterName"] = undefined;
+    },
+    clusterPopoutModalIncGroupID() {
+      let allIds = this.resultsStore.clusteredResultsIndex[this.clusterPopoutModalData["selectedSmiles"]];
+      let allResults = this.resultsStore.clusteredResults[this.clusterPopoutModalData["selectedSmiles"]];
+      let idx = allIds.indexOf(this.clusterPopoutModalData["clusterId"]);
+      let idxToModify = Math.min(allIds.length - 1, idx + 1);
+      this.$set(this.clusterPopoutModalData, "clusterId", allIds[idxToModify]);
+      this.$set(this.clusterPopoutModalData, "clusterName", allResults[idxToModify]["clusterName"]);
+      this.selectedClusterId = allIds[idxToModify];
+    },
+    clusterPopoutModalDecGroupID() {
+      let allIds = this.resultsStore.clusteredResultsIndex[this.clusterPopoutModalData["selectedSmiles"]];
+      let allResults = this.resultsStore.clusteredResults[this.clusterPopoutModalData["selectedSmiles"]];
+      let idx = allIds.indexOf(this.clusterPopoutModalData["clusterId"]);
+      let idxToModify = Math.max(0, idx - 1);
+      this.$set(this.clusterPopoutModalData, "clusterId", allIds[idxToModify]);
+      this.$set(this.clusterPopoutModalData, "clusterName", allResults[idxToModify]["clusterName"]);
+      this.selectedClusterId = allIds[idxToModify];
+    },
+    clusterEditOnDragover(event) {
+      event.dataTransfer.dropEffect = "move"; // important
+    },
+    clusterEditOnDragenter(event) {
+      event.target.classList.add("dragover");
+    },
+    clusterEditOnDragleave(event) {
+      event.target.classList.remove("dragover");
+    },
+    clusterEditOnDragstart(precursor, event) {
+      event.target.style.opacity = "0.4";
+      event.dataTransfer.setData("text/plain", precursor.id);
+      let img = new Image();
+      img.src = this.getMolDrawEndPoint(precursor.precursorSmiles);
+      // set opacity does not work..
+      event.dataTransfer.setDragImage(img, 10, 10);
+      event.dataTransfer.effectAllowed = "all";
+      // disable all buttons on dragging
+      let buttons = document.querySelectorAll("button");
+      buttons.forEach(function (e) {
+        e.style.pointerEvents = "none";
+      });
+    },
+    clusterEditOnDragend(event) {
+      event.target.style.opacity = "1";
+      // enable all buttons
+      let buttons = document.querySelectorAll("button");
+      buttons.forEach(function (e) {
+        e.style.pointerEvents = "all";
+      });
+    },
+    clusterEditOnDrop(target, event) {
+      let smi = event.dataTransfer.getData("text/plain"); // precursor.id
+      let obj = this.resultsStore.dataGraph.nodes.get(smi);
+      let oldId = obj.clusterId;
+      let newId = target.clusterId;
+      this.resultsStore.updateDataNodes({
+        id: smi,
+        clusterId: newId,
+        clusterName: target.clusterName,
+      });
+      this.clusterEditOnDragend(event);
+      this.clusterEditOnDragleave(event);
+      this.updateClusterReps(this.clusterEditModalData["selectedSmiles"], [oldId, newId]);
+    },
+    clusterEditOnDropNew(event) {
+      let smi = event.dataTransfer.getData("text/plain"); // precursor.id
+      let obj = this.resultsStore.dataGraph.nodes.get(smi);
+      let allIds = this.resultsStore.clusteredResultsIndex[this.clusterEditModalData["selectedSmiles"]];
+      let oldId = obj.clusterId;
+      let newId = allIds[allIds.length - 1] + 1;
+      let defaultName = `Reaction Cluster #${newId + 1}`;
+      let customName = prompt("Please enter a name for the new cluster", defaultName);
+      this.resultsStore.updateDataNodes({
+        id: smi,
+        clusterId: newId,
+        clusterName: customName === "" || customName === null ? defaultName : customName,
+      });
+      this.clusterEditOnDragend(event);
+      this.clusterEditOnDragleave(event);
+      this.updateClusterReps(this.clusterEditModalData["selectedSmiles"], [oldId, newId]);
+    },
+    updateClusterReps(target, clusterIds) {
+      // Update the cluster representatives for the specified clusterIds
+      for (let clusterId of clusterIds) {
+        let options = { filter: (item) => item.clusterId === clusterId };
+        let precursorSmiles = this.resultsStore.dataGraph.getSuccessors(target);
+        let precursors = this.resultsStore.dataGraph.nodes.get(precursorSmiles, options);
+        this.resultsStore.updateDataNodes(
+          precursors.map((item, index) => ({
+            id: item.id,
+            clusterRep: index === 0,
+          }))
+        ); // Set first item as cluster rep
+      }
+    },
+    clusterEditModalIncGroupID() {
+      let allIds = this.resultsStore.clusteredResultsIndex[this.clusterEditModalData["selectedSmiles"]];
+      let allResults = this.resultsStore.clusteredResults[this.clusterEditModalData["selectedSmiles"]];
+      let idx = allIds.indexOf(this.clusterEditModalData["clusterId"]);
+      let idxToModify = Math.min(allIds.length - 1, idx + 1);
+      this.$set(this.clusterEditModalData, "clusterId", allIds[idxToModify]);
+      this.$set(this.clusterEditModalData, "clusterName", allResults[idxToModify]["clusterName"]);
+      this.selectedClusterId = allIds[idxToModify];
+    },
+    clusterEditModalDecGroupID() {
+      let allIds = this.resultsStore.clusteredResultsIndex[this.clusterEditModalData["selectedSmiles"]];
+      let allResults = this.resultsStore.clusteredResults[this.clusterEditModalData["selectedSmiles"]];
+      let idx = allIds.indexOf(this.clusterEditModalData["clusterId"]);
+      let idxToModify = Math.max(0, idx - 1);
+      this.$set(this.clusterEditModalData, "clusterId", allIds[idxToModify]);
+      this.$set(this.clusterEditModalData, "clusterName", allResults[idxToModify]["clusterName"]);
+      this.selectedClusterId = allIds[idxToModify];
+    },
+    clusterEditModalSetGroupID() {
+      let allIds = this.resultsStore.clusteredResultsIndex[this.clusterEditModalData["selectedSmiles"]];
+      let idx = allIds.indexOf(this.selectedClusterId);
+      this.$set(this.clusterEditModalData, "clusterId", this.selectedClusterId);
+      let allResults = this.resultsStore.clusteredResults[this.clusterEditModalData["selectedSmiles"]];
+      this.$set(this.clusterEditModalData, "clusterName", allResults[idx]["clusterName"]);
+    },
+    clusterEditModalAddPrecursor(selectedSmiles, smiles, clusterId) {
+      // clusterId == -1 is to add a new cluster
+      let successors = this.resultsStore.dataGraph.getSuccessors(selectedSmiles);
+      let allIds = this.resultsStore.clusteredResultsIndex[selectedSmiles];
+      let clusterName;
+      if (clusterId === -1) {
+        if (successors.length === 0 || allIds.length === 0) {
+          clusterId = 0;
+        } else {
+          clusterId = allIds[allIds.length - 1] + 1;
+        }
+        clusterName = this.addNewPrecursorModal["newClusterName"];
+        if (clusterName === "") {
+          clusterName = `Reaction Cluster #${clusterId + 1}`;
+        }
+      } else {
+        clusterName = this.addNewPrecursorModalName(clusterId);
+      }
+      let rank = Math.max(...this.resultsStore.dataGraph.nodes.get(successors).map((s) => s.rank)) + 1;
+      let res = {
+        smiles: smiles,
+        smiles_split: smiles.split("."),
+        rank: rank,
+        group_id: clusterId,
+        group_name: clusterName,
+      };
+      this.resultsStore.addRetroResultToDataGraph({ data: [res], parentSmiles: selectedSmiles });
+    },
+    requestClusterId(smiles) {
+      this.$emit("updatePendingTasks", "add");
+      return this.resultsStore.recluster(smiles).finally(() => {
+        this.$emit("updatePendingTasks", "sub");
+      });
+    },
+    validatesmiles(smiles, iswarning) {
+      return API.post("/api/v2/rdkit/smiles/validate/", { smiles: smiles }).then((json) => {
+        if (!json["correct_syntax"]) {
+          if (iswarning) {
+            this.$bvModal.msgBoxOk("Invalid SMILES entered: Invalid Syntax", {
               title: "Alert",
               size: "sm",
               okVariant: "danger",
@@ -1098,403 +1296,217 @@
               centered: true,
               footerClass: "p-2",
             });
-            return;
           }
-          if (clusterId === undefined) {
-            clusterId = 0;
+          return false;
+        } else if (!json["valid_chem_name"]) {
+          if (iswarning) {
+            this.$bvModal.msgBoxOk("Invalid SMILES entered: Invalid Chemical Name", {
+              title: "Alert",
+              size: "sm",
+              okVariant: "danger",
+              okTitle: "Ok",
+              hideHeaderClose: true,
+              centered: true,
+              footerClass: "p-2",
+            });
           }
-          this.$set(this.clusterEditModalData, "selected", selected);
-          this.$set(this.clusterEditModalData, "selectedSmiles", selected.smiles);
-          this.$set(this.clusterEditModalData, "clusterId", clusterId);
-          this.$set(this.clusterEditModalData, "clusterName", clusterName);
-          this.selectedClusterId = clusterId;
-          this.showClusterEditModal = true;
-        },
-        closeClusterEditModal() {
-          this.showClusterEditModal = false;
-          this.clusterEditModalData["selected"] = undefined;
-          this.clusterEditModalData["selectedSmiles"] = undefined;
-          this.clusterEditModalData["clusterId"] = undefined;
-          this.clusterEditModalData["clusterName"] = undefined;
-        },
-        clusterPopoutModalIncGroupID() {
-          let allIds = this.resultsStore.clusteredResultsIndex[this.clusterPopoutModalData["selectedSmiles"]];
-          let allResults = this.resultsStore.clusteredResults[this.clusterPopoutModalData["selectedSmiles"]];
-          let idx = allIds.indexOf(this.clusterPopoutModalData["clusterId"]);
-          let idxToModify = Math.min(allIds.length - 1, idx + 1);
-          this.$set(this.clusterPopoutModalData, "clusterId", allIds[idxToModify]);
-          this.$set(this.clusterPopoutModalData, "clusterName", allResults[idxToModify]["clusterName"]);
-          this.selectedClusterId = allIds[idxToModify];
-        },
-        clusterPopoutModalDecGroupID() {
-          let allIds = this.resultsStore.clusteredResultsIndex[this.clusterPopoutModalData["selectedSmiles"]];
-          let allResults = this.resultsStore.clusteredResults[this.clusterPopoutModalData["selectedSmiles"]];
-          let idx = allIds.indexOf(this.clusterPopoutModalData["clusterId"]);
-          let idxToModify = Math.max(0, idx - 1);
-          this.$set(this.clusterPopoutModalData, "clusterId", allIds[idxToModify]);
-          this.$set(this.clusterPopoutModalData, "clusterName", allResults[idxToModify]["clusterName"]);
-          this.selectedClusterId = allIds[idxToModify];
-        },
-        clusterEditOnDragover(event) {
-          event.dataTransfer.dropEffect = "move"; // important
-        },
-        clusterEditOnDragenter(event) {
-          event.target.classList.add("dragover");
-        },
-        clusterEditOnDragleave(event) {
-          event.target.classList.remove("dragover");
-        },
-        clusterEditOnDragstart(precursor, event) {
-          event.target.style.opacity = "0.4";
-          event.dataTransfer.setData("text/plain", precursor.id);
-          let img = new Image();
-          img.src = this.getMolDrawEndPoint(precursor.precursorSmiles);
-          // set opacity does not work..
-          event.dataTransfer.setDragImage(img, 10, 10);
-          event.dataTransfer.effectAllowed = "all";
-          // disable all buttons on dragging
-          let buttons = document.querySelectorAll("button");
-          buttons.forEach(function (e) {
-            e.style.pointerEvents = "none";
-          });
-        },
-        clusterEditOnDragend(event) {
-          event.target.style.opacity = "1";
-          // enable all buttons
-          let buttons = document.querySelectorAll("button");
-          buttons.forEach(function (e) {
-            e.style.pointerEvents = "all";
-          });
-        },
-        clusterEditOnDrop(target, event) {
-          let smi = event.dataTransfer.getData("text/plain"); // precursor.id
-          let obj = this.resultsStore.dataGraph.nodes.get(smi);
-          let oldId = obj.clusterId;
-          let newId = target.clusterId;
-          this.resultsStore.updateDataNodes({
-            id: smi,
-            clusterId: newId,
-            clusterName: target.clusterName,
-          });
-          this.clusterEditOnDragend(event);
-          this.clusterEditOnDragleave(event);
-          this.updateClusterReps(this.clusterEditModalData["selectedSmiles"], [oldId, newId]);
-        },
-        clusterEditOnDropNew(event) {
-          let smi = event.dataTransfer.getData("text/plain"); // precursor.id
-          let obj = this.resultsStore.dataGraph.nodes.get(smi);
-          let allIds = this.resultsStore.clusteredResultsIndex[this.clusterEditModalData["selectedSmiles"]];
-          let oldId = obj.clusterId;
-          let newId = allIds[allIds.length - 1] + 1;
-          let defaultName = `Reaction Cluster #${newId + 1}`;
-          let customName = prompt("Please enter a name for the new cluster", defaultName);
-          this.resultsStore.updateDataNodes({
-            id: smi,
-            clusterId: newId,
-            clusterName: customName === "" || customName === null ? defaultName : customName,
-          });
-          this.clusterEditOnDragend(event);
-          this.clusterEditOnDragleave(event);
-          this.updateClusterReps(this.clusterEditModalData["selectedSmiles"], [oldId, newId]);
-        },
-        updateClusterReps(target, clusterIds) {
-          // Update the cluster representatives for the specified clusterIds
-          for (let clusterId of clusterIds) {
-            let options = { filter: (item) => item.clusterId === clusterId };
-            let precursorSmiles = this.resultsStore.dataGraph.getSuccessors(target);
-            let precursors = this.resultsStore.dataGraph.nodes.get(precursorSmiles, options);
-            this.resultsStore.updateDataNodes(
-              precursors.map((item, index) => ({
-                id: item.id,
-                clusterRep: index === 0,
-              }))
-            ); // Set first item as cluster rep
+          return false;
+        } else {
+          return true;
+        }
+      });
+    },
+    canonicalize(smiles, input) {
+      return API.post("/api/v2/rdkit/smiles/canonicalize/", { smiles: smiles }).then((json) => {
+        if (json.smiles) {
+          if (typeof input === "string") {
+            this[input] = json.smiles;
+          } else if (input instanceof Function) {
+            input(json.smiles);
           }
-        },
-        clusterEditModalIncGroupID() {
-          let allIds = this.resultsStore.clusteredResultsIndex[this.clusterEditModalData["selectedSmiles"]];
-          let allResults = this.resultsStore.clusteredResults[this.clusterEditModalData["selectedSmiles"]];
-          let idx = allIds.indexOf(this.clusterEditModalData["clusterId"]);
-          let idxToModify = Math.min(allIds.length - 1, idx + 1);
-          this.$set(this.clusterEditModalData, "clusterId", allIds[idxToModify]);
-          this.$set(this.clusterEditModalData, "clusterName", allResults[idxToModify]["clusterName"]);
-          this.selectedClusterId = allIds[idxToModify];
-        },
-        clusterEditModalDecGroupID() {
-          let allIds = this.resultsStore.clusteredResultsIndex[this.clusterEditModalData["selectedSmiles"]];
-          let allResults = this.resultsStore.clusteredResults[this.clusterEditModalData["selectedSmiles"]];
-          let idx = allIds.indexOf(this.clusterEditModalData["clusterId"]);
-          let idxToModify = Math.max(0, idx - 1);
-          this.$set(this.clusterEditModalData, "clusterId", allIds[idxToModify]);
-          this.$set(this.clusterEditModalData, "clusterName", allResults[idxToModify]["clusterName"]);
-          this.selectedClusterId = allIds[idxToModify];
-        },
-        clusterEditModalSetGroupID() {
-          let allIds = this.resultsStore.clusteredResultsIndex[this.clusterEditModalData["selectedSmiles"]];
-          let idx = allIds.indexOf(this.selectedClusterId);
-          this.$set(this.clusterEditModalData, "clusterId", this.selectedClusterId);
-          let allResults = this.resultsStore.clusteredResults[this.clusterEditModalData["selectedSmiles"]];
-          this.$set(this.clusterEditModalData, "clusterName", allResults[idx]["clusterName"]);
-        },
-        clusterEditModalAddPrecursor(selectedSmiles, smiles, clusterId) {
-          // clusterId == -1 is to add a new cluster
-          let successors = this.resultsStore.dataGraph.getSuccessors(selectedSmiles);
-          let allIds = this.resultsStore.clusteredResultsIndex[selectedSmiles];
-          let clusterName;
-          if (clusterId === -1) {
-            if (successors.length === 0 || allIds.length === 0) {
-              clusterId = 0;
-            } else {
-              clusterId = allIds[allIds.length - 1] + 1;
-            }
-            clusterName = this.addNewPrecursorModal["newClusterName"];
-            if (clusterName === "") {
-              clusterName = `Reaction Cluster #${clusterId + 1}`;
-            }
-          } else {
-            clusterName = this.addNewPrecursorModalName(clusterId);
-          }
-          let rank = Math.max(...this.resultsStore.dataGraph.nodes.get(successors).map((s) => s.rank)) + 1;
-          let res = {
-            smiles: smiles,
-            smiles_split: smiles.split("."),
-            rank: rank,
-            group_id: clusterId,
-            group_name: clusterName,
-          };
-          this.resultsStore.addRetroResultToDataGraph({ data: [res], parentSmiles: selectedSmiles });
-        },
-        requestClusterId(smiles) {
-          this.$emit("updatePendingTasks", "add");
-          return this.resultsStore.recluster(smiles).finally(() => {
-            this.$emit("updatePendingTasks", "sub");
-          });
-        },
-        validatesmiles(smiles, iswarning) {
-          return API.post("/api/v2/rdkit/smiles/validate/", { smiles: smiles }).then((json) => {
-            if (!json["correct_syntax"]) {
-              if (iswarning) {
-                this.$bvModal.msgBoxOk("Invalid SMILES entered: Invalid Syntax", {
-                  title: "Alert",
-                  size: "sm",
-                  okVariant: "danger",
-                  okTitle: "Ok",
-                  hideHeaderClose: true,
-                  centered: true,
-                  footerClass: "p-2",
-                });
-              }
-              return false;
-            } else if (!json["valid_chem_name"]) {
-              if (iswarning) {
-                this.$bvModal.msgBoxOk("Invalid SMILES entered: Invalid Chemical Name", {
-                  title: "Alert",
-                  size: "sm",
-                  okVariant: "danger",
-                  okTitle: "Ok",
-                  hideHeaderClose: true,
-                  centered: true,
-                  footerClass: "p-2",
-                });
-              }
-              return false;
-            } else {
-              return true;
-            }
-          });
-        },
-        canonicalize(smiles, input) {
-          return API.post("/api/v2/rdkit/smiles/canonicalize/", { smiles: smiles }).then((json) => {
-            if (json.smiles) {
-              if (typeof input === "string") {
-                this[input] = json.smiles;
-              } else if (input instanceof Function) {
-                input(json.smiles);
-              }
-            }
-          });
-        },
-        expandNode() {
-          this.$emit("expandNode");
-        },
-        dayjs,
-        num2str,
+        }
+      });
+    },
+    expandNode() {
+      this.$emit("expandNode");
+    },
+    dayjs,
+    num2str,
+  },
+  computed: {
+    allowResolve: {
+      get() {
+        return this.settingsStore.allowResolve;
       },
-      computed: {
-        allowResolve: {
-          get() {
-            return this.settingsStore.allowResolve;
-          },
-          set(value) {
-            this.settingsStore.setOption({ key: "allowResolve", value: value });
-          },
-        },
-        sortingCategory: {
-          get() {
-            return this.settingsStore.sortingCategory;
-          },
-          set(value) {
-            this.settingsStore.setOption({ key: "sortingCategory", value: value });
-          },
-        },
-        sortOrderAscending: {
-          get() {
-            return this.settingsStore.sortOrderAscending;
-          },
-          set(value) {
-            this.settingsStore.setOption({ key: "sortOrderAscending", value: value });
-          },
-        },
-        allowCluster: {
-          get() {
-            return this.settingsStore.allowCluster;
-          },
-          set(value) {
-            this.settingsStore.setOption({ key: "allowCluster", value: value });
-          },
-        },
-        reactionLimit: {
-          get() {
-            return this.settingsStore.reactionLimit;
-          },
-          set(value) {
-            this.settingsStore.setOption({ key: "reactionLimit", value: value });
-          },
-        },
-        savedResultOverwrite: {
-          get() {
-            return this.resultsStore.savedResultInfo.overwrite;
-          },
-          set(value) {
-            this.resultsStore.updateSavedResultInfo({ overwrite: value });
-          },
-        },
-        resultsAvailable() {
-          // Boolean of whether the selected chemical has been expanded
-          // Returns false if a reaction node is selected
-          if (this.selected.type !== "chemical") {
+      set(value) {
+        this.settingsStore.setOption({ key: "allowResolve", value: value });
+      },
+    },
+    sortingCategory: {
+      get() {
+        return this.settingsStore.sortingCategory;
+      },
+      set(value) {
+        this.settingsStore.setOption({ key: "sortingCategory", value: value });
+      },
+    },
+    sortOrderAscending: {
+      get() {
+        return this.settingsStore.sortOrderAscending;
+      },
+      set(value) {
+        this.settingsStore.setOption({ key: "sortOrderAscending", value: value });
+      },
+    },
+    allowCluster: {
+      get() {
+        return this.settingsStore.allowCluster;
+      },
+      set(value) {
+        this.settingsStore.setOption({ key: "allowCluster", value: value });
+      },
+    },
+    reactionLimit: {
+      get() {
+        return this.settingsStore.reactionLimit;
+      },
+      set(value) {
+        this.settingsStore.setOption({ key: "reactionLimit", value: value });
+      },
+    },
+    savedResultOverwrite: {
+      get() {
+        return this.resultsStore.savedResultInfo.overwrite;
+      },
+      set(value) {
+        this.resultsStore.updateSavedResultInfo({ overwrite: value });
+      },
+    },
+    resultsAvailable() {
+      // Boolean of whether the selected chemical has been expanded
+      // Returns false if a reaction node is selected
+      if (this.selected.type !== "chemical") {
+        return false;
+      } else {
+        return this.resultsStore.dataGraph.getSuccessors(this.selected.smiles).length !== 0;
+      }
+    },
+    currentPrecursors() {
+      // Array of precursors corresponding to the selected chemical
+      this.resultsStore.recomputeData;
+      if (this.selected.type !== "chemical") {
+        return [];
+      }
+
+      let precursorSmiles = this.resultsStore.dataGraph.getSuccessors(this.selected.smiles);
+      let cmp = this.sortOrderAscending
+        ? (a, b) => {
+          return a - b;
+        }
+        : (a, b) => {
+          return b - a;
+        };
+      let options = {
+        filter: (item) => {
+          if (this.allowCluster && !item.clusterRep) {
             return false;
-          } else {
-            return this.resultsStore.dataGraph.getSuccessors(this.selected.smiles).length !== 0;
           }
+          return this.checkFilter(item);
         },
-        currentPrecursors() {
-          // Array of precursors corresponding to the selected chemical
-          this.resultsStore.recomputeData;
-          if (this.selected.type !== "chemical") {
-            return [];
+        order: (a, b) => {
+          let a_ = a[this.sortingCategory] === undefined ? 0 : a[this.sortingCategory];
+          let b_ = b[this.sortingCategory] === undefined ? 0 : b[this.sortingCategory];
+          if (a_ === b_) {
+            return a.rank - b.rank;
           }
-  
-          let precursorSmiles = this.resultsStore.dataGraph.getSuccessors(this.selected.smiles);
-          let cmp = this.sortOrderAscending
-            ? (a, b) => {
-                return a - b;
-              }
-            : (a, b) => {
-                return b - a;
-              };
-          let options = {
-            filter: (item) => {
-              if (this.allowCluster && !item.clusterRep) {
-                return false;
-              }
-              return this.checkFilter(item);
-            },
-            order: (a, b) => {
-              let a_ = a[this.sortingCategory] === undefined ? 0 : a[this.sortingCategory];
-              let b_ = b[this.sortingCategory] === undefined ? 0 : b[this.sortingCategory];
-              if (a_ === b_) {
-                return a.rank - b.rank;
-              }
-              return cmp(a_, b_);
-            },
-          };
-          return this.resultsStore.dataGraph.nodes.get(precursorSmiles, options);
+          return cmp(a_, b_);
         },
-        currentClusterViewPrecursors() {
-          this.resultsStore.recomputeData;
-          let smi = this.clusterPopoutModalData.selectedSmiles;
-          let cid = this.clusterPopoutModalData.clusterId;
-          let precursorSmiles = this.resultsStore.dataGraph.getSuccessors(smi);
-          let options = {
-            filter: (item) => item.clusterId === cid,
-          };
-          return this.resultsStore.dataGraph.nodes.get(precursorSmiles, options);
-        },
-        currentClusterEditPrecursors() {
-          this.resultsStore.recomputeData;
-          let smi = this.clusterEditModalData.selectedSmiles;
-          let cid = this.clusterEditModalData.clusterId;
-          let precursorSmiles = this.resultsStore.dataGraph.getSuccessors(smi);
-          let options = {
-            filter: (item) => item.clusterId === cid,
-          };
-          return this.resultsStore.dataGraph.nodes.get(precursorSmiles, options);
-        },
-        ...mapStores(useResultsStore, useSettingsStore),
-      },
-    };
-  </script>
+      };
+      return this.resultsStore.dataGraph.nodes.get(precursorSmiles, options);
+    },
+    currentClusterViewPrecursors() {
+      this.resultsStore.recomputeData;
+      let smi = this.clusterPopoutModalData.selectedSmiles;
+      let cid = this.clusterPopoutModalData.clusterId;
+      let precursorSmiles = this.resultsStore.dataGraph.getSuccessors(smi);
+      let options = {
+        filter: (item) => item.clusterId === cid,
+      };
+      return this.resultsStore.dataGraph.nodes.get(precursorSmiles, options);
+    },
+    currentClusterEditPrecursors() {
+      this.resultsStore.recomputeData;
+      let smi = this.clusterEditModalData.selectedSmiles;
+      let cid = this.clusterEditModalData.clusterId;
+      let precursorSmiles = this.resultsStore.dataGraph.getSuccessors(smi);
+      let options = {
+        filter: (item) => item.clusterId === cid,
+      };
+      return this.resultsStore.dataGraph.nodes.get(precursorSmiles, options);
+    },
+    ...mapStores(useResultsStore, useSettingsStore),
+  },
+};
+</script>
   
-  <style>
-    .scroll-list {
-      max-height: 45vh;
-      overflow-y: scroll;
-    }
-  
-    .scroll-list-x {
-      max-height: 45vh;
-      max-width: 90vw;
-      overflow-x: scroll;
-    }
-  
-    .custom-shadow {
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-      transition: 0.3s;
-    }
-  
-    .custom-shadow:hover {
-      box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-    }
-  
-    .grey-border {
-      border: #333 3px solid;
-    }
-  
-    .grid-wrapper {
-      display: grid;
-      grid-template-rows: auto;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      grid-auto-flow: row;
-      grid-gap: 10px;
-    }
-  
-    .grid-wrapper-onerow {
-      display: grid;
-      grid-template-rows: minmax(25vh, max-content);
-      grid-auto-columns: 200px;
-      grid-auto-flow: column;
-      grid-gap: 10px;
-    }
-  
-    [draggable] {
-      user-select: none;
-    }
-  
-    .nonselectable {
-      user-select: none;
-    }
-  
-    .nopointer {
-      pointer-events: none;
-    }
-  
-    .dragover {
-      border: 2px dashed #000 !important;
-    }
-  
-    .flex-gap-2 {
-      gap: 0.5rem;
-    }
-  </style>
+<style>
+.scroll-list {
+  max-height: 55vh;
+  overflow-y: scroll;
+}
+
+.scroll-list-x {
+  max-height: 45vh;
+  max-width: 90vw;
+  overflow-x: scroll;
+}
+
+.custom-shadow {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+}
+
+.custom-shadow:hover {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.grey-border {
+  border: #333 3px solid;
+}
+
+.grid-wrapper {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-auto-flow: row;
+  grid-gap: 10px;
+}
+
+.grid-wrapper-onerow {
+  display: grid;
+  grid-template-rows: minmax(25vh, max-content);
+  grid-auto-columns: 200px;
+  grid-auto-flow: column;
+  grid-gap: 10px;
+}
+
+[draggable] {
+  user-select: none;
+}
+
+.nonselectable {
+  user-select: none;
+}
+
+.nopointer {
+  pointer-events: none;
+}
+
+.dragover {
+  border: 2px dashed #000 !important;
+}
+
+.flex-gap-2 {
+  gap: 0.5rem;
+}</style>
   

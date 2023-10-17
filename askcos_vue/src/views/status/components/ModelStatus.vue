@@ -66,7 +66,7 @@ const getStatus = async () => {
   loading.value = true;
 
   try {
-    const json = await API.get('/api/admin/get_backend_status');
+    const json = await API.get('/api/admin/get-backend-status');
     data.value = json['modules'];
     date.value = new Date();
   } catch (error) {

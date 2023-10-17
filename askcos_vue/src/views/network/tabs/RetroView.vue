@@ -318,7 +318,7 @@ export default {
                 templateSets.value = json.template_sets
 
             });
-            API.get("/api/admin/get_backend_status").then((json) => {
+            API.get("/api/admin/get-backend-status").then((json) => {
                 modelStatus.value = json["modules"];
             });
         });
@@ -364,7 +364,7 @@ export default {
             console.log(maxIndex.value)
             carouselSlide.value = Object.keys(predictions.value).length;
 
-            const url = "/api/tree_search/expand_one/call_async";
+            const url = "/api/tree-search/expand-one/call-async";
             const body = {
                 smiles: target.value,
                 retro_backend_options: [
@@ -378,7 +378,6 @@ export default {
                 retro_rerank_backend: settings.precursorScoring,
                 use_fast_filter: true,
                 fast_filter_threshold: settings.minPlausibility,
-                attribute_filter: settings.attributeFilter,
                 cluster_precursors: false,
                 selectivity_check: settings.false,
             };

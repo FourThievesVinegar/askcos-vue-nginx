@@ -1,11 +1,10 @@
 <template>
     <div>
-        <iframe id="ketcher-iframe-min" ref="ketcherIframeMin" :src="ketcherSrc" width="160" height="100"></iframe>
-        <b-spinner v-if="isLoading" id="ketcher-iframe-min-spinner" ref="ketcherIframeMinSpinner"
-            label="Loading"></b-spinner>
+        <iframe ref="ketcherIframeMin" id="ketcher-iframe-min" src="/ketcher-standalone/index.html" width="160"
+            height="100"></iframe>
     </div>
 </template>
-
+  
 <script>
 import { ref, onMounted } from 'vue';
 import { API } from "@/common/api";
@@ -23,7 +22,7 @@ export default {
         const ketcherIframeMinSpinner = ref(null);
         const isLoading = ref(false);
 
-        const ketcherSrc = '/ketcher-standalone/iframe.html';
+        const ketcherSrc = '/ketcher-standalone/index.html';
 
         const setSmiles = (smiles, reference, callback) => {
             const data = { smiles };
@@ -31,6 +30,7 @@ export default {
                 data['reference'] = reference;
             }
             isLoading.value = true;
+            // console.log(data)
             API.post('/api/v2/rdkit/smiles/to_molfile/', data)
                 .then(json => {
                     setMolfile(json.molfile, callback);
@@ -45,20 +45,19 @@ export default {
 
         const setMolfile = (molfile, callback) => {
             const km = ketcherIframeMin.value;
-            const spinner = ketcherIframeMinSpinner.value;
-            if (!(km && km.contentWindow.ketcher && km.contentWindow.ketcher.ready)) {
-                if (spinner && spinner.value) {
-                    spinner.value.style.display = 'block';
-                }
+            if (!(km && km.contentWindow.ketcher)) {
                 setTimeout(() => setMolfile(molfile, callback), 100);
                 return;
             }
+            console.log("done wait")
             const ketcher = km.contentWindow.ketcher;
+            console.log(ketcher)
 
             // Remove mousemove handler to prevent dragging atoms and bonds
             ketcher.editor.event.mousemove.handlers.length = 0;
 
             function resizeKetcherIframe() {
+                console.log("start of resize")
                 const scale = 40; // 40's a bit of a magic number; I think it comes from a scale factor in Ketcher.
                 const zoom = 0.8; // Based on what size looks good in the UI
                 const margin = 1.5 * scale * zoom; // Based on testing to avoid cutoff along right and bottom edges
@@ -96,15 +95,16 @@ export default {
 
                 // Move canvas slightly so highlight circles do not get cut off along the top and left edges
                 ketcher.editor.render.setScrollOffset(offset, offset);
-
-                if (callback) {
-                    callback(ketcher);
-                }
+                // if (callback) {
+                //     callback(ketcher);
+                // }
             }
-
             // Need callback because the molecule takes a bit of time to finish displaying,
             // and we can't properly get coordinates  / bounding boxes until that finishes.
-            ketcher.setMolecule(molfile, { callback: resizeKetcherIframe });
+            ketcher.setMolecule(molfile);
+
+            setTimeout(resizeKetcherIframe(), 5000)
+
             km.contentWindow.scrollTo(0, 0)
 
             // Hook a click listener to refresh the filtered results when the atom selection is changes.
@@ -115,9 +115,9 @@ export default {
                 }
             }
 
-            if (spinner && spinner.value) {
-                spinner.value.style.display = 'none';
-            }
+            // if (spinner && spinner.value) {
+            //     spinner.value.style.display = 'none';
+            // }
         };
 
         const getSelectedAtoms = () => {
@@ -148,7 +148,7 @@ export default {
     },
 };
 </script>
-
+  
 <style scoped>
 #ketcher-iframe-min {
     border-width: 0;
@@ -167,5 +167,30 @@ export default {
     width: 50px;
     height: 50px;
 }
-</style>
 
+body {
+    margin: 0;
+}
+
+main[role=application] .cellar {
+    display: none;
+}
+
+main[role=application] #canvas {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: 0;
+}
+
+.measure-log {
+    display: none;
+}
+
+main[role=application] [role=toolbar] {
+    display: none;
+}
+</style>
+  
+  

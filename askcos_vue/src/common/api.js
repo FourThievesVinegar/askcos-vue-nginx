@@ -5,7 +5,7 @@
 import Cookies from 'js-cookie';
 import { useFastapiStore } from "@/store/fastapi";
 
-const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/status", "/api/tree_search", "/api/impurity_predictor", "/api/forward", "/api/legacy"];
+const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/tree-search"];
 
 const API = {
   pollInterval: 1000,
@@ -13,21 +13,15 @@ const API = {
 
   getHeaders(data, endpoint) {
     let headers = {};
+    if (data && !(data instanceof FormData)) {
+      headers['Content-Type'] = 'application/json';
+    }
 
     if (authMigratedAPI.some(api => endpoint.startsWith(api))) {
-      const accessToken = localStorage.getItem('accessToken');
-      headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + accessToken
-      };
+      headers['Authorization'] = 'Bearer ' + localStorage.getItem('accessToken')
     }
     else {
-      headers = {
-        'X-CSRFToken': Cookies.get('csrftoken'),
-      }
-      if (data && !(data instanceof FormData)) {
-        headers['Content-Type'] = 'application/json'
-      }
+      headers['X-CSRFToken'] = Cookies.get('csrftoken')
     }
 
     return headers
