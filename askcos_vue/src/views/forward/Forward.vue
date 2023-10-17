@@ -2,22 +2,6 @@
   <v-container fluid>
     <v-row class="justify-center">
       <v-col cols="12" sm="8" md="10">
-        <div class="mt-8 mb-5">
-          <v-breadcrumbs class="pa-0" :items="[
-            {
-              title: 'Home',
-              disabled: false,
-              href: '/',
-            },
-            {
-              title: 'Forward',
-              disabled: true,
-            },
-          ]"></v-breadcrumbs>
-          <h1>
-            Forward Synthesis Planner
-          </h1>
-        </div>
 
         <v-sheet elevation="2" class="my-6 ">
           <v-tabs v-model="tab" color="primary" align-tabs="center" grow class="mb-4">
@@ -409,7 +393,7 @@ const evaluateIndex = async (index) => {
   let solvent = contextResults.value[index].solvent;
   const postData = constructForwardPostData(reagents, solvent);
   try {
-    const output = await API.runCeleryTask('/api/forward/controller/call_async', postData);
+    const output = await API.runCeleryTask('/api/forward/controller/call-async', postData);
     for (let i = 0; i < output.length; i++) {
       const outcome = output[i];
       if (outcome.smiles === product.value) {
@@ -692,7 +676,7 @@ const impurityPredict = () => {
     impurityProgress.value.message = 'Impurity prediction failed!';
   };
 
-  API.runCeleryTask('/api/impurity_predictor/call_async', postData, progress)
+  API.runCeleryTask('/api/impurity-predictor/call-async', postData, progress)
     .then(output => {
       complete(output);
     })
@@ -715,7 +699,6 @@ const constructImpurityPostData = () => {
     insp_threshold: inspectionThreshold.value,
     inspector: inspectionModel.value,
     atom_map_backend: "indigo",
-    priority: numForwardResults.value
   };
 
   if (product.value) {
@@ -761,7 +744,7 @@ const updateFromURL = () => {
 };
 
 onMounted(() => {
-  API.get('/api/admin/get_backend_status')
+  API.get('/api/admin/get-backend-status')
     .then(json => {
       modelStatus.value = json['modules'];
     });
@@ -782,7 +765,7 @@ const forwardPredict = async () => {
   }
   const postData = constructForwardPostData(reagents.value, solvent.value);
   try {
-    const output = await API.runCeleryTask('/api/forward/controller/call_async', postData);
+    const output = await API.runCeleryTask('/api/forward/controller/call-async', postData);
     forwardResults.value = output.result[0];
     console.log(output.result[0])
   } catch (error) {
@@ -793,12 +776,10 @@ const forwardPredict = async () => {
 };
 
 const constructForwardPostData = (reagents, solvent) => {
-  let _smile = reactants.value
   let data = reactive({
-    smiles: [_smile],
+    smiles: [reactants.value],
     backend: forwardModel.value,
     model_name: forwardModelTrainingSet.value,
-    priority: numForwardResults.value
   });
 
   if (reagents) {
@@ -812,7 +793,7 @@ const constructForwardPostData = (reagents, solvent) => {
 }
 
 const canonicalize = async (smiles, input) => {
-  return API.post('/api/v2/rdkit/smiles/canonicalize/', { smiles: smiles })
+  return API.post('/api/rdkit/canonicalize', { smiles: smiles })
     .then(json => {
       if (input === 'reactants') {
         reactants.value = json.smiles

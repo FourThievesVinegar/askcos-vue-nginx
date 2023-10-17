@@ -541,7 +541,7 @@ export default {
     saveImage() {
       // Getting the current canvas element
       const canvas = document.getElementsByTagName("canvas")[0];
-      if (canvas === undefined) {
+      if (canvas === undefined) {e
         this.createConfirm({ title: 'Alert', content: 'No tree created yet to export as PNG', dialogProps: { width: "auto" } })
         return;
       }

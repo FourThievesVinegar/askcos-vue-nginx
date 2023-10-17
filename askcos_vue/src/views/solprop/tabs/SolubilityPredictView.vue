@@ -1,11 +1,11 @@
 <template>
-  <v-container fluid>
-    <v-row class="justify-center align-center">
+  <v-container fluid >
+  <v-row class="justify-center align-center pa-0">
       <v-col cols="12" md="4">
         <v-sheet elevation="2" rounded="lg">
           <v-form @submit.prevent class="pa-5">
             <v-expansion-panels v-model="panel" multiple>
-              <v-expansion-panel title="Basic Information (*Required)" class="text-primary">
+              <v-expansion-panel title="Basic Information" class="text-primary">
                 <v-expansion-panel-text class="text-black">
                   <v-text-field :rules="[v => !!v || 'Solute is required']" variant="outlined" label="Solute"
                     v-model="solute" clearable></v-text-field>
@@ -44,19 +44,29 @@
           </v-form>
         </v-sheet>
       </v-col>
-    </v-row>
-    <v-row class="justify-center align-center">
-      <v-col v-if="results.length" cols="12">
-        <v-sheet elevation="2" rounded="lg">
+
+      <v-col v-if="results.length" cols="12" md="8" >
+        <v-sheet elevation="2">
+          <v-row align="center" justify="space-between" class="mx-auto my-auto pa-3">
+                  <v-col>
+                  </v-col>
+                
+                  <v-spacer></v-spacer>
+                  <v-col cols="auto">
+                      <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
+                          Reference
+                      </v-btn>
+                  </v-col>
+              </v-row>
           <v-data-table
           :headers="fields" :items="results"></v-data-table>
         </v-sheet>
       </v-col>
-      <v-col v-else cols="12" md="6">
+      <!-- <v-col v-else cols="12" md="6">
         <v-sheet elevation="2" rounded="lg" class="pa-5">
           No Data Available
         </v-sheet>
-      </v-col>
+      </v-col> -->
     </v-row>
   </v-container>
 </template>
@@ -284,8 +294,9 @@ export default {
   methods: {
     predict() {
       this.loading = true
-      const url = '/api/v2/solubility/'
+      const url = '/api/legacy/solubility/batch/call-async'
       const body = {
+        "task_list": [{
         solvent: this.solvent,
         solute: this.solute,
         temp: this.temperature,
@@ -295,10 +306,13 @@ export default {
         hsub298: this.soluteHsub || null,
         cp_gas_298: this.soluteCpg || null,
         cp_solid_298: this.soluteCps || null,
+        }
+      ]
       }
       API.runCeleryTask(url, body)
         .then(output => {
           this.results.push(...output)
+          console.log(output)
         })
         .catch(error => {
           alert('There was an error predicting solubility: ' + error)
@@ -307,7 +321,7 @@ export default {
     },
     predictBatch(data) {
       this.loading = true
-      const url = '/api/v2/solubility/batch/'
+      const url = '/api/legacy/solubility/batch/call-async'
       const body = {
         task_list: data,
       }

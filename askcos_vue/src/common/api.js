@@ -5,7 +5,7 @@
 import Cookies from 'js-cookie';
 import { useFastapiStore } from "@/store/fastapi";
 
-const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/tree-search"];
+const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/tree-search", "/api/buyables", "api/forward"];
 
 const API = {
   pollInterval: 1000,
