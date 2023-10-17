@@ -238,7 +238,7 @@ export const useResultsStore = defineStore("results", {
       console.log("importTree")
       const settings = useSettingsStore();
       let resultObj = data;
-      let target = "CCCCCC";
+      let target = resultObj["target_smiles"];
       this.setTarget(target);
       // Disable precusrsor clustering by default for tree builder results
       settings.setOption({ key: "allowCluster", value: false }, { root: true });
@@ -848,20 +848,8 @@ export const useResultsStore = defineStore("results", {
       const url = "/api/tree-search/expand-one/call-async";
       const body = {
         smiles: smiles,
-        retro_backend_options: settings.tbSettings.strategies,
-        retro_rerank_backend: settings.tbSettings.precursorScoring,
-        use_fast_filter: true,
-        fast_filter_threshold: settings.tbSettings.minPlausibility,
-        cluster_precursors: false,
-        cluster_setting: {
-          feature: settings.clusterOptions.feature,
-          fp_type: settings.clusterOptions.fingerprint,
-          fp_length: settings.clusterOptions.fpBits,
-          fp_radius: settings.clusterOptions.fpRadius,
-        },
-        selectivity_check: settings.tbSettings.allowSelec,
-        group_by_strategy: true
       };
+      Object.assign(body,settings.interactive_path_planner_settings)
       // if (strategy.model === "template_relevance") {
       //   checkTemplatePrioritizers(body["template_prioritizers"]);
       // }
@@ -910,7 +898,7 @@ export const useResultsStore = defineStore("results", {
             });
 
             let reactionsToAdd = [];
-            if (settings.tbSettings.strategies[idx].retro_backend === "template_relevance") {
+            if (settings.interactive_path_planner_settings.retro_backend_options[idx].retro_backend === "template_relevance") {
               reactionsToAdd = addedReactions
                 .filter((reactionSmiles) => {
                   return (

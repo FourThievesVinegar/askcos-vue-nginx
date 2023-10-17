@@ -679,9 +679,10 @@ export default {
       const url = "/api/tree-search/mcts/call-async";
       const body = {
         smiles: this.resultsStore.target,
+        description: this.tb.taskName || this.resultsStore.target
       };
       Object.assign(body, this.settingsStore.tree_builder_settings);
-      body.expand_one_options = this.settingsStore.interactive_path_planner_settings
+      Object.assign(body.expand_one_options, this.settingsStore.interactive_path_planner_settings)
       delete body.expand_one_options.group_by_strategy;
       delete body.expand_one_options.fast_filter_threshold;
       // checkTemplatePrioritizers(body["template_prioritizers"]);
@@ -693,37 +694,11 @@ export default {
           return API.pollCeleryResult(json);
         })
         .then(() => {
-          this.createSnackbar({text: "Tree builder job complete! Visit results page for more details", snackbarProps: {timeout: -1, vertical: true} })
-          // let notificationOptions = {
-          //   requireInteraction: true,
-          //   body: "Click here to open a new tab with results.",
-          // };
-          // let app = this;
-          // let notifyCallback = function (event) {
-          //   event.preventDefault(); // prevent the browser from focusing the Notification's tab
-          //   if (app.tbSettings.redirectToGraph) {
-          //     window.open(
-          //       `/retro/network/?view=25&id=${app.tb.taskId}`,
-          //       "_blank"
-          //     );
-          //     this.close();
-          //   } else {
-          //     window.open(
-          //       `/retro/network/?tab=2&id=${app.tb.taskId}`,
-          //       "_blank"
-          //     );
-          //     this.close();
-          //   }
-          // };
-          // this.makeNotification(
-          //   "Tree builder job complete!",
-          //   notificationOptions,
-          //   notifyCallback
-          // );
+          this.createSnackbar({ text: "Tree builder job complete! Visit results page for more details", snackbarProps: { timeout: -1, vertical: true } })
         })
         .catch((error) => {
           console.error(error);
-          this.createSnackbar({text: "Job failed. Try submitting a new job.", snackbarProps: {timeout: -1, vertical: true} })
+          this.createSnackbar({ text: "Job failed. Try submitting a new job.", snackbarProps: { timeout: -1, vertical: true } })
         });
     },
     resolveChemName(name) {

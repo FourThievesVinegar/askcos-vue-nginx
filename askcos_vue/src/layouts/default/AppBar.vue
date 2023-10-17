@@ -111,10 +111,8 @@ function logout() {
   router.push({ path: '/login' })
 }
 
-function onDrawerCollapse(value) {
-  if (value) {
+function onDrawerCollapse() {
     openGroups.value = [];
-  }
 }
 
 async function closeGroupsOnBack(_value) {
