@@ -12,7 +12,7 @@
         </v-row>
         <v-row class="justify-center">
             <v-col cols="12" sm="8" md="10" class="d-flex align-center justify-center">
-                <v-expansion-panels multiple density="compact" v-if="fastapiStore.logs.length !== 0">
+                <v-expansion-panels multiple density="compact" v-if="fastapiStore.logs.length !== 0" v-model="logsOpened">
                     <v-expansion-panel v-for="(log, index) in fastapiStore.logs" :key="index" density="compact">
                         <template v-slot:title>
                             <v-chip :color="methodToColors[log.method]">{{ log.method }}</v-chip> <span
@@ -44,9 +44,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, watch } from "vue"
 import { useFastapiStore } from "@/store/fastapi"
 import emptyLogs from "@/assets/emptyLogs.svg"
+
 
 const fastapiStore = useFastapiStore();
 
@@ -56,4 +57,11 @@ const methodToColors = ref({
 })
 
 const emptyLogsSrc = ref(emptyLogs)
+
+const logsOpened = ref([])
+
+watch(fastapiStore.logs, () => {
+    logsOpened.value = Array.from(logsOpened.value, x => ++x);
+})
+
 </script>
