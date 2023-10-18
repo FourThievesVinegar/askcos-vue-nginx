@@ -55,6 +55,9 @@
                         mdi-check
                       </v-icon>
                     </template>
+                    <template v-slot:item.description="{ item }">
+                      {{ item.columns.description || "No Description" }}
+                    </template>
                     <template v-slot:expanded-row="{ columns, item }">
                       <tr>
                         <td :colspan="columns.length">
@@ -63,7 +66,8 @@
                               item.columns.description }} Tree</span>
                             <span class="text-center" v-if="item.columns.result_type == 'ipp'">Tags:</span>
                             <v-btn color="primary" variant="tonal"
-                              v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'">
+                              v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'"
+                              :href="`network?tab=TE&id=${item.raw.result_id}`">
                               View trees
                             </v-btn>
                             <v-btn color="primary" variant="tonal">

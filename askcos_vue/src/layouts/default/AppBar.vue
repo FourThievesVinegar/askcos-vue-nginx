@@ -19,9 +19,9 @@
             <v-list-item v-bind="props" title="Retrosynthesis"></v-list-item>
           </template>
 
-          <v-list-item to="network?tab=IPP" prepend-icon="mdi-help-box" title="Interactive Path Planning/Tree Builder"
+          <v-list-item to="/network?tab=IPP" prepend-icon="mdi-help-box" title="Interactive Path Planning/Tree Builder"
             value="IPP" :active="route.query.tab === 'IPP'"></v-list-item>
-          <v-list-item to="network?tab=RP" prepend-icon="mdi-help-box" title="Retrosynthesis Prediction" value="RP"
+          <v-list-item to="/network?tab=RP" prepend-icon="mdi-help-box" title="Retrosynthesis Prediction" value="RP"
             :active="route.query.tab === 'RP'"></v-list-item>
         </v-list-group>
 
@@ -30,15 +30,15 @@
             <v-list-item v-bind="props" title="Forward Synthesis"></v-list-item>
           </template>
 
-          <v-list-item to="forward?tab=context" title="Condition Recommendation"
+          <v-list-item to="/forward?tab=context" title="Condition Recommendation"
             value="context" :active="route.query.tab === 'context'"></v-list-item>
-          <v-list-item to="forward?tab=forward" title="Synthesis Prediction" value="forward"
+          <v-list-item to="/forward?tab=forward" title="Synthesis Prediction" value="forward"
             :active="route.query.tab === 'forward'"></v-list-item>
-          <v-list-item to="forward?tab=impurity" title="Impurity Prediction" value="impurity"
+          <v-list-item to="/forward?tab=impurity" title="Impurity Prediction" value="impurity"
             :active="route.query.tab === 'impurity'"></v-list-item>
-          <v-list-item to="forward?tab=selectivity" title="Regio-selectivity Prediction"
+          <v-list-item to="/forward?tab=selectivity" title="Regio-selectivity Prediction"
             value="selectivity" :active="route.query.tab === 'selectivity'"></v-list-item>
-          <v-list-item to="forward?tab=sites" title="Aromatic C-H Functionalization" value="sites"
+          <v-list-item to="/forward?tab=sites" title="Aromatic C-H Functionalization" value="sites"
             :active="route.query.tab === 'sites'"></v-list-item>
         </v-list-group>
 
@@ -47,15 +47,15 @@
             <v-list-item v-bind="props" title="Utilities"></v-list-item>
           </template>
 
-          <v-list-item to="solprop?tab=solpred" prepend-icon="mdi-help-box" title="Solubility Prediction" value="USP"
+          <v-list-item to="/solprop?tab=solpred" prepend-icon="mdi-help-box" title="Solubility Prediction" value="USP"
             :active="route.query.tab === 'solpred'"></v-list-item>
-          <v-list-item to="solprop?tab=solscreen" prepend-icon="mdi-help-box" title="Solvent Screening" value="USS"
+          <v-list-item to="/solprop?tab=solscreen" prepend-icon="mdi-help-box" title="Solvent Screening" value="USS"
             :active="route.query.tab === 'solscreen'"></v-list-item>
-          <v-list-item to="buyables" prepend-icon="mdi-help-box" title="Buyable Look-up" value="UBLU"></v-list-item>
+          <v-list-item to="/buyables" prepend-icon="mdi-help-box" title="Buyable Look-up" value="UBLU"></v-list-item>
           <v-list-item prepend-icon="mdi-help-box" title="Drawing" value="UD"></v-list-item>
         </v-list-group>
       </v-list-group>
-      <v-list-item to="status" prepend-icon="mdi-list-status" title="Server Status" value="status"
+      <v-list-item to="/status" prepend-icon="mdi-list-status" title="Server Status" value="status"
         :active="route.path === '/status'"></v-list-item>
       <v-list-item prepend-icon="mdi-book-information-variant" title="Quick Reference" value="reference"></v-list-item>
       <v-divider></v-divider>
@@ -64,16 +64,16 @@
       <v-list-item prepend-icon="mdi-bug" title="Report a bug" value="bug" :active="false">
         <TheSupportModal />
       </v-list-item>
-      <v-list-item prepend-icon="mdi-code-json" title="Logs" value="logs" to="logs"></v-list-item>
+      <v-list-item prepend-icon="mdi-code-json" title="Logs" value="logs" to="/logs"></v-list-item>
       <v-divider></v-divider>
-      <v-list-item v-if=!isLoggedIn to="login" prepend-icon="mdi-login" title="Login" :active="false"></v-list-item>
+      <v-list-item v-if=!isLoggedIn to="/login" prepend-icon="mdi-login" title="Login" :active="false"></v-list-item>
       <v-list-group v-if=isLoggedIn value="profile" no-action>
         <template v-slot:activator="{ props }">
           <v-list-item v-bind="props" prepend-icon="mdi-account-circle" title="Profile" :active="activeProfile"
             :variant="activeProfile ? 'tonal' : 'text'"></v-list-item>
         </template>
-        <v-list-item prepend-icon="mdi-table" title="My Results" value="result" to="results"></v-list-item>
-        <v-list-item prepend-icon="mdi-cancel" title="My Banlist" value="banlist" to="banlist"></v-list-item>
+        <v-list-item prepend-icon="mdi-table" title="My Results" value="result" to="/results"></v-list-item>
+        <v-list-item prepend-icon="mdi-cancel" title="My Banlist" value="banlist" to="/banlist"></v-list-item>
       </v-list-group>
       <v-list-item v-if=isLoggedIn @click="logout" prepend-icon="mdi-logout" title="Logout" :active="false"></v-list-item>
     </v-list>

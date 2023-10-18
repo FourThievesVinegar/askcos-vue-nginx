@@ -244,7 +244,7 @@
                 </p>
               </div>
               <v-btn class="my-3" variant="outlined"
-                :href="'/synth_interactive/?mode=context&rxnsmiles=' + encodeURIComponent(selected.smiles)"
+                :href="'/forward?tab=context&rxnsmiles=' + encodeURIComponent(selected.smiles)"
                 target="_blank">Evaluate reaction</v-btn>
               <div class="text-left mx-2">
                 <table class="table table-sm table-striped table-borderless">
