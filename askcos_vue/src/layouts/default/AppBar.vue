@@ -1,5 +1,6 @@
 <template>
-  <v-navigation-drawer expand-on-hover rail elevation="2" @update:rail="onDrawerCollapse" width="100px" class="sidebar">
+  <v-navigation-drawer expand-on-hover rail elevation="2" @update:rail="($event) => onDrawerCollapse($event)"
+    width="100px" class="sidebar">
     <v-list>
       <v-list-item prepend-icon="mdi-tools" title="ASKCOS" subtitle="Demo"></v-list-item>
     </v-list>
@@ -29,14 +30,14 @@
             <v-list-item v-bind="props" title="Forward Synthesis"></v-list-item>
           </template>
 
-          <v-list-item to="/forward?tab=context" title="Condition Recommendation"
-            value="context" :active="route.query.tab === 'context'"></v-list-item>
+          <v-list-item to="/forward?tab=context" title="Condition Recommendation" value="context"
+            :active="route.query.tab === 'context'"></v-list-item>
           <v-list-item to="/forward?tab=forward" title="Synthesis Prediction" value="forward"
             :active="route.query.tab === 'forward'"></v-list-item>
           <v-list-item to="/forward?tab=impurity" title="Impurity Prediction" value="impurity"
             :active="route.query.tab === 'impurity'"></v-list-item>
-          <v-list-item to="/forward?tab=selectivity" title="Regio-selectivity Prediction"
-            value="selectivity" :active="route.query.tab === 'selectivity'"></v-list-item>
+          <v-list-item to="/forward?tab=selectivity" title="Regio-selectivity Prediction" value="selectivity"
+            :active="route.query.tab === 'selectivity'"></v-list-item>
           <v-list-item to="/forward?tab=sites" title="Aromatic C-H Functionalization" value="sites"
             :active="route.query.tab === 'sites'"></v-list-item>
         </v-list-group>
@@ -110,8 +111,10 @@ function logout() {
   router.push({ path: '/login' })
 }
 
-function onDrawerCollapse() {
+function onDrawerCollapse(value) {
+  if (value) {
     openGroups.value = [];
+  }
 }
 
 async function closeGroupsOnBack(_value) {
@@ -136,10 +139,10 @@ onMounted(() => {
 
 <style scoped>
 .sidebar {
-  position:fixed !important;
-  top:0 !important; 
-  left:0 !important; 
-  overflow-y:scroll !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  overflow-y: scroll !important;
 }
 
 .v-icon {
