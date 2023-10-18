@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer expand-on-hover rail elevation="2" @update:rail="onDrawerCollapse" width="100px">
+  <v-navigation-drawer expand-on-hover rail elevation="2" @update:rail="onDrawerCollapse" width="100px" class="sidebar">
     <v-list>
       <v-list-item prepend-icon="mdi-tools" title="ASKCOS" subtitle="Demo"></v-list-item>
     </v-list>
@@ -13,7 +13,6 @@
           <v-list-item v-bind="props" prepend-icon="mdi-file-tree" title="Modules" :active="activeModules"
             :variant="activeModules ? 'tonal' : 'text'"></v-list-item>
         </template>
-        <!-- <v-list-item prepend-icon="mdi-help-box" title="Overview" value="overview"></v-list-item> -->
         <v-list-group value="Retrosynthesis" subgroup>
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" title="Retrosynthesis"></v-list-item>
@@ -135,7 +134,14 @@ onMounted(() => {
 });
 </script>
 
-<style>
+<style scoped>
+.sidebar {
+  position:fixed !important;
+  top:0 !important; 
+  left:0 !important; 
+  overflow-y:scroll !important;
+}
+
 .v-icon {
   margin-inline-end: 0px;
 }
