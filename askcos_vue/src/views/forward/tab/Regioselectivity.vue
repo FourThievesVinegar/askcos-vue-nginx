@@ -1,6 +1,6 @@
 <template>
     <v-container fluid class="pa-0">
-        <v-sheet elevation="5" rounded="lg" width="100%" class="pa-6">
+        <v-sheet elevation="5" width="100%" class="pa-6">
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
                     <h3 class="text-h5">Regioselectivity Prediction</h3>

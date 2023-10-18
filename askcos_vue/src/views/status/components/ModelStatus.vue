@@ -33,9 +33,6 @@
               {{ modelName.trim() }}
             </div>
           </div>
-          <div v-else>
-            No available model names
-          </div>
         </template>
         <template #bottom></template>
       </v-data-table>

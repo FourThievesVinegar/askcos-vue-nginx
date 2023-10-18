@@ -147,22 +147,22 @@
       <v-card-text>
         <v-row>
           <v-col cols="12">
-            <v-text-field data-cy="smiles-input" label="SMILES" v-model="addBuyableSmiles" density="comfortable"
-              variant="outlined" hide-details clearable></v-text-field>
+            <v-text-field data-cy="smiles-input" :rules="[v => !!v || 'SMILES is required']" label="SMILES" v-model="addBuyableSmiles" density="comfortable"
+              variant="outlined"  clearable></v-text-field>
           </v-col>
         </v-row>
 
         <v-row>
           <v-col cols="12">
-            <v-text-field id="pricePerGram" label="Price per gram" v-model="addBuyablePrice" density="comfortable"
-              variant="outlined" hide-details clearable></v-text-field>
+            <v-text-field id="pricePerGram" :rules="[v => !!v || 'Price is required']" label="Price per gram" v-model="addBuyablePrice" density="comfortable"
+              variant="outlined" clearable></v-text-field>
           </v-col>
         </v-row>
 
         <v-row>
           <v-col cols="12">
-            <v-text-field id="source" label="Source" v-model="addBuyableSource" density="comfortable" variant="outlined"
-              hide-details clearable></v-text-field>
+            <v-text-field id="source" label="Source" v-model="addBuyableSource" :rules="[v => !!v || 'Source is required']" density="comfortable" variant="outlined"
+              clearable></v-text-field>
           </v-col>
         </v-row>
 
@@ -203,7 +203,7 @@
 
         <v-row>
           <v-col cols="12">
-            <v-file-input label="File" v-model="uploadFile" density="comfortable" variant="outlined" hide-details
+            <v-file-input label="File" v-model="uploadFile" :rules="[v => !!v || 'File is required']"  density="comfortable" variant="outlined" 
               clearable></v-file-input>
           </v-col>
         </v-row>
@@ -363,7 +363,6 @@ const handleUploadSubmit = () => {
         return
       }
       createSnackbar({ text: 'Out of ' + json.total_count + ' entries, successfully added ' + json.inserted_count + ', updated ' + json.updated_count + ', and skipped ' + json.duplicate_count + ' duplicates. Only adding (up to) ' + 2 * searchLimit.value + ' documents to the list below', snackbarProps: { timeout: -1, vertical: true } })
-      // alert('Out of ' + json.total_count + ' entries, successfully added ' + json.inserted_count + ', updated ' + json.updated_count + ', and skipped ' + json.duplicate_count + ' duplicates. Only adding (up to) ' + 2 * searchLimit.value + ' documents to the list below')
       if (json.inserted.length > 0) {
         buyables.value.unshift(...json.inserted)
       }
@@ -385,6 +384,7 @@ const handleUploadSubmit = () => {
       }
     })
     .finally(() => {
+      showUploadModal.value = false;
       uploadFile.value = null;
       pendingTasks.value--;
     });

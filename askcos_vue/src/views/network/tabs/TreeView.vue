@@ -354,7 +354,7 @@
               <smiles-image class="my-3" :smiles="selected.smiles" :align="settingsStore.ippSettings.alignPrecursorsToProduct"></smiles-image>
             </div>
             <div class="text-center my-3">
-              <b-button size="sm" variant="outline-secondary" :href="'/synth_interactive/?mode=context&rxnsmiles=' + encodeURIComponent(selected.smiles)" target="_blank">Evaluate reaction</b-button>
+              <b-button size="sm" variant="outline-secondary" :href="'/smynth_interactive/?mode=context&rxnsiles=' + encodeURIComponent(selected.smiles)" target="_blank">Evaluate reaction</b-button>
             </div>
             <table class="table table-sm table-striped table-borderless">
               <tbody>

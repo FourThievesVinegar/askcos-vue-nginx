@@ -1,9 +1,9 @@
 <template>
-    <v-container fluid class="pa-0">
-        <v-sheet elevation="2" width="100%" class="pa-6">
+    <v-container  fluid class="pa-0">
+        <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6">
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
-                    <!-- <h3 class="text-h5">Condition Recommendation</h3> -->
+                    <h3 class="text-h5">Condition Recommendation</h3>
                     <b v-if=!!score>Reaction score: {{ score.toFixed(3) }}</b>
                 </v-col>
                 <v-spacer></v-spacer>
@@ -15,7 +15,7 @@
                 </v-col>
             </v-row>
 
-            <!-- <v-dialog v-model="showDialog" max-width="500px">
+            <v-dialog v-model="showDialog" max-width="500px">
                 <v-card>
                     <v-card-text class="px-8 py-8">
                         <p class="my-4">
@@ -31,9 +31,9 @@
                     </v-card-text>
                     <v-divider></v-divider>
                 </v-card>
-            </v-dialog> -->
+            </v-dialog>
 
-            <v-data-table class="mx-auto my-auto " v-if="models === 'neuralnetwork' && !pending && results.length"
+            <v-data-table class="mx-auto my-auto mt-3" v-if="models === 'neuralnetwork' && !pending && results.length"
                 :headers="headers" :items="results" v-show="results.length > 0" :items-per-page="10" height="600px">
                 <template v-slot:item.index="{ index }">
                     {{ index + 1 }}
@@ -53,21 +53,34 @@
                     </td>
                 </template>
                 <template v-slot:item.solvent_score="{ item }">
-                    <v-chip :color="getColor(item.columns.solvent_score)">
+                    <v-chip :color="getColor(item.columns.solvent_score)" v-if="item.columns.solvent_score">
                         {{ item.columns.solvent_score }}
                     </v-chip>
+                    <div v-else>
+                        None
+                    </div>
                 </template>
                 <template #item.reagent="{ item }">
-                    <v-tooltip activator="parent" location="top">
-                        <span>{{ item.columns.reagent }}</span>
-                    </v-tooltip>
-                    <smiles-image :smiles="item.columns.reagent" height="80px"></smiles-image>
+                    <template v-if="item.columns.reagent">
+                        <v-tooltip activator="parent" location="top">
+                            <span>{{ item.columns.reagent }}</span>
+                        </v-tooltip>
+                        <smiles-image :smiles="item.columns.reagent" height="80px"></smiles-image>
+                        </template>
+                    <div v-else>
+                        None
+                    </div>
                 </template>
                 <template #item.solvent="{ item }">
-                    <v-tooltip activator="parent" location="top">
-                        <span>{{ item.columns.solvent }}</span>
-                    </v-tooltip>
-                    <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
+                    <template v-if="item.columns.solvent">
+                        <v-tooltip activator="parent" location="top">
+                            <span>{{ item.columns.solvent }}</span>
+                        </v-tooltip>
+                        <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
+                    </template>
+                    <div v-else>
+                        None
+                    </div>
                 </template>
                 <template #item.temperature="{ item }">
                     {{ Math.round(item.columns.temperature) }} &deg;C
@@ -138,6 +151,21 @@
 
             <v-skeleton-loader v-else-if="!!pending" class="mx-auto my-auto" min-height="80px" type="table">
             </v-skeleton-loader>
+
+            <v-row align="center" justify="space-between" class="mx-auto my-auto" v-if="pending || !results.length">
+                    <v-col>
+                       <p class="my-4">
+                                Predict reagents, catalysts, solvents and temperature for a desired transformation using a
+                                neural
+                                network model.
+                                <a href="https://doi.org/10.1021/acscentsci.8b00357">(ACS Cent. Sci., 2018, 4, 1465-1476)</a>
+                            </p>
+                            <p class="my-4">
+                                <b>New in 2021.01:</b> Quantitative condition predictions now available using neural network v2
+                                model. Select in <a>settings menu.</a>
+                            </p>
+                    </v-col>
+                </v-row>
         </v-sheet>
     </v-container>
 </template>
@@ -180,19 +208,19 @@ const { results, models, pending } = defineProps({
 const headers = ref([
     { key: 'index', title: '#', align: 'center', },
     { key: 'evaluation', title: 'Rank', align: 'center', },
-    { key: 'solvent', title: 'Solvent', align: 'center', },
-    { key: 'reagent', title: 'Reagents', align: 'center', },
+    { key: 'solvent', title: 'Solvent', align: 'center'},
+    { key: 'reagent', title: 'Reagents', align: 'center', width: "300px"},
     { key: 'catalyst_name_only', title: 'Catalyst', align: 'center', },
     { key: 'temperature', title: 'Temperature', align: 'center', },
     { key: 'solvent_score', title: 'Solvent Score', align: 'center', },
-    { key: 'predict', title: 'Predict with conditions', align: 'center', }
+    { key: 'predict', title: 'Predict with conditions', align: 'center', width: "50px" }
 ])
 
 
 const headersAlt = ref([
     { key: 'index', title: '#', align: 'center', },
     { key: 'evaluation', title: 'Rank', align: 'center', },
-    { key: 'reactants', title: 'Reactants (Amount)', align: 'center', },
+    { key: 'reactants', title: 'Reactants (Amount)', align: 'center' },
     { key: 'reagents', title: 'Reagents (Amount)', align: 'center', },
     { key: 'temperature', title: 'Temperature', align: 'center', },
     { key: 'predict', title: 'Predict with conditions', align: 'center', }

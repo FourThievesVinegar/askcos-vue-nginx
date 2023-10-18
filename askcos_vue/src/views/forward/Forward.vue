@@ -359,7 +359,7 @@ const evaluate = async () => {
   })
 
   try {
-    const output = await API.runCeleryTask('/api/legacy/fast_filter/', postData);
+    const output = await API.runCeleryTask('/api/legacy/fast-filter/', postData);
     reactionScore.value = output;
   } catch (error) {
     console.error("An error occurred during evaluation:", error);
@@ -630,7 +630,7 @@ const selectivityPredict = () => {
 
   const postData = constructSelectivityPostData()
 
-  return API.runCeleryTask('/api/legacy/general_selectivity', postData)
+  return API.runCeleryTask('/api/legacy/general-selectivity', postData)
     .then(output => {
       if (typeof output === 'string') {
         alert('Error running selectivity prediction: ' + output)
@@ -887,7 +887,7 @@ const contextV2Predict = () => {
   contextResults.value = [];
   evaluating.value = false;
   const postData = constructContextV2PostData();
-  API.runCeleryTask('/api/legacy/context_v2/', postData)
+  API.runCeleryTask('/api/legacy/context-v2/', postData)
     .then((output) => {
       postprocessContextV2(output);
       console.log(contextResults.value)
