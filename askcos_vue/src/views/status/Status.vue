@@ -3,7 +3,15 @@
     <v-row style="min-height: 100vh" class="justify-center">
       <v-col cols="12" sm="8" md="10">
         <div class="my-8">
-          <v-breadcrumbs class="pa-0" :items="['Home', 'Status']"></v-breadcrumbs>
+          <v-breadcrumbs class="pa-0" :items="[{
+            title: 'Home',
+            disabled: false,
+            href: '/',
+          },
+          {
+            title: 'Status',
+            disabled: true,
+          }]"></v-breadcrumbs>
           <h1>
             Server Status
           </h1>

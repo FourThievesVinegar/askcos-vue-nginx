@@ -13,7 +13,7 @@
           <v-list-item v-bind="props" prepend-icon="mdi-file-tree" title="Modules" :active="activeModules"
             :variant="activeModules ? 'tonal' : 'text'"></v-list-item>
         </template>
-        <v-list-item prepend-icon="mdi-help-box" title="Overview" value="overview"></v-list-item>
+        <!-- <v-list-item prepend-icon="mdi-help-box" title="Overview" value="overview"></v-list-item> -->
         <v-list-group value="Retrosynthesis" subgroup>
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" title="Retrosynthesis"></v-list-item>
@@ -30,16 +30,16 @@
             <v-list-item v-bind="props" title="Forward Synthesis"></v-list-item>
           </template>
 
-          <v-list-item to="forward?tab=context" prepend-icon="mdi-help-box" title="Condition Recommendation"
+          <v-list-item to="forward?tab=context" title="Condition Recommendation"
             value="context" :active="route.query.tab === 'context'"></v-list-item>
-          <v-list-item to="forward?tab=forward" prepend-icon="mdi-help-box" title="Synthesis Prediction" value="forward"
+          <v-list-item to="forward?tab=forward" title="Synthesis Prediction" value="forward"
             :active="route.query.tab === 'forward'"></v-list-item>
-          <v-list-item to="forward?tab=impurity" prepend-icon="mdi-help-box" title="Impurity Prediction" value="impurity"
+          <v-list-item to="forward?tab=impurity" title="Impurity Prediction" value="impurity"
             :active="route.query.tab === 'impurity'"></v-list-item>
-          <v-list-item to="forward?tab=selectivity" prepend-icon="mdi-help-box" title="Regio-selectivity Prediction"
+          <v-list-item to="forward?tab=selectivity" title="Regio-selectivity Prediction"
             value="selectivity" :active="route.query.tab === 'selectivity'"></v-list-item>
-          <v-list-item to="forward?tab=sites" prepend-icon="mdi-help-box" title="Aromatic C-H Functionalization"
-            value="sites" :active="route.query.tab === 'sites'"></v-list-item>
+          <v-list-item to="forward?tab=sites" title="Aromatic C-H Functionalization" value="sites"
+            :active="route.query.tab === 'sites'"></v-list-item>
         </v-list-group>
 
         <v-list-group value="Utilities" subgroup>

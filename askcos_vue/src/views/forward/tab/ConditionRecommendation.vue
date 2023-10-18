@@ -1,9 +1,9 @@
 <template>
     <v-container fluid class="pa-0">
-        <v-sheet elevation="5" rounded="lg" width="100%" class="pa-6">
+        <v-sheet elevation="2" width="100%" class="pa-6">
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
-                    <h3 class="text-h5">Condition Recommendation</h3>
+                    <!-- <h3 class="text-h5">Condition Recommendation</h3> -->
                     <b v-if=!!score>Reaction score: {{ score.toFixed(3) }}</b>
                 </v-col>
                 <v-spacer></v-spacer>
@@ -12,13 +12,10 @@
                         color="primary mx-2">
                         Evaluate Reaction(s)
                     </v-btn>
-                    <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
-                        Reference
-                    </v-btn>
                 </v-col>
             </v-row>
 
-            <v-dialog v-model="showDialog" max-width="500px">
+            <!-- <v-dialog v-model="showDialog" max-width="500px">
                 <v-card>
                     <v-card-text class="px-8 py-8">
                         <p class="my-4">
@@ -34,7 +31,7 @@
                     </v-card-text>
                     <v-divider></v-divider>
                 </v-card>
-            </v-dialog>
+            </v-dialog> -->
 
             <v-data-table class="mx-auto my-auto " v-if="models === 'neuralnetwork' && !pending && results.length"
                 :headers="headers" :items="results" v-show="results.length > 0" :items-per-page="10" height="600px">
@@ -119,9 +116,9 @@
                         ({{ amount.toFixed(2) }})
                     </div>
                 </template>
-                 <template #item.temperature="{ item }">
-                        {{ Math.round(item.columns.temperature) }} &deg;C
-                    </template>
+                <template #item.temperature="{ item }">
+                    {{ Math.round(item.columns.temperature) }} &deg;C
+                </template>
                 <template v-slot:item.reagents="{ item }">
                     <div v-if="!!item.columns.reagents" class="text-center" v-for="(amount, rgt) in item.columns.reagents"
                         :key="rgt">

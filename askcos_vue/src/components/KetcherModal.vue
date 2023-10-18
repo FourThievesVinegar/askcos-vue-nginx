@@ -94,7 +94,7 @@ export default {
       const km = ketcherIframe.value;
       const ketcher = km.contentWindow.ketcher;
       ketcher.getSmiles().then(async smiles => {
-        const json = await API.post('/api/v2/rdkit/smiles/canonicalize/', { smiles: smiles });
+        const json = await API.post('/api/rdkit/canonicalize', { smiles: smiles });
         if (json.smiles) {
           context.emit('update:smiles', json.smiles);
         }

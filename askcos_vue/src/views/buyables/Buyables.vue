@@ -10,11 +10,12 @@
         </div>
       </v-col>
     </v-row>
+
     <v-row class="justify-center">
       <v-col cols="12" md="10">
-        <v-sheet elevation="2" rounded="lg">
-          
-          <v-row class="px-5 pt-5 justify-center">
+        <v-sheet elevation="2">
+
+          <v-row class="px-5 pt-5 justify-center" density="compact">
             <v-col cols="12" md="10" my="10">
               <v-text-field v-model="searchSmilesQuery" placeholder="SMILES/SMARTS" prepend-inner-icon="mdi mdi-flask"
                 density="comfortable" variant="outlined" label="Enter SMILES/SMART to explore" hide-details clearable>
@@ -55,14 +56,37 @@
                 </template>
               </v-slider>
             </v-col>
-            <v-col cols="12" md="4" class="d-flex justify-space-evenly align-center"><v-btn
-                @click="showSourcesDialog = true" height="40px" color="primary" variant="tonal">
-                Select Sources
-              </v-btn>
-              <v-btn color="success" data-cy="add-compound-button" @click="showAddModal = !showAddModal" icon="mdi-plus"
-                class="mr-3">
-              </v-btn>
-              <v-btn color="info" @click="showUploadModal = !showUploadModal" icon="mdi-file-upload">
+            <v-col cols="12" md="4" class="d-flex justify-space-evenly align-center">
+
+              <v-menu location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-btn color="primary" size="small" variant="flat" v-bind="props">
+                    Select Sources
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item data-cy="all-sources-checkbox" @change="searchSourceQuery = []"
+                    label="All">All</v-list-item>
+                  <v-list-item v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery" :title="source"
+                    :label="source" @click="searchSourceQuery = source"></v-list-item>
+                </v-list>
+              </v-menu>
+
+              <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
+                <template v-slot:activator="{ props }">
+                  <v-btn color="primary" prepend-icon="mdi mdi-menu-down" size="small" variant="flat" v-bind="props">
+                    Upload
+                  </v-btn>
+                </template>
+
+                <v-list>
+                  <v-list-item @click="showAddModal = !showAddModal">Add Compound</v-list-item>
+                  <v-list-item @click="showUploadModal = !showUploadModal">Upload File</v-list-item>
+                </v-list>
+              </v-menu>
+
+              <v-btn color="primary" variant="tonal" size="small" @click="clear()" :disabled="!buyables.length">
+                Clear
               </v-btn>
             </v-col>
           </v-row>
@@ -76,8 +100,7 @@
                   </copy-tooltip>
                 </template>
                 <template v-slot:item.delete="{ item }">
-                  <!-- <pre>{{ item }}</pre> -->
-                  <v-icon @click="deleteBuyable(item.index)" class="text-center">mdi-delete</v-icon>
+                  <v-icon @click="deleteBuyable(item.raw._id)" class="text-center">mdi-delete</v-icon>
                 </template>
               </v-data-table>
             </v-col>
@@ -92,7 +115,7 @@
     </v-row>
   </v-container>
 
-  <v-dialog v-model="showSourcesDialog" max-width="600px">
+  <!-- <v-dialog v-model="showSourcesDialog" max-width="600px">
     <v-card>
       <v-card-title class="mt-2">
         <v-col cols="12">Select Sources</v-col>
@@ -114,40 +137,40 @@
         </v-btn>
       </v-card-actions>
     </v-card>
-  </v-dialog>
+  </v-dialog> -->
 
   <v-dialog v-model="showAddModal" max-width="600px">
     <v-card>
-        <v-card-title class="mt-2">
-          <v-col cols="12">Add new buyable compound</v-col>
-        </v-card-title>
+      <v-card-title class="mt-2">
+        <v-col cols="12">Add new buyable compound</v-col>
+      </v-card-title>
       <v-card-text>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field data-cy="smiles-input" label="SMILES" v-model="addBuyableSmiles" density="comfortable" variant="outlined" hide-details
-                              clearable></v-text-field>
-            </v-col>
-          </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field data-cy="smiles-input" label="SMILES" v-model="addBuyableSmiles" density="comfortable"
+              variant="outlined" hide-details clearable></v-text-field>
+          </v-col>
+        </v-row>
 
-          <v-row>
-            <v-col cols="12">
-              <v-text-field id="pricePerGram" label="Price per gram" v-model="addBuyablePrice" density="comfortable" variant="outlined" hide-details
-                              clearable></v-text-field>
-            </v-col>
-          </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field id="pricePerGram" label="Price per gram" v-model="addBuyablePrice" density="comfortable"
+              variant="outlined" hide-details clearable></v-text-field>
+          </v-col>
+        </v-row>
 
-          <v-row>
-            <v-col cols="12">
-              <v-text-field id="source" label="Source" v-model="addBuyableSource" density="comfortable" variant="outlined" hide-details
-                              clearable></v-text-field>
-            </v-col>
-          </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field id="source" label="Source" v-model="addBuyableSource" density="comfortable" variant="outlined"
+              hide-details clearable></v-text-field>
+          </v-col>
+        </v-row>
 
-          <v-row>
-            <v-col cols="12">
-              <v-checkbox label="Allow overwriting exisiting result" v-model="allowOverwrite"></v-checkbox>
-            </v-col>
-          </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-checkbox label="Allow overwriting exisiting result" v-model="allowOverwrite"></v-checkbox>
+          </v-col>
+        </v-row>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -159,44 +182,44 @@
 
   <v-dialog v-model="showUploadModal" max-width="600px">
     <v-card>
-          <v-card-title class="mt-2">
-            <v-col cols="12">Upload buyable compound file</v-col>
-          </v-card-title>
+      <v-card-title class="mt-2">
+        <v-col cols="12">Upload buyable compound file</v-col>
+      </v-card-title>
       <v-card-text>
-          <v-row>
-            <v-col cols="12" class="mb-2">
-              <span>
-                File uploads should be in CSV format containing "smiles", "ppg", and "source" columns or
-                in
-                JSON format as an
-                array of objects containing "smiles", "ppg", and "source" fields. Optionally, a
-                "properties" field containing additional metadata can be specified as an array of JSON
-                objects
-                with "name" and
-                "value" fields.
-              </span>
-            </v-col>
-          </v-row>
+        <v-row>
+          <v-col cols="12" class="mb-2">
+            <span>
+              File uploads should be in CSV format containing "smiles", "ppg", and "source" columns or
+              in
+              JSON format as an
+              array of objects containing "smiles", "ppg", and "source" fields. Optionally, a
+              "properties" field containing additional metadata can be specified as an array of JSON
+              objects
+              with "name" and
+              "value" fields.
+            </span>
+          </v-col>
+        </v-row>
 
-          <v-row>
-            <v-col cols="12">
-              <v-file-input label="File" v-model="uploadFile" density="comfortable" variant="outlined" hide-details
-                                clearable></v-file-input>
-            </v-col>
-          </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-file-input label="File" v-model="uploadFile" density="comfortable" variant="outlined" hide-details
+              clearable></v-file-input>
+          </v-col>
+        </v-row>
 
-          <v-row>
-            <v-col cols="12">
-              <v-select label="Format" v-model="uploadFileFormat" :items="['json', 'csv']" density="comfortable" variant="outlined" hide-details
-                                clearable></v-select>
-            </v-col>
-          </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-select label="Format" v-model="uploadFileFormat" :items="['json', 'csv']" density="comfortable"
+              variant="outlined" hide-details clearable></v-select>
+          </v-col>
+        </v-row>
 
-          <v-row>
-            <v-col cols="12">
-              <v-checkbox label="Allow overwriting exisiting result" v-model="allowOverwrite"></v-checkbox>
-            </v-col>
-          </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-checkbox label="Allow overwriting exisiting result" v-model="allowOverwrite"></v-checkbox>
+          </v-col>
+        </v-row>
       </v-card-text>
 
       <v-card-actions>
@@ -216,8 +239,9 @@ import SmilesImage from "@/components/SmilesImage.vue";
 import CopyTooltip from "@/components/CopyTooltip";
 import emptyCart from "@/assets/emptyCart.svg";
 import KetcherModal from "@/components/KetcherModal";
+import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
 
-const showSourcesDialog = ref(false);
+// const showSourcesDialog = ref(false);
 const buyables = ref([]);
 const uploadFile = ref(null);
 const searchSmilesQuery = ref('');
@@ -236,6 +260,9 @@ const pendingTasks = ref(0);
 const buyablesSources = ref([]);
 const showKetcher = ref(false);
 const ketcherRef = ref(null);
+const selectedSource = ref(null);
+const createConfirm = useConfirm();
+const createSnackbar = useSnackbar()
 
 const headers = computed(() => {
   let headers = [
@@ -252,6 +279,23 @@ const headers = computed(() => {
   return headers
 });
 
+const clear = async (skipConfirm = false) => {
+  if (!skipConfirm) {
+    const isConfirmed = await createConfirm({
+      title: 'Please Confirm',
+      content: 'This will clear all of your current results. Continue anyway?',
+      dialogProps: { width: "auto" }
+    });
+    if (!isConfirmed) return;
+  }
+
+  searchSmilesQuery.value = "",
+    searchSourceQuery.value = [],
+    buyables.value = [],
+    searchLimit.value = 100,
+    simThresh.value = 1
+};
+
 const showLoader = computed(() => {
   return pendingTasks.value > 0
 });
@@ -267,9 +311,10 @@ const updateSmiles = (newSmiles) => {
 }
 
 onMounted(() => {
-  API.get('/api/buyables/sources/')
+  API.get('/api/buyables/sources')
     .then(json => {
       buyablesSources.value = json.sources
+      console.log(buyablesSources.value)
     });
   let urlParams = new URLSearchParams(window.location.search);
   let query = urlParams.get('q');
@@ -286,12 +331,11 @@ const search = () => {
     searchSourceQuery.value,
     searchRegex.value,
     searchLimit.value,
-    simThresh.value
+    simThresh.value,
   )
     .then(json => {
-      console.log(json)
       buyables.value = json['result'];
-      console.log(json['result'])
+      console.log(buyables.value)
     })
     .finally(() => {
       pendingTasks.value--
@@ -305,17 +349,21 @@ const handleUploadSubmit = () => {
     return;
   }
   pendingTasks.value++;
+
   let formData = new FormData();
-  formData.append('file', uploadFile.value);
+  formData.append('file', uploadFile.value[0]);
   formData.append('format', uploadFileFormat.value);
   formData.append('allowOverwrite', allowOverwrite.value);
-  API.post('/api/buyables/upload/', formData)
+  formData.append('returnLimit', 200);
+  console.log('Form Data', Object.fromEntries(formData.entries()));
+  API.post('/api/buyables/upload', formData)
     .then(json => {
       if (json.error) {
         alert(json.error)
         return
       }
-      alert('Out of ' + json.total_count + ' entries, successfully added ' + json.inserted_count + ', updated ' + json.updated_count + ', and skipped ' + json.duplicate_count + ' duplicates. Only adding (up to) ' + 2 * this.searchLimit + ' documents to the list below')
+      createSnackbar({ text: 'Out of ' + json.total_count + ' entries, successfully added ' + json.inserted_count + ', updated ' + json.updated_count + ', and skipped ' + json.duplicate_count + ' duplicates. Only adding (up to) ' + 2 * searchLimit.value + ' documents to the list below', snackbarProps: { timeout: -1, vertical: true } })
+      // alert('Out of ' + json.total_count + ' entries, successfully added ' + json.inserted_count + ', updated ' + json.updated_count + ', and skipped ' + json.duplicate_count + ' duplicates. Only adding (up to) ' + 2 * searchLimit.value + ' documents to the list below')
       if (json.inserted.length > 0) {
         buyables.value.unshift(...json.inserted)
       }
@@ -342,6 +390,9 @@ const handleUploadSubmit = () => {
     });
 };
 
+
+
+
 const addBuyable = () => {
   pendingTasks.value++;
   let body = {
@@ -350,10 +401,10 @@ const addBuyable = () => {
     source: addBuyableSource.value,
     allowOverwrite: allowOverwrite.value,
   };
-  API.post('/api/buyables/', body)
+  API.post('/api/buyables/create', body)
     .then(json => {
       if (json.error || !json.success) {
-        alert('Error adding buyable compound')
+        createSnackbar({ text: "Error adding buyable compound", snackbarProps: { timeout: -1, vertical: true } })
       } else {
         if (json.inserted) {
           buyables.value.unshift(json.result)
@@ -366,8 +417,12 @@ const addBuyable = () => {
             }
           }
         }
-        if (json.duplicate) {
-          alert('Compound already exists in database! Check allow overwrite checkbox to allow overwriting!')
+        if (json.duplicate == true) {
+          createSnackbar({ text: "Compound already exists in database! Check allow overwrite checkbox to allow overwriting!", snackbarProps: { timeout: -1, vertical: true } })
+        }
+        if (json.success) {
+          createSnackbar({ text: "Complete!", snackbarProps: { timeout: -1, vertical: true } })
+          showAddModal.value = !showAddModal.value;
         }
       }
     })
@@ -378,24 +433,36 @@ const addBuyable = () => {
 
 
 const deleteBuyable = (_id) => {
-  if (!window.confirm('Click "OK" to confirm deleting this entry')) {
-    return;
+  const confirmDelete = async () => {
+    const isConfirmed = await createConfirm({
+      title: 'Please Confirm',
+      content: 'Click "OK" to confirm deleting this entry',
+      dialogProps: { width: "auto" }
+    });
+
+    if (!isConfirmed) return;
+
+    // User confirmed, now call the API
+    pendingTasks.value++;
+
+    const params = new URLSearchParams();
+    params.append('pk', encodeURIComponent(_id));
+
+    return API.delete(`/api/buyables/destroy?${params.toString()}`)
   }
 
-  pendingTasks.value++;
-  API.delete(`/api/buyables/destroy/${encodeURIComponent(_id)}`)
+  confirmDelete()
     .then(json => {
-      if (json.error) {
-        alert(json.error)
-        console.log(json.error)
-      }
-      if (json['success']) {
-        for (let i = 0; i < buyables.value.length; i++) {
-          if (buyables.value[i]['_id'] === _id) {
-            buyables.value = buyables.value.filter(b => b._id !== _id)
-            console.log(buyables.value[i]['_id'])
-          }
+      if (json['success'] === true) {
+        const indexToDelete = buyables.value.findIndex(b => b._id === _id);
+        if (indexToDelete !== -1) {
+          console.log(buyables.value[indexToDelete]['_id']);
+          buyables.value.splice(indexToDelete, 1);
+          createSnackbar({ text: "Complete!", snackbarProps: { timeout: -1, vertical: true } })
         }
+      }
+      if (json.error !== null) {
+        alert(json.error)
       }
     })
     .finally(() => {
@@ -406,12 +473,22 @@ const deleteBuyable = (_id) => {
 
 
 watch(uploadFile, (file) => {
-  if (file) {
+  if (file && file.name) {
     if (file.name.endsWith('.json')) {
       uploadFileFormat.value = 'json'
     } else if (file.name.endsWith('.csv')) {
       uploadFileFormat.value = 'csv'
     }
+  }
+});
+
+watch(selectedSource, (newValue) => {
+  console.log('Selected source changed:', newValue);
+
+  if (newValue) {
+    console.log('Source selected successfully:', newValue);
+  } else {
+    console.log('Source deselected');
   }
 });
 

@@ -2,14 +2,18 @@
   <v-container fluid>
     <v-row class="justify-center">
       <v-col cols="12" sm="8" md="10">
-        <div class="mt-8 mb-5">
-          <v-breadcrumbs class="pa-0" :items="['Home', 'Forward']"></v-breadcrumbs>
-          <h1>
-            Forward Synthesis Planner
-          </h1>
-        </div>
-        <v-sheet elevation="2" rounded="lg" class="pa-10">
 
+        <v-sheet elevation="2" class="my-6 ">
+          <v-tabs v-model="tab" color="primary" align-tabs="center" grow class="mb-4">
+            <v-tab @click="replaceRoute('context')" value="context">Condition Recommendation</v-tab>
+            <v-tab @click="replaceRoute('forward')" value="forward">Product Prediction</v-tab>
+            <v-tab @click="replaceRoute('impurity')" value="impurity">Impurity Prediction</v-tab>
+            <v-tab @click="replaceRoute('selectivity')" value="selectivity">Regioselectivity Prediction</v-tab>
+            <v-tab @click="replaceRoute('sites')" value="sites">Aromatic C-H Functionalization</v-tab>
+          </v-tabs>
+        </v-sheet>
+
+        <v-sheet elevation="2" class="pa-10">
           <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="currentSmiles" @input="showKetcher = false"
             @update:smiles="(ketcherSmiles) => updateSmiles(ketcherSmiles)" />
 
@@ -35,8 +39,14 @@
             </v-row>
 
             <v-row v-if="!!reactants" class="d-flex justify-center">
-              <v-col cols="12">
-                <smiles-image :smiles="reactants + '>>' + product"></smiles-image>
+              <v-col cols="3">
+                <smiles-image :smiles="reactants"></smiles-image>
+              </v-col>
+               <v-col cols="3" align="center" v-if="!!reactants && mode !== 'sites'" class="py-30">
+                  <smiles-image :smiles="'>>'"  width="200"></smiles-image>
+                </v-col>
+              <v-col cols="3"  v-if="mode !== 'sites'">
+                <smiles-image :smiles="product"></smiles-image>
               </v-col>
             </v-row>
 
@@ -65,37 +75,35 @@
               v-if="!!reagents && mode === 'forward' || !!reagents && mode === 'impurity' || !!reagents && mode === 'selectivity'"
               class="d-flex justify-center">
               <v-col cols="6" class="d-flex justify-center">
-                <smiles-image :smiles="reagents" width="200"></smiles-image>
+                <smiles-image :smiles="reagents" width="300"></smiles-image>
               </v-col>
               <v-col cols="6" class="d-flex justify-center">
-                <smiles-image :smiles="solvent" width="200"></smiles-image>
+                <smiles-image :smiles="solvent" width="300"></smiles-image>
 
               </v-col>
             </v-row>
 
 
-            <v-row align="center" justify="space-between">
-              <v-col>
-                <v-btn type="submit" color="success">
-                  Submit
+            <v-row align="center" justify-start>
+              <v-col class="mr-5">
+                <v-btn type="submit" color="success" class="mr-5">
+                  {{
+                    tab === 'context' ? 'Get Condition Recommendation' :
+                    tab === 'forward' ? 'Get Product Prediction' :
+                      tab === 'impurity' ? 'Get Impurity Prediction' :
+                        tab === 'selectivity' ? 'Get Regioselectivity Prediction' :
+                         tab === 'sites' ? 'Get Aromatic C-H Functionalization' :
+                          'Submit'
+                  }}
+                </v-btn>
+                <v-btn icon @click="dialog = !dialog">
+                  <v-icon>mdi-cog</v-icon>
                 </v-btn>
               </v-col>
-              <v-btn icon @click="dialog = !dialog">
-                <v-icon>mdi-cog</v-icon>
-              </v-btn>
             </v-row>
           </v-form>
         </v-sheet>
 
-        <v-sheet elevation="2" class="my-6 ">
-          <v-tabs v-model="tab" color="primary" align-tabs="center" grow class="mb-4">
-            <v-tab @click="replaceRoute('context')" value="context">Condition Recommendation</v-tab>
-            <v-tab @click="replaceRoute('forward')" value="forward">Synthesis Prediction</v-tab>
-            <v-tab @click="replaceRoute('impurity')" value="impurity">Impurity Prediction</v-tab>
-            <v-tab @click="replaceRoute('selectivity')" value="selectivity">Regioselectivity Prediction</v-tab>
-            <v-tab @click="replaceRoute('sites')" value="sites" disabled>Aromatic C-H Functionalization</v-tab>
-          </v-tabs>
-        </v-sheet>
 
         <v-window v-model="tab" class="elevation-2 my-6">
           <v-window-item value="context" rounded="lg">
@@ -112,7 +120,7 @@
               :progress="impurityProgress" @download-impurity="downloadImpurityResults" />
           </v-window-item>
           <v-window-item value="selectivity">
-            <Regioselectivity value="selectivity" rounded="lg" />
+            <Regioselectivity value="selectivity" rounded="lg" :results="selectivityResults" :pending="pendingTasks" />
           </v-window-item>
           <v-window-item value="sites">
             <SiteSelectivity value="sites" rounded="lg" :results="siteResults" :reactingAtoms="reactingAtoms"
@@ -234,8 +242,10 @@
               <v-expansion-panel-text>
                 <v-row>
                   <v-col cols="12">
-                    <v-switch label="Do not map reagents" hint="Reagents do not provide any atom to the product."
-                      v-model="absoluteReagents"></v-switch>
+                    <v-switch :label="`Do not map reagents: ${absoluteReagents}`"
+                      hint="Reagents do not provide any atom to the product." v-model="absoluteReagents" true-value="yes"
+                      false-value="no" color="primary">
+                    </v-switch>
                   </v-col>
                 </v-row>
               </v-expansion-panel-text>
@@ -285,8 +295,11 @@ const impurityTopk = ref(3);
 const inspectionThreshold = ref(0.1);
 const inspectionModel = ref('Reaxys inspector');
 const impurityCheckMapping = ref(true);
-const absoluteReagents = ref(true);
+const absoluteReagents = ref(false);
+const atomMappingModel = ref('Transformer')
 const forwardResults = ref([])
+const selectivityResults = ref([])
+const selectivityModel = ref('GNN')
 const pendingTasks = ref(0)
 const reactionScore = ref(null)
 const evaluating = ref(false)
@@ -380,7 +393,7 @@ const evaluateIndex = async (index) => {
   let solvent = contextResults.value[index].solvent;
   const postData = constructForwardPostData(reagents, solvent);
   try {
-    const output = await API.runCeleryTask('/api/forward/controller/call_async', postData);
+    const output = await API.runCeleryTask('/api/forward/controller/call-async', postData);
     for (let i = 0; i < output.length; i++) {
       const outcome = output[i];
       if (outcome.smiles === product.value) {
@@ -584,6 +597,53 @@ const clearForward = () => {
   forwardResults.value = []
 }
 
+const clearSelectivity = () => {
+  selectivityResults.value = []
+}
+
+const constructSelectivityPostData = () => {
+  const data = reactive({
+    reactants: reactants.value,
+    product: product.value,
+    mapper: atomMappingModel.value,
+    no_map_reagents: absoluteReagents.value,
+    mode: selectivityModel.value
+  })
+
+  if (reagents.value) {
+    data.reagents = reagents.value
+  } else {
+    data.reagents = ""
+  }
+
+  if (solvent.value) {
+    data.solvent = solvent.value
+  } else {
+    data.solvent = ""
+  }
+
+  return data
+}
+
+const selectivityPredict = () => {
+  pendingTasks.value++
+
+  const postData = constructSelectivityPostData()
+
+  return API.runCeleryTask('/api/legacy/general_selectivity', postData)
+    .then(output => {
+      if (typeof output === 'string') {
+        alert('Error running selectivity prediction: ' + output)
+      } else {
+        selectivityResults.value = output
+        console.log(selectivityResults.value)
+      }
+    })
+    .finally(() => {
+      pendingTasks.value--
+    })
+}
+
 const clearImpurity = () => {
   impurityResults.value = [];
   impurityProgress.value = {
@@ -616,7 +676,7 @@ const impurityPredict = () => {
     impurityProgress.value.message = 'Impurity prediction failed!';
   };
 
-  API.runCeleryTask('/api/impurity_predictor/call_async', postData, progress)
+  API.runCeleryTask('/api/impurity-predictor/call-async', postData, progress)
     .then(output => {
       complete(output);
     })
@@ -639,7 +699,6 @@ const constructImpurityPostData = () => {
     insp_threshold: inspectionThreshold.value,
     inspector: inspectionModel.value,
     atom_map_backend: "indigo",
-    priority: numForwardResults.value
   };
 
   if (product.value) {
@@ -685,9 +744,8 @@ const updateFromURL = () => {
 };
 
 onMounted(() => {
-  API.get('/api/admin/get_backend_status')
+  API.get('/api/admin/get-backend-status')
     .then(json => {
-      console.log(json['modules'])
       modelStatus.value = json['modules'];
     });
   updateFromURL();
@@ -707,7 +765,7 @@ const forwardPredict = async () => {
   }
   const postData = constructForwardPostData(reagents.value, solvent.value);
   try {
-    const output = await API.runCeleryTask('/api/forward/controller/call_async', postData);
+    const output = await API.runCeleryTask('/api/forward/controller/call-async', postData);
     forwardResults.value = output.result[0];
     console.log(output.result[0])
   } catch (error) {
@@ -718,12 +776,10 @@ const forwardPredict = async () => {
 };
 
 const constructForwardPostData = (reagents, solvent) => {
-  let _smile = reactants.value
   let data = reactive({
-    smiles: [_smile],
+    smiles: [reactants.value],
     backend: forwardModel.value,
     model_name: forwardModelTrainingSet.value,
-    priority: numForwardResults.value
   });
 
   if (reagents) {
@@ -737,7 +793,7 @@ const constructForwardPostData = (reagents, solvent) => {
 }
 
 const canonicalize = async (smiles, input) => {
-  return API.post('/api/v2/rdkit/smiles/canonicalize/', { smiles: smiles })
+  return API.post('/api/rdkit/canonicalize', { smiles: smiles })
     .then(json => {
       if (input === 'reactants') {
         reactants.value = json.smiles
@@ -851,11 +907,6 @@ const constructContextV2PostData = () => {
     num_results: numContextResults.value,
   };
 };
-
-
-const clearSelectivity = () => {
-  selectivityResults.value = [];
-}
 
 const downloadImpurityResults = () => {
   if (!impurityResults.value.length) {

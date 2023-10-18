@@ -31,8 +31,13 @@
                 <v-col cols="12">
                     <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" :items-per-page="10"
                         height="600px">
+                        <template #item.smiles="{ item }">
+                            <v-tooltip activator="parent" location="top">
+                                <span>{{ item.columns.smiles }}</span>
+                            </v-tooltip>
+                            <smiles-image :smiles="item.columns.smiles" height="200px"></smiles-image>
+                        </template>
                     </v-data-table>
-
 
                     <v-skeleton-loader v-if="!!pending" class="mx-auto my-auto" min-height="80px" type="table">
                     </v-skeleton-loader>
@@ -49,10 +54,21 @@ import SmilesImage from "@/components/SmilesImage.vue";
 
 const showDialog = ref(false)
 
+const { results, models, progress } = defineProps({
+    results: {
+        type: Array,
+        default: [],
+    },
+    pending: {
+        type: Number,
+        default: 0
+    },
+})
+
 const headers = ref([
-    { key: 'avg_insp_score', title: 'Inspector Score', align: 'center', },
-    { key: 'similarity_to_major', title: 'Similarity Score', align: 'center', },
-    { key: 'prd_mw', title: 'Molecular Weight', align: 'center', },
+    { key: 'rank', title: 'Rank', align: 'center', },
+    { key: 'smiles', title: 'Product', align: 'center', },
+    { key: 'prob', title: 'Probability', align: 'center', },
 ])
 
 </script>
