@@ -42,10 +42,10 @@
               <v-col cols="3">
                 <smiles-image :smiles="reactants"></smiles-image>
               </v-col>
-              <v-col cols="3" align="center" v-if="!!reactants && mode !== 'sites'" class="py-30">
+              <v-col cols="3" align="center" v-if="!!reactants && mode !== 'sites' && !!reactants && mode !== 'forward'" class="py-30">
                 <smiles-image :smiles="'>>'" width="200"></smiles-image>
               </v-col>
-              <v-col cols="3" v-if="mode !== 'sites'">
+              <v-col cols="3" v-if="mode !== 'sites' && mode !== 'forward'">
                 <smiles-image :smiles="product"></smiles-image>
               </v-col>
             </v-row>
@@ -110,7 +110,7 @@
                     </v-list-item>
                   </v-list>
                 </v-menu>
-                <v-btn variant="tonal" class="mr-5" @click="clear()">
+                <v-btn variant="tonal" class="mr-5" @click="clear()" :disabled="reactants === ''">
                   Clear
                 </v-btn>
                 <v-btn icon @click="dialog = !dialog">
