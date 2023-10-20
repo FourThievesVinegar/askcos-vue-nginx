@@ -1,8 +1,12 @@
 <template>
-  <v-container fluid >
-  <v-row class="justify-center align-center pa-0">
-      <v-col cols="12" md="4">
-        <v-sheet elevation="2" rounded="lg">
+  <v-container fluid pa-0>
+    <v-row class="justify-center align-center ">
+      <v-col cols="12" md="6">
+        <v-sheet elevation="2" >
+          <v-tabs v-model="tab" align-tabs="center" color="primary">
+            <v-tab value="one">Form Input</v-tab>
+            <v-tab value="two">File Upload</v-tab>
+          </v-tabs>
           <v-form @submit.prevent class="pa-5">
             <v-expansion-panels v-model="panel" multiple>
               <v-expansion-panel title="Basic Information" class="text-primary">
@@ -45,159 +49,41 @@
         </v-sheet>
       </v-col>
 
-      <v-col v-if="results.length" cols="12" md="8" >
-        <v-sheet elevation="2">
-          <v-row align="center" justify="space-between" class="mx-auto my-auto pa-3">
-                  <v-col>
-                  </v-col>
-                
-                  <v-spacer></v-spacer>
-                  <v-col cols="auto">
-                      <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
-                          Reference
-                      </v-btn>
-                  </v-col>
-              </v-row>
-          <v-data-table
-          :headers="fields" :items="results"></v-data-table>
+      <v-col v-show="pendingTasks > 0 || results.length" cols="12">
+        <v-sheet elevation="2" class="pa-4">
+          <v-row v-if="!pendingTasks > 0" align="center" justify="space-between" class="mx-auto my-auto pa-2">
+            <v-col md="5">
+              <v-menu location="top">
+                <template v-slot:activator="{ props }">
+                <v-btn v-show="!!results.length" @click="handleClick" :disabled="evaluating" height="30px" color="primary mr-2" v-bind="props" prepend-icon="mdi mdi-download">
+                  Download
+                </v-btn>
+                </template>
+              </v-menu>
+            </v-col>
+            <v-spacer md="2"></v-spacer>
+            <v-col md="4">
+              <v-select v-model="selectedHeaders" :items="headers" label="Select Columns" density="comfortable"
+                variant="outlined" hide-details clearable>
+                <template v-slot:selection="{ item, index }">
+                  <v-chip v-if="index < 2">
+                    <span>{{ item.text }}</span>
+                  </v-chip>
+                </template>
+              </v-select>
+            </v-col>
+            <v-row class="mt-3 pa-4">
+              <v-data-table :headers="fields" :items="results"></v-data-table>
+            </v-row>
+          </v-row>
+          <v-row v-else align="center" justify="space-between" class="mx-auto my-auto pa-2">
+            <v-skeleton-loader class="mx-auto my-auto" min-height="80px" type="table"></v-skeleton-loader>
+          </v-row>
         </v-sheet>
       </v-col>
-      <!-- <v-col v-else cols="12" md="6">
-        <v-sheet elevation="2" rounded="lg" class="pa-5">
-          No Data Available
-        </v-sheet>
-      </v-col> -->
     </v-row>
   </v-container>
 </template>
-
-<!-- <template>
-    <div class="row">
-      <div id="solubility-left-pane" class="col-xl-3">
-        <b-button v-b-modal.solubility-model-info block variant="outline-info">Model Input/Output Details</b-button>
-        <div id="solubility-input" class="mt-3">
-          <b-tabs content-class="mt-3">
-            <b-tab title="Form Input">
-              <b-form @submit.prevent="predict">
-                <smiles-input id="solute" label="Solute" label-for="solute" label-cols="6"
-                              v-model="solute" required>
-                  <div v-if="!!solute" class="text-center my-3">
-                    <smiles-image :smiles="solute"></smiles-image>
-                  </div>
-                </smiles-input>
-  
-                <smiles-input id="solvent" label="Solvent" label-for="solvent" label-cols="6"
-                              v-model="solvent" required>
-                  <div v-if="!!solvent" class="text-center my-3">
-                    <smiles-image :smiles="solvent"></smiles-image>
-                  </div>
-                </smiles-input>
-  
-                <setting-input label="Temperature (K)" label-for="temperature-input">
-                  <b-form-input id="temperature-input" v-model="temperature" required></b-form-input>
-                </setting-input>
-  
-                <b-button v-b-toggle.reference variant="outline-secondary" block class="mb-3">Add Reference Data</b-button>
-  
-                <b-collapse id="reference">
-                  <smiles-input id="ref-solvent" label="Ref. Solvent" label-for="ref-solvent" label-cols="6"
-                                v-model="refSolvent">
-                    <div v-if="!!refSolvent" class="text-center my-3">
-                      <smiles-image :smiles="refSolvent"></smiles-image>
-                    </div>
-                  </smiles-input>
-                  <setting-input label="Ref. Solubility (log10(mol/L))" label-for="ref-solubility-input">
-                    <b-form-input id="ref-solubility-input" v-model="refSolubility"></b-form-input>
-                  </setting-input>
-                  <setting-input label="Ref. Temperature (K)" label-for="ref-temperature-input">
-                    <b-form-input id="ref-temperature-input" v-model="refTemperature"></b-form-input>
-                  </setting-input>
-                </b-collapse>
-  
-                <b-button v-b-toggle.solute-thermo variant="outline-secondary" block class="mb-3">Add Solute Data</b-button>
-  
-                <b-collapse id="solute-thermo">
-                  <setting-input label="ΔHsub298 (kcal/mol)" label-for="solute-hsub-input">
-                    <b-form-input id="solute-hsub-input" v-model="soluteHsub"></b-form-input>
-                  </setting-input>
-                  <setting-input label="Cpg298 (cal/mol/K)" label-for="solute-cpg-input">
-                    <b-form-input id="solute-cpg-input" v-model="soluteCpg"></b-form-input>
-                  </setting-input>
-                  <setting-input label="Cps298 (cal/mol/K)" label-for="solute-cps-input">
-                    <b-form-input id="solute-cps-input" v-model="soluteCps"></b-form-input>
-                  </setting-input>
-                </b-collapse>
-  
-                <div class="text-center">
-                  <loading-button
-                    id="solubility-submit-btn"
-                    type="submit"
-                    :loading="loading"
-                    variant="success"
-                    spinner-variant="secondary"
-                  >Submit</loading-button>
-                </div>
-              </b-form>
-            </b-tab>
-            <b-tab title="File Upload">
-              <p>See Model Input/Output Details for notes on file format.</p>
-              <b-form @submit.prevent="handleUploadSubmit">
-                <b-form-group label="File">
-                  <b-form-file v-model="uploadFile"></b-form-file>
-                </b-form-group>
-                <div class="text-center my-3">
-                  <loading-button
-                    id="solubility-upload-btn"
-                    type="submit"
-                    :loading="loading"
-                    variant="success"
-                    spinner-variant="secondary"
-                  >Submit</loading-button>
-                </div>
-              </b-form>
-            </b-tab>
-          </b-tabs>
-        </div>
-      </div>
-      <div id="solubility-right-pane" class="col-xl-9">
-        <div v-if="results.length">
-          <div class="d-flex justify-content-between mb-3">
-            <b-dropdown text="Show/Hide Columns" variant="outline-secondary">
-              <b-dropdown-form class="text-nowrap">
-                <b-form-checkbox-group
-                  id="solubility-column-select"
-                  v-model="selectedColumnCategories"
-                  :options="Object.keys(columnCategories)"
-                  name="output-categories"
-                  stacked
-                ></b-form-checkbox-group>
-              </b-dropdown-form>
-            </b-dropdown>
-            <b-button-group>
-              <b-button variant="outline-secondary" @click="downloadCSV">
-                <i class="fas fa-download"></i>
-                Download CSV
-              </b-button>
-              <b-button variant="outline-secondary" @click="downloadJSON">
-                <i class="fas fa-download"></i>
-                Download JSON
-              </b-button>
-            </b-button-group>
-          </div>
-          <b-table
-            :items="results"
-            :fields="fields"
-            sticky-header="calc(100vh - 17rem)"
-            no-border-collapse
-          ></b-table>
-        </div>
-        <div v-else class="text-center">
-          <h2 class="mt-5">No Results</h2>
-          <p class="lead">Begin by running a new prediction on the left!</p>
-        </div>
-      </div>
-    </div>
-  </template> -->
   
 <script>
 // import LoadingButton from "@/components/LoadingButton";
@@ -219,6 +105,7 @@ export default {
   data() {
     return {
       panel: [0],
+      pendingTasks: 0,
       solvent: '',
       solute: '',
       temperature: 298,
@@ -269,6 +156,9 @@ export default {
       }
       return baseName + '_solubility_export'
     },
+    //  showHeaders() {
+    //   return this.headers.filter(s => this.selectedHeaders.includes(s));
+    // },
   },
   created() {
     // Prompt user before going back to previous page
@@ -290,24 +180,28 @@ export default {
     if (solvent) {
       this.solvent = solvent
     }
+
+    // this.headers = Object.values(this.headersMap);
+    // this.selectedHeaders = this.headers;
   },
   methods: {
     predict() {
+      this.pendingTasks += 1
       this.loading = true
       const url = '/api/legacy/solubility/batch/call-async'
       const body = {
         "task_list": [{
-        solvent: this.solvent,
-        solute: this.solute,
-        temp: this.temperature,
-        ref_solvent: this.refSolvent || null,
-        ref_solubility: this.refSolubility || null,
-        ref_temp: this.refTemperature || null,
-        hsub298: this.soluteHsub || null,
-        cp_gas_298: this.soluteCpg || null,
-        cp_solid_298: this.soluteCps || null,
+          solvent: this.solvent,
+          solute: this.solute,
+          temp: this.temperature,
+          ref_solvent: this.refSolvent || null,
+          ref_solubility: this.refSolubility || null,
+          ref_temp: this.refTemperature || null,
+          hsub298: this.soluteHsub || null,
+          cp_gas_298: this.soluteCpg || null,
+          cp_solid_298: this.soluteCps || null,
         }
-      ]
+        ]
       }
       API.runCeleryTask(url, body)
         .then(output => {
@@ -317,9 +211,13 @@ export default {
         .catch(error => {
           alert('There was an error predicting solubility: ' + error)
         })
-        .finally(() => this.loading = false)
+        .finally(() => {
+          this.loading = false;
+          this.pendingTasks -= 1;
+        })
     },
     predictBatch(data) {
+      this.pendingTasks += 1
       this.loading = true
       const url = '/api/legacy/solubility/batch/call-async'
       const body = {
@@ -332,7 +230,7 @@ export default {
         .catch(error => {
           alert('There was an error predicting solubility: ' + error)
         })
-        .finally(() => this.loading = false)
+        .finally(() => this.loading = false, this.pendingTasks -= 1)
     },
     handleUploadSubmit() {
       let fileFormat
