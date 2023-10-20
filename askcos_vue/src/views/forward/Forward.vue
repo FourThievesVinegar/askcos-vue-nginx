@@ -1,9 +1,9 @@
 <template>
-  <v-container fluid>
-    <v-row class="justify-center">
+  <v-container fluid style="min-height: calc(100vh-50px)">
+    <v-row class="justify-center" >
       <v-col cols="12" sm="8" md="10">
 
-        <v-sheet elevation="2" class="my-6 ">
+        <v-sheet elevation="2" class="my-6">
           <v-tabs v-model="tab" color="primary" align-tabs="center" grow class="mb-4">
             <v-tab @click="replaceRoute('context')" value="context">Condition Recommendation</v-tab>
             <v-tab @click="replaceRoute('forward')" value="forward">Product Prediction</v-tab>
@@ -110,7 +110,7 @@
                     </v-list-item>
                   </v-list>
                 </v-menu>
-                <v-btn variant="tonal" class="mr-5" @click="clear()" :disabled="reactants === ''">
+                <v-btn variant="tonal" class="mr-5" @click="clear()" :disabled="contextResults = [] && reactants === ''">
                   Clear
                 </v-btn>
                 <v-btn icon @click="dialog = !dialog">
@@ -366,6 +366,7 @@ const constructFastFilterPostData = () => {
 }
 
 const updateContextModel = (newModel) => {
+  contextResults.value = []
   contextModel.value = newModel
   console.log('Updated context model to:', newModel)
 }
@@ -631,25 +632,20 @@ const clear = async (skipConfirm = false) => {
     case 'forward':
       clearForward()
       clearInputs()
-      break
     case 'context':
       clearContext()
       clearInputs()
-      break
     case 'impurity':
       clearImpurity()
       clearInputs()
-      break
     case 'selectivity':
       clearSelectivity()
       clearInputs()
-      break
     case 'sites':
       clearSites()
       clearInputs()
-      break
-    default:
-      alert('unsupported mode')
+    // default:
+    //   alert('unsupported mode')
   }
 }
 

@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row class="justify-center">
       <v-col cols="12" sm="8" md="10">
-        <div class="mt-8 mb-2">
+        <div class="mt-8 mb-5">
           <v-breadcrumbs class="pa-0" :items="['Home', 'Banlist']"></v-breadcrumbs>
           <h1>
             My Banlist
@@ -13,7 +13,7 @@
     <v-row class="justify-center">
       <v-col cols="12" md="10">
         <v-sheet elevation="2" rounded="lg">
-          <v-row class="mb-3 mt-3 px-5 pt-2">
+          <v-row class="mb-3 px-5 pt-2">
             <v-col cols="12">
               <p class="text-body-3 left-justify">
                 This page lists chemicals and reactions that you have identified as problematic in some way. Entries
