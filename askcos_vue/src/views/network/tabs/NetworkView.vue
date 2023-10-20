@@ -1429,8 +1429,8 @@ export default {
     init() {
       if (!this.network && this.resultsStore.dispGraph.nodes.length) {
         this.initializeNetwork();
+        this.centerGraph();
       } else if (this.network) {
-        // this.centerGraph();
       }
     },
     canonicalize(smiles, input) {
