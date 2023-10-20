@@ -287,6 +287,7 @@ import ImpurityPrediction from "@/views/forward/tab/ImpurityPrediction.vue"
 import Regioselectivity from "@/views/forward/tab/Regioselectivity.vue"
 import SiteSelectivity from "@/views/forward/tab/SiteSelectivity.vue"
 import { saveAs } from 'file-saver';
+import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
 import KetcherMin from "@/components/KetcherMin.vue";
 import { createReaxysQuery, createReaxysUrl } from "@/common/reaxys";
 
@@ -330,7 +331,8 @@ const impurityProgress = ref({
   message: ''
 });
 const openSettingsPanel = ref(null)
-
+const createConfirm = useConfirm();
+const createSnackbar = useSnackbar()
 const siteResults = ref([])
 const siteResultsQuery = ref('')
 const siteSelectedAtoms = ref([])
@@ -616,7 +618,15 @@ const clearInputs = () => {
   solvent.value = '';
 }
 
-const clear = async () => {
+const clear = async (skipConfirm = false) => {
+    if (!skipConfirm) {
+    const isConfirmed = await createConfirm({
+      title: 'Please Confirm',
+      content: 'This will clear all of your current results. Continue anyway?',
+      dialogProps: { width: "auto" }
+    });
+    if (!isConfirmed) return;
+  }
   switch (tab.value) {
     case 'forward':
       clearForward()
@@ -688,12 +698,12 @@ const selectivityPredict = () => {
 
   return API.runCeleryTask('/api/legacy/general-selectivity/', postData)
     .then(output => {
-        selectivityResults.value = output.output
+        selectivityResults.value = output
     })
     .catch(error => {
         const errorData = JSON.parse(error.message);
         if (errorData && errorData.output) {
-          alert('Error running selectivity prediction: '+ errorData.output);
+          createSnackbar({ text: 'Error running selectivity prediction: '+ errorData.output , snackbarProps: { timeout: -1, vertical: true } })
         }
     })
     .finally(() => {
@@ -816,7 +826,7 @@ const forwardPredict = async () => {
   forwardResults.value = [];
 
   if (reactants.value.length < 4) {
-    alert('Please enter a reactant with at least 4 atoms.');
+    createSnackbar({ text: 'Please enter a reactant with at least 4 atoms.', snackbarProps: { timeout: -1, vertical: true } })
     pendingTasks.value--;
     return;
   }
@@ -904,7 +914,7 @@ const contextV1Predict = async () => {
   evaluating.value = false
   let postData = constructContextV1PostData()
   if (reactants.value.length < 4) {
-    alert('Please enter a reactant with at least 4 atoms.');
+     createSnackbar({ text: 'Please enter a reactant with at least 4 atoms.', snackbarProps: { timeout: -1, vertical: true } })
     pendingTasks.value--;
     return;
   }
