@@ -248,41 +248,44 @@
         It is roughly how long it will take for results to be returned, however there is an additional pathway resolution step following expansion that may take some time as well.">
                                                 <v-text-field id="expansionTime" density="compact" variant="outlined"
                                                     type="number" min="1" max="30" step="1" :model-value="expansionTime"
-                                                    hide-details></v-text-field>
+                                                    hide-details class="mb-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Maximum iterations" label-for="maxIterations"
                                                 help-text="This is how many iterations the MCTS algorithm is allowed to perform before returning results.">
-                                                <!-- <b-form-input id="maxIterations" size="sm" type="number" min="1" step="1"
-                                        v-model.number="maxIterations"></b-form-input> -->
+                                                <v-text-field id="maxIterations" density="compact" variant="outlined"
+                                                    type="number" min="1" step="1" :model-value="maxIterations"
+                                                    hide-details class="mb-2"></v-text-field>
                                             </setting-input>
-                                            <setting-input v-if="tbVersion < 1000" label="Maximum chemicals"
-                                                label-for="maxChemicals"
+                                            <setting-input label="Maximum chemicals" label-for="maxChemicals"
                                                 help-text="This is how many chemicals the MCTS algorithm is allowed to explore before returning results.">
-                                                <!-- <b-form-input id="maxChemicals" size="sm" type="number" min="1" step="1"
-                                        v-model.number="maxChemicals"></b-form-input> -->
+                                                <v-text-field id="maxChemicals" density="compact" variant="outlined"
+                                                    type="number" min="1" step="1" :model-value="maxChemicals"
+                                                    hide-details class="mb-2"></v-text-field>
                                             </setting-input>
-                                            <setting-input v-if="tbVersion < 1000" label="Maximum reactions"
-                                                label-for="maxReactions"
+                                            <setting-input label="Maximum reactions" label-for="maxReactions"
                                                 help-text="This is how many reactions the MCTS algorithm is allowed to explore before returning results.">
-                                                <!-- <b-form-input id="maxReactions" size="sm" type="number" min="1" step="1"
-                                        v-model.number="maxReactions"></b-form-input> -->
+                                                <v-text-field id="maxReactions" density="compact" variant="outlined"
+                                                    type="number" min="1" step="1" :model-value="maxReactions"
+                                                    hide-details class="mb-2"></v-text-field>
                                             </setting-input>
-                                            <setting-input v-if="tbVersion < 1000" label="Maximum templates"
-                                                label-for="maxTemplates"
+                                            <setting-input label="Maximum templates" label-for="maxTemplates"
                                                 help-text="This is how many template applications the MCTS algorithm is allowed to try before returning results.">
-                                                <!-- <b-form-input id="maxTemplates" size="sm" type="number" min="1" step="1"
-                                        v-model.number="maxTemplates"></b-form-input> -->
+                                                <v-text-field id="maxTemplates" density="compact" variant="outlined"
+                                                    type="number" min="1" step="1" :model-value="maxTemplates"
+                                                    hide-details class="mb-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Max expansion depth" label-for="maxDepth"
                                                 help-text="This is the maximum depth (or number of steps) for any given reaction pathway return by the search algorithm.">
-                                                <!-- <b-form-input id="maxDepth" size="sm" type="number" min="1" max="9" step="1"
-                                        v-model.number="maxDepth"></b-form-input> -->
+                                                <v-text-field id="maxDepth" density="compact" variant="outlined"
+                                                    type="number" min="1" step="1" :model-value="maxDepth"
+                                                    hide-details class="mb-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Max branching" label-for="maxBranching"
                                                 help-text="This is the maximum branching for any given chemical in the reaction tree/graph.
         Once this maximum branching factor is reached, no more template applications will be attempted for that chemical during the search.">
-                                                <!-- <b-form-input id="maxBranching" size="sm" type="number" min="1" max="50" step="1"
-                                        v-model.number="maxBranching"></b-form-input> -->
+                                                <v-text-field id="maxBranching" density="compact" variant="outlined"
+                                                    type="number" min="1" max="50" step="1" :model-value="maxBranching"
+                                                    hide-details class="mb-2"></v-text-field>
                                             </setting-input>
                                         </v-expansion-panel-text>
                                     </v-expansion-panel>
