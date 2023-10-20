@@ -1,47 +1,54 @@
 <template>
     <v-container fluid class="pa-0">
-        <v-sheet elevation="5" width="100%" class="pa-6">
+        <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6">
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
-                    <h3 class="text-h5">Regioselectivity Prediction</h3>
+                    <span class="text-body-1 ml-2"><b>Regioselectivity Prediction</b> </span>
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn @click="showDialog = true" height="30px" color="blue-grey mx-2">
-                        Reference
+                    <v-btn variant="flat" v-show="!!results.length" @click="emitDownloadSelectivity" height="30px" color="primary mx-2">
+                        Export
                     </v-btn>
                 </v-col>
             </v-row>
 
-            <v-dialog v-model="showDialog" max-width="500px">
-                <v-card>
-                    <v-card-text class="px-8 py-8">
-                        <p class="my-4">
-                            Predict selectivity of regio-selective reactions. The QM-GNN model combines a WLN
-                            graph encoding
-                            with predicted quantum descriptors as input to a multitask neural network.
-                            <a href="https://doi.org/10.1039/D0SC04823B">(Chem. Sci., 2021, 12, 2198-2208)</a>
-                        </p>
-                    </v-card-text>
-                    <v-divider></v-divider>
-                </v-card>
-            </v-dialog>
+            <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" :items-per-page="10"
+                height="600px">
+                <template #item.smiles="{ item }">
+                    <v-tooltip activator="parent" location="top">
+                        <span>{{ item.columns.smiles }}</span>
+                    </v-tooltip>
+                    <smiles-image :smiles="item.columns.smiles" max-height="125px"></smiles-image>
+                </template>
+                           <template #item.prob="{ item }">
+                        {{ item.columns.prob.toFixed(4) }}
+                    </template>
+            </v-data-table>
 
-            <v-row>
-                <v-col cols="12">
-                    <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" :items-per-page="10"
-                        height="600px">
-                        <template #item.smiles="{ item }">
-                            <v-tooltip activator="parent" location="top">
-                                <span>{{ item.columns.smiles }}</span>
-                            </v-tooltip>
-                            <smiles-image :smiles="item.columns.smiles" height="200px"></smiles-image>
+            <v-skeleton-loader v-if="!!pending" class="mx-auto my-auto" min-height="80px" type="table">
+            </v-skeleton-loader>
+
+            <v-row align="center" justify="space-between" class="mx-auto my-3">
+                <v-expansion-panels multiple density="compact" v-model="panel" :disabled="disabled">
+                    <v-expansion-panel density="compact">
+                        <template v-slot:title>
+                            <span class="text-body-1 ml-2"><b>Reference</b></span>
                         </template>
-                    </v-data-table>
-
-                    <v-skeleton-loader v-if="!!pending" class="mx-auto my-auto" min-height="80px" type="table">
-                    </v-skeleton-loader>
-                </v-col>
+                        <template v-slot:text>
+                            <v-row>
+                                <v-col>
+                                    <p class="my-4">
+                                        Predict selectivity of regio-selective reactions. The QM-GNN model combines a WLN
+                                        graph encoding
+                                        with predicted quantum descriptors as input to a multitask neural network.
+                                        <a href="https://doi.org/10.1039/D0SC04823B">(Chem. Sci., 2021, 12, 2198-2208)</a>
+                                    </p>
+                                </v-col>
+                            </v-row>
+                        </template>
+                    </v-expansion-panel>
+                </v-expansion-panels>
             </v-row>
         </v-sheet>
     </v-container>
@@ -52,7 +59,8 @@
 import { ref } from "vue";
 import SmilesImage from "@/components/SmilesImage.vue";
 
-const showDialog = ref(false)
+const panel = ref([0])
+const disabled = ref(false)
 
 const { results, models, progress } = defineProps({
     results: {
@@ -70,5 +78,11 @@ const headers = ref([
     { key: 'smiles', title: 'Product', align: 'center', },
     { key: 'prob', title: 'Probability', align: 'center', },
 ])
+
+const emits = defineEmits()
+
+const emitDownloadSelectivity = () => {
+    emits('download-selectivity')
+}
 
 </script>

@@ -9,7 +9,7 @@
             <v-tab @click="replaceRoute('forward')" value="forward">Product Prediction</v-tab>
             <v-tab @click="replaceRoute('impurity')" value="impurity">Impurity Prediction</v-tab>
             <v-tab @click="replaceRoute('selectivity')" value="selectivity">Regioselectivity Prediction</v-tab>
-            <v-tab @click="replaceRoute('sites')" value="sites">Aromatic C-H Functionalization</v-tab>
+            <v-tab @click="replaceRoute('sites')" value="sites" :disabled=true>Aromatic C-H Functionalization</v-tab>
           </v-tabs>
         </v-sheet>
 
@@ -42,10 +42,10 @@
               <v-col cols="3">
                 <smiles-image :smiles="reactants"></smiles-image>
               </v-col>
-               <v-col cols="3" align="center" v-if="!!reactants && mode !== 'sites'" class="py-30">
-                  <smiles-image :smiles="'>>'"  width="200"></smiles-image>
-                </v-col>
-              <v-col cols="3"  v-if="mode !== 'sites'">
+              <v-col cols="3" align="center" v-if="!!reactants && mode !== 'sites'" class="py-30">
+                <smiles-image :smiles="'>>'" width="200"></smiles-image>
+              </v-col>
+              <v-col cols="3" v-if="mode !== 'sites'">
                 <smiles-image :smiles="product"></smiles-image>
               </v-col>
             </v-row>
@@ -85,16 +85,33 @@
 
 
             <v-row align="center" justify-start>
-              <v-col class="mr-5">
-                <v-btn type="submit" color="success" class="mr-5">
-                  {{
-                    tab === 'context' ? 'Get Condition Recommendation' :
-                    tab === 'forward' ? 'Get Product Prediction' :
-                      tab === 'impurity' ? 'Get Impurity Prediction' :
-                        tab === 'selectivity' ? 'Get Regioselectivity Prediction' :
-                         tab === 'sites' ? 'Get Aromatic C-H Functionalization' :
-                          'Submit'
-                  }}
+              <v-col>
+                <v-btn type="submit" variant="flat" color="success" class="mr-5">
+                  Get Results
+                </v-btn>
+                <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
+                  <template v-slot:activator="{ props }">
+                    <v-btn color="primary" append-icon="mdi mdi-menu-down" variant="flat" v-bind="props" class="mr-5"
+                      v-if="mode === 'context'">
+                      Model
+                    </v-btn>
+                  </template>
+                  <v-list v-model="contextModel" min-width="200px">
+                    <v-list-item @click="updateContextModel('neuralnetwork')">
+                      <v-list-item-title>
+                        <v-icon v-if="contextModel === 'neuralnetwork'" icon="mdi-check"></v-icon>
+                        Neural Network
+                      </v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="updateContextModel('neuralnetworkv2')"><v-list-item-title>
+                        <v-icon v-if="contextModel === 'neuralnetworkv2'" icon="mdi-check"></v-icon>
+                        Neural Network V2
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+                <v-btn variant="tonal" class="mr-5" @click="clear()">
+                  Clear
                 </v-btn>
                 <v-btn icon @click="dialog = !dialog">
                   <v-icon>mdi-cog</v-icon>
@@ -120,7 +137,8 @@
               :progress="impurityProgress" @download-impurity="downloadImpurityResults" />
           </v-window-item>
           <v-window-item value="selectivity">
-            <Regioselectivity value="selectivity" rounded="lg" :results="selectivityResults" :pending="pendingTasks" />
+            <Regioselectivity value="selectivity" rounded="lg" :results="selectivityResults" :pending="pendingTasks"
+              @download-selectivity="downloadSelectivityResults" />
           </v-window-item>
           <v-window-item value="sites">
             <SiteSelectivity value="sites" rounded="lg" :results="siteResults" :reactingAtoms="reactingAtoms"
@@ -172,10 +190,10 @@
                       hide-details clearable variant="outlined" :items="forwardModelTrainingSets"></v-select>
                   </v-col>
 
-                  <v-col cols="12">
+                  <!-- <v-col cols="12">
                     <v-select label="Forward model version" v-model="forwardModelVersion" density="comfortable"
                       hide-details clearable variant="outlined" :items="forwardModelVersions"></v-select>
-                  </v-col>
+                  </v-col> -->
                 </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
@@ -343,6 +361,11 @@ const constructFastFilterPostData = () => {
     reactants: reactants.value,
     products: product.value
   }
+}
+
+const updateContextModel = (newModel) => {
+  contextModel.value = newModel
+  console.log('Updated context model to:', newModel)
 }
 
 const evaluate = async () => {
@@ -586,6 +609,40 @@ const predict = async () => {
   }
 }
 
+const clearInputs = () => {
+  reactants.value = '';
+  product.value = '';
+  reagents.value = '';
+  solvent.value = '';
+}
+
+const clear = async () => {
+  switch (tab.value) {
+    case 'forward':
+      clearForward()
+      clearInputs()
+      break
+    case 'context':
+      clearContext()
+      clearInputs()
+      break
+    case 'impurity':
+      clearImpurity()
+      clearInputs()
+      break
+    case 'selectivity':
+      clearSelectivity()
+      clearInputs()
+      break
+    case 'sites':
+      clearSites()
+      clearInputs()
+      break
+    default:
+      alert('unsupported mode')
+  }
+}
+
 watch(route, async (newRoute, _oldRoute) => {
   if (newRoute.path === '/forward') {
     tab.value = newRoute.query.tab
@@ -627,17 +684,17 @@ const constructSelectivityPostData = () => {
 
 const selectivityPredict = () => {
   pendingTasks.value++
-
   const postData = constructSelectivityPostData()
 
-  return API.runCeleryTask('/api/legacy/general-selectivity', postData)
+  return API.runCeleryTask('/api/legacy/general-selectivity/', postData)
     .then(output => {
-      if (typeof output === 'string') {
-        alert('Error running selectivity prediction: ' + output)
-      } else {
-        selectivityResults.value = output
-        console.log(selectivityResults.value)
-      }
+        selectivityResults.value = output.output
+    })
+    .catch(error => {
+        const errorData = JSON.parse(error.message);
+        if (errorData && errorData.output) {
+          alert('Error running selectivity prediction: '+ errorData.output);
+        }
     })
     .finally(() => {
       pendingTasks.value--
@@ -846,6 +903,11 @@ const contextV1Predict = async () => {
   contextResults.value = []
   evaluating.value = false
   let postData = constructContextV1PostData()
+  if (reactants.value.length < 4) {
+    alert('Please enter a reactant with at least 4 atoms.');
+    pendingTasks.value--;
+    return;
+  }
   API.runCeleryTask('/api/legacy/context/', postData)
     .then(output => {
       console.log(output)
@@ -919,6 +981,18 @@ const downloadImpurityResults = () => {
   });
   const blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' });
   saveAs(blob, 'askcos_impurity_export.csv');
+};
+
+const downloadSelectivityResults = () => {
+  if (!selectivityResults.value) {
+    alert('There are no regio-selectivity results to download!')
+  }
+  let downloadData = 'Rank,SMILES,Probability\n'
+  selectivityResults.value.forEach((res) => {
+    downloadData += `${res.rank},${res.smiles},${res.prob}\n`
+  })
+  let blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' })
+  saveAs(blob, 'askcos_regioselectivity_export.csv')
 };
 
 const downloadForwardResults = () => {

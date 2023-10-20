@@ -38,7 +38,7 @@
             :active="route.query.tab === 'impurity'"></v-list-item>
           <v-list-item to="/forward?tab=selectivity" title="Regio-selectivity Prediction" value="selectivity"
             :active="route.query.tab === 'selectivity'"></v-list-item>
-          <v-list-item to="/forward?tab=sites" title="Aromatic C-H Functionalization" value="sites"
+          <v-list-item to="/forward?tab=sites" :disabled=true title="Aromatic C-H Functionalization" value="sites"
             :active="route.query.tab === 'sites'"></v-list-item>
         </v-list-group>
 
