@@ -1,13 +1,13 @@
 <template>
-  <v-navigation-drawer expand-on-hover rail elevation="2" @update:rail="($event) => onDrawerCollapse($event)"
-    width="100px" class="sidebar">
+  <v-navigation-drawer expand-on-hover rail elevation="2" width="100px" class="sidebar"
+    @update:rail="($event) => rail = $event">
     <v-list>
       <v-list-item prepend-icon="mdi-tools" title="ASKCOS" subtitle="Demo"></v-list-item>
     </v-list>
 
     <v-divider></v-divider>
 
-    <v-list nav v-model:opened="openGroups" @update:opened="closeGroupsOnBack" color="primary">
+    <v-list nav v-model:opened="openedGroups" color="primary">
       <v-list-item prepend-icon="mdi-home" title="Home" to="/" value="home" :active="route.path === '/'"></v-list-item>
       <v-list-group value="modules" no-action>
         <template v-slot:activator="{ props }">
@@ -19,9 +19,9 @@
             <v-list-item v-bind="props" title="Retrosynthesis"></v-list-item>
           </template>
 
-          <v-list-item to="/network?tab=IPP" prepend-icon="mdi-help-box" title="Interactive Path Planning/Tree Builder"
-            value="IPP" :active="route.query.tab === 'IPP'"></v-list-item>
-          <v-list-item to="/network?tab=RP" prepend-icon="mdi-help-box" title="Retrosynthesis Prediction" value="RP"
+          <v-list-item to="/network?tab=IPP" title="Interactive Path Planning/Tree Builder" value="IPP"
+            :active="route.query.tab === 'IPP'"></v-list-item>
+          <v-list-item to="/network?tab=RP" title="Retrosynthesis Prediction" value="RP"
             :active="route.query.tab === 'RP'"></v-list-item>
         </v-list-group>
 
@@ -47,12 +47,12 @@
             <v-list-item v-bind="props" title="Utilities"></v-list-item>
           </template>
 
-          <v-list-item to="/solprop?tab=solpred" prepend-icon="mdi-help-box" title="Solubility Prediction" value="USP"
+          <v-list-item to="/solprop?tab=solpred" title="Solubility Prediction" value="USP"
             :active="route.query.tab === 'solpred'"></v-list-item>
-          <v-list-item to="/solprop?tab=solscreen" prepend-icon="mdi-help-box" title="Solvent Screening" value="USS"
+          <v-list-item to="/solprop?tab=solscreen" title="Solvent Screening" value="USS"
             :active="route.query.tab === 'solscreen'"></v-list-item>
-          <v-list-item to="/buyables" prepend-icon="mdi-help-box" title="Buyable Look-up" value="UBLU"></v-list-item>
-          <v-list-item prepend-icon="mdi-help-box" title="Drawing" value="UD"></v-list-item>
+          <v-list-item to="/buyables" title="Buyable Look-up" value="UBLU"></v-list-item>
+          <v-list-item title="Drawing" value="UD"></v-list-item>
         </v-list-group>
       </v-list-group>
       <v-list-item to="/status" prepend-icon="mdi-list-status" title="Server Status" value="status"
@@ -81,16 +81,22 @@
 </template>
 
 <script setup>
-import logo from "@/assets/logo.svg";
 import { useRoute, useRouter } from "vue-router";
-import { ref, onMounted, computed, nextTick } from "vue";
+import { ref, computed } from "vue";
 import TheSupportModal from "@/components/TheSupportModal.vue"
 
-const logoSrc = ref();
-const openGroups = ref([]);
+const _openedGroups = ref([]);
 const route = useRoute();
 const router = useRouter();
-const backPressed = ref(false);
+const rail = ref(true)
+
+const openedGroups = computed({
+  get: () => rail.value ? [] : _openedGroups.value,
+  set: val => {
+    _openedGroups.value = val
+  },
+})
+
 const activeModules = computed(() => {
   const shouldBeActiveModules = ['/network', '/buyables', '/forward', '/solprop']
   return shouldBeActiveModules.some(el => route.path.includes(el));
@@ -110,31 +116,6 @@ function logout() {
   localStorage.removeItem("accessToken");
   router.push({ path: '/login' })
 }
-
-function onDrawerCollapse(value) {
-  if (value) {
-    openGroups.value = [];
-  }
-}
-
-async function closeGroupsOnBack(_value) {
-  // wait for DOM to update
-  await nextTick();
-  if (backPressed.value === true) {
-    openGroups.value = [];
-    backPressed.value = false;
-  }
-
-}
-
-onMounted(() => {
-  openGroups.value = [];
-  logoSrc.value = logo;
-  // if back button is pressed
-  window.onpopstate = function (_event) {
-    backPressed.value = true;
-  };
-});
 </script>
 
 <style scoped>
