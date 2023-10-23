@@ -12,7 +12,7 @@
               @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }">Draw</v-btn>
           </template>
           <template v-slot:append>
-            <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large">Canonicalize</v-btn>
+            <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large" @click="canonicalize()">Canonicalize</v-btn>
           </template>
         </v-text-field>
       </v-col>
@@ -210,11 +210,11 @@ export default {
       }
     });
 
-    const canonicalize = (smiles, field) => {
-      API.post("/api/rdkit/canonicalize/", { smiles: smiles })
+    const canonicalize = () => {
+      API.post("/api/rdkit/canonicalize/", { smiles: smiles.value })
         .then((json) => {
           console.log(json);
-          field.value = json.smiles;
+          smiles.value = json.smiles;
         })
         .catch((error) => {
           console.log("Could not canonicalize: " + error);
