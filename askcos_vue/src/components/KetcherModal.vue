@@ -2,7 +2,7 @@
   <v-dialog v-model="propShow" :id="id" width="auto">
     <v-card>
       <v-card-text>
-        <iframe ref="ketcherIframe" src="/ketcher-standalone/index.html" width="800px" height="800px"></iframe>
+        <iframe ref="ketcherIframe" src="/ketcher/dist/ketcher.html" width="800px" height="800px"></iframe>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -61,10 +61,9 @@ export default {
     });
 
     const smilesToKetcher = () => {
-      // console.log(props.smiles)
       const km = ketcherIframe.value;
       // const spinner = ketcherSpinner.value;
-      if (!(km && km.contentWindow.ketcher)) {
+      if (!(km && km.contentWindow.ketcher && km.contentWindow.ketcher.ready)) {
         // spinner.style.display = 'block';
         setTimeout(smilesToKetcher, 100);
         return;
