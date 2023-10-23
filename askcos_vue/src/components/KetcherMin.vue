@@ -1,6 +1,6 @@
 <template>
     <div>
-        <iframe ref="ketcherIframeMin" id="ketcher-iframe-min" src="/ketcher-standalone/index.html" width="160"
+        <iframe ref="ketcherIframeMin" id="ketcher-iframe-min" src="/ketcher/dist/ketcher_min.html" width="160"
             height="100"></iframe>
     </div>
 </template>
@@ -21,8 +21,6 @@ export default {
         const ketcherIframeMin = ref(null);
         const ketcherIframeMinSpinner = ref(null);
         const isLoading = ref(false);
-
-        const ketcherSrc = '/ketcher-standalone/index.html';
 
         const setSmiles = (smiles, reference, callback) => {
             const data = { smiles };
@@ -45,19 +43,16 @@ export default {
 
         const setMolfile = (molfile, callback) => {
             const km = ketcherIframeMin.value;
-            if (!(km && km.contentWindow.ketcher)) {
+            if (!(km && km.contentWindow.ketcher && km.contentWindow.ketcher.ready)) {
                 setTimeout(() => setMolfile(molfile, callback), 100);
                 return;
             }
-            console.log("done wait")
             const ketcher = km.contentWindow.ketcher;
-            console.log(ketcher)
 
             // Remove mousemove handler to prevent dragging atoms and bonds
             ketcher.editor.event.mousemove.handlers.length = 0;
 
             function resizeKetcherIframe() {
-                console.log("start of resize")
                 const scale = 40; // 40's a bit of a magic number; I think it comes from a scale factor in Ketcher.
                 const zoom = 0.8; // Based on what size looks good in the UI
                 const margin = 1.5 * scale * zoom; // Based on testing to avoid cutoff along right and bottom edges
@@ -95,15 +90,14 @@ export default {
 
                 // Move canvas slightly so highlight circles do not get cut off along the top and left edges
                 ketcher.editor.render.setScrollOffset(offset, offset);
-                // if (callback) {
-                //     callback(ketcher);
-                // }
+                if (callback) {
+                    console.log(ketcher.editor)
+                    callback(ketcher);
+                }
             }
             // Need callback because the molecule takes a bit of time to finish displaying,
             // and we can't properly get coordinates  / bounding boxes until that finishes.
-            ketcher.setMolecule(molfile);
-
-            setTimeout(resizeKetcherIframe(), 5000)
+            ketcher.setMolecule(molfile, {callback: resizeKetcherIframe});
 
             km.contentWindow.scrollTo(0, 0)
 
@@ -140,7 +134,6 @@ export default {
             ketcherIframeMin,
             ketcherIframeMinSpinner,
             isLoading,
-            ketcherSrc,
             setSmiles,
             setMolfile,
             getSelectedAtoms
@@ -149,7 +142,7 @@ export default {
 };
 </script>
   
-<style scoped>
+<style>
 #ketcher-iframe-min {
     border-width: 0;
     overflow: hidden;
@@ -166,30 +159,6 @@ export default {
     margin: auto;
     width: 50px;
     height: 50px;
-}
-
-body {
-    margin: 0;
-}
-
-main[role=application] .cellar {
-    display: none;
-}
-
-main[role=application] #canvas {
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    border: 0;
-}
-
-.measure-log {
-    display: none;
-}
-
-main[role=application] [role=toolbar] {
-    display: none;
 }
 </style>
   

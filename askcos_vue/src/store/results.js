@@ -235,7 +235,6 @@ export const useResultsStore = defineStore("results", {
       return Promise.all(promises);
     },
     importTreeBuilderResult({ data, numTrees }) {
-      console.log("importTree")
       const settings = useSettingsStore();
       let resultObj = data;
       let target = resultObj["target_smiles"];

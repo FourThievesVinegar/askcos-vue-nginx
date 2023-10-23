@@ -11,13 +11,13 @@
         </v-sheet>
         <v-window v-model="tab" :class="tab === 'IPP' ? 'elevation-2' : 'elevation-0'">
           <v-window-item value="IPP">
-            <NetworkView :tab-active="tab === 'IPP'" @update:treeViewVisible="($event) => treeViewVisible = $event" />
+            <NetworkView :tab-active="tab === 'IPP'" @update:treeViewVisible="($event) => treeViewVisible = $event" ref="network" />
           </v-window-item>
           <v-window-item value="RP">
             <RetroView />
           </v-window-item>
           <v-window-item value="TE">
-            <TreeView />
+            <TreeView ref="treeDetail"/>
           </v-window-item>
         </v-window>
       </v-col>

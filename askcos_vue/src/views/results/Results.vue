@@ -70,7 +70,9 @@
                               :href="`network?tab=TE&id=${item.raw.result_id}`">
                               View trees
                             </v-btn>
-                            <v-btn color="primary" variant="tonal">
+                            <v-btn color="primary" variant="tonal"
+                              v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'"
+                              :href="`network?tab=IPP&id=${item.raw.result_id}&view=25`">
                               View in IPP
                             </v-btn>
                             <v-btn color="primary" variant="tonal" v-if="item.columns.result_type === 'tree_builder'"
