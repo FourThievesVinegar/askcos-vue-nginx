@@ -73,7 +73,7 @@
 
       <v-row align="center">
         <v-col cols="auto">
-          <v-list-item-title >{{ source }}<v-icon class="ml-2 mb-2" v-show="selectedSource === source" icon="mdi-check"></v-icon></v-list-item-title>
+          <v-list-item-title >{{ source }}<v-icon class="ml-1 mb-2" v-show="selectedSource === source" icon="mdi-check"></v-icon></v-list-item-title>
         </v-col>
       </v-row>
 
