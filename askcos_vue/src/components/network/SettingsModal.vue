@@ -253,32 +253,32 @@
                                             <setting-input label="Maximum iterations" label-for="maxIterations"
                                                 help-text="This is how many iterations the MCTS algorithm is allowed to perform before returning results.">
                                                 <v-text-field id="maxIterations" density="compact" variant="outlined"
-                                                    type="number" min="1" step="1" :model-value="maxIterations"
-                                                    hide-details class="mb-2"></v-text-field>
+                                                    type="number" min="1" step="1" :model-value="maxIterations" hide-details
+                                                    class="mb-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Maximum chemicals" label-for="maxChemicals"
                                                 help-text="This is how many chemicals the MCTS algorithm is allowed to explore before returning results.">
                                                 <v-text-field id="maxChemicals" density="compact" variant="outlined"
-                                                    type="number" min="1" step="1" :model-value="maxChemicals"
-                                                    hide-details class="mb-2"></v-text-field>
+                                                    type="number" min="1" step="1" :model-value="maxChemicals" hide-details
+                                                    class="mb-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Maximum reactions" label-for="maxReactions"
                                                 help-text="This is how many reactions the MCTS algorithm is allowed to explore before returning results.">
                                                 <v-text-field id="maxReactions" density="compact" variant="outlined"
-                                                    type="number" min="1" step="1" :model-value="maxReactions"
-                                                    hide-details class="mb-2"></v-text-field>
+                                                    type="number" min="1" step="1" :model-value="maxReactions" hide-details
+                                                    class="mb-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Maximum templates" label-for="maxTemplates"
                                                 help-text="This is how many template applications the MCTS algorithm is allowed to try before returning results.">
                                                 <v-text-field id="maxTemplates" density="compact" variant="outlined"
-                                                    type="number" min="1" step="1" :model-value="maxTemplates"
-                                                    hide-details class="mb-2"></v-text-field>
+                                                    type="number" min="1" step="1" :model-value="maxTemplates" hide-details
+                                                    class="mb-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Max expansion depth" label-for="maxDepth"
                                                 help-text="This is the maximum depth (or number of steps) for any given reaction pathway return by the search algorithm.">
                                                 <v-text-field id="maxDepth" density="compact" variant="outlined"
-                                                    type="number" min="1" step="1" :model-value="maxDepth"
-                                                    hide-details class="mb-2"></v-text-field>
+                                                    type="number" min="1" step="1" :model-value="maxDepth" hide-details
+                                                    class="mb-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Max branching" label-for="maxBranching"
                                                 help-text="This is the maximum branching for any given chemical in the reaction tree/graph.
