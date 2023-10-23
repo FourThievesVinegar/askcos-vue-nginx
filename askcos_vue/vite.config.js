@@ -65,6 +65,7 @@ export default defineConfig({
       '/api/site-selectivity': fastapiGatewayPtr,
       '/api/fast-filter': fastapiGatewayPtr,
       '/api/tree-analysis': fastapiGatewayPtr,
+      '/api/site-selectivity': fastapiGatewayPtr,
       // Legacy Django Gateway
       '/api/': {
         target: 'https://askcos-demo.mit.edu',
