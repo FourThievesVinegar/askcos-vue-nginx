@@ -32,14 +32,13 @@
                     {{ item.columns.mol_wt.toFixed(1) }}
                 </template>
                 <template #item.predict_impurities="{ item, index }">
-                    <!-- <pre>{{item.columns.outcome}}</pre> -->
                     <v-btn variant="tonal" @click="emitGoToImpurity(item.columns.outcome)"
                         :id="'predict-impurities-' + index" title="Predict products">
                         <v-icon>mdi-arrow-right</v-icon>
                     </v-btn>
                 </template>
                 <template #item.predict_selectivity="{ item, index }">
-                    <v-btn variant="tonal" @click="emitGoToImpurity(index)" :id="'predict-regio-selectivities-' + index"
+                    <v-btn variant="tonal" @click="goToSelectivity(item.columns.outcome)" :id="'predict-regio-selectivities-' + index"
                         title="Predict products">
                         <v-icon>mdi-arrow-right</v-icon>
                     </v-btn>
@@ -113,7 +112,6 @@ const { results, models, pending } = defineProps({
     },
 })
 
-const showDialog = ref(false)
 const headers = ref([
     // { key: 'rank', title: 'Rank', align: 'center', },
     { key: 'outcome', title: 'Product', align: 'center', width: '300px' },
@@ -135,7 +133,7 @@ const emitGoToImpurity = (index) => {
     console.log(index)
 }
 
-// const goToSelectivity = (index) => {
-//     emits('go-to-selectivity', index);
-// }
+const goToSelectivity = (index) => {
+    emits('go-to-selectivity', index);
+}
 </script>

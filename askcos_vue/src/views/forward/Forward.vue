@@ -9,7 +9,7 @@
             <v-tab @click="replaceRoute('forward')" value="forward">Product Prediction</v-tab>
             <v-tab @click="replaceRoute('impurity')" value="impurity">Impurity Prediction</v-tab>
             <v-tab @click="replaceRoute('selectivity')" value="selectivity">Regioselectivity Prediction</v-tab>
-            <v-tab @click="replaceRoute('sites')" value="sites" :disabled=true>Aromatic C-H Functionalization</v-tab>
+            <v-tab @click="replaceRoute('sites')" value="sites">Aromatic C-H Functionalization</v-tab>
           </v-tabs>
         </v-sheet>
 
@@ -130,7 +130,7 @@
           </v-window-item>
           <v-window-item value="forward">
             <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel"
-              :pending="pendingTasks" @download-forward="downloadForwardResults" @go-to-impurities="goToImpurity" />
+              :pending="pendingTasks" @download-forward="downloadForwardResults" @go-to-impurities="goToImpurity" @go-to-selectivity="goToSelectivity"/>
           </v-window-item>
           <v-window-item value="impurity">
             <ImpurityPrediction value="impurity" rounded="lg" :results="impurityResults" :pending="pendingTasks"
@@ -542,13 +542,21 @@ const goToImpurity = (index) => {
   canonicalizeAll()
     .then(() => {
       product.value = index;
-      console.log(index)
       changeMode('impurity');
       tab.value = 'impurity';
       impurityPredict();
     });
 };
 
+const goToSelectivity = (index) => {
+  canonicalizeAll()
+    .then(() => {
+      product.value = index
+      changeMode('selectivity')
+      tab.value = 'selectivity';
+      selectivityPredict()
+    })
+}
 
 const forwardModelTrainingSets = computed(() => {
   const sets = new Set();
@@ -1022,7 +1030,7 @@ const clearSites = () => {
 const sitesPredict = () => {
   pendingTasks.value++
   const postData = constructSiteSelectivityPostData()
-  API.runCeleryTask('/api/v2/selectivity/', postData)
+  API.runCeleryTask('/api/legacy/selectivity/', postData)
     .then(output => {
       siteResults.value = output
       ketcherMinRef.value.setSmiles(reactants.value);

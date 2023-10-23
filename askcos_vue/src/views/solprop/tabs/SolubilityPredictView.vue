@@ -1,64 +1,63 @@
 <template>
-  <v-container fluid pa-0>
-    <v-row class="justify-center align-center ">
-      <v-col cols="12" md="6">
-        <v-sheet elevation="2" >
-          <v-tabs v-model="tab" align-tabs="center" color="primary">
-            <v-tab value="one">Form Input</v-tab>
-            <v-tab value="two">File Upload</v-tab>
-          </v-tabs>
-          <v-form @submit.prevent class="pa-5">
-            <v-expansion-panels v-model="panel" multiple>
-              <v-expansion-panel title="Basic Information" class="text-primary">
-                <v-expansion-panel-text class="text-black">
-                  <v-text-field :rules="[v => !!v || 'Solute is required']" variant="outlined" label="Solute"
-                    v-model="solute" clearable></v-text-field>
-                  <div v-if="!!solute" class="my-3">
-                    <smiles-image :smiles="solute" height="100px"></smiles-image>
-                  </div>
-                  <v-text-field :rules="[v => !!v || 'Solvent is required']" variant="outlined" label="Solvent"
-                    v-model="solvent" clearable></v-text-field>
-                  <div v-if="!!solvent" class="my-3">
-                    <smiles-image :smiles="solvent" height="100px"></smiles-image>
-                  </div>
-                  <v-text-field :rules="[v => !!v || 'Temperature is required']" variant="outlined" label="Temperature"
-                    v-model="temperature" clearable></v-text-field>
-                </v-expansion-panel-text>
-              </v-expansion-panel>
-              <v-expansion-panel title="Reference Information (Optional)" class="text-primary">
-                <v-expansion-panel-text class="text-black">
-                  <v-text-field variant="outlined" label="Ref. Solvent" v-model="refSolvent"></v-text-field>
-                  <div v-if="!!refSolvent" class="my-3">
-                    <smiles-image :smiles="refSolvent" height="100px"></smiles-image>
-                  </div>
-                  <v-text-field variant="outlined" label="Ref. Solubility (log10(mol/L))"
-                    v-model="refSolubility"></v-text-field>
-                  <v-text-field variant="outlined" label="Ref. Temperature (K)" v-model="refTemperature"></v-text-field>
-                </v-expansion-panel-text>
-              </v-expansion-panel>
-              <v-expansion-panel title="Solute Information (Optional)" class="text-primary">
-                <v-expansion-panel-text class="text-black">
-                  <v-text-field variant="outlined" label="ΔHsub298 (kcal/mol)" v-model="soluteHsub"></v-text-field>
-                  <v-text-field variant="outlined" label="Cpg298 (cal/mol/K)" v-model="soluteCpg"></v-text-field>
-                  <v-text-field variant="outlined" label="Cps298 (cal/mol/K)" v-model="soluteCps"></v-text-field>
-                </v-expansion-panel-text>
-              </v-expansion-panel>
-            </v-expansion-panels>
-            <v-btn type="submit" block class="mt-4" color="success" @click="predict">Submit</v-btn>
-          </v-form>
+  <v-container fluid style="min-height: calc(100vh-50px)">
+    <v-row class="justify-center" >
+      <v-col cols="12" sm="8" md="10">
+        <v-sheet elevation="2" class="pa-10">
+              <v-form @submit.prevent >
+                <v-row>
+                  <v-col>
+                    <v-text-field :rules="[v => !!v || 'Solute is required']" variant="outlined" label="Solute"
+                      v-model="solute" clearable></v-text-field>
+                    <div v-if="!!solute" class="my-3">
+                      <smiles-image :smiles="solute" height="100px"></smiles-image>
+                    </div>
+                  </v-col>
+                  <v-col>
+                    <v-text-field :rules="[v => !!v || 'Solvent is required']" variant="outlined" label="Solvent"
+                      v-model="solvent" clearable></v-text-field>
+                    <div v-if="!!solvent" class="my-3">
+                      <smiles-image :smiles="solvent" height="100px"></smiles-image>
+                    </div>
+                  </v-col>
+                  <v-col>
+                    <v-text-field :rules="[v => !!v || 'Temperature is required']" variant="outlined" label="Temperature"
+                      v-model="temperature" clearable></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row align="center" justify-start>
+                  <v-col>
+                    <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict">Submit</v-btn>
+                    <!-- 
+                  <v-btn variant="tonal" class="mr-5" @click="clear()" :disabled="contextResults = [] && reactants === ''">
+                    Clear
+                  </v-btn> -->
+                  <v-btn type="submit" variant="flat" color="primary" class="mr-5" @click="showUploadModal=true">Upload</v-btn>
+                    <v-btn icon @click="dialog = !dialog">
+                      <v-icon>mdi-cog</v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <!-- <v-btn type="submit" block class="mt-4" color="success" @click="predict">Submit</v-btn> -->
+              </v-form>
         </v-sheet>
       </v-col>
 
+
       <v-col v-show="pendingTasks > 0 || results.length" cols="12">
-        <v-sheet elevation="2" class="pa-4">
+        <v-sheet elevation="2" class="pa-4" rounded="lg">
           <v-row v-if="!pendingTasks > 0" align="center" justify="space-between" class="mx-auto my-auto pa-2">
             <v-col md="5">
-              <v-menu location="top">
+              <v-menu location="bottom">
                 <template v-slot:activator="{ props }">
-                <v-btn v-show="!!results.length" @click="handleClick" :disabled="evaluating" height="30px" color="primary mr-2" v-bind="props" prepend-icon="mdi mdi-download">
-                  Download
-                </v-btn>
+                  <v-btn v-show="!!results.length" @click="handleClick" :disabled="evaluating"
+                    height="30px" color="primary mr-2" v-bind="props" prepend-icon="mdi mdi-download">
+                    Download
+                  </v-btn>
                 </template>
+                <v-list>
+                  <v-list-item @click="downloadCSV()">Download CSV</v-list-item>
+                  <v-list-item @click="downloadJSON()">Download JSON</v-list-item>
+                </v-list>
               </v-menu>
             </v-col>
             <v-spacer md="2"></v-spacer>
@@ -82,6 +81,65 @@
         </v-sheet>
       </v-col>
     </v-row>
+
+      <v-dialog v-model="showUploadModal" max-width="600px">
+      <v-card>
+        <v-card-title class="mt-2">
+          <v-col cols="12">Upload file</v-col>
+        </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col cols="12" class="mb-2">
+              <span>
+               See Model Input/Output Details for notes on file format.
+              </span>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="12">
+              <v-file-input label="File" v-model="uploadFile" :rules="[v => !!v || 'File is required']"
+                density="comfortable" variant="outlined" clearable></v-file-input>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="showUploadModal = false">Close</v-btn>
+          <v-btn color="green darken-1" text @click="handleUploadSubmit">Upload</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialog" max-width="600px" class="justify-center align-center">
+      <v-card class="pa-3 m-5">
+        <v-card-title class="headline">
+          Settings
+        </v-card-title>
+        <v-expand-transition>
+          <v-expansion-panels v-model="panel" multiple>
+            <v-expansion-panel title="Reference Information (Optional)" class="text-primary">
+              <v-expansion-panel-text class="text-black">
+                <v-text-field variant="outlined" label="Ref. Solvent" v-model="refSolvent"></v-text-field>
+                <div v-if="!!refSolvent" class="my-3">
+                  <smiles-image :smiles="refSolvent" height="100px"></smiles-image>
+                </div>
+                <v-text-field variant="outlined" label="Ref. Solubility (log10(mol/L))"
+                  v-model="refSolubility"></v-text-field>
+                <v-text-field variant="outlined" label="Ref. Temperature (K)" v-model="refTemperature"></v-text-field>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+            <v-expansion-panel title="Solute Information (Optional)" class="text-primary">
+              <v-expansion-panel-text class="text-black">
+                <v-text-field variant="outlined" label="ΔHsub298 (kcal/mol)" v-model="soluteHsub"></v-text-field>
+                <v-text-field variant="outlined" label="Cpg298 (cal/mol/K)" v-model="soluteCpg"></v-text-field>
+                <v-text-field variant="outlined" label="Cps298 (cal/mol/K)" v-model="soluteCps"></v-text-field>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </v-expand-transition>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
   
@@ -91,8 +149,8 @@
 import SmilesImage from "@/components/SmilesImage";
 import SmilesInput from "@/components/SmilesInput";
 import { API } from "@/common/api";
-// import { saveAs } from "file-saver";
-// import * as Papa from "papaparse";
+import { saveAs } from "file-saver";
+import * as Papa from "papaparse";
 
 export default {
   name: "SolubilityPrediction",
@@ -115,7 +173,10 @@ export default {
       soluteHsub: null,
       soluteCpg: null,
       soluteCps: null,
+      dialog: false,
+      showUploadModal: false,
       results: [],
+      tab: "one",
       uploadFile: null,
       selectedColumnCategories: [
         'Solubility(T) [mg/mL]',
