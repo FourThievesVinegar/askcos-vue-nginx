@@ -39,8 +39,8 @@
                     </v-btn>
                 </template>
                 <template #item.predict_selectivity="{ item, index }">
-                    <v-btn variant="tonal" @click="goToSelectivity(item.columns.outcome)"
-                        :id="'predict-regio-selectivities-' + index" title="Predict products">
+                    <v-btn variant="tonal" @click="goToSelectivity(item.columns.outcome)" :id="'predict-regio-selectivities-' + index"
+                        title="Predict products">
                         <v-icon>mdi-arrow-right</v-icon>
                     </v-btn>
                 </template>
