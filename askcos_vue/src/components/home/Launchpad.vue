@@ -211,7 +211,7 @@ export default {
     });
 
     const canonicalize = (smiles, field) => {
-      API.post("/api/v2/rdkit/smiles/canonicalize/", { smiles: smiles })
+      API.post("/api/rdkit/canonicalize/", { smiles: smiles })
         .then((json) => {
           console.log(json);
           field.value = json.smiles;

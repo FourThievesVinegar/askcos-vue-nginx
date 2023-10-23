@@ -6,9 +6,9 @@
       <v-container fluid>
         <v-row class="justify-center align-center">
           <v-col cols="12" md="10"><v-text-field v-model="resultsStore.target" density="compact" variant="outlined"
-              label="Target" placeholder="SMILES" type="text" clearable class="target-input" hide-details>
+              label="Target" placeholder="SMILES" type="text" clearable class="target-input" hide-details prepend-inner-icon="mdi mdi-flask">
               <template v-slot:append-inner>
-                <v-btn variant="tonal" size="small" prepend-iconf="mdi-pencil">Draw</v-btn>
+                <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil">Draw</v-btn>
               </template>
               <template v-slot:append>
                 <v-btn variant="flat" color="green-darken-1" prepend-icon="mdi mdi-play" class="mr-2"
@@ -711,7 +711,7 @@ export default {
       }
     },
     validatesmiles(smiles, iswarning) {
-      return API.post("/api/v2/rdkit/smiles/validate/", {
+      return API.post("/api/rdkit/validate/", {
         smiles: smiles,
       }).then(async (json) => {
         if (!json["correct_syntax"]) {
@@ -1434,7 +1434,7 @@ export default {
       }
     },
     canonicalize(smiles, input) {
-      return API.post("/api/v2/rdkit/smiles/canonicalize/", {
+      return API.post("/api/rdkit/canonicalize/", {
         smiles: smiles,
       }).then((json) => {
         if (json.smiles) {

@@ -29,8 +29,8 @@
           <v-row class="mb-3 px-3 justify-center">
             <v-col cols="12" md="11">
               <v-row class="px-5 py-4 justify-space-between">
-                <v-btn icon class="bg-red">
-                  <v-icon white @click="deleteSelection" :disabled="selection.length === 0">mdi-delete</v-icon>
+                <v-btn icon class="bg-red" :disabled="selection.length === 0" variant="flat">
+                  <v-icon @click="deleteSelection">mdi-delete</v-icon>
                 </v-btn>
                 <v-btn icon="mdi-refresh" variant="tonal" @click="update">
                 </v-btn>
@@ -44,7 +44,7 @@
               <v-row v-if="allResults.length">
                 <v-col cols="12">
                   <v-data-table :headers="headers" item-value="result_id" :items="allResults" show-select
-                    v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10" height="400px"
+                    v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10" 
                     :search="searchQuery">
                     <template v-slot:item.delete="{ item }">
                       <!-- <pre>{{ item }}</pre> -->

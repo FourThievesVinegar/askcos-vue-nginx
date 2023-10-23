@@ -1263,13 +1263,13 @@ function retroScoreDescending(a, b) {
 
 function getHistory(smiles, templateSets) {
   // Lookup chemhistorian data for a list of SMILES
-  const url = "/api/v2/historian/lookup/";
+  const url = "/api/historian/lookup-smiles-list/";
   const body = {
-    smiles: smiles,
+    smiles_list: smiles,
     template_sets: templateSets,
   };
   return API.post(url, body).then((json) => {
-    let result = json["result"];
+    let result = json;
     Object.keys(result).forEach((smi) => {
       result[smi] = {
         asReactant: result[smi]["as_reactant"],

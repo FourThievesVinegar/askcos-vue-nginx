@@ -1284,7 +1284,7 @@ export default {
       });
     },
     validatesmiles(smiles, iswarning) {
-      return API.post("/api/v2/rdkit/smiles/validate/", { smiles: smiles }).then((json) => {
+      return API.post("/api/rdkit/validate/", { smiles: smiles }).then((json) => {
         if (!json["correct_syntax"]) {
           if (iswarning) {
             this.$bvModal.msgBoxOk("Invalid SMILES entered: Invalid Syntax", {
@@ -1317,7 +1317,7 @@ export default {
       });
     },
     canonicalize(smiles, input) {
-      return API.post("/api/v2/rdkit/smiles/canonicalize/", { smiles: smiles }).then((json) => {
+      return API.post("/api/rdkit/canonicalize/", { smiles: smiles }).then((json) => {
         if (json.smiles) {
           if (typeof input === "string") {
             this[input] = json.smiles;

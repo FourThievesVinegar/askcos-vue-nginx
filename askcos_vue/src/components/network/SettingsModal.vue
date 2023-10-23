@@ -234,7 +234,7 @@
                         </v-window-item>
                         <v-window-item value="mctsTB">
                             <v-container fluid>
-                                <v-expansion-panels multiple variant="popout" color="grey-lighten-4">
+                                <v-expansion-panels multiple variant="popout" color="grey-lighten-4" v-model="mctsPanels">
                                     <v-expansion-panel title="MCTS algorithm options">
                                         <v-expansion-panel-text>
                                             <setting-input label="Tree builder version" label-for="tbVersion"
@@ -302,6 +302,27 @@
                                             </v-alert>
                                             <setting-input label="Buyables sources"
                                                 help-text="Restrict buyables database lookup to specific sources. Note that this also applies to one-step predictions.">
+                                                <v-menu>
+                                                    <template v-slot:activator="{ props }">
+                                                        <v-btn color="primary" dark v-bind="props">
+                                                            {{ buyablesSourceDisplay }}
+                                                        </v-btn>
+                                                    </template>
+                                                    <v-list>
+                                                        <v-list-item>
+                                                            <v-checkbox hide-details v-model="buyablesSourceAll"
+                                                                @update:modelValue="buyablesSource = []"
+                                                                label="All"></v-checkbox>
+                                                        </v-list-item>
+                                                        <v-list-item v-for="(source, index) in buyablesSources"
+                                                            :key="index">
+                                                            <v-checkbox hide-details v-model="buyablesSource" :key="source"
+                                                                :value="source" :disabled="buyablesSourceAll">
+                                                                {{ source === NO_SOURCE ? NO_SOURCE_TEXT : source }}
+                                                            </v-checkbox>
+                                                        </v-list-item>
+                                                    </v-list>
+                                                </v-menu>
                                                 <!-- <b-dropdown variant="outline-secondary" size="sm" block
                                             :text="buyablesSourceDisplay">
                                             <b-dropdown-form>
@@ -528,7 +549,8 @@ export default {
             precursorScoringItems: [
                 { title: "Relevance Heuristic", value: "relevance_heuristic" },
                 { title: "SCScore", value: "scscore" }
-            ]
+            ],
+            mctsPanels: [0]
         };
     },
     computed: {
