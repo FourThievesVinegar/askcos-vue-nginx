@@ -328,7 +328,7 @@ export default {
         };
 
         const canonicalize = async (smiles) => {
-            const json = await API.post("/api/v2/rdkit/smiles/canonicalize/", { smiles: smiles });
+            const json = await API.post("/api/rdkit/canonicalize/", { smiles: smiles });
             return json.smiles;
         };
 

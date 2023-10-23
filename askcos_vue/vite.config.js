@@ -58,6 +58,7 @@ export default defineConfig({
       '/api/cluster': fastapiGatewayPtr,
       '/api/user': fastapiGatewayPtr,
       '/api/rdkit': fastapiGatewayPtr,
+      '/api/historian': fastapiGatewayPtr,
       // Legacy Django Gateway
       '/api/': {
         target: 'https://askcos-demo.mit.edu',
