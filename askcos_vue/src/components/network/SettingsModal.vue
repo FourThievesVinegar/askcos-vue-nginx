@@ -206,10 +206,9 @@
                                     <v-alert type="info" title="Note" variant="tonal">
                                         <template v-slot:text>
                                             <ul>
-                                                <li>- Template-based: template relevance, gln, localretro, neuralsym,
-                                                    retrocomposer</li>
-                                                <li>- Template-free (graph-edit based): retroxpert</li>
-                                                <li>- Template-free (translation based): transformer</li>
+                                                <li>- Template-based: template_relevance</li>
+                                                <li>- Template-free (graph-edit based): graph2smiles</li>
+                                                <li>- Template-free (translation based): augmented_transformer</li>
                                             </ul>
                                         </template>
                                     </v-alert>
@@ -217,7 +216,8 @@
                                 <setting-input label="Precursor scoring" label-for="precursorScoring"
                                     help-text="This settings changes how the precursors are ranked by the server. Results can also be re-ordered dynamically as explained in the tutorial.">
                                     <v-select :model-value="precursorScoring" :items="precursorScoringItems"
-                                        variant="outlined" class="mt-4 mb-2" hide-details density="compact"></v-select>
+                                        @update:modelValue="($event) => precursorScoring = $event" variant="outlined"
+                                        class="mt-4 mb-2" hide-details density="compact"></v-select>
                                 </setting-input>
                                 <setting-input label="Min. plausibility" label-for="minPlausibility"
                                     help-text="This is the minimum plausibility that a predictor transformation must receive from the Fast Filter model in order to be kept and returned as a result.
@@ -300,7 +300,7 @@
                                                     Any OR criteria
                                                     are sufficient on their own.</p>
                                             </v-alert>
-                                            <setting-input label="Buyables sources"
+                                            <setting-input class="mt-2" label="Buyables sources"
                                                 help-text="Restrict buyables database lookup to specific sources. Note that this also applies to one-step predictions.">
                                                 <v-menu>
                                                     <template v-slot:activator="{ props }">
@@ -317,99 +317,89 @@
                                                         <v-list-item v-for="(source, index) in buyablesSources"
                                                             :key="index">
                                                             <v-checkbox hide-details v-model="buyablesSource" :key="source"
-                                                                :value="source" :disabled="buyablesSourceAll">
-                                                                {{ source === NO_SOURCE ? NO_SOURCE_TEXT : source }}
+                                                                :value="source" :disabled="buyablesSourceAll != []">
+                                                                <template v-slot:label>
+                                                                    {{ source === NO_SOURCE ? NO_SOURCE_TEXT : source }}
+                                                                </template>
                                                             </v-checkbox>
                                                         </v-list-item>
                                                     </v-list>
                                                 </v-menu>
-                                                <!-- <b-dropdown variant="outline-secondary" size="sm" block
-                                            :text="buyablesSourceDisplay">
-                                            <b-dropdown-form>
-                                                <b-form-checkbox v-model="buyablesSourceAll"
-                                                    @change="buyablesSource = []">All</b-form-checkbox>
-                                                <b-form-checkbox v-for="source in buyablesSources" v-model="buyablesSource"
-                                                    :key="source" :value="source" :disabled="buyablesSourceAll">
-                                                    {{ source === NO_SOURCE ? NO_SOURCE_TEXT : source }}
-                                                </b-form-checkbox>
-                                            </b-dropdown-form>
-                                        </b-dropdown> -->
                                             </setting-input>
                                             <setting-input label="Buyability logic" label-for="buyableLogic"
                                                 help-text="Sets the logic type for considering buyability. This only checks for existence in the buyables database and does not consider price.">
-                                                <!-- <b-form-select id="buyableLogic" size="sm" :options="logicOptions"
-                                            v-model="buyableLogic"></b-form-select> -->
+                                                <v-select :items="logicOptions" v-model="buyableLogic" hide-details
+                                                    variant="outlined" density="compact" class="mt-2"></v-select>
                                             </setting-input>
                                             <setting-input label="Chemical price logic" label-for="ppgLogic"
                                                 help-text="Sets the logic type for considering max chemical price.">
-                                                <!-- <b-form-select id="ppgLogic" size="sm" :options="logicOptions"
-                                            v-model="maxPPGLogic"></b-form-select> -->
+                                                <v-select :items="logicOptions" v-model="maxPPGLogic" hide-details
+                                                    variant="outlined" density="compact" class="mt-2"></v-select>
                                             </setting-input>
-                                            <setting-input v-if="maxPPGLogic !== 'none'" label="Max chemical price ($/g)"
+                                            <setting-input v-if="maxPPGLogic != 'none'" label="Max chemical price ($/g)"
                                                 label-for="maxPPG"
                                                 help-text="This is the maximum price below which a precursor will be considered terminal in the MCTS search."
                                                 class="ml-3">
-                                                <!-- <b-form-input id="maxPPG" size="sm" type="number"
-                                            v-model.number="maxPPG"></b-form-input> -->
+                                                <v-text-field label="" id="maxPPG" v-model.number="maxPPG" type="number"
+                                                    variant="outlined" density="compact" hide-details
+                                                    class="mt-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Chemical SCScore logic" label-for="scscoreLogic"
                                                 help-text="Sets the logic type for considering max synthetic complexity score.">
-                                                <!-- <b-form-select id="scscoreLogic" size="sm" :options="logicOptions"
-                                            v-model="maxScscoreLogic"></b-form-select> -->
+                                                <v-select :items="logicOptions" v-model="maxScscoreLogic" hide-details
+                                                    variant="outlined" density="compact" class="mt-2"
+                                                    id="scscoreLogic"></v-select>
                                             </setting-input>
                                             <setting-input v-if="maxScscoreLogic !== 'none'"
                                                 label="Max chemical SCScore (1-5)" label-for="maxScscore" help-text="This is the maximum synthetic complexity score below which a precursor will be considered terminal in the MCTS search.
         Values range from 1-5, with 5 being most synthetically complex." class="ml-3">
-                                                <!-- <b-form-input id="maxScscore" size="sm" type="number" min="1" max="5"
-                                            v-model.number="maxScscore"></b-form-input> -->
+                                                <v-text-field label="" id="maxScscore" v-model.number="maxScscore"
+                                                    type="number" min="1" max="5" variant="outlined" density="compact"
+                                                    hide-details class="mt-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Chemical property logic" label-for="chemPropLogic"
                                                 help-text="Sets the logic type for considering maximum chemical size in terms of element counts.">
-                                                <!-- <b-form-select id="chemPropLogic" size="sm" :options="logicOptions"
-                                            v-model="chemicalPropertyLogic"></b-form-select> -->
+                                                <v-select id="chemPropLogic" :items="logicOptions"
+                                                    v-model="chemicalPropertyLogic" variant="outlined" density="compact"
+                                                    class="mt-2" hide-details></v-select>
                                             </setting-input>
                                             <setting-input v-if="chemicalPropertyLogic !== 'none'" label="Max atoms"
                                                 help-text="This is the maximum number of each element below which a precursor will be considered terminal in the MCTS search."
                                                 class="ml-3">
-                                                <!-- <b-form-group label-cols="auto" label-for="chemPropC">
-                                            <template #label>C &le;</template>
-                                            <b-form-input id="chemPropC" size="sm" type="number" min="1" step="1"
-                                                v-model.number="chemicalPropertyC"></b-form-input>
-                                        </b-form-group>
-                                        <b-form-group label-cols="auto" label-for="chemPropN">
-                                            <template #label>N &le;</template>
-                                            <b-form-input id="chemPropN" size="sm" type="number" min="1" step="1"
-                                                v-model.number="chemicalPropertyN"></b-form-input>
-                                        </b-form-group>
-                                        <b-form-group label-cols="auto" label-for="chemPropO">
-                                            <template #label>O &le;</template>
-                                            <b-form-input id="chemPropO" size="sm" type="number" min="1" step="1"
-                                                v-model.number="chemicalPropertyO"></b-form-input>
-                                        </b-form-group>
-                                        <b-form-group label-cols="auto" label-for="chemPropH">
-                                            <template #label>H &le;</template>
-                                            <b-form-input id="chemPropH" size="sm" type="number" min="1" step="1"
-                                                v-model.number="chemicalPropertyH"></b-form-input>
-                                        </b-form-group> -->
+                                                <v-text-field label="C &le;" id="chemPropC"
+                                                    v-model.number="chemicalPropertyC" type="number" min="1" step="1"
+                                                    variant="outlined" density="compact" hide-details
+                                                    class="mt-2"></v-text-field>
+                                                <v-text-field label="N &le;" id="chemPropN"
+                                                    v-model.number="chemicalPropertyN" type="number" min="1" step="1"
+                                                    variant="outlined" density="compact" hide-details
+                                                    class="mt-2"></v-text-field>
+                                                <v-text-field label="O &le;" id="chemPropO"
+                                                    v-model.number="chemicalPropertyO" type="number" min="1" step="1"
+                                                    variant="outlined" density="compact" hide-details
+                                                    class="mt-2"></v-text-field>
+                                                <v-text-field label="H &le;" id="chemPropH"
+                                                    v-model.number="chemicalPropertyH" type="number" min="1" step="1"
+                                                    variant="outlined" density="compact" hide-details
+                                                    class="mt-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Chemical popularity logic" label-for="chemPopLogic"
                                                 help-text="Sets the logic type for considering the number of times a chemical appeared in the training data for the template relevance machine learning model.">
-                                                <!-- <b-form-select id="chemPopLogic" size="sm" :options="logicOptions"
-                                            v-model="chemicalPopularityLogic"></b-form-select> -->
+                                                <v-select id="chemPopLogic" :items="logicOptions"
+                                                    v-model="chemicalPopularityLogic" hide-details density="compact"
+                                                    variant="outlined" class="mt-2"></v-select>
                                             </setting-input>
                                             <setting-input v-if="chemicalPopularityLogic !== 'none'" label="Min occurrences"
                                                 help-text="This is the minimum number of prior occurrences above which a precursor will be considered terminal in the MCTS search."
                                                 class="ml-3">
-                                                <!-- <b-form-group label-cols="auto" label-for="chemPopR">
-                                            <template #label>As reactant &ge;</template>
-                                            <b-form-input id="chemPopR" size="sm" type="number" min="1" step="1"
-                                                v-model.number="chemicalPopularityReactants"></b-form-input>
-                                        </b-form-group>
-                                        <b-form-group label-cols="auto" label-for="chemPopP">
-                                            <template #label>As product &ge;</template>
-                                            <b-form-input id="chemPopP" size="sm" type="number" min="1" step="1"
-                                                v-model.number="chemicalPopularityProducts"></b-form-input>
-                                        </b-form-group> -->
+                                                <v-text-field label="As reactant &ge;" id="chemPopR"
+                                                    v-model.number="chemicalPopularityReactants" type="number" min="1"
+                                                    step="1" variant="outlined" density="compact" hide-details
+                                                    class="mt-2"></v-text-field>
+                                                <v-text-field label="As product &ge;" id="chemPopP"
+                                                    v-model.number="chemicalPopularityProducts" type="number" min="1"
+                                                    step="1" variant="outlined" density="compact" hide-details
+                                                    class="mt-2"></v-text-field>
                                             </setting-input>
                                         </v-expansion-panel-text>
                                     </v-expansion-panel>
@@ -417,60 +407,63 @@
                                         <v-expansion-panel-text>
                                             <setting-input label="Cluster pathways"
                                                 help-text="This setting toggles whether or not clustering is performed for pathways found by the tree builder.">
-                                                <!-- <b-checkbox id="clusterTrees" v-model="pathClusterEnabled" class="col-form-label"
-                                            switch>
-                                            <span class="sr-only">Cluster pathways</span>
-                                        </b-checkbox> -->
+                                                <v-switch hide-details v-model="pathClusterEnabled" label="All"
+                                                    color="primary">
+                                                    <template v-slot:label>
+                                                        <span class="sr-only">Cluster pathways</span>
+                                                    </template></v-switch>
                                             </setting-input>
                                             <setting-input label="Pathway clustering algorithm"
                                                 label-for="pathClusterMethod"
                                                 help-text="Sets the clustering algorithm to use for pathway clustering.">
-                                                <!-- <b-form-select id="pathClusterMethod" size="sm" v-model="pathClusterMethod">
-                                            <b-form-select-option value="hdbscan">hdbscan</b-form-select-option>
-                                            <b-form-select-option value="kmeans">kmeans</b-form-select-option>
-                                        </b-form-select> -->
+                                                <v-select hide-details id="pathClusterMethod" v-model="pathClusterMethod"
+                                                    :items="pathClusterMethodItems" variant="outlined"
+                                                    density="compact"></v-select>
                                             </setting-input>
                                             <setting-input v-show="pathClusterMethod === 'hdbscan'"
                                                 label="Min. cluster size" label-for="pathClusterMinSize"
                                                 help-text="This is the min_cluster_size parameter for the hdbscan algorithm.">
-                                                <!-- <b-form-input id="pathClusterMinSize" size="sm" type="number" min="1" max="100"
-                                            step="1" v-model.number="pathClusterMinSize"></b-form-input> -->
+                                                <v-text-field label="As product &ge;" id="pathClusterMinSize"
+                                                    v-model.number="pathClusterMinSize" type="number" min="1" max="100"
+                                                    step="1" variant="outlined" density="compact" hide-details
+                                                    class="mt-2"></v-text-field>
                                             </setting-input>
                                             <setting-input v-show="pathClusterMethod === 'hdbscan'" label="Min. samples"
                                                 label-for="pathClusterMinSamples"
                                                 help-text="This is the min_samples parameter for the hdbscan algorithm.">
-                                                <!-- <b-form-input id="pathClusterMinSamples" size="sm" type="number" min="1" max="100"
-                                            step="1" v-model.number="pathClusterMinSamples"></b-form-input> -->
+                                                <v-text-field label="As product &ge;" id="pathClusterMinSamples"
+                                                    v-model.number="pathClusterMinSamples" type="number" min="1" max="100"
+                                                    step="1" variant="outlined" density="compact" hide-details
+                                                    class="mt-2"></v-text-field>
                                             </setting-input>
                                         </v-expansion-panel-text>
                                     </v-expansion-panel>
                                     <v-expansion-panel title="Result output options">
                                         <v-expansion-panel-text>
-                                            <setting-input v-show="tbVersion < 1000" label="Return ASAP"
+                                            <setting-input label="Return ASAP"
                                                 help-text="This setting will make the tree search algorithm terminate upon finding any pathway with terminal nodes that meet the stopping criteria (price, and or property/popularity logic).">
-                                                <!-- <b-checkbox id="returnFirst" v-model="returnFirst" class="col-form-label" switch>
-                                        <span class="sr-only">Return ASAP</span>
-                                    </b-checkbox> -->
+                                                <v-switch id="returnFirst" hide-details v-model="returnFirst"
+                                                    color="primary">
+                                                </v-switch>
                                             </setting-input>
                                             <setting-input label="Maximum pathways to return" label-for="maxTrees"
                                                 help-text="This allows limiting how many pathways are returned by the tree builder. Note that the cutoff is checked during depth-first pathway enumeration, so there is no guarantee on which pathways are returned.">
-                                                <!-- <b-form-input id="maxTrees" size="sm" type="number" min="1" step="1"
-                                        v-model.number="maxTrees"></b-form-input> -->
+                                                <v-text-field label="" id="maxTrees" v-model.number="maxTrees" type="number"
+                                                    min="1" step="1" variant="outlined" density="compact" hide-details
+                                                    class="mt-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Classify reactions"
                                                 help-text="This setting toggles whether or not to predict reaction classes for all reactions explored by the tree builder.
         Predicting reaction classes provides additional data for filtering trees, but takes more time (~0.1s per reaction).">
-                                                <!-- <b-checkbox id="classifyReactions" v-model="classifyReactions" class="col-form-label"
-                                        switch>
-                                        <span class="sr-only">classifyReactions</span>
-                                    </b-checkbox> -->
+                                                <v-switch id="classifyReactions" hide-details v-model="classifyReactions"
+                                                    color="primary">
+                                                </v-switch>
                                             </setting-input>
                                             <setting-input label="Redirect to IPP results view"
                                                 help-text="This setting allows you to redirect to the entire graph visualization of the tree builder results in this IPP interface instead of the pathway visualization page that lets you view individual pathways one at a time.">
-                                                <!-- <b-checkbox id="redirectToGraph" v-model="redirectToGraph" class="col-form-label"
-                                        switch>
-                                        <span class="sr-only">Redirect to IPP results view</span>
-                                    </b-checkbox> -->
+                                                <v-switch id="redirectToGraph" hide-details v-model="redirectToGraph"
+                                                    color="primary">
+                                                </v-switch>
                                             </setting-input>
                                         </v-expansion-panel-text>
                                     </v-expansion-panel>
@@ -503,7 +496,7 @@
 </template>
   
 <script>
-import { NO_SOURCE, NO_SOURCE_TEXT } from "@/common/buyables";
+import { NO_SOURCE, NO_SOURCE_TEXT, sourceArgsToDisplay } from "@/common/buyables";
 import { API } from "@/common/api";
 import SettingInput from "./SettingInput";
 import { mapStores } from "pinia";
@@ -539,9 +532,9 @@ export default {
             templateSetsList: [],
             buyablesSources: [],
             logicOptions: [
-                { value: "none", text: "None" },
-                { value: "or", text: "Or" },
-                { value: "and", text: "And" },
+                { value: "none", title: "None" },
+                { value: "or", title: "Or" },
+                { value: "and", title: "And" },
             ],
             NO_SOURCE: NO_SOURCE,
             NO_SOURCE_TEXT: NO_SOURCE_TEXT,
@@ -550,7 +543,11 @@ export default {
                 { title: "Relevance Heuristic", value: "relevance_heuristic" },
                 { title: "SCScore", value: "scscore" }
             ],
-            mctsPanels: [0]
+            mctsPanels: [0],
+            pathClusterMethodItems: [
+                { title: "hdbscan", value: "hdbscan" },
+                { title: "kmeans", value: "kmeans" }
+            ]
         };
     },
     computed: {

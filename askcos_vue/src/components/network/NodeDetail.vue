@@ -198,8 +198,9 @@
                       <v-btn v-show="!(selected.id in res.inVis)" variant="flat" color="green" class="addRes mr-1"
                         :data-rank="res.rank" @click="addFromResults(selected, res)" icon="mdi-plus" density="compact">
                       </v-btn>
-                      <v-btn v-show="selected.id in res.inVis" variant="flat" color="red" class="remRes mr-1" title="Remove node(s)"
-                        :data-rank="res.rank" @click="remFromResults(selected, res)" icon="mdi-minus" density="compact">
+                      <v-btn v-show="selected.id in res.inVis" variant="flat" color="red" class="remRes mr-1"
+                        title="Remove node(s)" :data-rank="res.rank" @click="remFromResults(selected, res)"
+                        icon="mdi-minus" density="compact">
                       </v-btn>
                       <v-btn variant="flat" :data-rank="res.rank" title="Open cluser modal"
                         @click="openClusterPopoutModal(selected, res)" icon="mdi-group" density="compact">
@@ -244,8 +245,8 @@
                 </p>
               </div>
               <v-btn class="my-3" variant="outlined"
-                :href="'/forward?tab=context&rxnsmiles=' + encodeURIComponent(selected.smiles)"
-                target="_blank">Evaluate reaction</v-btn>
+                :href="'/forward?tab=context&rxnsmiles=' + encodeURIComponent(selected.smiles)" target="_blank">Evaluate
+                reaction</v-btn>
               <div class="text-left mx-2">
                 <table class="table table-sm table-striped table-borderless">
                   <tbody>
@@ -1508,5 +1509,6 @@ export default {
 
 .flex-gap-2 {
   gap: 0.5rem;
-}</style>
+}
+</style>
   
