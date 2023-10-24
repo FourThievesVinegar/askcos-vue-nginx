@@ -68,17 +68,6 @@
                                             (J. Chem. Inf. Model. 2022, 62, 15, 3503–3513)
                                         </a>
                                     </p>
-                                    <p class="my-4">
-                                        <b>New in 2022.04:</b> Forward prediction model trained on Pistachio dataset. Select
-                                        in
-                                        settings menu.
-                                    </p>
-                                    <p class="my-4">
-                                        <b>New in 2022.10:</b> Forward prediction model using Graph2SMILES. Select in
-                                        <a>settings menu</a>. This new model is capable of making chirality-aware
-                                        prediction, though it
-                                        currently doesn't support impurity prediction.
-                                    </p>
                                 </v-col>
                             </v-row>
                         </template>

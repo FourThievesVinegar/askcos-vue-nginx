@@ -1,11 +1,11 @@
 <template>
-     <v-container fluid class="pa-0">
-                <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6">
-                    <v-row align="center" justify="space-between" class="mx-auto my-auto">
-                    <v-col>
-                        <span class="text-body-1 ml-2"><b>Product Prediction</b> </span>
-                    </v-col>
-                    <v-spacer></v-spacer>
+    <v-container fluid class="pa-0">
+        <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6">
+            <v-row align="center" justify="space-between" class="mx-auto my-auto">
+                <v-col>
+                    <span class="text-body-1 ml-2"><b>Product Prediction</b> </span>
+                </v-col>
+                <v-spacer></v-spacer>
             </v-row>
 
             <v-dialog v-model="showDialog" max-width="500px">
@@ -22,10 +22,15 @@
                 </v-card>
             </v-dialog>
 
+            <v-col cols="6" v-if="!pending && results.length">
+                <v-text-field label="Filter Reactants" density="comfortable" variant="outlined" hide-details clearable
+                    placeholder="Filter reactants based on substring match to SMILES." :value="resultsQuery" 
+                    @input="$emit('update:resultsQuery', $event)"></v-text-field>
+            </v-col>
 
-            <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" class="my-3" :items-per-page="5">
-
-                <ketcher-min ref="ketcher-min" @change="siteSelectedAtoms = $event"></ketcher-min>
+            <v-data-table v-if="!pending && filteredResults.length" :headers="headers" :items="results" class="my-3"
+                :items-per-page="5">
+                <!-- <ketcher-min ref="ketcher-min" @change="siteSelectedAtoms = $event"></ketcher-min> -->
                 <template v-slot:item.task="{ item }">
                     <smiles-image :smiles="item.columns.task"></smiles-image>
                 </template>
@@ -89,13 +94,13 @@
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
 import KetcherMin from "@/components/KetcherMin.vue";
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const panel = ref([0])
 const disabled = ref(false)
 
 
-const { results, pending } = defineProps({
+const { results, pending, resultsQuery } = defineProps({
     results: {
         type: Array,
         default: [],
@@ -104,10 +109,10 @@ const { results, pending } = defineProps({
         type: Number,
         default: 0
     },
-    reactingAtoms: {
-        type: Array,
-        default: [],
-    }
+    resultsQuery: {
+        type: String,
+        default: ''
+    },
 })
 
 const headers = ref([
@@ -117,7 +122,14 @@ const headers = ref([
 
 ])
 
-const emits = defineEmits()
-
+const filteredResults = computed(() => {  
+    if (!results.value) return [];
+    if (!resultsQuery.value) {
+        return results.value;  
+    }
+    return results.value.filter(item => {
+        return item.columns.task.includes(resultsQuery.value);
+    });
+});
 
 </script>

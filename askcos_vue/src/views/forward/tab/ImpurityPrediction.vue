@@ -89,7 +89,7 @@ const { results, models, progress } = defineProps({
 const headers = ref([
     { key: 'no', title: 'No.', align: 'center', },
     { key: 'prd_smiles', title: 'Predicted Impurities', align: 'center', },
-    // { key: 'modes_name', title: 'Possible Mechanisms', align: 'center', },
+    { key: 'modes_name', title: 'Possible Mechanisms', align: 'center', },
     { key: 'avg_insp_score', title: 'Inspector Score', align: 'center', },
     { key: 'similarity_to_major', title: 'Similarity Score', align: 'center', },
     { key: 'prd_mw', title: 'Molecular Weight', align: 'center', },

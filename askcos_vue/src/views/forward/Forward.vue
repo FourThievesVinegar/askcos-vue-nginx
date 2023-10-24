@@ -141,7 +141,7 @@
               @download-selectivity="downloadSelectivityResults" />
           </v-window-item>
           <v-window-item value="sites">
-            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" :reactingAtoms="reactingAtoms"
+            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" :resultsQuery="siteResultsQuery" :reactingAtoms="reactingAtoms"
               :pending="pendingTasks" />
           </v-window-item>
         </v-window>
