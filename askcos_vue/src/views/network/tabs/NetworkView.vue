@@ -1353,7 +1353,7 @@ export default {
         },
         settings: this.getAllSettings(),
         description: this.resultsStore.savedResultInfo.description,
-        tags: this.resultsStore.savedResultInfo.tags.join(","),
+        tags: "",
         type: "ipp",
       };
       if (!this.resultsStore.savedResultInfo) {

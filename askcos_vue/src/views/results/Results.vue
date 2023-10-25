@@ -77,6 +77,11 @@
                               :href="`network?tab=IPP&id=${item.raw.result_id}&view=25`">
                               View in IPP
                             </v-btn>
+                            <v-btn color="primary" variant="tonal"
+                              v-if="item.columns.result_type === 'ipp'"
+                              :href="`network?tab=IPP&id=${item.raw.result_id}`">
+                              View in IPP
+                            </v-btn>
                             <v-btn color="primary" variant="tonal" v-if="item.columns.result_type === 'tree_builder'"
                               @click="sendTreeBuilderJob(data.item.description, data.item.settings)">
                               View Settings

@@ -2,20 +2,16 @@
 import { defineStore } from "pinia";
 
 import { updateObj } from "@/common/utils";
-import { interactive_path_planner_settings_default, tree_builder_settings_default, ippSettingsDefault, tbSettingsDefault, visjsOptionsDefault, getVisjsUserOptions } from "@/store/init/settings";
+import { interactive_path_planner_settings_default, tree_builder_settings_default,ippSettingsDefault, tbSettingsDefault, visjsOptionsDefault, getVisjsUserOptions } from "@/store/init/settings";
 
 export const useSettingsStore = defineStore("settings", {
   state: () => ({
     allowCluster: ippSettingsDefault.allowCluster,
     allowResolve: ippSettingsDefault.allowResolve,
-    clusterOptions: JSON.parse(JSON.stringify(ippSettingsDefault.clusterOptions)),
     isHighlightAtom: ippSettingsDefault.isHighlightAtom,
     alignNodeImagesToTarget: ippSettingsDefault.alignNodeImagesToTarget,
     alignPrecursorsToProduct: ippSettingsDefault.alignPrecursorsToProduct,
     reactionLimit: ippSettingsDefault.reactionLimit,
-    selectivityModel: ippSettingsDefault.selectivityModel,
-    sortingCategory: ippSettingsDefault.sortingCategory,
-    sortOrderAscending: ippSettingsDefault.sortOrderAscending,
     interactive_path_planner_settings: JSON.parse(JSON.stringify(interactive_path_planner_settings_default)),
     tree_builder_settings: JSON.parse(JSON.stringify(tree_builder_settings_default)),
     tbSettings: JSON.parse(JSON.stringify(tbSettingsDefault)),

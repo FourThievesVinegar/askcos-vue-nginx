@@ -108,6 +108,14 @@ const routes = [
   {
     path: '/results',
     component: () => import('@/layouts/default/Default.vue'),
+    beforeEnter: (to, from, next) => {
+      if (!isAuthenticated()) {
+        next({ name: 'Login' })
+      }
+      else {
+        next()
+      }
+    },
     children: [
       {
         path: '',
@@ -122,6 +130,14 @@ const routes = [
   {
     path: '/banlist',
     component: () => import('@/layouts/default/Default.vue'),
+    beforeEnter: (to, from, next) => {
+      if (!isAuthenticated()) {
+        next({ name: 'Login' })
+      }
+      else {
+        next()
+      }
+    },
     children: [
       {
         path: '',

@@ -130,9 +130,9 @@ export const useResultsStore = defineStore("results", {
       const settings = useSettingsStore();
       let sources = settings.tbSettings.buyablesSourceAll
         ? null
-        : settings.tbSettings.buyablesSource;
-      let templateSets = settings.tbSettings.templatePrioritizers.map(
-        (tp) => tp["template_set"]
+        : settings.tree_builder_settings.build_tree_options.buyables_source;
+      let templateSets = settings.interactive_path_planner_settings.retro_backend_options.map(
+        (tp) => tp["retro_model_name"]
       );
       let promises = [];
       promises.push(getHistory(smiles, templateSets));
@@ -195,10 +195,10 @@ export const useResultsStore = defineStore("results", {
     },
     importIppResult({ data }) {
       const settings = useSettingsStore();
-      let resultObj = data["result"];
+      let resultObj = data;
       // Update saved result info
       let savedResultInfo = {
-        id: resultObj["_id"],
+        id: resultObj["result_id"],
         description: resultObj["description"],
         tags: resultObj["tags"],
         type: data["result_type"],
@@ -226,12 +226,12 @@ export const useResultsStore = defineStore("results", {
       this.setTarget(this.dispGraph.nodes.get(NIL_UUID)["smiles"]);
       // Retrieve template example count and template set metadata
       let templates = [];
-      this.dataGraph.nodes
-        .get({ filter: isReaction })
-        .forEach((n) => templates.push(...n["templateIds"]));
+      // this.dataGraph.nodes
+      //   .get({ filter: isReaction })
+      //   .forEach((n) => templates.push(...n["templateIds"]));
       let promises = [];
-      promises.push(this.apiTemplateCount(templates));
-      promises.push(this.apiTemplateSet(templates));
+      // promises.push(this.apiTemplateCount(templates));
+      // promises.push(this.apiTemplateSet(templates));
       return Promise.all(promises);
     },
     importTreeBuilderResult({ data, numTrees }) {
@@ -245,7 +245,7 @@ export const useResultsStore = defineStore("results", {
       settings.setVisHierachicalEnabled(true, { root: true });
       // Update saved result info
       let savedResultInfo = {
-        id: resultObj["_id"],
+        id: resultObj["result_id"],
         description: resultObj["description"],
         type: data["result_type"],
         created: resultObj["created"],
@@ -741,7 +741,7 @@ export const useResultsStore = defineStore("results", {
           });
         })
       );
-      
+
     },
     addTreeBuilderResultToDataGraph(data) {
       let templateIds = [];
@@ -763,7 +763,7 @@ export const useResultsStore = defineStore("results", {
               type: node["type"],
             };
           } else {
-            if(node["tforms"]){
+            if (node["tforms"]) {
               templateIds.push(...node["tforms"]);
             }
             return {
@@ -848,7 +848,7 @@ export const useResultsStore = defineStore("results", {
       const body = {
         smiles: smiles,
       };
-      Object.assign(body,settings.interactive_path_planner_settings)
+      Object.assign(body, settings.interactive_path_planner_settings)
       // if (strategy.model === "template_relevance") {
       //   checkTemplatePrioritizers(body["template_prioritizers"]);
       // }
@@ -871,7 +871,7 @@ export const useResultsStore = defineStore("results", {
       const smiles = node.smiles;
       const settings = useSettingsStore();
 
-      if (settings.tbSettings.strategies.length === 0) {
+      if (settings.interactive_path_planner_settings.retro_backend_options.length === 0) {
         alert("Please add atleast one strategy");
         return;
       }
@@ -994,15 +994,15 @@ export const useResultsStore = defineStore("results", {
         .sort(retroScoreDescending);
       let outcomes = rxns.map((rxn) => rxn["precursorSmiles"]);
       let scores = rxns.map((rxn) => rxn["retroScore"] || 0);
-      let url = "/api/cluster/call_async";
+      let url = "/api/cluster/call-async";
       let body = {
         original: smiles,
         outcomes: outcomes,
-        feature: settings.clusterOptions.feature,
-        cluster_method: settings.clusterOptions.cluster_method,
-        fp_type: settings.clusterOptions.fingerprint,
-        fp_length: settings.clusterOptions.fpBits,
-        fp_radius: settings.clusterOptions.fpRadius,
+        feature: settings.interactive_path_planner_settings.cluster_setting.feature,
+        cluster_method: settings.interactive_path_planner_settings.cluster_setting.cluster_method,
+        fp_type: settings.interactive_path_planner_settings.cluster_setting.fp_type,
+        fp_length: settings.interactive_path_planner_settings.cluster_setting.fp_length,
+        fp_radius: settings.interactive_path_planner_settings.cluster_setting.fp_radius,
         scores: scores,
       };
       return API.runCeleryTask(url, body)

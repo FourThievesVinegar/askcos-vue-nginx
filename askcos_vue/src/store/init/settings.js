@@ -39,17 +39,29 @@ const tree_builder_settings_default = {
     ...interactive_path_planner_settings_default
   },
   build_tree_options: {
+    buyable_logic: "and",
+    buyables_source: null,
     expansion_time: 30,
     max_branching: 25,
     max_depth: 5,
     exploration_weight: 1,
     return_first: false,
     max_trees: 500,
-    termination_logic: {
-      and: [
-        "buyable"
-      ]
-    }
+    max_chemicals: null,
+    max_reactions: null,
+    max_templates: null,
+    max_iterations: null,
+    max_ppg_logic: "none",
+    max_ppg: null,
+    max_scscore_logic: "none",
+    max_scscore: null,
+    chemical_property_logic: "none",
+    max_chemprop_c: null,
+    max_chemprop_n: null,
+    max_chemprop_o: null,
+    max_chemprop_h: null,
+    min_chempop_reactants: 5,
+    min_chempop_products: 5
   },
   enumerate_paths_options: {
     path_format: "json",
@@ -68,57 +80,12 @@ const tree_builder_settings_default = {
 }
 
 const tbSettingsDefault = {
-  strategies: [
-    {
-      retro_backend: "template_relevance",
-      retro_model_name: 'reaxys',
-      max_num_templates: 1000,
-      max_cum_prob: 0.999,
-      attribute_filter: [],
-    },
-  ],
   quick: "normal",
-  version: 1,
-  maxDepth: 5,
-  maxBranching: 20,
-  expansionTime: 60,
-  maxChemicals: null,
-  maxReactions: null,
-  maxIterations: null,
-  maxTemplates: null,
-  buyableLogic: "and",
-  maxPPGLogic: "none",
-  maxPPG: 100,
-  maxScscoreLogic: "none",
-  maxScscore: 0,
-  chemicalPropertyLogic: "none",
-  chemicalPropertyC: 0,
-  chemicalPropertyN: 0,
-  chemicalPropertyO: 0,
-  chemicalPropertyH: 0,
-  chemicalPopularityLogic: "none",
-  chemicalPopularityReactants: 0,
-  chemicalPopularityProducts: 0,
-  buyablesSource: [],
   buyablesSourceAll: true,
-  returnFirst: false,
-  maxTrees: 500,
-  templatePrioritizers: [{ template_set: "reaxys", version: 1, attribute_filter: [] }],
-  precursorScoring: "relevance_heuristic",
-  numTemplates: 1000,
-  maxCumProb: 0.999,
-  minPlausibility: 0.1,
-  allowSelec: true,
-  clusterTrees: true,
-  clusterMethod: "hdbscan",
-  clusterMinSamples: 5,
-  clusterMinSize: 5,
-  classifyReactions: false,
   redirectToGraph: false,
 };
 
 const ippSettingsDefault = {
-  allowCluster: false,
   filterReactingAtoms: false,
   allowResolve: false,
   isHighlightAtom: true,
@@ -128,14 +95,6 @@ const ippSettingsDefault = {
   sortingCategory: "retroScore",
   sortOrderAscending: false,
   selectivityModel: "qm_GNN",
-  clusterOptions: {
-    feature: "original",
-    fingerprint: "morgan",
-    fpRadius: 1,
-    fpBits: 512,
-    cluster_method: "kmeans",
-    isAlternatingColor: false,
-  },
 };
 
 const visjsOptionsDefault = {
@@ -314,6 +273,6 @@ function getVisjsUserOptions(obj) {
   };
 }
 
-export { interactive_path_planner_settings_default, tree_builder_settings_default, tbSettingsDefault, ippSettingsDefault, visjsOptionsDefault, visjsOptionsTreeDefault, visjsOptionsTreeCondensed, getVisjsUserOptions };
+export { interactive_path_planner_settings_default, tree_builder_settings_default,ippSettingsDefault, tbSettingsDefault, visjsOptionsDefault, visjsOptionsTreeDefault, visjsOptionsTreeCondensed, getVisjsUserOptions };
 
 
