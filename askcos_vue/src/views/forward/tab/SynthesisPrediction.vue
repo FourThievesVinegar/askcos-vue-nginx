@@ -13,6 +13,8 @@
                     </v-btn>
                 </v-col>
             </v-row>
+
+
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" v-show="results.length > 0"
                 :items-per-page="10" height="600px">
                 <template #item.outcome="{ item }">
@@ -95,7 +97,7 @@
 
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import CopyTooltip from "@/components/CopyTooltip";
 
 

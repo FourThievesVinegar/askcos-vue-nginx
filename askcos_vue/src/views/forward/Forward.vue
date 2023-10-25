@@ -419,7 +419,7 @@ const evaluateIndex = async (index) => {
   if (contextResults.value[index]) {
     contextResults.value[index].evaluating = true;
   }
-  contextResults.value.forEach((index) => {
+    contextResults.value.forEach((index) => {
     console.log(contextResults.value[index].evaluating)
   })
 
