@@ -44,7 +44,7 @@
               <v-row v-if="allResults.length">
                 <v-col cols="12">
                   <v-data-table :headers="headers" item-value="result_id" :items="allResults" show-select
-                    v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10" 
+                    v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10"
                     :search="searchQuery">
                     <template v-slot:item.delete="{ item }">
                       <!-- <pre>{{ item }}</pre> -->
@@ -56,7 +56,9 @@
                       </v-icon>
                     </template>
                     <template v-slot:item.description="{ item }">
-                      {{ item.columns.description || "No Description" }}
+                      <p><strong>{{ item.columns.description || "No Description" }}</strong></p>
+                      <p v-if="item.raw.num_trees !== 0">{{ `Found ${item.raw.num_trees} trees` }}</p>
+                      <p v-else>No trees found</p>
                     </template>
                     <template v-slot:expanded-row="{ columns, item }">
                       <tr>
@@ -135,7 +137,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
 import CopyTooltip from "@/components/CopyTooltip";
-import results from "@/assets/results.svg";
+import results from "@/assets/emptyResults.svg";
 import { API } from "@/common/api";
 import dayjs from "dayjs";
 

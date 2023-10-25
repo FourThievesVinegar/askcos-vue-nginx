@@ -254,7 +254,7 @@
     @expandNode="expandNode" @updatePendingTasks="pendingTasksHandler" ref="node-detail" />
 
   <SettingsModal :visible="settingsVisible" @update:settingsVisible="settingsVisible = $event"
-    :template-attributes="templateAttributes" :template-sets="templateSets" />
+    :template-attributes="templateAttributes" :template-sets="templateSets" @changeNetopt="updateNetworkOptions"/>
 </template>
 
 <script>

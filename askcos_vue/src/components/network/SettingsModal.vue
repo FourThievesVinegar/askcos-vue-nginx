@@ -473,12 +473,100 @@
                         <v-window-item value="IPPC">
                             <v-card flat>
                                 <v-card-text>
+                                    <setting-input label="Cluster similar precursors"
+                                        help-text="This setting lets you turn on or off the precursor clustering.">
+                                        <v-switch id="allowClusterSetting" hide-details v-model="precursorClusterEnabled"
+                                            color="primary">
+                                        </v-switch>
+                                    </setting-input>
+                                    <setting-input label="Clustering method" label-for="clusterMethod"
+                                        help-text="This setting let's you choose between 'kmeans', 'hdbscan', and 'rxn_class' clustering algorithms.">
+                                        <v-select hide-details id="clusterMethod" v-model="precursorClusterMethod"
+                                            :items="precursorClusterMethodItems" variant="outlined" density="compact"
+                                            ></v-select>
+                                    </setting-input>
+                                    <v-alert v-if="precursorClusterMethod === 'rxn_class'" title="Warning" type="warning"
+                                        class="my-4" density="compact">
+                                        rxn_class clustering takes longer than other clustering methods.
+                                    </v-alert>
+                                    <div v-if="precursorClusterMethod === 'rxn_class'">
+                                        <setting-input label="Feature" label-for="clusterFeature"
+                                            help-text="This clustering parameter determines which fingerprint features are used as input to the clustering algorithm.">
+                                            <v-select id="clusterFeature" v-model="precursorClusterFeature"
+                                                :items="precursorClusterFeatureItems"
+                                                @update:modelValue="$emit('change-netopt')" variant="outlined"
+                                                density="compact" hide-details></v-select>
+                                        </setting-input>
+                                    </div>
+                                    <!-- 
+                                    <div v-show="precursorClusterMethod !== 'rxn_class'">
+                                        
+                                        <setting-input label="Fingerprint" label-for="clusterFingerprint"
+                                            help-text="Currently only morgan fingerprint methods are supported.">
+                                            <b-form-select id="clusterFingerprint" size="sm"
+                                                v-model="precursorClusterFingerprint">
+                                                <b-form-select-option value="morgan">Morgan</b-form-select-option>
+                                            </b-form-select>
+                                        </setting-input>
+                                        <setting-input label="Length" label-for="clusterBits"
+                                            help-text="This setting changes the fixed length folding used for constructing morgan fingerprints for clustering.">
+                                            <b-form-input id="clusterBits" size="sm" type="number"
+                                                v-model.number="precursorClusterFpBits"></b-form-input>
+                                        </setting-input>
+                                        <setting-input label="Radius" label-for="clusterRadius"
+                                            help-text="This setting changes the radius used for constructing morgan fingerprints for clustering.">
+                                            <b-form-input id="clusterRadius" size="sm" type="number"
+                                                v-model.number="precursorClusterFpRadius"></b-form-input>
+                                        </setting-input>
+                                    </div> -->
                                 </v-card-text>
                             </v-card>
                         </v-window-item>
                         <v-window-item value="graphVis">
                             <v-card flat>
                                 <v-card-text>
+                                    <setting-input :label="`Edge spring constant: ${graphSpringConstant}`"
+                                        label-for="graphSpringConst">
+                                        <v-slider label="" id="graphSpringConst" v-model="graphSpringConstant"
+                                            @update:modelValue="$emit('changeNetopt')" min="0" max="0.3" step="0.005"
+                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                    </setting-input>
+                                    <setting-input :label="`Chemical node size: ${graphNodeSize}`"
+                                        label-for="graphNodeSize">
+                                        <v-slider label="" id="graphNodeSize" v-model="graphNodeSize"
+                                            @update:modelValue="$emit('changeNetopt')" min="1" max="60" step="1"
+                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                    </setting-input>
+                                    <setting-input :label="`Reaction node size: ${graphNodeFontSize}`"
+                                        label-for="graphFontSize">
+                                        <v-slider label="" id="graphFontSize" v-model="graphNodeFontSize"
+                                            @update:modelValue="$emit('changeNetopt')" min="1" max="20" step="1"
+                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                    </setting-input>
+                                    <setting-input :label="`Node effective mass: ${graphNodeMass}`"
+                                        label-for="graphNodeMass">
+                                        <v-slider label="" id="graphNodeMass" v-model="graphNodeMass"
+                                            @update:modelValue="$emit('changeNetopt')" min="0.1" max="5" step="0.1"
+                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                    </setting-input>
+                                    <setting-input label="Hierarchical layout">
+                                        <v-switch id="checkHier" hide-details v-model="graphHierarchicalEnabled"
+                                            @update:modelValue="$emit('change-netopt')" color="primary">
+                                        </v-switch>
+                                    </setting-input>
+                                    <setting-input v-if="graphHierarchicalEnabled" label="Hierarchical direction"
+                                        label-for="graphHierDir">
+                                        <v-select id="graphHierDir" v-model="graphHierarchicalDirection" :items="HDItems"
+                                            @update:modelValue="$emit('change-netopt')" variant="outlined" density="compact"
+                                            hide-details></v-select>
+                                    </setting-input>
+                                    <setting-input v-if="graphHierarchicalEnabled"
+                                        :label="`Hierarchical level separation: ${graphHierarchicalLevelSeparation}`"
+                                        label-for="graphLevelSep">
+                                        <v-slider label="" id="graphLevelSep" v-model="graphHierarchicalLevelSeparation"
+                                            @update:modelValue="$emit('changeNetopt')" min="1" max="500" step="1"
+                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                    </setting-input>
                                 </v-card-text>
                             </v-card>
                         </v-window-item>
@@ -547,6 +635,22 @@ export default {
             pathClusterMethodItems: [
                 { title: "hdbscan", value: "hdbscan" },
                 { title: "kmeans", value: "kmeans" }
+            ],
+            precursorClusterMethodItems: [
+                { title: "kmeans", value: "kmeans" },
+                { title: "hdbscan", value: "hdbscan" },
+                { title: "rxn_class", value: "rxn_class" }
+            ],
+            HDItems: [
+                { title: "Top-down", value: "UD" },
+                { title: "Left-right", value: "LR" },
+                { title: "Bottom-up", value: "DU" },
+                { title: "Right-left", value: "RL" },
+            ],
+            precursorClusterFeatureItems: [
+                { title: "Original", value: "original" },
+                { title: "Outcomes", value: "outcomes" },
+                { title: "All", value: "all" }
             ]
         };
     },
@@ -1226,6 +1330,7 @@ export default {
         },
         resetSettings() {
             this.settingsStore.resetSettings();
+            this.$emit('changeNetopt')
         },
     },
 };
