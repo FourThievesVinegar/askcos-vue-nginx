@@ -434,7 +434,7 @@ const evaluateIndex = async (index) => {
   let solvent = contextResults.value[index].solvent;
   const postData = constructForwardPostData(reagents, solvent);
   try {
-    const output = await API.runCeleryTask('/api/forward/controller/call-async', postData);
+    const output = await API.runCeleryTask('/api/v2/forward/', postData);
     for (let i = 0; i < output.length; i++) {
       const outcome = output[i];
       if (outcome.smiles === product.value) {
