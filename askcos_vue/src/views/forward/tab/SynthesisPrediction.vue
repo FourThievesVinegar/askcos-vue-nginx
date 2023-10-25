@@ -7,50 +7,20 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn variant="flat" v-show="!!results.length" @click="emitDownloadForward" height="30px"
+                    <v-btn variant="flat" v-show="!!results.length" @click="dialog=true" height="30px"
                         color="primary mx-2">
                         Export
                     </v-btn>
                 </v-col>
             </v-row>
-
-            <v-dialog v-model="resultDialogVisible" max-width="600px" persistent>
-                <v-card>
-                    <v-card-title class="headline">Save IPP network</v-card-title>
-                    <v-card-text>
-                        <v-text-field v-model="savedResultDescription" label="Description" outlined></v-text-field>
-                        <v-text-field v-model="savedResultTags" label="Tags" outlined delimiter=",;"></v-text-field>
-                        <template v-if="!!resultsStore.savedResultInfo.id">
-                            <template v-if="resultsStore.savedResultInfo.type === 'ipp'">
-                                <v-checkbox v-model="savedResultOverwrite" label="Overwrite" class="my-3"></v-checkbox>
-                                <v-alert v-if="savedResultOverwrite" dense type="info">The previous version of this saved
-                                    result will be
-                                    overwritten.</v-alert>
-                                <v-alert v-else dense type="info">A new saved result will be created.</v-alert>
-                            </template>
-                            <template v-else>
-                                <v-alert dense type="info">A new IPP result will be created from the current tree builder
-                                    result.</v-alert>
-                            </template>
-                        </template>
-                    </v-card-text>
-
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="red darken-1" text @click="resultDialogVisible = false">Cancel</v-btn>
-                        <v-btn color="green darken-1" text @click="saveResult">Save</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
-
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" v-show="results.length > 0"
                 :items-per-page="10" height="600px">
                 <template #item.outcome="{ item }">
                     <v-tooltip activator="parent" location="bottom">
                         <span>{{ item.columns.outcome }}</span>
                     </v-tooltip>
-                     <copy-tooltip :data="item.columns.reagent">
-                    <smiles-image :smiles="item.columns.outcome" height="80px"></smiles-image>
+                    <copy-tooltip :data="item.columns.reagent">
+                        <smiles-image :smiles="item.columns.outcome" height="80px"></smiles-image>
                     </copy-tooltip>
                 </template>
                 <template #item.prob="{ item }">
@@ -105,18 +75,34 @@
                     </v-expansion-panel>
                 </v-expansion-panels>
             </v-row>
+            <v-dialog v-model="dialog" max-width="600px" persistent>
+                <v-card>
+                    <v-card-title class="headline">Export Results</v-card-title>
+                    <v-card-text>
+                     <v-text-field v-model="filename" @input="updateFilename($event.target.value)"
+                     density="comfortable" variant="outlined" placeholder="Filename" hide-details clearable type="string" ></v-text-field>
+                     </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="red darken-1" text @click="dialog = false">Cancel</v-btn>
+                        <v-btn color="green darken-1" text @click="emitDownloadForward">Save</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-sheet>
     </v-container>
 </template>
 
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import CopyTooltip from "@/components/CopyTooltip";
 
 
 const panel = ref([0])
 const disabled = ref(false)
+const dialog = ref(false)
+const filename = ref('forward.csv')
 
 const { results, models, pending } = defineProps({
     inheritAttrs: false,
@@ -135,7 +121,7 @@ const { results, models, pending } = defineProps({
 })
 
 const headers = ref([
-    // { key: 'rank', title: 'Rank', align: 'center', },
+    { key: 'rank', title: 'Rank', align: 'center', },
     { key: 'outcome', title: 'Product', align: 'center', width: '300px' },
     { key: 'prob', title: 'Probability', align: 'center' },
     { key: 'score', title: 'Max. Score', align: 'center' },
@@ -147,15 +133,22 @@ const headers = ref([
 const emits = defineEmits()
 
 const emitDownloadForward = () => {
-    emits('download-forward')
+    emits('download-forward'),
+    dialog.value=false
 }
 
 const emitGoToImpurity = (index) => {
     emits('go-to-impurities', index);
-    console.log(index)
 }
 
 const goToSelectivity = (index) => {
     emits('go-to-selectivity', index);
 }
+
+const updateFilename = (newFilename) => {
+    emits('update:filename', newFilename); 
+    console.log(filename)
+};
+
+
 </script>
