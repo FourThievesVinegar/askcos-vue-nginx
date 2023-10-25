@@ -1,7 +1,7 @@
 <template>
-        <v-container fluid class="pa-0">
-            <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6">
-                <v-row align="center" justify="space-between" class="mx-auto my-auto">
+    <v-container fluid class="pa-0">
+        <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6">
+            <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
                     <span class="text-body-1 ml-2"><b>Product Prediction</b> </span>
                 </v-col>
@@ -14,13 +14,44 @@
                 </v-col>
             </v-row>
 
+            <v-dialog v-model="resultDialogVisible" max-width="600px" persistent>
+                <v-card>
+                    <v-card-title class="headline">Save IPP network</v-card-title>
+                    <v-card-text>
+                        <v-text-field v-model="savedResultDescription" label="Description" outlined></v-text-field>
+                        <v-text-field v-model="savedResultTags" label="Tags" outlined delimiter=",;"></v-text-field>
+                        <template v-if="!!resultsStore.savedResultInfo.id">
+                            <template v-if="resultsStore.savedResultInfo.type === 'ipp'">
+                                <v-checkbox v-model="savedResultOverwrite" label="Overwrite" class="my-3"></v-checkbox>
+                                <v-alert v-if="savedResultOverwrite" dense type="info">The previous version of this saved
+                                    result will be
+                                    overwritten.</v-alert>
+                                <v-alert v-else dense type="info">A new saved result will be created.</v-alert>
+                            </template>
+                            <template v-else>
+                                <v-alert dense type="info">A new IPP result will be created from the current tree builder
+                                    result.</v-alert>
+                            </template>
+                        </template>
+                    </v-card-text>
+
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="red darken-1" text @click="resultDialogVisible = false">Cancel</v-btn>
+                        <v-btn color="green darken-1" text @click="saveResult">Save</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" v-show="results.length > 0"
                 :items-per-page="10" height="600px">
                 <template #item.outcome="{ item }">
-                    <v-tooltip activator="parent" location="top">
+                    <v-tooltip activator="parent" location="bottom">
                         <span>{{ item.columns.outcome }}</span>
                     </v-tooltip>
+                     <copy-tooltip :data="item.columns.reagent">
                     <smiles-image :smiles="item.columns.outcome" height="80px"></smiles-image>
+                    </copy-tooltip>
                 </template>
                 <template #item.prob="{ item }">
                     {{ item.columns.prob.toFixed(4) }}
@@ -38,8 +69,8 @@
                     </v-btn>
                 </template>
                 <template #item.predict_selectivity="{ item, index }">
-                    <v-btn variant="tonal" @click="goToSelectivity(item.columns.outcome)" :id="'predict-regio-selectivities-' + index"
-                        title="Predict products">
+                    <v-btn variant="tonal" @click="goToSelectivity(item.columns.outcome)"
+                        :id="'predict-regio-selectivities-' + index" title="Predict products">
                         <v-icon>mdi-arrow-right</v-icon>
                     </v-btn>
                 </template>
@@ -81,6 +112,8 @@
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
 import { ref } from 'vue'
+import CopyTooltip from "@/components/CopyTooltip";
+
 
 const panel = ref([0])
 const disabled = ref(false)

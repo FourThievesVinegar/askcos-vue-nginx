@@ -60,6 +60,7 @@ export default defineConfig({
       '/api/rdkit': fastapiGatewayPtr,
       '/api/historian': fastapiGatewayPtr,
       '/api/site-selectivity': fastapiGatewayPtr,
+      '/api/fast-filter': fastapiGatewayPtr,
       // Legacy Django Gateway
       '/api/': {
         target: 'https://askcos-demo.mit.edu',

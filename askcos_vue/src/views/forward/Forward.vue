@@ -42,10 +42,10 @@
               <v-col cols="3">
                 <smiles-image :smiles="reactants"></smiles-image>
               </v-col>
-              <v-col cols="3" align="center" v-if="!!reactants && mode !== 'sites' && !!reactants && mode !== 'forward'" class="py-30">
+              <v-col cols="3" align="center" v-if="!!reactants && mode !== 'sites'" class="py-30">
                 <smiles-image :smiles="'>>'" width="200"></smiles-image>
               </v-col>
-              <v-col cols="3" v-if="mode !== 'sites' && mode !== 'forward'">
+              <v-col cols="3" v-if="mode !== 'sites'">
                 <smiles-image :smiles="product"></smiles-image>
               </v-col>
             </v-row>
@@ -171,7 +171,7 @@
                   <v-col cols="12" v-if="contextModel === 'neuralnetworkv2'">
                     <v-select label="Neural Network v2 model type" density="comfortable" variant="outlined" hide-details
                       clearable v-model="contextV2ModelType"
-                      :items="[{ key: 'graph', title: 'Graph' }, { key: 'fp-small', title: 'Fingerprint (small)' }]"
+                      :items="[{ key: 'graph', title: 'Graph' }, { key: 'fp', title: 'Fingerprint (small)' }]"
                       item-text="title" item-value="key"></v-select>
                   </v-col>
 
@@ -380,13 +380,14 @@ const evaluate = async () => {
   evaluating.value = true;
   const postData = constructFastFilterPostData();
 
-  contextResults.value.forEach((item, index) => {
+  contextResults.value.forEach((index) => {
     evaluateIndex(index)
   })
 
   try {
-    const output = await API.runCeleryTask('/api/legacy/fast-filter/', postData);
+    const output = await API.runCeleryTask('/api/v2/fast-filter/', postData);
     reactionScore.value = output;
+    console.log(output)
   } catch (error) {
     console.error("An error occurred during evaluation:", error);
   } finally {
@@ -398,7 +399,6 @@ const evaluate = async () => {
 
 const clearEvaluation = () => {
   reactionScore.value = null;
-
   for (let res of contextResults.value) {
     res.evaluation = undefined;
   }
@@ -406,7 +406,13 @@ const clearEvaluation = () => {
 
 const evaluateIndex = async (index) => {
   pendingRank.value++;
-  contextResults.value[index].evaluating = true;
+  console.log(contextResults.value[index])
+  if (contextResults.value[index]) {
+    contextResults.value[index].evaluating = true;
+  }
+    contextResults.value.forEach((index) => {
+    console.log(contextResults.value[index].evaluating)
+  })
 
   let reagents = contextResults.value[index].reagent;
   if (contextResults.value[index].catalyst) {
@@ -419,7 +425,7 @@ const evaluateIndex = async (index) => {
   let solvent = contextResults.value[index].solvent;
   const postData = constructForwardPostData(reagents, solvent);
   try {
-    const output = await API.runCeleryTask('/api/forward/controller/call-async', postData);
+    const output = await API.runCeleryTask('/api/v2/forward/', postData);
     for (let i = 0; i < output.length; i++) {
       const outcome = output[i];
       if (outcome.smiles === product.value) {
@@ -707,7 +713,7 @@ const selectivityPredict = () => {
     .catch(error => {
         const errorData = JSON.parse(error.message);
         if (errorData && errorData.output) {
-          createSnackbar({ text: 'Error running selectivity prediction: '+ errorData.output , snackbarProps: { timeout: -1, vertical: true } })
+          createSnackbar({ text: 'Error running selectivity prediction: Regioselectivity is not applicable for the given reaction.' , snackbarProps: { timeout: -1, vertical: true } })
         }
     })
     .finally(() => {
@@ -733,7 +739,6 @@ const impurityPredict = () => {
     impurityProgress.value.percent = 1.0;
     impurityProgress.value.message = 'Prediction complete!';
     impurityResults.value = output['result']['predict_expand'];
-    console.log(impurityResults.value)
   };
 
   let progress = (json) => {
@@ -838,7 +843,7 @@ const forwardPredict = async () => {
   try {
     const output = await API.runCeleryTask('/api/forward/controller/call-async', postData);
     forwardResults.value = output.result[0];
-    console.log(output.result[0])
+
   } catch (error) {
     console.error('Error in forward prediction:', error);
   } finally {
@@ -989,12 +994,18 @@ const downloadImpurityResults = () => {
     alert('There are no impurity predictor results to download!');
     return;
   }
-  let downloadData = 'No.,SMILES,Mechanism,InspectorScore,SimilarityScore,MolWt\n';
+  let downloadData = 'No.,reactantData,productData,reagentData,solventData,SMILES,Mechanism,InspectorScore,SimilarityScore,MolWt\n';
+
+  let reactantData = reactants.value;
+  let productData = product.value;
+  let reagentData = reagents.value;
+  let solventData = solvent.value;
+
   impurityResults.value.forEach((res) => {
-    downloadData += `${res.no},${res.prd_smiles},${res.modes_name},${res.avg_insp_score},${res.similarity_to_major},${res.prd_mw}\n`;
+    downloadData += `${res.no},${reactantData},${productData},${reagentData},${solventData},${res.prd_smiles},${res.modes_name},${res.avg_insp_score},${res.similarity_to_major},${res.prd_mw}\n`;
   });
   const blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' });
-  saveAs(blob, 'askcos_impurity_export.csv');
+  saveAs(blob, 'impurity.csv');
 };
 
 const downloadSelectivityResults = () => {

@@ -4,12 +4,12 @@
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
                     <span class="text-body-1 ml-2"><b>Condition Recommendation</b> </span>
-                    <b v-if=!!score>Reaction score: {{ score.toFixed(3) }}</b>
+                    <!-- <b v-if=!!score>Reaction score: {{ score.toFixed(3) }}</b> -->
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn variant="flat" v-show="!!results.length" @click="handleClick" :disabled="evaluating" height="30px"
-                        color="primary mx-2">
+                    <v-btn variant="flat" v-show="!!results.length" @click="handleClick" :disabled="evaluating"
+                        height="30px" color="primary mx-2">
                         Evaluate Reaction(s)
                     </v-btn>
                 </v-col>
@@ -44,10 +44,12 @@
                 </template>
                 <template #item.reagent="{ item }">
                     <template v-if="item.columns.reagent">
-                        <v-tooltip activator="parent" location="top">
-                            <span>{{ item.columns.reagent }}</span>
-                        </v-tooltip>
+                                                <v-tooltip activator="parent" location="bottom">
+                                <span>{{ item.columns.reagent }}</span>
+                            </v-tooltip>
+                        <copy-tooltip :data="item.columns.reagent">
                         <smiles-image :smiles="item.columns.reagent" height="80px"></smiles-image>
+                        </copy-tooltip>
                     </template>
                     <div v-else>
                         None
@@ -55,10 +57,12 @@
                 </template>
                 <template #item.solvent="{ item }">
                     <template v-if="item.columns.solvent">
-                        <v-tooltip activator="parent" location="top">
+                        <v-tooltip activator="parent" location="bottom">
                             <span>{{ item.columns.solvent }}</span>
                         </v-tooltip>
+                        <copy-tooltip :data="item.columns.solvent">
                         <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
+                        </copy-tooltip>
                     </template>
                     <div v-else>
                         None
@@ -86,7 +90,7 @@
                 </template>
             </v-data-table>
 
-            <v-data-table class="mx-auto my-auto" v-else-if="models === 'neuralnetworkv2' && !pending && results.length" 
+            <v-data-table class="mx-auto my-auto" v-else-if="models === 'neuralnetworkv2' && !pending && results.length"
                 :headers="headersAlt" :items="results" v-show="results.length > 0" :items-per-page="10" height="600px">
                 <template v-slot:item.index="{ index }">
                     {{ index + 1 }}
@@ -107,7 +111,9 @@
                 </template>
                 <template #item.reactants="{ item }">
                     <div v-for="(amount, rct) in item.columns.reactants" class="text-center my-2" :key="rct">
-                        <smiles-image :smiles="rct" max-height="80px"></smiles-image>
+                        <copy-tooltip :data="rct">
+                            <smiles-image :smiles="rct" max-height="80px"></smiles-image>
+                        </copy-tooltip>
                         ({{ amount.toFixed(2) }})
                     </div>
                 </template>
@@ -115,9 +121,11 @@
                     {{ Math.round(item.columns.temperature) }} &deg;C
                 </template>
                 <template v-slot:item.reagents="{ item }">
-                    <div v-if="!!item.columns.reagents" class="text-center my-2" v-for="(amount, rgt) in item.columns.reagents"
-                        :key="rgt" >
+                    <div v-if="!!item.columns.reagents" class="text-center my-2"
+                        v-for="(amount, rgt) in item.columns.reagents" :key="rgt">
+                        <copy-tooltip :data="rgt">
                         <smiles-image :smiles="rgt" max-height="80px"></smiles-image>
+                        </copy-tooltip>
                         ({{ (amount > 0.01) ? amount.toFixed(2) : amount.toExponential(2) }})
                     </div>
                     <span v-else class="text-center">None</span>
@@ -135,8 +143,8 @@
             </v-skeleton-loader>
 
             <v-row align="center" justify="space-between" class="mx-auto my-3">
-                <v-expansion-panels  multiple density="compact" v-model="panel" :disabled="disabled">
-                    <v-expansion-panel density="compact" >
+                <v-expansion-panels multiple density="compact" v-model="panel" :disabled="disabled">
+                    <v-expansion-panel density="compact">
                         <template v-slot:title>
                             <span class="text-body-1 ml-2"><b>Reference</b></span>
                         </template>
@@ -169,7 +177,8 @@
 
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
+import CopyTooltip from "@/components/CopyTooltip";
 
 const panel = ref([0])
 const disabled = ref(false)
@@ -194,7 +203,6 @@ const { results, models, pending } = defineProps({
     },
     score: {
         type: Number,
-        default: null
     },
     evaluating: {
         type: Boolean,
