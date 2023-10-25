@@ -225,7 +225,7 @@ export const useResultsStore = defineStore("results", {
       });
       this.setTarget(this.dispGraph.nodes.get(NIL_UUID)["smiles"]);
       // Retrieve template example count and template set metadata
-      let templates = [];
+      // let templates = [];
       // this.dataGraph.nodes
       //   .get({ filter: isReaction })
       //   .forEach((n) => templates.push(...n["templateIds"]));
