@@ -1,12 +1,80 @@
 <template>
     <v-container fluid>
-        <v-row class="justify-center  overflow-auto" style="height: calc(100vh - 12rem)">
-            <v-col id="tree-view-left" cols="12" md="3" class="d-flex align-center flex-column">
+        <v-row class="justify-center">
+            <v-col id="tree-view-left" cols="12" md="3" class="d-flex align-center flex-column"
+                style="height: calc(100vh - 14rem); overflow-y: auto;">
                 <v-btn-group divided width="auto">
                     <v-btn>Result Info</v-btn>
                     <v-btn>Open List View</v-btn>
                 </v-btn-group>
-                <div class="mt-2 align-self-start">
+                <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4 align-self-start">
+                    <h6 class="text-h6">Add results to IPP network</h6>
+                    <p>
+                        Add by tree
+                        <i class="fas fa-question-circle ml-1"
+                            title="Add the requested number of trees to the IPP network visualization based on the current cluster, sorting, and filtering options."></i>
+                    </p>
+                    <v-text-field label="First N Trees" variant="outlined" hide-details v-model="numTreesInput"
+                        density="compact" class="mt-2">
+                        <template v-slot:append>
+                            <v-btn @click="addTreesToIpp()">Add</v-btn>
+                        </template>
+                    </v-text-field>
+                    <p class="mt-3">
+                        Add by depth
+                        <i v-b-tooltip class="fas fa-question-circle ml-1"
+                            title="Add results from the full reaction network to the IPP network visualization. Depth is the number of reaction steps to descend. Top-N is the number of precursor suggestions to add for each intermediate."></i>
+                    </p>
+                    <v-text-field label="Depth" variant="outlined" hide-details v-model="maxDepthInput" density="compact"
+                        class="mt-2">
+                        <template v-slot:append>
+                            <v-btn @click="addResultsToIpp()">Add</v-btn>
+                        </template>
+                    </v-text-field>
+                    <v-text-field label="Top-N" variant="outlined" hide-details v-model="maxNumInput" density="compact"
+                        class="mt-2">
+                        <template v-slot:append>
+                            <v-btn @click="addResultsToIpp()">Add</v-btn>
+                        </template>
+                    </v-text-field>
+                </div>
+                <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4 align-self-start">
+                    <h6 class="text-h6">Analyze trees</h6>
+                    <v-btn width="100%" @click="runPathwayRanking()" class="my-1">Run pathway ranking</v-btn>
+                    <v-btn width="100%" @click="runReactionClassification()" class="my-1">Run reaction
+                        classification</v-btn>
+                    <v-btn-group class="mt-2">
+                        <v-btn variant="tonal">Run PMI calculation</v-btn>
+                        <v-menu location="bottom" :close-on-content-click="false">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="mdi mdi-menu-down" />
+                            </template>
+                            <v-list density="compact">
+                                <v-list-item @click="runPmiCalculation(true)">For this tree only</v-list-item>
+                                <v-list-item @click="runPmiCalculation()">For all trees</v-list-item>
+                            </v-list>
+                        </v-menu>
+                    </v-btn-group>
+                    <v-btn-group class="mt-2">
+                        <v-btn variant="tonal">Count analogs</v-btn>
+                        <v-menu location="bottom" :close-on-content-click="false">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="mdi mdi-menu-down" />
+                            </template>
+                            <v-list density="compact">
+                                <v-list-item @click="runAnalogCounting(true)">For this tree only</v-list-item>
+                                <v-list-item @click="runAnalogCounting()">For all trees</v-list-item>
+                            </v-list>
+                        </v-menu>
+                    </v-btn-group>
+                </div>
+                <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4 align-self-start">
+                    <h6 class="text-h6">Cluster Trees</h6>
+                    <v-switch id="clusterSwitch" v-model="cluster" :disabled="clusterDisabled" hide-details>
+                        View by cluster
+                    </v-switch>
+                </div>
+                <div class="align-self-start">
                     <h6 class="text-h6">Sort trees</h6>
                     <div v-for="(sortInput, index) in treeSortInput" :key="index" class="d-flex flex-gap-2 mb-2">
                         <v-input hide-details>
@@ -38,8 +106,9 @@
                         </v-btn>
                         of the selected components.
                     </p>
-                    <!-- <a v-b-modal.starting-material-select-modal href="#" role="button">Select starting materials by
+                    <a href="#" role="button">Select starting materials by
                         image</a>
+                    <!--
                     <b-form-group label="Starting materials" v-slot="{ ariaDescribedby }">
                         <div class="overflow-auto" style="max-height: 10rem">
                             <b-form-checkbox-group v-model="selectedStartingMaterials" :options="startingMaterialOptions"
@@ -62,7 +131,7 @@
                     </b-form-group> -->
                 </div>
             </v-col>
-            <v-col cols="12" md="9" id="tree-view-right">
+            <v-col cols="12" md="9" id="tree-view-right" style="overflow-y: hide;">
                 <div class="my-2 d-flex justify-space-around align-center">
                     <v-btn-group variant="outlined" density="comfortable" divided :border="true">
                         <v-btn icon="mdi mdi-chevron-double-left" @click="changeClusterId('first')"
@@ -946,17 +1015,17 @@ export default {
             if (!confirm("This will start a pathway ranking job for this result. If you stay on this page, you will receive a notification once the job is complete.")) {
                 return;
             }
-            const url = `/api/v2/tree-analysis/`;
+            const url = `/api/tree-analysis/controller/call-async`;
             const body = {
                 result_id: this.resultsStore.savedResultInfo.id,
                 task: "pathway_ranking",
             };
             API.post(url, body)
                 .then((json) => {
-                    this.$bvToast.toast("Pathway ranking job submitted!", {
-                        title: "Pathway ranking",
-                    });
-                    return API.pollCeleryResult(json.task_id);
+                    // this.$bvToast.toast("Pathway ranking job submitted!", {
+                    //     title: "Pathway ranking",
+                    // });
+                    return API.pollCeleryResult(json);
                 })
                 .then((output) => {
                     if (output.success) {
@@ -994,7 +1063,7 @@ export default {
                 selectTreeIdx = this.allTrees.indexOf(this.currentTree);
             }
 
-            const url = `/api/v2/tree-analysis/`;
+            const url = `/api/tree-analysis/controller/call-async`;
             const body = {
                 result_id: this.resultsStore.savedResultInfo.id,
                 task: "count_analogs",
@@ -1003,10 +1072,10 @@ export default {
             };
             API.post(url, body)
                 .then((json) => {
-                    this.$bvToast.toast("Analog counting job submitted!", {
-                        title: "Analog counting",
-                    });
-                    return API.pollCeleryResult(json.task_id);
+                    // this.$bvToast.toast("Analog counting job submitted!", {
+                    //     title: "Analog counting",
+                    // });
+                    return API.pollCeleryResult(json);
                 })
                 .then((output) => {
                     if (output.success) {
@@ -1038,7 +1107,7 @@ export default {
             if (!confirm("This will start a reaction classification job for this result. If you stay on this page, you will receive a notification once the job is complete.")) {
                 return;
             }
-            const url = `/api/v2/tree-analysis/`;
+            const url = `/api/tree-analysis/controller/call-async`;
             const body = {
                 result_id: this.resultsStore.savedResultInfo.id,
                 task: "reaction_classification",
@@ -1123,18 +1192,19 @@ export default {
                 selectTreeIdx = this.allTrees.indexOf(this.currentTree);
             }
 
-            const url = `/api/v2/tree-analysis/`;
+            const url = `/api/tree-analysis/controller/call-async`;
             const body = {
                 result_id: this.resultsStore.savedResultInfo.id,
                 task: "pmi_calculation",
                 index: selectTreeIdx,
             };
+            console.log(body)
             API.post(url, body)
                 .then((json) => {
-                    this.$bvToast.toast("PMI job submitted!", {
-                        title: "pmi_calculation",
-                    });
-                    return API.pollCeleryResult(json.task_id);
+                    // this.$bvToast.toast("PMI job submitted!", {
+                    //     title: "pmi_calculation",
+                    // });
+                    return API.pollCeleryResult(json);
                 })
                 .then(() => {
                     this.$bvToast.toast("PMI calculation job is complete! Refresh the page to view updated results.", {

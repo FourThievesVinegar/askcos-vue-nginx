@@ -247,44 +247,44 @@
                                                 help-text="This is how long the server is allowed to search for template applications.
         It is roughly how long it will take for results to be returned, however there is an additional pathway resolution step following expansion that may take some time as well.">
                                                 <v-text-field id="expansionTime" density="compact" variant="outlined"
-                                                    type="number" min="1" max="30" step="1" :model-value="expansionTime"
+                                                    type="number" min="1" max="30" step="1" v-model="expansionTime"
                                                     hide-details class="mb-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Maximum iterations" label-for="maxIterations"
                                                 help-text="This is how many iterations the MCTS algorithm is allowed to perform before returning results.">
                                                 <v-text-field id="maxIterations" density="compact" variant="outlined"
-                                                    type="number" min="1" step="1" :model-value="maxIterations" hide-details
+                                                    type="number" min="1" step="1" v-model="maxIterations" hide-details
                                                     class="mb-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Maximum chemicals" label-for="maxChemicals"
                                                 help-text="This is how many chemicals the MCTS algorithm is allowed to explore before returning results.">
                                                 <v-text-field id="maxChemicals" density="compact" variant="outlined"
-                                                    type="number" min="1" step="1" :model-value="maxChemicals" hide-details
+                                                    type="number" min="1" step="1" v-model="maxChemicals" hide-details
                                                     class="mb-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Maximum reactions" label-for="maxReactions"
                                                 help-text="This is how many reactions the MCTS algorithm is allowed to explore before returning results.">
                                                 <v-text-field id="maxReactions" density="compact" variant="outlined"
-                                                    type="number" min="1" step="1" :model-value="maxReactions" hide-details
+                                                    type="number" min="1" step="1" v-model="maxReactions" hide-details
                                                     class="mb-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Maximum templates" label-for="maxTemplates"
                                                 help-text="This is how many template applications the MCTS algorithm is allowed to try before returning results.">
                                                 <v-text-field id="maxTemplates" density="compact" variant="outlined"
-                                                    type="number" min="1" step="1" :model-value="maxTemplates" hide-details
+                                                    type="number" min="1" step="1" v-model="maxTemplates" hide-details
                                                     class="mb-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Max expansion depth" label-for="maxDepth"
                                                 help-text="This is the maximum depth (or number of steps) for any given reaction pathway return by the search algorithm.">
                                                 <v-text-field id="maxDepth" density="compact" variant="outlined"
-                                                    type="number" min="1" step="1" :model-value="maxDepth" hide-details
+                                                    type="number" min="1" step="1" v-model="maxDepth" hide-details
                                                     class="mb-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Max branching" label-for="maxBranching"
                                                 help-text="This is the maximum branching for any given chemical in the reaction tree/graph.
         Once this maximum branching factor is reached, no more template applications will be attempted for that chemical during the search.">
                                                 <v-text-field id="maxBranching" density="compact" variant="outlined"
-                                                    type="number" min="1" max="50" step="1" :model-value="maxBranching"
+                                                    type="number" min="1" max="50" step="1" v-model="maxBranching"
                                                     hide-details class="mb-2"></v-text-field>
                                             </setting-input>
                                         </v-expansion-panel-text>
@@ -383,22 +383,15 @@
                                                     variant="outlined" density="compact" hide-details
                                                     class="mt-2"></v-text-field>
                                             </setting-input>
-                                            <setting-input label="Chemical popularity logic" label-for="chemPopLogic"
-                                                help-text="Sets the logic type for considering the number of times a chemical appeared in the training data for the template relevance machine learning model.">
-                                                <v-select id="chemPopLogic" :items="logicOptions"
-                                                    v-model="chemicalPopularityLogic" hide-details density="compact"
-                                                    variant="outlined" class="mt-2"></v-select>
-                                            </setting-input>
-                                            <setting-input v-if="chemicalPopularityLogic !== 'none'" label="Min occurrences"
-                                                help-text="This is the minimum number of prior occurrences above which a precursor will be considered terminal in the MCTS search."
-                                                class="ml-3">
+                                            <setting-input label="Min occurrences"
+                                                help-text="This is the minimum number of prior occurrences above which a precursor will be considered terminal in the MCTS search.">
                                                 <v-text-field label="As reactant &ge;" id="chemPopR"
-                                                    v-model.number="chemicalPopularityReactants" type="number" min="1"
-                                                    step="1" variant="outlined" density="compact" hide-details
+                                                    v-model="chemicalPopularityReactants" type="number" min="1" step="1"
+                                                    variant="outlined" density="compact" hide-details
                                                     class="mt-2"></v-text-field>
                                                 <v-text-field label="As product &ge;" id="chemPopP"
-                                                    v-model.number="chemicalPopularityProducts" type="number" min="1"
-                                                    step="1" variant="outlined" density="compact" hide-details
+                                                    v-model="chemicalPopularityProducts" type="number" min="1" step="1"
+                                                    variant="outlined" density="compact" hide-details
                                                     class="mt-2"></v-text-field>
                                             </setting-input>
                                         </v-expansion-panel-text>
@@ -452,13 +445,6 @@
                                                     min="1" step="1" variant="outlined" density="compact" hide-details
                                                     class="mt-2"></v-text-field>
                                             </setting-input>
-                                            <setting-input label="Classify reactions"
-                                                help-text="This setting toggles whether or not to predict reaction classes for all reactions explored by the tree builder.
-        Predicting reaction classes provides additional data for filtering trees, but takes more time (~0.1s per reaction).">
-                                                <v-switch id="classifyReactions" hide-details v-model="classifyReactions"
-                                                    color="primary">
-                                                </v-switch>
-                                            </setting-input>
                                             <setting-input label="Redirect to IPP results view"
                                                 help-text="This setting allows you to redirect to the entire graph visualization of the tree builder results in this IPP interface instead of the pathway visualization page that lets you view individual pathways one at a time.">
                                                 <v-switch id="redirectToGraph" hide-details v-model="redirectToGraph"
@@ -473,12 +459,96 @@
                         <v-window-item value="IPPC">
                             <v-card flat>
                                 <v-card-text>
+                                    <setting-input label="Cluster similar precursors"
+                                        help-text="This setting lets you turn on or off the precursor clustering.">
+                                        <v-switch id="allowClusterSetting" hide-details v-model="precursorClusterEnabled"
+                                            color="primary">
+                                        </v-switch>
+                                    </setting-input>
+                                    <setting-input label="Clustering method" label-for="clusterMethod"
+                                        help-text="This setting let's you choose between 'kmeans', 'hdbscan', and 'rxn_class' clustering algorithms.">
+                                        <v-select hide-details id="clusterMethod" v-model="precursorClusterMethod"
+                                            :items="precursorClusterMethodItems" variant="outlined"
+                                            density="compact"></v-select>
+                                    </setting-input>
+                                    <v-alert v-if="precursorClusterMethod === 'rxn_class'" title="Warning" type="warning"
+                                        class="my-4" density="compact">
+                                        rxn_class clustering takes longer than other clustering methods.
+                                    </v-alert>
+                                    <div v-if="precursorClusterMethod === 'rxn_class'">
+                                        <setting-input label="Feature" label-for="clusterFeature"
+                                            help-text="This clustering parameter determines which fingerprint features are used as input to the clustering algorithm.">
+                                            <v-select id="clusterFeature" v-model="precursorClusterFeature"
+                                                :items="precursorClusterFeatureItems" variant="outlined" density="compact"
+                                                hide-details class="mt-2"></v-select>
+                                        </setting-input>
+                                        <setting-input label="Fingerprint" label-for="clusterFingerprint"
+                                            help-text="Currently only morgan fingerprint methods are supported.">
+                                            <v-select id="clusterFingerprint" v-model="precursorClusterFingerprint"
+                                                :items="precursorClusterFingerprintItems" variant="outlined"
+                                                density="compact" hide-details class="mt-2"></v-select>
+                                        </setting-input>
+                                        <setting-input label="Length" label-for="clusterBits"
+                                            help-text="This setting changes the fixed length folding used for constructing morgan fingerprints for clustering.">
+                                            <v-text-field id="clusterBits" v-model.number="precursorClusterFpBits"
+                                                type="number" variant="outlined" density="compact" hide-details
+                                                class="mt-2"></v-text-field>
+                                        </setting-input>
+                                        <setting-input label="Radius" label-for="clusterRadius"
+                                            help-text="This setting changes the radius used for constructing morgan fingerprints for clustering.">
+                                            <v-text-field id="clusterRadius" v-model.number="precursorClusterFpRadius"
+                                                type="number" variant="outlined" density="compact" hide-details
+                                                class="mt-2"></v-text-field>
+                                        </setting-input>
+                                    </div>
                                 </v-card-text>
                             </v-card>
                         </v-window-item>
                         <v-window-item value="graphVis">
                             <v-card flat>
                                 <v-card-text>
+                                    <setting-input :label="`Edge spring constant: ${graphSpringConstant}`"
+                                        label-for="graphSpringConst">
+                                        <v-slider label="" id="graphSpringConst" v-model="graphSpringConstant"
+                                            @update:modelValue="$emit('changeNetopt')" min="0" max="0.3" step="0.005"
+                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                    </setting-input>
+                                    <setting-input :label="`Chemical node size: ${graphNodeSize}`"
+                                        label-for="graphNodeSize">
+                                        <v-slider label="" id="graphNodeSize" v-model="graphNodeSize"
+                                            @update:modelValue="$emit('changeNetopt')" min="1" max="60" step="1"
+                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                    </setting-input>
+                                    <setting-input :label="`Reaction node size: ${graphNodeFontSize}`"
+                                        label-for="graphFontSize">
+                                        <v-slider label="" id="graphFontSize" v-model="graphNodeFontSize"
+                                            @update:modelValue="$emit('changeNetopt')" min="1" max="20" step="1"
+                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                    </setting-input>
+                                    <setting-input :label="`Node effective mass: ${graphNodeMass}`"
+                                        label-for="graphNodeMass">
+                                        <v-slider label="" id="graphNodeMass" v-model="graphNodeMass"
+                                            @update:modelValue="$emit('changeNetopt')" min="0.1" max="5" step="0.1"
+                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                    </setting-input>
+                                    <setting-input label="Hierarchical layout">
+                                        <v-switch id="checkHier" hide-details v-model="graphHierarchicalEnabled"
+                                            @update:modelValue="$emit('change-netopt')" color="primary">
+                                        </v-switch>
+                                    </setting-input>
+                                    <setting-input v-if="graphHierarchicalEnabled" label="Hierarchical direction"
+                                        label-for="graphHierDir">
+                                        <v-select id="graphHierDir" v-model="graphHierarchicalDirection" :items="HDItems"
+                                            @update:modelValue="$emit('change-netopt')" variant="outlined" density="compact"
+                                            hide-details></v-select>
+                                    </setting-input>
+                                    <setting-input v-if="graphHierarchicalEnabled"
+                                        :label="`Hierarchical level separation: ${graphHierarchicalLevelSeparation}`"
+                                        label-for="graphLevelSep">
+                                        <v-slider label="" id="graphLevelSep" v-model="graphHierarchicalLevelSeparation"
+                                            @update:modelValue="$emit('changeNetopt')" min="1" max="500" step="1"
+                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                    </setting-input>
                                 </v-card-text>
                             </v-card>
                         </v-window-item>
@@ -547,6 +617,25 @@ export default {
             pathClusterMethodItems: [
                 { title: "hdbscan", value: "hdbscan" },
                 { title: "kmeans", value: "kmeans" }
+            ],
+            precursorClusterMethodItems: [
+                { title: "kmeans", value: "kmeans" },
+                { title: "hdbscan", value: "hdbscan" },
+                { title: "rxn_class", value: "rxn_class" }
+            ],
+            HDItems: [
+                { title: "Top-down", value: "UD" },
+                { title: "Left-right", value: "LR" },
+                { title: "Bottom-up", value: "DU" },
+                { title: "Right-left", value: "RL" },
+            ],
+            precursorClusterFeatureItems: [
+                { title: "Original", value: "original" },
+                { title: "Outcomes", value: "outcomes" },
+                { title: "All", value: "all" }
+            ],
+            precursorClusterFingerprintItems: [
+                { title: "Morgan", value: "morgan" }
             ]
         };
     },
@@ -628,68 +717,50 @@ export default {
         },
         precursorClusterEnabled: {
             get() {
-                return this.settingsStore.allowCluster;
+                return this.settingsStore.interactive_path_planner_settings.cluster_precursors;
             },
             set(value) {
-                this.settingsStore.setOption({
-                    key: "allowCluster",
-                    value: value,
-                });
+                this.settingsStore.interactive_path_planner_settings.cluster_precursors = value;
             },
         },
         precursorClusterMethod: {
             get() {
-                return this.settingsStore.clusterOptions.cluster_method;
+                return this.settingsStore.interactive_path_planner_settings.cluster_setting.cluster_method;
             },
             set(value) {
-                this.settingsStore.setClusterOption({
-                    key: "cluster_method",
-                    value: value,
-                });
+                this.settingsStore.interactive_path_planner_settings.cluster_setting.cluster_method = value
             },
         },
         precursorClusterFeature: {
             get() {
-                return this.settingsStore.clusterOptions.feature;
+                return this.settingsStore.interactive_path_planner_settings.cluster_setting.feature;
             },
             set(value) {
-                this.settingsStore.setClusterOption({
-                    key: "feature",
-                    value: value,
-                });
+                this.settingsStore.interactive_path_planner_settings.cluster_setting.feature = value;
             },
         },
         precursorClusterFingerprint: {
             get() {
-                return this.settingsStore.clusterOptions.fingerprint;
+                return this.settingsStore.interactive_path_planner_settings.cluster_setting.fp_type;
             },
             set(value) {
-                this.settingsStore.setClusterOption({
-                    key: "fingerprint",
-                    value: value,
-                });
+                this.settingsStore.interactive_path_planner_settings.cluster_setting.fp_type = value;
             },
         },
         precursorClusterFpBits: {
             get() {
-                return this.settingsStore.clusterOptions.fpBits;
+                return this.settingsStore.interactive_path_planner_settings.cluster_setting.fp_length;
             },
             set(value) {
-                this.settingsStore.setClusterOption({
-                    key: "fpBits",
-                    value: value,
-                });
+                this.settingsStore.interactive_path_planner_settings.cluster_setting.fp_length = value;
             },
         },
         precursorClusterFpRadius: {
             get() {
-                return this.settingsStore.clusterOptions.fpRadius;
+                return this.settingsStore.interactive_path_planner_settings.cluster_setting.fp_radius;
             },
             set(value) {
-                this.settingsStore.setClusterOption({
-                    key: "fpRadius",
-                    value: value,
-                });
+                this.settingsStore.interactive_path_planner_settings.cluster_setting.fp_radius = value;
             },
         },
         allowSelec: {
@@ -713,112 +784,74 @@ export default {
         },
         buyablesSource: {
             get() {
-                return this.settingsStore.tbSettings.buyablesSource;
+                return this.settingsStore.tree_builder_settings.build_tree_options.buyables_source;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "buyablesSource",
-                    value: value,
-                });
-            },
-        },
-        classifyReactions: {
-            get() {
-                return this.settingsStore.tbSettings.classifyReactions;
-            },
-            set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "classifyReactions",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.buyables_source = value;
             },
         },
         expansionTime: {
             get() {
-                return this.settingsStore.tbSettings.expansionTime;
+                return this.settingsStore.tree_builder_settings.build_tree_options.expansion_time;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "expansionTime",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.expansion_time = value;
             },
         },
         maxBranching: {
             get() {
-                return this.settingsStore.tbSettings.maxBranching;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_branching;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "maxBranching",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.max_branching = value;
             },
         },
         maxChemicals: {
             get() {
-                return this.settingsStore.tbSettings.maxChemicals;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_chemicals;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "maxChemicals",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.max_chemicals = value;
             },
         },
         maxDepth: {
             get() {
-                return this.settingsStore.tbSettings.maxDepth;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_depth;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "maxDepth",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.max_depth = value;
             },
         },
         maxIterations: {
             get() {
-                return this.settingsStore.tbSettings.maxIterations;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_iterations;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "maxIterations",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.max_iterations = value;
             },
         },
         maxReactions: {
             get() {
-                return this.settingsStore.tbSettings.maxReactions;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_reactions;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "maxReactions",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.max_reactions = value;
             },
         },
         maxTemplates: {
             get() {
-                return this.settingsStore.tbSettings.maxTemplates;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_templates;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "maxTemplates",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.max_templates = value;
             },
         },
         maxTrees: {
             get() {
-                return this.settingsStore.tbSettings.maxTrees;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_trees;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "maxTrees",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.max_trees = value;
             },
         },
         minPlausibility: {
@@ -831,46 +864,34 @@ export default {
         },
         pathClusterEnabled: {
             get() {
-                return this.settingsStore.tbSettings.clusterTrees;
+                return this.settingsStore.tree_builder_settings.build_tree_options.cluster_trees;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "clusterTrees",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.cluster_trees = value;
             },
         },
         pathClusterMethod: {
             get() {
-                return this.settingsStore.tbSettings.clusterMethod;
+                return this.settingsStore.tree_builder_settings.build_tree_options.cluster_method;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "clusterMethod",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.cluster_method = value;
             },
         },
         pathClusterMinSize: {
             get() {
-                return this.settingsStore.tbSettings.clusterMinSize;
+                return this.settingsStore.tree_builder_settings.build_tree_options.min_cluster_size;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "clusterMinSize",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.min_cluster_size = value;
             },
         },
         pathClusterMinSamples: {
             get() {
-                return this.settingsStore.tbSettings.clusterMinSamples;
+                return this.settingsStore.tree_builder_settings.build_tree_options.min_samples;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "clusterMinSamples",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.min_samples = value;
             },
         },
         strategies: {
@@ -879,28 +900,6 @@ export default {
             },
             set(value) {
                 this.settingsStore.interactive_path_planner_settings.retro_backend_options = value;
-            },
-        },
-        modelSelector: {
-            get() {
-                return this.settingsStore.tbSettings.model;
-            },
-            set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "model",
-                    value: value,
-                });
-            },
-        },
-        trainingSetSelector: {
-            get() {
-                return this.settingsStore.tbSettings.trainingSet;
-            },
-            set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "trainingSet",
-                    value: value,
-                });
             },
         },
         precursorScoring: {
@@ -924,13 +923,10 @@ export default {
         },
         returnFirst: {
             get() {
-                return this.settingsStore.tbSettings.returnFirst;
+                return this.settingsStore.tree_builder_settings.build_tree_options.return_first;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "returnFirst",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.return_first = value;
             },
         },
         tbVersion: {
@@ -940,145 +936,98 @@ export default {
         },
         buyableLogic: {
             get() {
-                return this.settingsStore.tbSettings.buyableLogic;
+                return this.settingsStore.tree_builder_settings.build_tree_options.buyable_logic;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "buyableLogic",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.buyable_logic = value;
             },
         },
         maxPPGLogic: {
             get() {
-                return this.settingsStore.tbSettings.maxPPGLogic;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_ppg_logic;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "maxPPGLogic",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.max_ppg_logic = value;
             },
         },
         maxPPG: {
             get() {
-                return this.settingsStore.tbSettings.maxPPG;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_ppg;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "maxPPG",
-                    value: value,
-                });
+                this.tree_builder_settings.build_tree_options.max_ppg = value;
             },
         },
         maxScscoreLogic: {
             get() {
-                return this.settingsStore.tbSettings.maxScscoreLogic;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_scscore_logic;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "maxScscoreLogic",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.max_scscore_logic = value;
             },
         },
         maxScscore: {
             get() {
-                return this.settingsStore.tbSettings.maxScscore;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_scscore;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "maxScscore",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.max_scscore = value;
             },
         },
         chemicalPropertyLogic: {
             get() {
-                return this.settingsStore.tbSettings.chemicalPropertyLogic;
+                return this.settingsStore.tree_builder_settings.build_tree_options.chemical_property_logic;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "chemicalPropertyLogic",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.chemical_property_logic = value;
             },
         },
         chemicalPropertyC: {
             get() {
-                return this.settingsStore.tbSettings.chemicalPropertyC;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_chemprop_c;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "chemicalPropertyC",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.max_chemprop_c = value;
             },
         },
         chemicalPropertyN: {
             get() {
-                return this.settingsStore.tbSettings.chemicalPropertyN;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_chemprop_n;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "chemicalPropertyN",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.max_chemprop_n = value;
             },
         },
         chemicalPropertyO: {
             get() {
-                return this.settingsStore.tbSettings.chemicalPropertyO;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_chemprop_o;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "chemicalPropertyO",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.max_chemprop_o = value;
             },
         },
         chemicalPropertyH: {
             get() {
-                return this.settingsStore.tbSettings.chemicalPropertyH;
+                return this.settingsStore.tree_builder_settings.build_tree_options.max_chemprop_h;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "chemicalPropertyH",
-                    value: value,
-                });
-            },
-        },
-        chemicalPopularityLogic: {
-            get() {
-                return this.settingsStore.tbSettings.chemicalPopularityLogic;
-            },
-            set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "chemicalPopularityLogic",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.max_chemprop_h = value;
             },
         },
         chemicalPopularityReactants: {
             get() {
-                return this.settingsStore.tbSettings.chemicalPopularityReactants;
+                return this.settingsStore.tree_builder_settings.build_tree_options.min_chempop_reactants;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "chemicalPopularityReactants",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.min_chempop_reactants = value;
             },
         },
         chemicalPopularityProducts: {
             get() {
-                return this.settingsStore.tbSettings.chemicalPopularityProducts;
+                return this.settingsStore.tree_builder_settings.build_tree_options.min_chempop_products;
             },
             set(value) {
-                this.settingsStore.setTbSetting({
-                    key: "chemicalPopularityProducts",
-                    value: value,
-                });
+                this.settingsStore.tree_builder_settings.build_tree_options.min_chempop_products = value;
             },
         },
         graphSpringConstant: {
@@ -1226,6 +1175,7 @@ export default {
         },
         resetSettings() {
             this.settingsStore.resetSettings();
+            this.$emit('changeNetopt')
         },
     },
 };

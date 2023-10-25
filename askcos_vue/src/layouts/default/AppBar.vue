@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer expand-on-hover rail elevation="2" width="100px" class="sidebar"
+  <v-navigation-drawer expand-on-hover rail elevation="2" width="1000px" class="sidebar"
     @update:rail="($event) => rail = $event">
     <v-list>
       <v-list-item prepend-icon="mdi-tools" title="ASKCOS" subtitle="Demo"></v-list-item>
@@ -123,7 +123,6 @@ function logout() {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
-  overflow-y: scroll !important;
 }
 
 .v-icon {

@@ -2,7 +2,7 @@
   <v-dialog v-model="propShow" :id="id" width="auto">
     <v-card>
       <v-card-text>
-        <iframe ref="ketcherIframe" src="/ketcher/dist/ketcher.html" width="800px" height="800px"></iframe>
+        <iframe ref="ketcherIframe" src="/ketcher/dist/ketcher.html" width="820px" height="460px"></iframe>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -89,15 +89,14 @@ export default {
         });
     };
 
-    const smilesFromKetcher = () => {
+    const smilesFromKetcher = async () => {
       const km = ketcherIframe.value;
       const ketcher = km.contentWindow.ketcher;
-      ketcher.getSmiles().then(async smiles => {
-        const json = await API.post('/api/rdkit/canonicalize', { smiles: smiles });
-        if (json.smiles) {
-          context.emit('update:smiles', json.smiles);
-        }
-      });
+      let smiles = ketcher.getSmiles()
+      const json = await API.post('/api/rdkit/canonicalize/', { smiles: smiles });
+      if (json.smiles) {
+        context.emit('update:smiles', json.smiles);
+      }
     };
 
     function dialogChange(dialogState) {
