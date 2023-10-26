@@ -3,8 +3,11 @@
         <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6">
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
-                    <span class="text-body-1 ml-2"><b>Condition Recommendation</b> </span>
-                    <!-- <b v-if=!!score>Reaction score: {{ score.toFixed(3) }}</b> -->
+                    <span><b>Condition Recommendation</b> </span>
+                     <p v-if="!!score">Reaction score: {{ score.toFixed(3) }}</p>
+                </v-col>
+                <v-col>
+                   
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
@@ -44,11 +47,11 @@
                 </template>
                 <template #item.reagent="{ item }">
                     <template v-if="item.columns.reagent">
-                                                <v-tooltip activator="parent" location="bottom">
-                                <span>{{ item.columns.reagent }}</span>
-                            </v-tooltip>
+                        <v-tooltip activator="parent" location="bottom">
+                            <span>{{ item.columns.reagent }}</span>
+                        </v-tooltip>
                         <copy-tooltip :data="item.columns.reagent">
-                        <smiles-image :smiles="item.columns.reagent" height="80px"></smiles-image>
+                            <smiles-image :smiles="item.columns.reagent" height="80px"></smiles-image>
                         </copy-tooltip>
                     </template>
                     <div v-else>
@@ -61,7 +64,7 @@
                             <span>{{ item.columns.solvent }}</span>
                         </v-tooltip>
                         <copy-tooltip :data="item.columns.solvent">
-                        <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
+                            <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
                         </copy-tooltip>
                     </template>
                     <div v-else>
@@ -124,7 +127,7 @@
                     <div v-if="!!item.columns.reagents" class="text-center my-2"
                         v-for="(amount, rgt) in item.columns.reagents" :key="rgt">
                         <copy-tooltip :data="rgt">
-                        <smiles-image :smiles="rgt" max-height="80px"></smiles-image>
+                            <smiles-image :smiles="rgt" max-height="80px"></smiles-image>
                         </copy-tooltip>
                         ({{ (amount > 0.01) ? amount.toFixed(2) : amount.toExponential(2) }})
                     </div>
@@ -203,6 +206,7 @@ const { results, models, pending } = defineProps({
     },
     score: {
         type: Number,
+        default: 0
     },
     evaluating: {
         type: Boolean,
@@ -212,7 +216,7 @@ const { results, models, pending } = defineProps({
 
 const headers = ref([
     { key: 'index', title: '#', align: 'center', },
-    { key: 'evaluation', title: 'Rank', align: 'center', },
+    // { key: 'evaluation', title: 'Rank', align: 'center', },
     { key: 'solvent', title: 'Solvent', align: 'center' },
     { key: 'reagent', title: 'Reagents', align: 'center', width: "300px" },
     { key: 'catalyst_name_only', title: 'Catalyst', align: 'center', },
@@ -224,7 +228,7 @@ const headers = ref([
 
 const headersAlt = ref([
     { key: 'index', title: '#', align: 'center', },
-    { key: 'evaluation', title: 'Rank', align: 'center', },
+    // { key: 'evaluation', title: 'Rank', align: 'center', },
     { key: 'reactants', title: 'Reactants (Amount)', align: 'center' },
     { key: 'reagents', title: 'Reagents (Amount)', align: 'center', },
     { key: 'temperature', title: 'Temperature', align: 'center', },

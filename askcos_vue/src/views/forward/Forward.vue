@@ -131,14 +131,16 @@
           <v-window-item value="forward">
             <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel"
               :pending="pendingTasks" @download-forward="downloadForwardResults" @go-to-impurities="goToImpurity"
-              :filename.sync="forwardFileName" @update:filename="handleUpdateFilename" @go-to-selectivity="goToSelectivity"/>
+              :filename.sync="forwardFileName" @update:filename="forwardUpdateFilename" @go-to-selectivity="goToSelectivity"/>
           </v-window-item>
           <v-window-item value="impurity">
             <ImpurityPrediction value="impurity" rounded="lg" :results="impurityResults" :pending="pendingTasks"
+            :filename.sync="impurityFileName" @update:filename="impurityUpdateFilename" 
               :progress="impurityProgress" @download-impurity="downloadImpurityResults" />
           </v-window-item>
           <v-window-item value="selectivity">
             <Regioselectivity value="selectivity" rounded="lg" :results="selectivityResults" :pending="pendingTasks"
+            :filename.sync="selectivityFileName" @update:filename="selectivityUpdateFileName" 
               @download-selectivity="downloadSelectivityResults" />
           </v-window-item>
           <v-window-item value="sites">
@@ -340,10 +342,21 @@ const siteSelectedAtoms = ref([])
 const pendingRank = ref(0)
 const ketcherMinRef = ref(null);
 const forwardFileName = ref('forward.csv');
+const impurityFileName = ref('impurity.csv');
+const selectivityFileName = ref('selectivity.csv');
 
-const handleUpdateFilename = (newFilename) => {
+const forwardUpdateFilename = (newFilename) => {
   forwardFileName.value = newFilename;
   console.log(forwardFileName.value)
+};
+
+const impurityUpdateFilename = (newFilename) => {
+  impurityFileName.value = newFilename;
+  console.log(impurityFileName.value)
+};
+const selectivityUpdateFileName = (newFilename) => {
+  selectivityFileName.value = newFilename;
+  console.log(selectivityFileName.value)
 };
 
 watch(tab, () => {
@@ -390,13 +403,14 @@ const evaluate = async () => {
   const postData = constructFastFilterPostData();
 
   contextResults.value.forEach((index) => {
+    console.log(index);
     evaluateIndex(index)
   })
 
   try {
     const output = await API.runCeleryTask('/api/fast-filter/call-async', postData);
-    reactionScore.value = output;
-    console.log(output)
+    reactionScore.value = output.result.score;
+    console.log(reactionScore.value)
   } catch (error) {
     console.error("An error occurred during evaluation:", error);
   } finally {
@@ -415,15 +429,10 @@ const clearEvaluation = () => {
 
 const evaluateIndex = async (index) => {
   pendingRank.value++;
-  console.log(contextResults.value[index])
-  if (contextResults.value[index]) {
-    contextResults.value[index].evaluating = true;
-  }
-    contextResults.value.forEach((index) => {
-    console.log(contextResults.value[index].evaluating)
-  })
 
-  let reagents = contextResults.value[index].reagent;
+  contextResults[index].evaluating = true;
+
+   let reagents = contextResults[index]['reagent'];
   if (contextResults.value[index].catalyst) {
     if (reagents) {
       reagents += '.';
@@ -434,7 +443,7 @@ const evaluateIndex = async (index) => {
   let solvent = contextResults.value[index].solvent;
   const postData = constructForwardPostData(reagents, solvent);
   try {
-    const output = await API.runCeleryTask('/api/v2/forward/', postData);
+    const output = await API.runCeleryTask('/api/forward/controller/call-async', postData);
     for (let i = 0; i < output.length; i++) {
       const outcome = output[i];
       if (outcome.smiles === product.value) {
@@ -1013,7 +1022,7 @@ const downloadImpurityResults = () => {
     downloadData += `${res.no},${reactantData},${productData},${reagentData},${solventData},${res.prd_smiles},${res.modes_name},${res.avg_insp_score},${res.similarity_to_major},${res.prd_mw}\n`;
   });
   const blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' });
-  saveAs(blob, 'impurity.csv');
+  saveAs(blob, impurityFileName.value);
 };
 
 const downloadSelectivityResults = () => {
@@ -1025,7 +1034,7 @@ const downloadSelectivityResults = () => {
     downloadData += `${res.rank},${res.smiles},${res.prob}\n`
   })
   let blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' })
-  saveAs(blob, 'askcos_regioselectivity_export.csv')
+  saveAs(blob, selectivityFileName.value)
 };
 
 const downloadForwardResults = () => {

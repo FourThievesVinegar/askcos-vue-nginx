@@ -7,7 +7,7 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn variant="flat" v-show="!!results.length" @click="emitDownloadSelectivity" height="30px" color="primary mx-2">
+                    <v-btn variant="flat" v-show="!!results.length" @click="dialog = true" height="30px" color="primary mx-2">
                         Export
                     </v-btn>
                 </v-col>
@@ -52,6 +52,20 @@
                     </v-expansion-panel>
                 </v-expansion-panels>
             </v-row>
+            <v-dialog v-model="dialog" max-width="600px" persistent>
+                    <v-card>
+                        <v-card-title class="headline">Export Results</v-card-title>
+                        <v-card-text>
+                         <v-text-field v-model="filename" @input="updateFilename($event.target.value)"
+                         density="comfortable" variant="outlined" placeholder="Filename" hide-details clearable type="string" ></v-text-field>
+                         </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="red darken-1" text @click="dialog = false">Cancel</v-btn>
+                            <v-btn color="green darken-1" text @click="emitDownloadSelectivity">Save</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
         </v-sheet>
     </v-container>
 </template>
@@ -63,6 +77,8 @@ import SmilesImage from "@/components/SmilesImage.vue";
 
 const panel = ref([0])
 const disabled = ref(false)
+const dialog = ref(false)
+const filename = ref('selectivity.csv')
 
 const { results, models, progress } = defineProps({
     results: {
@@ -85,6 +101,13 @@ const emits = defineEmits()
 
 const emitDownloadSelectivity = () => {
     emits('download-selectivity')
+    dialog.value = false
 }
+
+const updateFilename = (newFilename) => {
+    emits('update:filename', newFilename);
+    console.log(filename)
+};
+
 
 </script>
