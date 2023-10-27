@@ -7,8 +7,8 @@ const interactive_path_planner_settings_default = {
     {
       retro_backend: "template_relevance",
       retro_model_name: "reaxys",
-      max_num_templates: 100,
-      max_cum_prob: 0.995,
+      max_num_templates: 1000,
+      max_cum_prob: 0.999,
       attribute_filter: []
     }
   ],
@@ -34,8 +34,8 @@ const interactive_path_planner_settings_default = {
 
 const tree_builder_settings_default = {
   expand_one_options: {
-    template_max_count: 100,
-    template_max_cum_prob: 0.995,
+    template_max_count: 1000,
+    template_max_cum_prob: 0.999,
     ...interactive_path_planner_settings_default
   },
   build_tree_options: {
