@@ -428,16 +428,16 @@ export const useResultsStore = defineStore("results", {
             rank: reaction["rank"],
             ffScore: reaction["plausibility"],
             retroScore: reaction["score"],
-            templateScore: reaction["template_score"],
-            templateRank: reaction["template_rank"],
-            templateIds: reaction["templates"],
+            templateScore: reaction["template"]["template_score"],
+            templateRank: reaction["template"]["template_rank"],
+            templateIds: reaction["template"]["tforms"],
             clusterId: reaction["group_id"],
             clusterName: reaction["group_name"],
             clusterRep: !clusterTracker.has(reaction["group_id"]), // Tag first result in each cluster as the representative
             precursors: reaction["smiles_split"],
             precursorSmiles: reaction["outcome"],
-            numExamples: reaction["num_examples"],
-            necessaryReagent: reaction["necessary_reagent"],
+            numExamples: reaction["template"]["num_examples"],
+            necessaryReagent: reaction["template"]["necessary_reagent"],
             mappedSmiles: reaction["mapped_smiles"],
             reactingAtoms: reaction["reacting_atoms"],
             numRings: reaction["num_rings"],
@@ -699,8 +699,8 @@ export const useResultsStore = defineStore("results", {
       });
       this.updateDispNodes(
         newNodes.map((node) => {
+          console.log(node)
           let dataObj = this.dataGraph.nodes.get(node["smiles"]);
-          console.log(dataObj)
           if (node.type === "chemical") {
             return makeChemicalDisplayNode({
               id: node["id"],
@@ -1291,17 +1291,16 @@ function getPrice(smiles, sources) {
   });
 }
 
-function getScscore(smiles) {
+async function getScscore(smiles) {
   // Lookup scscores for a list of SMILES
-  const url = "/api/v2/scscore/batch/";
+  const url = "/api/scscore/batch/call-sync";
   const body = {
     smiles: smiles,
   };
-  return API.post(url, body).then((json) => {
-    let result = {};
-    smiles.forEach((smi) => {
-      result[smi] = { scscore: json["result"][smi] };
-    });
-    return result;
+  const json = await API.post(url, body);
+  let result = {};
+  smiles.forEach((smi) => {
+    result[smi] = { scscore: json["result"][smi] };
   });
+  return result;
 }

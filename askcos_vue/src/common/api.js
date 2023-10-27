@@ -1,28 +1,19 @@
 /*
  * ASKCOS API client library
  */
-
-import Cookies from 'js-cookie';
 import { useFastapiStore } from "@/store/fastapi";
-
-const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/tree-search", "/api/buyables", "api/forward", "/api/tree-analysis", "api/site-selectivity", "api/fast-filter"];
 
 const API = {
   pollInterval: 1000,
   pollIntervalLong: 2000,
 
-  getHeaders(data, endpoint) {
+  getHeaders(data) {
     let headers = {};
     if (data && !(data instanceof FormData)) {
       headers['Content-Type'] = 'application/json';
     }
 
-    if (authMigratedAPI.some(api => endpoint.startsWith(api))) {
-      headers['Authorization'] = 'Bearer ' + localStorage.getItem('accessToken')
-    }
-    else {
-      headers['X-CSRFToken'] = Cookies.get('csrftoken')
-    }
+    headers['Authorization'] = 'Bearer ' + localStorage.getItem('accessToken');
 
     return headers
   },
@@ -49,9 +40,6 @@ const API = {
 
   async get(endpoint, params) {
     const fastapiStore = useFastapiStore()
-    if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
-      endpoint += '/';
-    }
     if (params) {
       if (!(params instanceof URLSearchParams)) {
         params = new URLSearchParams(params);
@@ -61,7 +49,7 @@ const API = {
 
     const response = await fetch(endpoint, {
       method: 'GET',
-      headers: this.getHeaders(null, endpoint),
+      headers: this.getHeaders(null),
     });
     const json = await this.fetchHandler(response);
     fastapiStore.logs.unshift({ endpoint: endpoint, method: 'GET', request: params, response: json });
@@ -71,15 +59,12 @@ const API = {
 
   async post(endpoint, data, query = false) {
     const fastapiStore = useFastapiStore()
-    if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
-      endpoint += '/';
-    }
 
     let response = null;
     if (!query) {
       response = await fetch(endpoint, {
         method: 'POST',
-        headers: this.getHeaders(data, endpoint),
+        headers: this.getHeaders(data),
         body: data instanceof FormData ? data : JSON.stringify(data),
       });
     }
@@ -95,12 +80,9 @@ const API = {
 
   async put(endpoint, data) {
     const fastapiStore = useFastapiStore()
-    if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
-      endpoint += '/';
-    }
     const response = await fetch(endpoint, {
       method: 'PUT',
-      headers: this.getHeaders(data, endpoint),
+      headers: this.getHeaders(data),
       body: data instanceof FormData ? data : JSON.stringify(data),
     });
     const json = await this.fetchHandler(response);
@@ -109,12 +91,9 @@ const API = {
   },
 
   async delete(endpoint) {
-    if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
-      endpoint += '/';
-    }
     const response = await fetch(endpoint, {
       method: 'DELETE',
-      headers: this.getHeaders(null, endpoint),
+      headers: this.getHeaders(null),
     });
     return this.fetchHandler(response);
   },
