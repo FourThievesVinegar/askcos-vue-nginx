@@ -1293,7 +1293,7 @@ function getPrice(smiles, sources) {
 
 function getScscore(smiles) {
   // Lookup scscores for a list of SMILES
-  const url = "/api/v2/scscore/batch/";
+  const url = "/api/scscore/batch/call-sync";
   const body = {
     smiles: smiles,
   };
