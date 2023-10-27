@@ -42,6 +42,7 @@ function makeNodeTitleEl(node) {
 function makeChemicalDisplayNode({
   id, data, target, align = false, scale = true,
 }) {
+  console.log(data)
   return {
     id,
     smiles: data.id,

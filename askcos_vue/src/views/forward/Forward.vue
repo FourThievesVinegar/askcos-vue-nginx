@@ -171,7 +171,7 @@
                   <v-col cols="12" v-if="contextModel === 'neuralnetworkv2'">
                     <v-select label="Neural Network v2 model type" density="comfortable" variant="outlined" hide-details
                       clearable v-model="contextV2ModelType"
-                      :items="[{ key: 'graph', title: 'Graph' }, { key: 'fp-small', title: 'Fingerprint (small)' }]"
+                      :items="[{ key: 'graph', title: 'Graph' }, { key: 'fp', title: 'Fingerprint (small)' }]"
                       item-text="title" item-value="key"></v-select>
                   </v-col>
 

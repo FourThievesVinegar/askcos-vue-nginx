@@ -29,7 +29,7 @@ export default {
             }
             isLoading.value = true;
             // console.log(data)
-            API.post('/api/v2/rdkit/smiles/to_molfile/', data)
+            API.post('/api/rdkit/to-molfile/', data)
                 .then(json => {
                     setMolfile(json.molfile, callback);
                 })
