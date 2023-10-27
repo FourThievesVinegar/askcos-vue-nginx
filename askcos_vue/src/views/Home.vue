@@ -31,7 +31,7 @@
                       Synthesis (MLPDS) Consortium</strong></span></template>
               </v-expansion-panel>
               <v-expansion-panel text="If you have any questions or if any of the links/images appear
-            broken, please email mlpds_support@mit.edu." class="text-blue-darken-3">
+            broken, please email askcos_support@mit.edu." class="text-blue-darken-3">
                 <template v-slot:title><v-icon class="mr-1">mdi mdi-lifebuoy</v-icon><strong>Support</strong></template>
               </v-expansion-panel>
               <v-expansion-panel text='THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESSED OR IMPLIED
