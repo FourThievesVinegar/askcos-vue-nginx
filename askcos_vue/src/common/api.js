@@ -3,13 +3,11 @@
  */
 import { useFastapiStore } from "@/store/fastapi";
 
-const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/tree-search", "/api/buyables", "api/forward", "/api/tree-analysis", "api/site-selectivity", "api/fast-filter"];
-
 const API = {
   pollInterval: 1000,
   pollIntervalLong: 2000,
 
-  getHeaders(data, endpoint) {
+  getHeaders(data) {
     let headers = {};
     if (data && !(data instanceof FormData)) {
       headers['Content-Type'] = 'application/json';
@@ -51,7 +49,7 @@ const API = {
 
     const response = await fetch(endpoint, {
       method: 'GET',
-      headers: this.getHeaders(null, endpoint),
+      headers: this.getHeaders(null),
     });
     const json = await this.fetchHandler(response);
     fastapiStore.logs.unshift({ endpoint: endpoint, method: 'GET', request: params, response: json });
@@ -66,7 +64,7 @@ const API = {
     if (!query) {
       response = await fetch(endpoint, {
         method: 'POST',
-        headers: this.getHeaders(data, endpoint),
+        headers: this.getHeaders(data),
         body: data instanceof FormData ? data : JSON.stringify(data),
       });
     }
@@ -84,7 +82,7 @@ const API = {
     const fastapiStore = useFastapiStore()
     const response = await fetch(endpoint, {
       method: 'PUT',
-      headers: this.getHeaders(data, endpoint),
+      headers: this.getHeaders(data),
       body: data instanceof FormData ? data : JSON.stringify(data),
     });
     const json = await this.fetchHandler(response);
@@ -95,7 +93,7 @@ const API = {
   async delete(endpoint) {
     const response = await fetch(endpoint, {
       method: 'DELETE',
-      headers: this.getHeaders(null, endpoint),
+      headers: this.getHeaders(null),
     });
     return this.fetchHandler(response);
   },
