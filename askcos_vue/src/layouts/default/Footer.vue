@@ -2,7 +2,8 @@
   <v-footer class="bg-blue-darken-2" absolute app height="25px">
     <v-row justify="center" no-gutters>
       <v-col class="text-center my-2" cols="12">
-        <h6>ASKCOS version: {{ version }} Copyright © {{ new Date().getFullYear() }}.&nbsp; Last updated {{ lastUpdated }}. Created using FastAPI and Vue.</h6>
+        <h6 class="text-body-1">ASKCOS version: {{ version }} Copyright © {{ new Date().getFullYear() }}.&nbsp; Last
+          updated {{ lastUpdated }}. Created using FastAPI and Vue.</h6>
       </v-col>
     </v-row>
   </v-footer>

@@ -19,29 +19,30 @@
               significantly longer than expected if there are several other
               users on the site also performing computationally-expensive
               requests.
-              <br />
-              <br />
+            </p>
+            <p class="px-3 mt-2">
               This work began under the DARPA Make-It program (ARO
               W911NF-16-2-0023) and continues to be supported by the Machine
               Learning for Pharmaceutical Discovery and Synthesis Consortium. The main
               algorithms for Monte Carlo Tree Search used in the Tree Builder are
               adapted from
-              <br />
-              <br />
-              <small> Segler, M. H. S., Preuss, M., & Waller, M. P. (2018).
-              Planning chemical syntheses with deep neural networks and symbolic AI.
-              Nature, 555(7698), 604–610.
-                <a href="https://doi.org/10.1038/nature25978">
-                  https://doi.org/10.1038/nature25978
-                </a>.
-              </small>
-              <br />
-              <br />
+              <q><i> Segler, M. H. S., Preuss, M., & Waller, M. P. (2018).
+                  Planning chemical syntheses with deep neural networks and symbolic AI.
+                  Nature, 555(7698), 604–610.
+                  <a href="https://doi.org/10.1038/nature25978">
+                    https://doi.org/10.1038/nature25978
+                  </a>.
+                </i>
+              </q>
+            </p>
+            <p class="px-3 mt-2">
               The other deployed models are described in their respective pages where
               appropriate.
             </p>
-            <p class="px-3 text-body-1">
-              The development of ASKCOS has been supported by the DARPA Make-It program (ARO W911NF-16-2-0023), the <a href="http://mlpds.mit.edu" target="_blank">Machine Learning for Pharmaceutical Discovery and Synthesis Consortium</a>, and the National Institutes of Health (1U18TR004149-01).
+            <p class="px-3 text-body-1 mt-2">
+              The development of ASKCOS has been supported by the DARPA Make-It program (ARO W911NF-16-2-0023), the <a
+                href="http://mlpds.mit.edu" target="_blank">Machine Learning for Pharmaceutical Discovery and Synthesis
+                Consortium</a>, and the National Institutes of Health (1U18TR004149-01).
             </p>
             <v-expansion-panels class="mt-6 text-body-1" variant="popout">
               <v-expansion-panel text="If you have any questions or if any of the links/images appear
