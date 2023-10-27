@@ -699,8 +699,8 @@ export const useResultsStore = defineStore("results", {
       });
       this.updateDispNodes(
         newNodes.map((node) => {
+          console.log(node)
           let dataObj = this.dataGraph.nodes.get(node["smiles"]);
-          console.log(dataObj)
           if (node.type === "chemical") {
             return makeChemicalDisplayNode({
               id: node["id"],
@@ -1291,17 +1291,16 @@ function getPrice(smiles, sources) {
   });
 }
 
-function getScscore(smiles) {
+async function getScscore(smiles) {
   // Lookup scscores for a list of SMILES
-  const url = "/api/v2/scscore/batch/";
+  const url = "/api/scscore/batch/call-sync";
   const body = {
     smiles: smiles,
   };
-  return API.post(url, body).then((json) => {
-    let result = {};
-    smiles.forEach((smi) => {
-      result[smi] = { scscore: json["result"][smi] };
-    });
-    return result;
+  const json = await API.post(url, body);
+  let result = {};
+  smiles.forEach((smi) => {
+    result[smi] = { scscore: json["result"][smi] };
   });
+  return result;
 }

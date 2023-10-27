@@ -1,8 +1,6 @@
 /*
  * ASKCOS API client library
  */
-
-import Cookies from 'js-cookie';
 import { useFastapiStore } from "@/store/fastapi";
 
 const authMigratedAPI = ["/api/banlist", "/api/buyables", "/api/results", "/api/tree-search", "/api/buyables", "api/forward", "/api/tree-analysis", "api/site-selectivity", "api/fast-filter"];
@@ -17,12 +15,7 @@ const API = {
       headers['Content-Type'] = 'application/json';
     }
 
-    if (authMigratedAPI.some(api => endpoint.startsWith(api))) {
-      headers['Authorization'] = 'Bearer ' + localStorage.getItem('accessToken')
-    }
-    else {
-      headers['X-CSRFToken'] = Cookies.get('csrftoken')
-    }
+    headers['Authorization'] = 'Bearer ' + localStorage.getItem('accessToken');
 
     return headers
   },
@@ -49,9 +42,6 @@ const API = {
 
   async get(endpoint, params) {
     const fastapiStore = useFastapiStore()
-    if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
-      endpoint += '/';
-    }
     if (params) {
       if (!(params instanceof URLSearchParams)) {
         params = new URLSearchParams(params);
@@ -71,9 +61,6 @@ const API = {
 
   async post(endpoint, data, query = false) {
     const fastapiStore = useFastapiStore()
-    if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
-      endpoint += '/';
-    }
 
     let response = null;
     if (!query) {
@@ -95,9 +82,6 @@ const API = {
 
   async put(endpoint, data) {
     const fastapiStore = useFastapiStore()
-    if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
-      endpoint += '/';
-    }
     const response = await fetch(endpoint, {
       method: 'PUT',
       headers: this.getHeaders(data, endpoint),
@@ -109,9 +93,6 @@ const API = {
   },
 
   async delete(endpoint) {
-    if (!endpoint.endsWith('/') && !authMigratedAPI.some(api => endpoint.startsWith(api))) {
-      endpoint += '/';
-    }
     const response = await fetch(endpoint, {
       method: 'DELETE',
       headers: this.getHeaders(null, endpoint),

@@ -77,7 +77,7 @@ export default {
         // spinner.style.display = 'none';
         return;
       }
-      API.post('/api/v2/rdkit/smiles/to_molfile/', { 'smiles': props.smiles })
+      API.post('/api/rdkit/to-molfile/', { 'smiles': props.smiles })
         .then(json => {
           ketcher.setMolecule(json.molfile);
           // spinner.style.display = 'none';
