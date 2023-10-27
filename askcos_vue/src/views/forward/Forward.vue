@@ -1,15 +1,15 @@
 <template>
-  <v-container fluid>
+  <v-container fluid style="min-height: calc(100vh-50px)">
     <v-row class="justify-center">
       <v-col cols="12" sm="8" md="10">
 
-        <v-sheet elevation="2" class="my-6 ">
+        <v-sheet elevation="2" class="my-6">
           <v-tabs v-model="tab" color="primary" align-tabs="center" grow class="mb-4">
             <v-tab @click="replaceRoute('context')" value="context">Condition Recommendation</v-tab>
             <v-tab @click="replaceRoute('forward')" value="forward">Product Prediction</v-tab>
             <v-tab @click="replaceRoute('impurity')" value="impurity">Impurity Prediction</v-tab>
             <v-tab @click="replaceRoute('selectivity')" value="selectivity">Regioselectivity Prediction</v-tab>
-            <v-tab @click="replaceRoute('sites')" value="sites" :disabled=true>Aromatic C-H Functionalization</v-tab>
+            <v-tab @click="replaceRoute('sites')" value="sites">Aromatic C-H Functionalization</v-tab>
           </v-tabs>
         </v-sheet>
 
@@ -42,10 +42,10 @@
               <v-col cols="3">
                 <smiles-image :smiles="reactants"></smiles-image>
               </v-col>
-              <v-col cols="3" align="center" v-if="!!reactants && mode !== 'sites' && !!reactants && mode !== 'forward'" class="py-30">
+              <v-col cols="3" align="center" v-if="!!reactants && mode !== 'sites'" class="py-30">
                 <smiles-image :smiles="'>>'" width="200"></smiles-image>
               </v-col>
-              <v-col cols="3" v-if="mode !== 'sites' && mode !== 'forward'">
+              <v-col cols="3" v-if="mode !== 'sites'">
                 <smiles-image :smiles="product"></smiles-image>
               </v-col>
             </v-row>
@@ -110,7 +110,7 @@
                     </v-list-item>
                   </v-list>
                 </v-menu>
-                <v-btn variant="tonal" class="mr-5" @click="clear()" :disabled="reactants === ''">
+                <v-btn variant="tonal" class="mr-5" @click="clear()" :disabled="contextResults = [] && reactants === ''">
                   Clear
                 </v-btn>
                 <v-btn icon @click="dialog = !dialog">
@@ -130,19 +130,22 @@
           </v-window-item>
           <v-window-item value="forward">
             <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel"
-              :pending="pendingTasks" @download-forward="downloadForwardResults" @go-to-impurities="goToImpurity" />
+              :pending="pendingTasks" @download-forward="downloadForwardResults" @go-to-impurities="goToImpurity"
+              :filename.sync="forwardFileName" @update:filename="forwardUpdateFilename" @go-to-selectivity="goToSelectivity"/>
           </v-window-item>
           <v-window-item value="impurity">
             <ImpurityPrediction value="impurity" rounded="lg" :results="impurityResults" :pending="pendingTasks"
+            :filename.sync="impurityFileName" @update:filename="impurityUpdateFilename" 
               :progress="impurityProgress" @download-impurity="downloadImpurityResults" />
           </v-window-item>
           <v-window-item value="selectivity">
             <Regioselectivity value="selectivity" rounded="lg" :results="selectivityResults" :pending="pendingTasks"
+            :filename.sync="selectivityFileName" @update:filename="selectivityUpdateFileName" 
               @download-selectivity="downloadSelectivityResults" />
           </v-window-item>
           <v-window-item value="sites">
-            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" :reactingAtoms="reactingAtoms"
-              :pending="pendingTasks" />
+            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" :resultsQuery="siteResultsQuery"
+              :reactingAtoms="reactingAtoms" :pending="pendingTasks" />
           </v-window-item>
         </v-window>
       </v-col>
@@ -338,6 +341,23 @@ const siteResultsQuery = ref('')
 const siteSelectedAtoms = ref([])
 const pendingRank = ref(0)
 const ketcherMinRef = ref(null);
+const forwardFileName = ref('forward.csv');
+const impurityFileName = ref('impurity.csv');
+const selectivityFileName = ref('selectivity.csv');
+
+const forwardUpdateFilename = (newFilename) => {
+  forwardFileName.value = newFilename;
+  console.log(forwardFileName.value)
+};
+
+const impurityUpdateFilename = (newFilename) => {
+  impurityFileName.value = newFilename;
+  console.log(impurityFileName.value)
+};
+const selectivityUpdateFileName = (newFilename) => {
+  selectivityFileName.value = newFilename;
+  console.log(selectivityFileName.value)
+};
 
 watch(tab, () => {
   switch (tab.value) {
@@ -360,12 +380,15 @@ watch(tab, () => {
 
 const constructFastFilterPostData = () => {
   return {
-    reactants: reactants.value,
-    products: product.value
+    "smiles": [
+      reactants.value,
+      product.value
+    ]
   }
 }
 
 const updateContextModel = (newModel) => {
+  contextResults.value = []
   contextModel.value = newModel
   console.log('Updated context model to:', newModel)
 }
@@ -379,13 +402,15 @@ const evaluate = async () => {
   evaluating.value = true;
   const postData = constructFastFilterPostData();
 
-  contextResults.value.forEach((item, index) => {
+  contextResults.value.forEach((index) => {
+    console.log(index);
     evaluateIndex(index)
   })
 
   try {
-    const output = await API.runCeleryTask('/api/legacy/fast-filter/', postData);
-    reactionScore.value = output;
+    const output = await API.runCeleryTask('/api/fast-filter/call-async', postData);
+    reactionScore.value = output.result.score;
+    console.log(reactionScore.value)
   } catch (error) {
     console.error("An error occurred during evaluation:", error);
   } finally {
@@ -397,7 +422,6 @@ const evaluate = async () => {
 
 const clearEvaluation = () => {
   reactionScore.value = null;
-
   for (let res of contextResults.value) {
     res.evaluation = undefined;
   }
@@ -405,9 +429,10 @@ const clearEvaluation = () => {
 
 const evaluateIndex = async (index) => {
   pendingRank.value++;
-  contextResults.value[index].evaluating = true;
 
-  let reagents = contextResults.value[index].reagent;
+  contextResults[index].evaluating = true;
+
+   let reagents = contextResults[index]['reagent'];
   if (contextResults.value[index].catalyst) {
     if (reagents) {
       reagents += '.';
@@ -526,7 +551,7 @@ const goToForward = (index) => {
       if (context['catalyst']) {
         reagentsValue += '.' + context['catalyst'];
       }
-      reagents.value = reagentsValue;
+      reagents.value = reagentsValue; ``
       if (context['solvent']) {
         solvent.value = context['solvent'];
       }
@@ -541,13 +566,21 @@ const goToImpurity = (index) => {
   canonicalizeAll()
     .then(() => {
       product.value = index;
-      console.log(index)
       changeMode('impurity');
       tab.value = 'impurity';
       impurityPredict();
     });
 };
 
+const goToSelectivity = (index) => {
+  canonicalizeAll()
+    .then(() => {
+      product.value = index
+      changeMode('selectivity')
+      tab.value = 'selectivity';
+      selectivityPredict()
+    })
+}
 
 const forwardModelTrainingSets = computed(() => {
   const sets = new Set();
@@ -572,7 +605,6 @@ watch(forwardModel, () => {
     forwardModelTrainingSet.value = null;
   }
 });
-
 
 const replaceRoute = (tab) => {
   router.replace({ path: '/forward', query: { tab } })
@@ -619,7 +651,7 @@ const clearInputs = () => {
 }
 
 const clear = async (skipConfirm = false) => {
-    if (!skipConfirm) {
+  if (!skipConfirm) {
     const isConfirmed = await createConfirm({
       title: 'Please Confirm',
       content: 'This will clear all of your current results. Continue anyway?',
@@ -631,25 +663,20 @@ const clear = async (skipConfirm = false) => {
     case 'forward':
       clearForward()
       clearInputs()
-      break
     case 'context':
       clearContext()
       clearInputs()
-      break
     case 'impurity':
       clearImpurity()
       clearInputs()
-      break
     case 'selectivity':
       clearSelectivity()
       clearInputs()
-      break
     case 'sites':
       clearSites()
       clearInputs()
-      break
-    default:
-      alert('unsupported mode')
+    // default:
+    //   alert('unsupported mode')
   }
 }
 
@@ -698,13 +725,13 @@ const selectivityPredict = () => {
 
   return API.runCeleryTask('/api/legacy/general-selectivity/', postData)
     .then(output => {
-        selectivityResults.value = output
+      selectivityResults.value = output
     })
     .catch(error => {
-        const errorData = JSON.parse(error.message);
-        if (errorData && errorData.output) {
-          createSnackbar({ text: 'Error running selectivity prediction: '+ errorData.output , snackbarProps: { timeout: -1, vertical: true } })
-        }
+      const errorData = JSON.parse(error.message);
+      if (errorData && errorData.output) {
+        createSnackbar({ text: 'Error running selectivity prediction: Regioselectivity is not applicable for the given reaction.', snackbarProps: { timeout: -1, vertical: true } })
+      }
     })
     .finally(() => {
       pendingTasks.value--
@@ -729,7 +756,6 @@ const impurityPredict = () => {
     impurityProgress.value.percent = 1.0;
     impurityProgress.value.message = 'Prediction complete!';
     impurityResults.value = output['result']['predict_expand'];
-    console.log(impurityResults.value)
   };
 
   let progress = (json) => {
@@ -834,7 +860,7 @@ const forwardPredict = async () => {
   try {
     const output = await API.runCeleryTask('/api/forward/controller/call-async', postData);
     forwardResults.value = output.result[0];
-    console.log(output.result[0])
+
   } catch (error) {
     console.error('Error in forward prediction:', error);
   } finally {
@@ -914,7 +940,7 @@ const contextV1Predict = async () => {
   evaluating.value = false
   let postData = constructContextV1PostData()
   if (reactants.value.length < 4) {
-     createSnackbar({ text: 'Please enter a reactant with at least 4 atoms.', snackbarProps: { timeout: -1, vertical: true } })
+    createSnackbar({ text: 'Please enter a reactant with at least 4 atoms.', snackbarProps: { timeout: -1, vertical: true } })
     pendingTasks.value--;
     return;
   }
@@ -985,12 +1011,18 @@ const downloadImpurityResults = () => {
     alert('There are no impurity predictor results to download!');
     return;
   }
-  let downloadData = 'No.,SMILES,Mechanism,InspectorScore,SimilarityScore,MolWt\n';
+  let downloadData = 'No.,reactantData,productData,reagentData,solventData,SMILES,Mechanism,InspectorScore,SimilarityScore,MolWt\n';
+
+  let reactantData = reactants.value;
+  let productData = product.value;
+  let reagentData = reagents.value;
+  let solventData = solvent.value;
+
   impurityResults.value.forEach((res) => {
-    downloadData += `${res.no},${res.prd_smiles},${res.modes_name},${res.avg_insp_score},${res.similarity_to_major},${res.prd_mw}\n`;
+    downloadData += `${res.no},${reactantData},${productData},${reagentData},${solventData},${res.prd_smiles},${res.modes_name},${res.avg_insp_score},${res.similarity_to_major},${res.prd_mw}\n`;
   });
   const blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' });
-  saveAs(blob, 'askcos_impurity_export.csv');
+  saveAs(blob, impurityFileName.value);
 };
 
 const downloadSelectivityResults = () => {
@@ -1002,7 +1034,7 @@ const downloadSelectivityResults = () => {
     downloadData += `${res.rank},${res.smiles},${res.prob}\n`
   })
   let blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' })
-  saveAs(blob, 'askcos_regioselectivity_export.csv')
+  saveAs(blob, selectivityFileName.value)
 };
 
 const downloadForwardResults = () => {
@@ -1012,10 +1044,10 @@ const downloadForwardResults = () => {
   }
   let downloadData = 'Rank,SMILES,Probability,Score,MolWt\n';
   forwardResults.value.forEach((res) => {
-    downloadData += `${res.rank},${res.smiles},${res.prob},${res.score},${res.mol_wt}\n`;
+    downloadData += `${res.rank},${res.outcome},${res.prob},${res.score},${res.mol_wt}\n`;
   });
   const blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' });
-  saveAs(blob, 'askcos_forward_export.csv');
+  saveAs(blob, forwardFileName.value);
 };
 
 const clearSites = () => {
@@ -1026,7 +1058,7 @@ const clearSites = () => {
 const sitesPredict = () => {
   pendingTasks.value++
   const postData = constructSiteSelectivityPostData()
-  API.runCeleryTask('/api/v2/selectivity/', postData)
+  API.runCeleryTask('/api/legacy/selectivity/', postData)
     .then(output => {
       siteResults.value = output
       ketcherMinRef.value.setSmiles(reactants.value);
@@ -1043,18 +1075,18 @@ const constructSiteSelectivityPostData = () => {
   }
 }
 
-const getMolImgUrl = (smiles, highlight, reactingAtoms) => {
-  let url = `/api/v2/draw/?smiles=${encodeURIComponent(smiles)}`;
-  if (highlight !== undefined) {
-    url += '&highlight=true';
-  }
-  if (reactingAtoms !== undefined) {
-    for (const ra of reactingAtoms) {
-      url += `&reacting_atoms=${encodeURIComponent(ra)}`;
-    }
-  }
-  return url;
-};
+// const getMolImgUrl = (smiles, highlight, reactingAtoms) => {
+//   let url = `/api/v2/draw/?smiles=${encodeURIComponent(smiles)}`;
+//   if (highlight !== undefined) {
+//     url += '&highlight=true';
+//   }
+//   if (reactingAtoms !== undefined) {
+//     for (const ra of reactingAtoms) {
+//       url += `&reacting_atoms=${encodeURIComponent(ra)}`;
+//     }
+//   }
+//   return url;
+// };
 
 
 </script>

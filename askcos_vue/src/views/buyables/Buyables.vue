@@ -58,18 +58,27 @@
             </v-col>
             <v-col cols="12" md="4" class="d-flex justify-space-evenly align-center">
 
-              <v-menu location="bottom">
+              <v-menu location="bottom" :close-on-content-click="false">
                 <template v-slot:activator="{ props }">
                   <v-btn color="primary" size="small" variant="flat" v-bind="props">
                     Select Sources
                   </v-btn>
                 </template>
-                <v-list>
-                  <v-list-item data-cy="all-sources-checkbox" @change="searchSourceQuery = []"
-                    label="All">All</v-list-item>
-                  <v-list-item v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery" :title="source"
-                    :label="source" @click="searchSourceQuery = source"></v-list-item>
-                </v-list>
+               <v-list>
+    <v-list-item 
+      v-for="source in buyablesSources" 
+      :key="source" 
+      v-model="searchSourceQuery"
+      @click="selectSource(source)">
+
+      <v-row align="center">
+        <v-col cols="auto">
+          <v-list-item-title >{{ source }}<v-icon class="ml-1 mb-2" v-show="selectedSource === source" icon="mdi-check"></v-icon></v-list-item-title>
+        </v-col>
+      </v-row>
+
+    </v-list-item>
+  </v-list>
               </v-menu>
 
               <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
@@ -147,21 +156,22 @@
       <v-card-text>
         <v-row>
           <v-col cols="12">
-            <v-text-field data-cy="smiles-input" :rules="[v => !!v || 'SMILES is required']" label="SMILES" v-model="addBuyableSmiles" density="comfortable"
-              variant="outlined"  clearable></v-text-field>
+            <v-text-field data-cy="smiles-input" :rules="[v => !!v || 'SMILES is required']" label="SMILES"
+              v-model="addBuyableSmiles" density="comfortable" variant="outlined" clearable></v-text-field>
           </v-col>
         </v-row>
 
         <v-row>
           <v-col cols="12">
-            <v-text-field id="pricePerGram" :rules="[v => !!v || 'Price is required']" label="Price per gram" v-model="addBuyablePrice" density="comfortable"
-              variant="outlined" clearable></v-text-field>
+            <v-text-field id="pricePerGram" :rules="[v => !!v || 'Price is required']" label="Price per gram"
+              v-model="addBuyablePrice" density="comfortable" variant="outlined" clearable></v-text-field>
           </v-col>
         </v-row>
 
         <v-row>
           <v-col cols="12">
-            <v-text-field id="source" label="Source" v-model="addBuyableSource" :rules="[v => !!v || 'Source is required']" density="comfortable" variant="outlined"
+            <v-text-field id="source" label="Source" v-model="addBuyableSource"
+              :rules="[v => !!v || 'Source is required']" density="comfortable" variant="outlined"
               clearable></v-text-field>
           </v-col>
         </v-row>
@@ -203,8 +213,8 @@
 
         <v-row>
           <v-col cols="12">
-            <v-file-input label="File" v-model="uploadFile" :rules="[v => !!v || 'File is required']"  density="comfortable" variant="outlined" 
-              clearable></v-file-input>
+            <v-file-input label="File" v-model="uploadFile" :rules="[v => !!v || 'File is required']"
+              density="comfortable" variant="outlined" clearable></v-file-input>
           </v-col>
         </v-row>
 
@@ -470,7 +480,14 @@ const deleteBuyable = (_id) => {
     });
 };
 
-
+const selectSource = (source) => {
+  if (selectedSource.value === source) {
+    selectedSource.value = null;  // Deselect if already selected
+  } else {
+    selectedSource.value = source;  // Select if not already selected
+  }
+  searchSourceQuery.value = selectedSource.value;
+};
 
 watch(uploadFile, (file) => {
   if (file && file.name) {
@@ -484,7 +501,6 @@ watch(uploadFile, (file) => {
 
 watch(selectedSource, (newValue) => {
   console.log('Selected source changed:', newValue);
-
   if (newValue) {
     console.log('Source selected successfully:', newValue);
   } else {

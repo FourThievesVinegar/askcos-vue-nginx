@@ -2,7 +2,7 @@
     <v-container fluid style="min-height: calc(100vh-50px)">
         <v-row class="justify-center">
             <v-col cols="12" sm="8" md="10">
-                <v-sheet elevation="2">
+            <v-sheet elevation="2" class="my-6">
                     <v-tabs v-model="tab" color="primary" align-tabs="center" grow class="mb-4">
                         <v-tab @click="replaceRoute('solpred')" value="solpred">Solubility Prediction</v-tab>
                         <v-tab @click="replaceRoute('solscreen')" value="solscreen">Solvent Screening</v-tab>

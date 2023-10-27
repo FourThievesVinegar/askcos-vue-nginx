@@ -9,7 +9,8 @@
 
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn variant="flat" v-show="!!results.length" @click="emitDownloadImpurity" height="30px" color="primary mx-2">
+                    <v-btn variant="flat" v-show="!!results.length" @click="dialog = true" height="30px"
+                        color="primary mx-2">
                         Export
                     </v-btn>
                 </v-col>
@@ -18,11 +19,13 @@
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" :items-per-page="10"
                 height="600px">
                 <template #item.prd_smiles="{ item }">
-                    <v-tooltip activator="parent" location="top">
+                    <v-tooltip activator="parent" location="bottom">
                         <span>{{ item.columns.prd_smiles }}</span>
                     </v-tooltip>
-                    <smiles-image :smiles="item.columns.prd_smiles" height="80px">
-                    </smiles-image>
+                    <copy-tooltip :data="item.columns.prd_smiles">
+                        <smiles-image :smiles="item.columns.prd_smiles" height="80px">
+                        </smiles-image>
+                    </copy-tooltip>
                 </template>
                 <template #item.avg_insp_score="{ item }">
                     {{ item.columns.avg_insp_score.toFixed(3) }}
@@ -59,6 +62,20 @@
                     </v-expansion-panel>
                 </v-expansion-panels>
             </v-row>
+            <v-dialog v-model="dialog" max-width="600px" persistent>
+                    <v-card>
+                        <v-card-title class="headline">Export Results</v-card-title>
+                        <v-card-text>
+                         <v-text-field v-model="filename" @input="updateFilename($event.target.value)"
+                         density="comfortable" variant="outlined" placeholder="Filename" hide-details clearable type="string" ></v-text-field>
+                         </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="red darken-1" text @click="dialog = false">Cancel</v-btn>
+                            <v-btn color="green darken-1" text @click="emitDownloadImpurity">Save</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
         </v-sheet>
     </v-container>
 </template>
@@ -66,10 +83,15 @@
 
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
-import { ref } from 'vue'
+import { ref } from 'vue';
+import CopyTooltip from "@/components/CopyTooltip";
+
 
 const panel = ref([0])
 const disabled = ref(false)
+const dialog = ref(false)
+const filename = ref('impurity.csv')
+
 
 const { results, models, progress } = defineProps({
     results: {
@@ -89,7 +111,7 @@ const { results, models, progress } = defineProps({
 const headers = ref([
     { key: 'no', title: 'No.', align: 'center', },
     { key: 'prd_smiles', title: 'Predicted Impurities', align: 'center', },
-    // { key: 'modes_name', title: 'Possible Mechanisms', align: 'center', },
+    { key: 'modes_name', title: 'Possible Mechanisms', align: 'center', },
     { key: 'avg_insp_score', title: 'Inspector Score', align: 'center', },
     { key: 'similarity_to_major', title: 'Similarity Score', align: 'center', },
     { key: 'prd_mw', title: 'Molecular Weight', align: 'center', },
@@ -100,4 +122,10 @@ const emits = defineEmits()
 const emitDownloadImpurity = () => {
     emits('download-impurity')
 }
+
+const updateFilename = (newFilename) => {
+    emits('update:filename', newFilename);
+    console.log(filename)
+};
+
 </script>

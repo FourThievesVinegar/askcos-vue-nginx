@@ -1,26 +1,29 @@
 <template>
-        <v-container fluid class="pa-0">
-            <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6">
-                <v-row align="center" justify="space-between" class="mx-auto my-auto">
+    <v-container fluid class="pa-0">
+        <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6">
+            <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
                     <span class="text-body-1 ml-2"><b>Product Prediction</b> </span>
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn variant="flat" v-show="!!results.length" @click="emitDownloadForward" height="30px"
+                    <v-btn variant="flat" v-show="!!results.length" @click="dialog=true" height="30px"
                         color="primary mx-2">
                         Export
                     </v-btn>
                 </v-col>
             </v-row>
 
+
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" v-show="results.length > 0"
                 :items-per-page="10" height="600px">
                 <template #item.outcome="{ item }">
-                    <v-tooltip activator="parent" location="top">
+                    <v-tooltip activator="parent" location="bottom">
                         <span>{{ item.columns.outcome }}</span>
                     </v-tooltip>
-                    <smiles-image :smiles="item.columns.outcome" height="80px"></smiles-image>
+                    <copy-tooltip :data="item.columns.reagent">
+                        <smiles-image :smiles="item.columns.outcome" height="80px"></smiles-image>
+                    </copy-tooltip>
                 </template>
                 <template #item.prob="{ item }">
                     {{ item.columns.prob.toFixed(4) }}
@@ -32,15 +35,14 @@
                     {{ item.columns.mol_wt.toFixed(1) }}
                 </template>
                 <template #item.predict_impurities="{ item, index }">
-                    <!-- <pre>{{item.columns.outcome}}</pre> -->
                     <v-btn variant="tonal" @click="emitGoToImpurity(item.columns.outcome)"
                         :id="'predict-impurities-' + index" title="Predict products">
                         <v-icon>mdi-arrow-right</v-icon>
                     </v-btn>
                 </template>
                 <template #item.predict_selectivity="{ item, index }">
-                    <v-btn variant="tonal" @click="emitGoToImpurity(index)" :id="'predict-regio-selectivities-' + index"
-                        title="Predict products">
+                    <v-btn variant="tonal" @click="goToSelectivity(item.columns.outcome)"
+                        :id="'predict-regio-selectivities-' + index" title="Predict products">
                         <v-icon>mdi-arrow-right</v-icon>
                     </v-btn>
                 </template>
@@ -69,23 +71,26 @@
                                             (J. Chem. Inf. Model. 2022, 62, 15, 3503–3513)
                                         </a>
                                     </p>
-                                    <p class="my-4">
-                                        <b>New in 2022.04:</b> Forward prediction model trained on Pistachio dataset. Select
-                                        in
-                                        settings menu.
-                                    </p>
-                                    <p class="my-4">
-                                        <b>New in 2022.10:</b> Forward prediction model using Graph2SMILES. Select in
-                                        <a>settings menu</a>. This new model is capable of making chirality-aware
-                                        prediction, though it
-                                        currently doesn't support impurity prediction.
-                                    </p>
                                 </v-col>
                             </v-row>
                         </template>
                     </v-expansion-panel>
                 </v-expansion-panels>
             </v-row>
+            <v-dialog v-model="dialog" max-width="600px" persistent>
+                <v-card>
+                    <v-card-title class="headline">Export Results</v-card-title>
+                    <v-card-text>
+                     <v-text-field v-model="filename" @input="updateFilename($event.target.value)"
+                     density="comfortable" variant="outlined" placeholder="Filename" hide-details clearable type="string" ></v-text-field>
+                     </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="red darken-1" text @click="dialog = false">Cancel</v-btn>
+                        <v-btn color="green darken-1" text @click="emitDownloadForward">Save</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-sheet>
     </v-container>
 </template>
@@ -93,9 +98,13 @@
 <script setup>
 import SmilesImage from "@/components/SmilesImage.vue";
 import { ref } from 'vue'
+import CopyTooltip from "@/components/CopyTooltip";
+
 
 const panel = ref([0])
 const disabled = ref(false)
+const dialog = ref(false)
+const filename = ref('forward.csv')
 
 const { results, models, pending } = defineProps({
     inheritAttrs: false,
@@ -113,9 +122,8 @@ const { results, models, pending } = defineProps({
     },
 })
 
-const showDialog = ref(false)
 const headers = ref([
-    // { key: 'rank', title: 'Rank', align: 'center', },
+    { key: 'rank', title: 'Rank', align: 'center', },
     { key: 'outcome', title: 'Product', align: 'center', width: '300px' },
     { key: 'prob', title: 'Probability', align: 'center' },
     { key: 'score', title: 'Max. Score', align: 'center' },
@@ -127,15 +135,22 @@ const headers = ref([
 const emits = defineEmits()
 
 const emitDownloadForward = () => {
-    emits('download-forward')
+    emits('download-forward'),
+    dialog.value=false
 }
 
 const emitGoToImpurity = (index) => {
     emits('go-to-impurities', index);
-    console.log(index)
 }
 
-// const goToSelectivity = (index) => {
-//     emits('go-to-selectivity', index);
-// }
+const goToSelectivity = (index) => {
+    emits('go-to-selectivity', index);
+}
+
+const updateFilename = (newFilename) => {
+    emits('update:filename', newFilename); 
+    console.log(filename)
+};
+
+
 </script>
