@@ -60,7 +60,7 @@
       <v-list-item prepend-icon="mdi-book-information-variant" title="Quick Reference" value="reference"></v-list-item>
       <v-divider></v-divider>
       <v-list-item prepend-icon="mdi-book-open-variant" title="Wiki" value="wiki" :active="false"
-        href="https://docusaurus.io/" target="_blank" />
+        href="https://gitlab.com/mlpds_mit/askcosv2/askcos-docs/-/wikis/home" target="_blank" />
       <v-list-item prepend-icon="mdi-bug" title="Report a bug" value="bug" :active="false">
         <TheSupportModal />
       </v-list-item>
