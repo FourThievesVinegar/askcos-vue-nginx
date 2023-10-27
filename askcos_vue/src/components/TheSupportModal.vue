@@ -29,7 +29,7 @@
                     <span>
                         NOTE: Clicking "Submit" should launch your email client to send us an email. If this is blocked for some
                         reason, please include the above information in an email you compose separately to
-                        <!-- {{ context.contactEmail}}. -->
+                        askcos_support@mit.edu.
                     </span>
                     </v-col>
                 </v-row>

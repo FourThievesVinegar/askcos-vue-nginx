@@ -3,58 +3,46 @@
         <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6">
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
-                    <span class="text-body-1 ml-2"><b>Product Prediction</b> </span>
+                    <span class="text-body-1 ml-2"><b>Aromatic C-H functionalization</b> </span>
                 </v-col>
                 <v-spacer></v-spacer>
             </v-row>
 
-            <v-dialog v-model="showDialog" max-width="500px">
-                <v-card>
-                    <v-card-text class="px-8 py-8">
-                        <p class="my-4">
-                            Predict site selectivity of aromatic C-H functionalization reactions with a multitask
-                            neural
-                            network that uses a WLN graph encoding.
-                            <a href="https://doi.org/10.1039/D0RE00071J">(React. Chem. Eng., 2020, 5, 896-902)</a>
-                        </p>
-                    </v-card-text>
-                    <v-divider></v-divider>
-                </v-card>
-            </v-dialog>
+            <v-row class="justify-center my-auto" density="compact">
+                <v-col cols="12" md="8" justify-center v-if="!pending && results.length">
+                    <v-text-field label="Filter Reactants" density="comfortable" variant="outlined" hide-details clearable
+                        placeholder="Filter reactants based on substring match to SMILES." v-model="resultsQuery"
+                        @input="filterResult"></v-text-field>
+                </v-col>
+            </v-row>
 
-            <v-col cols="6" v-if="!pending && results.length">
-                <v-text-field label="Filter Reactants" density="comfortable" variant="outlined" hide-details clearable
-                    placeholder="Filter reactants based on substring match to SMILES." :value="resultsQuery" 
-                    @input="$emit('update:resultsQuery', $event)"></v-text-field>
-            </v-col>
-
-            <v-data-table v-if="!pending && filteredResults.length" :headers="headers" :items="results" class="my-3"
-                :items-per-page="5">
+            <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" class="my-3"
+                :items-per-page="5" height="600px">
                 <!-- <ketcher-min ref="ketcher-min" @change="siteSelectedAtoms = $event"></ketcher-min> -->
                 <template v-slot:item.task="{ item }">
-                    <smiles-image :smiles="item.columns.task"></smiles-image>
+                    <smiles-image :smiles="item.columns.task" max-height="120px"></smiles-image>
                 </template>
                 <template v-slot:item.smiles="{ item }">
-                    <smiles-image :smiles="item.columns.smiles" :reactingAtoms="item.columns.atom_scores"></smiles-image>
+                    <smiles-image :smiles="item.columns.smiles" max-height="200px"></smiles-image>
                 </template>
                 <template v-slot:item.references="{ item }">
                     <div v-if="item.columns.references === undefined">
-                        <v-btn outlined variant="tonal">
+                        <v-btn outlined variant="tonal" @click="emitgetSitesRefs(item.raw.index)">
                             Get Training Reaction IDs
                         </v-btn>
                     </div>
                     <div v-else>
-                        <p>{{ item.columns.references.length }} training reactions</p>
-                        <v-btn outlined small class="mb-2">
+                        <p class="my-3">{{ item.columns.references.length }} training reactions</p>
+                        <v-btn variant="outlined" @click="emitCopyToClipboard(item.columns.references.join('; '))">
                             <v-icon>mdi-content-copy</v-icon> Copy all reaction IDs
                         </v-btn>
                         <br>
-                        <v-btn outlined small class="mb-2" :href="createReaxysUrl(item.columns.references.slice(0, 50))"
-                            target="_blank">
+                        <v-btn variant="outlined" class="my-2"
+                            :href="createReaxysUrl(item.columns.references.slice(0, 50))">
                             <v-icon>mdi-open-in-new</v-icon> Find first 50 in Reaxys
                         </v-btn>
                         <br>
-                        <v-btn outlined small>
+                        <v-btn variant="outlined" class="mb-3" @click="emitDownloadSitesRefs(item.columns)">
                             <v-icon>mdi-download</v-icon> Export all as Reaxys query
                         </v-btn>
                     </div>
@@ -95,12 +83,14 @@
 import SmilesImage from "@/components/SmilesImage.vue";
 import KetcherMin from "@/components/KetcherMin.vue";
 import { ref, computed } from 'vue'
+import { createReaxysUrl } from "@/common/reaxys";
 
 const panel = ref([0])
 const disabled = ref(false)
+const resultsQuery = ref('')
 
 
-const { results, pending, resultsQuery } = defineProps({
+const { results, pending } = defineProps({
     results: {
         type: Array,
         default: [],
@@ -108,28 +98,32 @@ const { results, pending, resultsQuery } = defineProps({
     pending: {
         type: Number,
         default: 0
-    },
-    resultsQuery: {
-        type: String,
-        default: ''
-    },
+    }
 })
 
+const emits = defineEmits()
+
+const emitgetSitesRefs = async (index) => {
+    emits('get-sites-refs', index)
+}
+
+const filterResult = (query) => {
+    emits('update:filter-results', query);
+}
+
+const emitDownloadSitesRefs = (result) => {
+    emits('download-sites-refs', result)
+}
+const emitCopyToClipboard = (index) => {
+    emits('copy-to-clipboard', index)
+}
+
 const headers = ref([
-    { key: 'task', title: 'Reactant', align: 'center', },
+    { key: 'task', title: 'Reactant', align: 'center', width: "400px" },
     { key: 'smiles', title: 'Sites', align: 'center', },
-    { key: 'references', title: 'References', align: 'center', },
+    { key: 'references', title: 'References', align: 'center', width: "500px" },
 
 ])
 
-const filteredResults = computed(() => {  
-    if (!results.value) return [];
-    if (!resultsQuery.value) {
-        return results.value;  
-    }
-    return results.value.filter(item => {
-        return item.columns.task.includes(resultsQuery.value);
-    });
-});
 
 </script>
