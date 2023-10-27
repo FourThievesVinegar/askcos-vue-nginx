@@ -15,7 +15,7 @@ export const commands = {
         params: ["smiles"]
     },
     retro: {
-        name: "Retro Synthesis",
+        name: "One-step Retrosynthesis",
         path: "/network",
         tab: "RP",
         params: ["smiles"]

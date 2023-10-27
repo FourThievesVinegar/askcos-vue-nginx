@@ -19,19 +19,30 @@
               significantly longer than expected if there are several other
               users on the site also performing computationally-expensive
               requests.
+              <br />
+              <br />
+              This work began under the DARPA Make-It program (ARO
+              W911NF-16-2-0023) and continues to be supported by the Machine
+              Learning for Pharmaceutical Discovery and Synthesis Consortium. The main
+              algorithms for Monte Carlo Tree Search used in the Tree Builder are
+              adapted from
+              <br />
+              <br />
+              <small> Segler, M. H. S., Preuss, M., & Waller, M. P. (2018).
+              Planning chemical syntheses with deep neural networks and symbolic AI.
+              Nature, 555(7698), 604–610.
+                <a href="https://doi.org/10.1038/nature25978">
+                  https://doi.org/10.1038/nature25978
+                </a>.
+              </small>
+              <br />
+              <br />
+              The other deployed models are described in their respective pages where
+              appropriate.
             </p>
             <v-expansion-panels class="mt-6 text-body-1" variant="popout">
-              <v-expansion-panel text="This work began under the DARPA Make-It program (ARO
-            W911NF-16-2-0023) and continues to be supported by the Machine
-            Learning for Pharmaceutical Discovery and Synthesis Consortium.
-            Several of the deployed models are described in publications listed
-            here." class="text-blue-darken-3">
-                <template v-slot:title><span><v-icon class="mr-1">mdi mdi-domain</v-icon><strong>Machine Learning for
-                      Pharmaceutical Discovery and
-                      Synthesis (MLPDS) Consortium</strong></span></template>
-              </v-expansion-panel>
               <v-expansion-panel text="If you have any questions or if any of the links/images appear
-            broken, please email mlpds_support@mit.edu." class="text-blue-darken-3">
+            broken, please email askcos_support@mit.edu." class="text-blue-darken-3">
                 <template v-slot:title><v-icon class="mr-1">mdi mdi-lifebuoy</v-icon><strong>Support</strong></template>
               </v-expansion-panel>
               <v-expansion-panel text='THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESSED OR IMPLIED
