@@ -10,7 +10,7 @@
             <h2 class="my-1">Welcome</h2>
 
             <v-divider></v-divider>
-            <p class="mt-6 text-body-1">
+            <p class="mt-6 mb-3 px-3 text-body-1">
               Here, we have hosted a number of computational tools to assist in
               synthetic planning and other aspects of organic chemistry. These
               are listed and described in the Modules tab in the top navigation
@@ -39,6 +39,9 @@
               <br />
               The other deployed models are described in their respective pages where
               appropriate.
+            </p>
+            <p class="px-3 text-body-1">
+              The development of ASKCOS has been supported by the DARPA Make-It program (ARO W911NF-16-2-0023), the <a href="http://mlpds.mit.edu" target="_blank">Machine Learning for Pharmaceutical Discovery and Synthesis Consortium</a>, and the National Institutes of Health (1U18TR004149-01).
             </p>
             <v-expansion-panels class="mt-6 text-body-1" variant="popout">
               <v-expansion-panel text="If you have any questions or if any of the links/images appear

@@ -131,21 +131,24 @@
           <v-window-item value="forward">
             <SynthesisPrediction value="forward" rounded="lg" :results="forwardResults" :models="forwardModel"
               :pending="pendingTasks" @download-forward="downloadForwardResults" @go-to-impurities="goToImpurity"
-              :filename.sync="forwardFileName" @update:filename="forwardUpdateFilename" @go-to-selectivity="goToSelectivity"/>
+              :filename.sync="forwardFileName" @update:filename="forwardUpdateFilename"
+              @go-to-selectivity="goToSelectivity" />
           </v-window-item>
           <v-window-item value="impurity">
             <ImpurityPrediction value="impurity" rounded="lg" :results="impurityResults" :pending="pendingTasks"
-            :filename.sync="impurityFileName" @update:filename="impurityUpdateFilename" 
-              :progress="impurityProgress" @download-impurity="downloadImpurityResults" />
+              :filename.sync="impurityFileName" @update:filename="impurityUpdateFilename" :progress="impurityProgress"
+              @download-impurity="downloadImpurityResults" />
           </v-window-item>
           <v-window-item value="selectivity">
             <Regioselectivity value="selectivity" rounded="lg" :results="selectivityResults" :pending="pendingTasks"
-            :filename.sync="selectivityFileName" @update:filename="selectivityUpdateFileName" 
+              :filename.sync="selectivityFileName" @update:filename="selectivityUpdateFileName"
               @download-selectivity="downloadSelectivityResults" />
           </v-window-item>
           <v-window-item value="sites">
-            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" :resultsQuery="siteResultsQuery"
-              :reactingAtoms="reactingAtoms" :pending="pendingTasks" />
+            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" ref="sitesSelectivityRef"
+              :reactingAtoms="reactingAtoms" :pending="pendingTasks" @get-sites-refs="getSitesRefs"
+              @download-sites-refs="downloadSitesRefs" @copy-to-clipboard="copyToClipboard"
+             />
           </v-window-item>
         </v-window>
       </v-col>
@@ -279,7 +282,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch, reactive } from 'vue'
+import { ref, onMounted, computed, watch, reactive, nextTick } from 'vue'
 import { useRouter, useRoute } from "vue-router";
 import { API } from "@/common/api";
 import KetcherModal from "@/components/KetcherModal";
@@ -292,7 +295,8 @@ import SiteSelectivity from "@/views/forward/tab/SiteSelectivity.vue"
 import { saveAs } from 'file-saver';
 import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
 import KetcherMin from "@/components/KetcherMin.vue";
-import { createReaxysQuery, createReaxysUrl } from "@/common/reaxys";
+import { createReaxysQuery } from "@/common/reaxys";
+import { copyToClipboard } from "@/common/utils";
 
 const route = useRoute();
 const router = useRouter();
@@ -305,7 +309,6 @@ const product = ref('');
 const reagents = ref('');
 const solvent = ref('');
 const contextResults = ref([]);
-
 const contextV2ModelType = ref('graph');
 const contextV2ModelVersion = ref('20191118');
 const forwardModel = ref('wldn5');
@@ -344,6 +347,23 @@ const ketcherMinRef = ref(null);
 const forwardFileName = ref('forward.csv');
 const impurityFileName = ref('impurity.csv');
 const selectivityFileName = ref('selectivity.csv');
+const sitesSelectivityRef = ref(null)
+
+const downloadSitesRefs = (result) => {
+  console.log(result.references)
+  let blob = new Blob([createReaxysQuery(result.references)], { type: 'data:text/json;charset=utf-8' });
+  saveAs(blob, 'reaxys_query.json');
+}
+
+const getSitesRefs = async (index) => {
+  try {
+    const response = await API.get(`/api/selectivity/refs/${index}`);
+    siteResults.value[index].references = response.references;
+    console.log(siteResults.value[index].references)
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 const forwardUpdateFilename = (newFilename) => {
   forwardFileName.value = newFilename;
@@ -432,7 +452,7 @@ const evaluateIndex = async (index) => {
 
   contextResults[index].evaluating = true;
 
-   let reagents = contextResults[index]['reagent'];
+  let reagents = contextResults[index]['reagent'];
   if (contextResults.value[index].catalyst) {
     if (reagents) {
       reagents += '.';
@@ -1061,7 +1081,8 @@ const sitesPredict = () => {
   API.runCeleryTask('/api/legacy/selectivity/', postData)
     .then(output => {
       siteResults.value = output
-      ketcherMinRef.value.setSmiles(reactants.value);
+      console.log(sitesSelectivityRef.ketcherMinRef)
+      sitesSelectivityRef.ketcherMinRef.setSmiles(reactants.value);
       console.log(siteResults.value)
     })
     .finally(() => {
