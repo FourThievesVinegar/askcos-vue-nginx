@@ -13,12 +13,12 @@
                     <v-text-field label="Filter Reactants" density="comfortable" variant="outlined" hide-details clearable
                         placeholder="Filter reactants based on substring match to SMILES." v-model="resultsQuery"
                         @input="filterResult"></v-text-field>
-                </v-col>
+                        <ketcher-min ref="ketcherMinRef" @change="siteSelectedAtoms = $event"></ketcher-min>
+                    </v-col>
             </v-row>
 
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" class="my-3"
                 :items-per-page="5" height="600px">
-                <!-- <ketcher-min ref="ketcher-min" @change="siteSelectedAtoms = $event"></ketcher-min> -->
                 <template v-slot:item.task="{ item }">
                     <smiles-image :smiles="item.columns.task" max-height="120px"></smiles-image>
                 </template>
@@ -88,7 +88,8 @@ import { createReaxysUrl } from "@/common/reaxys";
 const panel = ref([0])
 const disabled = ref(false)
 const resultsQuery = ref('')
-
+// const sitesSelectivityRef = ref(null)
+const ketcherMinRef = ref(null)
 
 const { results, pending } = defineProps({
     results: {
