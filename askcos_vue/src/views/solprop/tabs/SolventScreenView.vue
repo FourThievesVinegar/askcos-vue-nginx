@@ -1,5 +1,5 @@
 <template>
-   <v-container fluid>
+    <v-container fluid>
         <v-row class="justify-center align-center">
             <v-col cols="12" md="12">
                 <v-sheet>

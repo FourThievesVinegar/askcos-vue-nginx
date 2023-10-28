@@ -22,8 +22,7 @@
                     </div>
                     <div class="text-center">
                         <v-btn color="success" @click="runRetro()" :disabled="!target || !validSmiles">Submit</v-btn>
-                        <v-btn variant="plain" class="ml-2"
-                            :disabled="!target || !validSmiles">Advanced...</v-btn>
+                        <v-btn variant="plain" class="ml-2" :disabled="!target || !validSmiles">Advanced...</v-btn>
                     </div>
                 </v-sheet>
             </v-col>

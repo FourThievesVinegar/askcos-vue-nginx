@@ -22,7 +22,7 @@
       </v-row>
     </v-card-title>
     <div v-if="!loading">
-      <v-data-table :headers="headers" :items="data" :items-per-page="100" >
+      <v-data-table :headers="headers" :items="data" :items-per-page="100">
         <template #bottom></template>
       </v-data-table>
     </div>

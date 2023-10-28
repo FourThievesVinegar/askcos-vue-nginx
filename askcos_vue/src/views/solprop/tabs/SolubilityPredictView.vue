@@ -1,44 +1,45 @@
 <template>
   <v-container fluid style="min-height: calc(100vh-50px)">
-    <v-row class="justify-center" >
+    <v-row class="justify-center">
       <v-col cols="12" sm="8" md="10">
         <v-sheet elevation="2" class="pa-10">
-              <v-form @submit.prevent >
-                <v-row>
-                  <v-col>
-                    <v-text-field :rules="[v => !!v || 'Solute is required']" variant="outlined" label="Solute"
-                      v-model="solute" clearable></v-text-field>
-                    <div v-if="!!solute" class="my-3">
-                      <smiles-image :smiles="solute" height="100px"></smiles-image>
-                    </div>
-                  </v-col>
-                  <v-col>
-                    <v-text-field :rules="[v => !!v || 'Solvent is required']" variant="outlined" label="Solvent"
-                      v-model="solvent" clearable></v-text-field>
-                    <div v-if="!!solvent" class="my-3">
-                      <smiles-image :smiles="solvent" height="100px"></smiles-image>
-                    </div>
-                  </v-col>
-                  <v-col>
-                    <v-text-field :rules="[v => !!v || 'Temperature is required']" variant="outlined" label="Temperature"
-                      v-model="temperature" clearable></v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row align="center" justify-start>
-                  <v-col>
-                    <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict">Submit</v-btn>
-                    <!-- 
+          <v-form @submit.prevent>
+            <v-row>
+              <v-col>
+                <v-text-field :rules="[v => !!v || 'Solute is required']" variant="outlined" label="Solute"
+                  v-model="solute" clearable></v-text-field>
+                <div v-if="!!solute" class="my-3">
+                  <smiles-image :smiles="solute" height="100px"></smiles-image>
+                </div>
+              </v-col>
+              <v-col>
+                <v-text-field :rules="[v => !!v || 'Solvent is required']" variant="outlined" label="Solvent"
+                  v-model="solvent" clearable></v-text-field>
+                <div v-if="!!solvent" class="my-3">
+                  <smiles-image :smiles="solvent" height="100px"></smiles-image>
+                </div>
+              </v-col>
+              <v-col>
+                <v-text-field :rules="[v => !!v || 'Temperature is required']" variant="outlined" label="Temperature"
+                  v-model="temperature" clearable></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row align="center" justify-start>
+              <v-col>
+                <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict">Submit</v-btn>
+                <!-- 
                   <v-btn variant="tonal" class="mr-5" @click="clear()" :disabled="contextResults = [] && reactants === ''">
                     Clear
                   </v-btn> -->
-                  <v-btn type="submit" variant="flat" color="primary" class="mr-5" @click="showUploadModal=true">Upload</v-btn>
-                    <v-btn icon @click="dialog = !dialog">
-                      <v-icon>mdi-cog</v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-                <!-- <v-btn type="submit" block class="mt-4" color="success" @click="predict">Submit</v-btn> -->
-              </v-form>
+                <v-btn type="submit" variant="flat" color="primary" class="mr-5"
+                  @click="showUploadModal = true">Upload</v-btn>
+                <v-btn icon @click="dialog = !dialog">
+                  <v-icon>mdi-cog</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+            <!-- <v-btn type="submit" block class="mt-4" color="success" @click="predict">Submit</v-btn> -->
+          </v-form>
         </v-sheet>
       </v-col>
 
@@ -49,8 +50,8 @@
             <v-col md="5">
               <v-menu location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-btn v-show="!!results.length" @click="handleClick" :disabled="evaluating"
-                    height="30px" color="primary mr-2" v-bind="props" prepend-icon="mdi mdi-download">
+                  <v-btn v-show="!!results.length" @click="handleClick" :disabled="evaluating" height="30px"
+                    color="primary mr-2" v-bind="props" prepend-icon="mdi mdi-download">
                     Download
                   </v-btn>
                 </template>
@@ -82,7 +83,7 @@
       </v-col>
     </v-row>
 
-      <v-dialog v-model="showUploadModal" max-width="600px">
+    <v-dialog v-model="showUploadModal" max-width="600px">
       <v-card>
         <v-card-title class="mt-2">
           <v-col cols="12">Upload file</v-col>
@@ -91,7 +92,7 @@
           <v-row>
             <v-col cols="12" class="mb-2">
               <span>
-               See Model Input/Output Details for notes on file format.
+                See Model Input/Output Details for notes on file format.
               </span>
             </v-col>
           </v-row>

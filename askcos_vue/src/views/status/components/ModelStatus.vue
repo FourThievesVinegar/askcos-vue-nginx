@@ -22,7 +22,7 @@
       </v-row>
     </v-card-title>
     <div v-if="!loading">
-      <v-data-table :headers="headers" :items="data" :items-per-page="100" >
+      <v-data-table :headers="headers" :items="data" :items-per-page="100">
         <template v-slot:item.ready="{ item }">
           <v-icon :color="item.ready ? 'error' : 'success'"
             :icon="item.ready ? 'mdi-alert-circle' : 'mdi-check-circle'" />

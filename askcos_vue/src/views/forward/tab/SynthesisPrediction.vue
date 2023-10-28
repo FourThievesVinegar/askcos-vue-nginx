@@ -7,8 +7,7 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn variant="flat" v-show="!!results.length" @click="dialog=true" height="30px"
-                        color="primary mx-2">
+                    <v-btn variant="flat" v-show="!!results.length" @click="dialog = true" height="30px" color="primary mx-2">
                         Export
                     </v-btn>
                 </v-col>
@@ -81,9 +80,9 @@
                 <v-card>
                     <v-card-title class="headline">Export Results</v-card-title>
                     <v-card-text>
-                     <v-text-field v-model="filename" @input="updateFilename($event.target.value)"
-                     density="comfortable" variant="outlined" placeholder="Filename" hide-details clearable type="string" ></v-text-field>
-                     </v-card-text>
+                        <v-text-field v-model="filename" @input="updateFilename($event.target.value)" density="comfortable"
+                            variant="outlined" placeholder="Filename" hide-details clearable type="string"></v-text-field>
+                    </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn color="red darken-1" text @click="dialog = false">Cancel</v-btn>
@@ -136,7 +135,7 @@ const emits = defineEmits()
 
 const emitDownloadForward = () => {
     emits('download-forward'),
-    dialog.value=false
+        dialog.value = false
 }
 
 const emitGoToImpurity = (index) => {
@@ -148,7 +147,7 @@ const goToSelectivity = (index) => {
 }
 
 const updateFilename = (newFilename) => {
-    emits('update:filename', newFilename); 
+    emits('update:filename', newFilename);
     console.log(filename)
 };
 

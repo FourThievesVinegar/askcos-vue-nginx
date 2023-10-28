@@ -13,8 +13,8 @@
                     <v-text-field label="Filter Reactants" density="comfortable" variant="outlined" hide-details clearable
                         placeholder="Filter reactants based on substring match to SMILES." v-model="resultsQuery"
                         @input="filterResult"></v-text-field>
-                        <ketcher-min ref="ketcherMinRef" @change="siteSelectedAtoms = $event"></ketcher-min>
-                    </v-col>
+                    <ketcher-min ref="ketcherMinRef" @change="siteSelectedAtoms = $event"></ketcher-min>
+                </v-col>
             </v-row>
 
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" class="my-3"

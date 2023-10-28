@@ -34,8 +34,9 @@
               <v-tab>Reactions</v-tab>
             </v-tabs>
             <v-sheet width="100%" class="pa-6">
-              <v-select  v-if="tabItems.length || filterActive !== 'all'" v-model="filterActive" :items="filterOptions" item-text="title" item-value="key" label="Filter by status" density="comfortable" variant="outlined" hide-details
-                              clearable></v-select>
+              <v-select v-if="tabItems.length || filterActive !== 'all'" v-model="filterActive" :items="filterOptions"
+                item-text="title" item-value="key" label="Filter by status" density="comfortable" variant="outlined"
+                hide-details clearable></v-select>
               <v-row v-if="tabItems.length">
                 <v-col cols="12">
                   <v-data-table :headers="headers" :items="tabItems" :items-per-page="10" height="400px">
@@ -63,12 +64,12 @@
                   <div v-if="filterActive == 'all'" class="text-center">
                     <v-img :width="400" cover :src="banlist"></v-img>
                     <h2 class="mt-6">No Ban Items</h2>
-                    <p class="text-body-1"  >Please check back later</p>
+                    <p class="text-body-1">Please check back later</p>
                   </div>
-                   <div v-else class="text-center">
-                      <v-img :width="400" cover :src="banlist"></v-img>
-                      <h2 class="mt-6">No Ban Items</h2>
-                    </div>
+                  <div v-else class="text-center">
+                    <v-img :width="400" cover :src="banlist"></v-img>
+                    <h2 class="mt-6">No Ban Items</h2>
+                  </div>
                 </v-col>
               </v-row>
             </v-sheet>
@@ -113,7 +114,7 @@
 
 <script setup>
 import banlist from "@/assets/banlist.svg";
-import { ref, computed, onMounted, nextTick, watch } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import SmilesImage from "@/components/SmilesImage.vue";
 import CopyTooltip from "@/components/CopyTooltip";
 import { API } from "@/common/api";
@@ -167,8 +168,8 @@ onMounted(() => {
 
 
 const tabItems = computed(() => {
-let items = activeTab.value === 0 ? chemicals.value : reactions.value;
- console.log(items)
+  let items = activeTab.value === 0 ? chemicals.value : reactions.value;
+  console.log(items)
   switch (filterActive.value) {
     case 'active':
       return items.filter(item => item.active === true);

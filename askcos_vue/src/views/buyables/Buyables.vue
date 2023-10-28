@@ -64,21 +64,19 @@
                     Select Sources
                   </v-btn>
                 </template>
-               <v-list>
-    <v-list-item 
-      v-for="source in buyablesSources" 
-      :key="source" 
-      v-model="searchSourceQuery"
-      @click="selectSource(source)">
+                <v-list>
+                  <v-list-item v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery"
+                    @click="selectSource(source)">
 
-      <v-row align="center">
-        <v-col cols="auto">
-          <v-list-item-title >{{ source }}<v-icon class="ml-1 mb-2" v-show="selectedSource === source" icon="mdi-check"></v-icon></v-list-item-title>
-        </v-col>
-      </v-row>
+                    <v-row align="center">
+                      <v-col cols="auto">
+                        <v-list-item-title>{{ source }}<v-icon class="ml-1 mb-2" v-show="selectedSource === source"
+                            icon="mdi-check"></v-icon></v-list-item-title>
+                      </v-col>
+                    </v-row>
 
-    </v-list-item>
-  </v-list>
+                  </v-list-item>
+                </v-list>
               </v-menu>
 
               <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">

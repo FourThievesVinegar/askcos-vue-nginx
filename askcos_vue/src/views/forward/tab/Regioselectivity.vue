@@ -7,7 +7,8 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn variant="flat" v-show="!!results.length" @click="dialog = true" height="30px" color="primary mx-2">
+                    <v-btn variant="flat" v-show="!!results.length" @click="dialog = true" height="30px"
+                        color="primary mx-2">
                         Export
                     </v-btn>
                 </v-col>
@@ -20,12 +21,12 @@
                         <span>{{ item.columns.smiles }}</span>
                     </v-tooltip>
                     <copy-tooltip :data="item.columns.smiles">
-                    <smiles-image :smiles="item.columns.smiles" max-height="125px"></smiles-image>
+                        <smiles-image :smiles="item.columns.smiles" max-height="125px"></smiles-image>
                     </copy-tooltip>
                 </template>
-                           <template #item.prob="{ item }">
-                        {{ item.columns.prob.toFixed(4) }}
-                    </template>
+                <template #item.prob="{ item }">
+                    {{ item.columns.prob.toFixed(4) }}
+                </template>
             </v-data-table>
 
             <v-skeleton-loader v-if="!!pending" class="mx-auto my-auto" min-height="80px" type="table">
@@ -53,19 +54,19 @@
                 </v-expansion-panels>
             </v-row>
             <v-dialog v-model="dialog" max-width="600px" persistent>
-                    <v-card>
-                        <v-card-title class="headline">Export Results</v-card-title>
-                        <v-card-text>
-                         <v-text-field v-model="filename" @input="updateFilename($event.target.value)"
-                         density="comfortable" variant="outlined" placeholder="Filename" hide-details clearable type="string" ></v-text-field>
-                         </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="red darken-1" text @click="dialog = false">Cancel</v-btn>
-                            <v-btn color="green darken-1" text @click="emitDownloadSelectivity">Save</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
+                <v-card>
+                    <v-card-title class="headline">Export Results</v-card-title>
+                    <v-card-text>
+                        <v-text-field v-model="filename" @input="updateFilename($event.target.value)" density="comfortable"
+                            variant="outlined" placeholder="Filename" hide-details clearable type="string"></v-text-field>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="red darken-1" text @click="dialog = false">Cancel</v-btn>
+                        <v-btn color="green darken-1" text @click="emitDownloadSelectivity">Save</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-sheet>
     </v-container>
 </template>

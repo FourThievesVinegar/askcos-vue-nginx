@@ -4,10 +4,10 @@
             <v-row align="center" justify="space-between" class="mx-auto my-auto">
                 <v-col>
                     <span><b>Condition Recommendation</b> </span>
-                     <p v-if="!!score">Reaction score: {{ score.toFixed(3) }}</p>
+                    <p v-if="!!score">Reaction score: {{ score.toFixed(3) }}</p>
                 </v-col>
                 <v-col>
-                   
+
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
