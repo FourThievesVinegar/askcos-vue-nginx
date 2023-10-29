@@ -44,7 +44,7 @@ class RetroGraph {
   }
 
   clear() {
-    this.nodes.clear('clear');
+    this.nodes.clear();
     this.edges.clear('clear');
     this._succ = {};
   }

@@ -695,9 +695,9 @@ export const useResultsStore = defineStore("results", {
         // Only add an edge if the target node is not already in the graph
         return this.dispGraph.edges.get(edge["id"]) === null;
       });
+
       this.updateDispNodes(
         newNodes.map((node) => {
-          console.log(node)
           let dataObj = this.dataGraph.nodes.get(node["smiles"]);
           if (node.type === "chemical") {
             return makeChemicalDisplayNode({
@@ -1062,16 +1062,10 @@ export const useResultsStore = defineStore("results", {
       });
     },
     clearDataGraph() {
-      this.$patch((state) => {
-        state.dataGraph.clear();
-        state.recomputeData += 1;
-      });
+      this.dataGraph.clear();
     },
     clearDispGraph() {
-      this.$patch((state) => {
-        state.dispGraph.clear();
-        state.recomputeDisp += 1;
-      });
+      this.dispGraph.clear();
     },
     clearRemovedReactions() {
       this.removedReactions = {};

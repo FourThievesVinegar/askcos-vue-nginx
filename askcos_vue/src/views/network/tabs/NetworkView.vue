@@ -142,7 +142,7 @@
           </template>
 
           <v-list>
-            <v-list-item>My PC</v-list-item>
+            <v-list-item @click="showDownloadNetwork = true">My PC</v-list-item>
             <v-list-item @click="resultDialogVisible = true">My Account</v-list-item>
           </v-list>
         </v-menu>
@@ -239,13 +239,29 @@
       <v-card-title>Load Network JSON</v-card-title>
       <v-divider></v-divider>
       <v-card-text>
-        <v-file-input label="File input" variant="outlined"></v-file-input>
+        <v-file-input label="File input" variant="outlined" v-model="uploadFile"></v-file-input>
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="primary" @click="showImportNetwork = false">Cancel</v-btn>
         <v-btn color="primary" @click="() => { showImportNetwork = false; load() }">Load</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="showDownloadNetwork" width="auto" min-width="500px">
+    <v-card>
+      <v-card-title>Save Network JSON</v-card-title>
+      <v-divider></v-divider>
+      <v-card-text>
+        <v-text-field label="File Name" variant="outlined" hide-details density="compact" v-model="downloadName"></v-text-field>
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" @click="showDownloadNetwork = false">Cancel</v-btn>
+        <v-btn color="primary" @click="() => { showDownloadNetwork = false; download() }">Save</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -275,6 +291,7 @@ import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
 import NodeDetail from "@/components/network/NodeDetail";
 import SettingsModal from "@/components/network/SettingsModal";
 import { interpolateHexColor } from "@/common/color";
+import { saveAs } from "file-saver";
 // import { tbSettingsJsToApi } from "@/common/tb-settings";
 
 const BG_OPACITY = 0.2; // Background opacity
@@ -319,6 +336,7 @@ export default {
       showSaveModal: false,
       showEnumeratePaths: false,
       showImportNetwork: false,
+      showDownloadNetwork: false,
       downloadName: "network.json",
       tb: {
         modes: TB_PRESETS,
@@ -760,11 +778,13 @@ export default {
         })
         .then((smiles) => this.canonicalize(smiles, "target"))
         .then(() => {
-          //   this.saveTarget();
+            this.saveTarget();
           if (this.resultsStore.target !== undefined) {
             this.resultsStore.clearDataGraph();
             this.resultsStore.clearDispGraph();
             this.resultsStore.clearRemovedReactions();
+            console.log(this.resultsStore.dataGraph)
+            console.log(this.resultsStore.dispGraph)
             return this.initTargetDataNode()
               .then(this.initTargetDispNode)
               .then(this.resultsStore.expand);
@@ -943,8 +963,9 @@ export default {
       this.pendingTasks += 1;
       this.isCanvasEmpty = false;
       this.visible = false;
-      let reader = new FileReader();
-      reader.readAsText(this.uploadFile);
+      let reader = new FileReader(); 
+      console.log(this.uploadFile)
+      reader.readAsText(this.uploadFile[0]);
       reader.onload = (e) => {
         let data = JSON.parse(e.target.result);
         if (data.version === 1.0) {
@@ -1063,8 +1084,8 @@ export default {
     importDataV1(data) {
       // Parse data format version 1.0
       // Top level properties should be dataGraph, dispGraph, and version
-      this.importDataJSON(data.dataGraph);
-      this.importDispJSON(data.dispGraph);
+      this.resultsStore.importDataJSON(data.dataGraph);
+      this.resultsStore.importDispJSON(data.dispGraph);
       this.resultsStore.target =
         this.resultsStore.dispGraph.nodes.get(NIL_UUID).smiles;
       if (this.hasUndefinedClusterId()) {
