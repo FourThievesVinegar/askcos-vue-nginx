@@ -156,7 +156,6 @@
                     <v-btn variant="tonal" @click="addTreeToIpp(currentTree)"> Add to IPP </v-btn>
                 </div>
                 <v-sheet class="position-relative elevation-2">
-
                     <div id="graph"></div>
                     <div v-if="currentTreeData" id="tree-data-overlay">
                         <table>
@@ -174,10 +173,10 @@
     <!-- <div>
       <div class="row mb-3">
         <div id="tree-view-left" class="col-xl-2 border-right overflow-auto" style="height: calc(100vh - 14rem)">
-          <b-button-toolbar class="flex-gap-2">
-            <b-button v-b-modal.result-info-modal class="flex-grow-1" variant="info">Result Info</b-button>
-            <b-button class="flex-grow-1" variant="primary" @click="showListView = true">Open List View</b-button>
-          </b-button-toolbar>
+          <v-btn-toolbar class="flex-gap-2">
+            <v-btn v-b-modal.result-info-modal class="flex-grow-1" variant="info">Result Info</v-btn>
+            <v-btn class="flex-grow-1" variant="primary" @click="showListView = true">Open List View</v-btn>
+          </v-btn-toolbar>
           <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4">
             <h4>Add results to IPP network</h4>
             <p>
@@ -194,7 +193,7 @@
                 </b-input-group-prepend>
                 <b-input class="text-center" v-model="numTreesInput"></b-input>
               </b-input-group>
-              <b-button class="flex-grow-1" variant="outline-dark" type="submit">Add</b-button>
+              <v-btn class="flex-grow-1" variant="outline-dark" type="submit">Add</v-btn>
             </b-form>
             <p class="mt-3">
               Add by depth
@@ -216,28 +215,28 @@
                 </b-input-group-prepend>
                 <b-input class="text-center" v-model="maxNumInput"></b-input>
               </b-input-group>
-              <b-button class="flex-grow-1" variant="outline-dark" type="submit">Add</b-button>
+              <v-btn class="flex-grow-1" variant="outline-dark" type="submit">Add</v-btn>
             </b-form>
           </div>
           <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4">
             <h4>Analyze trees</h4>
-            <b-button block @click="runPathwayRanking()">Run pathway ranking</b-button>
-            <b-button block @click="runReactionClassification()">Run reaction classification</b-button>
-            <b-button block @click="runGraphOptimization()">Find optimal pathway</b-button>
-            <b-button-group class="w-100 mt-2">
-              <b-button @click="runPmiCalculation()" disabled>Run PMI calculation</b-button>
+            <v-btn block @click="runPathwayRanking()">Run pathway ranking</v-btn>
+            <v-btn block @click="runReactionClassification()">Run reaction classification</v-btn>
+            <v-btn block @click="runGraphOptimization()">Find optimal pathway</v-btn>
+            <v-btn-group class="w-100 mt-2">
+              <v-btn @click="runPmiCalculation()" disabled>Run PMI calculation</v-btn>
               <b-dropdown right>
                 <b-dropdown-item @click="runPmiCalculation(true)">For this tree only</b-dropdown-item>
                 <b-dropdown-item @click="runPmiCalculation()">For all trees</b-dropdown-item>
               </b-dropdown>
-            </b-button-group>
-            <b-button-group class="w-100 mt-2">
-              <b-button @click="runAnalogCounting()" disabled>Count analogs</b-button>
+            </v-btn-group>
+            <v-btn-group class="w-100 mt-2">
+              <v-btn @click="runAnalogCounting()" disabled>Count analogs</v-btn>
               <b-dropdown right>
                 <b-dropdown-item @click="runAnalogCounting(true)">For this tree only</b-dropdown-item>
                 <b-dropdown-item @click="runAnalogCounting()">For all trees</b-dropdown-item>
               </b-dropdown>
-            </b-button-group>
+            </v-btn-group>
           </div>
           <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4">
             <h4>Cluster trees</h4>
@@ -262,11 +261,11 @@
                   </b-input-group-text>
                 </b-input-group-append>
               </b-input-group>
-              <b-button variant="link" class="text-danger px-0" @click="deleteSortField(index)">
+              <v-btn variant="link" class="text-danger px-0" @click="deleteSortField(index)">
                 <i class="fas fa-times"></i>
-              </b-button>
+              </v-btn>
             </div>
-            <b-button variant="link" class="px-0" @click="addSortField"> Add sort field <i class="fas fa-plus"></i> </b-button>
+            <v-btn variant="link" class="px-0" @click="addSortField"> Add sort field <i class="fas fa-plus"></i> </v-btn>
           </div>
           <div class="mt-4">
             <h4>Filter trees</h4>
@@ -316,29 +315,29 @@
             <div class="btn-toolbar justify-content-center flex-gap-2 mb-3">
               <b-input-group>
                 <b-input-group-prepend>
-                  <b-button variant="outline-dark" @click="changeClusterId('first')" :disabled="!cluster">&laquo; First</b-button>
-                  <b-button variant="outline-dark" @click="changeClusterId('prev')" :disabled="!cluster">&lsaquo; Previous</b-button>
+                  <v-btn variant="outline-dark" @click="changeClusterId('first')" :disabled="!cluster">&laquo; First</v-btn>
+                  <v-btn variant="outline-dark" @click="changeClusterId('prev')" :disabled="!cluster">&lsaquo; Previous</v-btn>
                 </b-input-group-prepend>
                 <b-input-group-text class="justify-content-center" style="width: 8rem">
                   {{ !cluster ? "Cluster N/A" : currentClusterId === -1 ? "Unclustered" : `Cluster ${currentClusterId + 1} of ${maxClusterId + 1}` }}
                 </b-input-group-text>
                 <b-input-group-append>
-                  <b-button variant="outline-dark" @click="changeClusterId('next')" :disabled="!cluster">Next &rsaquo;</b-button>
-                  <b-button variant="outline-dark" @click="changeClusterId('last')" :disabled="!cluster">Last &raquo;</b-button>
+                  <v-btn variant="outline-dark" @click="changeClusterId('next')" :disabled="!cluster">Next &rsaquo;</v-btn>
+                  <v-btn variant="outline-dark" @click="changeClusterId('last')" :disabled="!cluster">Last &raquo;</v-btn>
                 </b-input-group-append>
               </b-input-group>
               <b-input-group>
                 <b-input-group-prepend>
-                  <b-button variant="outline-dark" @click="changeTreeId('first')">&laquo; First</b-button>
-                  <b-button variant="outline-dark" @click="changeTreeId('prev')">&lsaquo; Previous</b-button>
+                  <v-btn variant="outline-dark" @click="changeTreeId('first')">&laquo; First</v-btn>
+                  <v-btn variant="outline-dark" @click="changeTreeId('prev')">&lsaquo; Previous</v-btn>
                 </b-input-group-prepend>
                 <b-input-group-text class="justify-content-center" style="width: 8rem"> Tree {{ currentTreeId + 1 }} of {{ trees.length }} </b-input-group-text>
                 <b-input-group-append>
-                  <b-button variant="outline-dark" @click="changeTreeId('next')">Next &rsaquo;</b-button>
-                  <b-button variant="outline-dark" @click="changeTreeId('last')">Last &raquo;</b-button>
+                  <v-btn variant="outline-dark" @click="changeTreeId('next')">Next &rsaquo;</v-btn>
+                  <v-btn variant="outline-dark" @click="changeTreeId('last')">Last &raquo;</v-btn>
                 </b-input-group-append>
               </b-input-group>
-              <b-button v-b-tooltip title="Add the current tree to the IPP network visualization" variant="outline-dark" @click="addTreeToIpp(currentTree)"> Add to IPP </b-button>
+              <v-btn v-b-tooltip title="Add the current tree to the IPP network visualization" variant="outline-dark" @click="addTreeToIpp(currentTree)"> Add to IPP </v-btn>
             </div>
           </div>
           <div class="position-relative">
@@ -390,8 +389,8 @@
               <smiles-image class="my-3" :smiles="selected.smiles"></smiles-image>
             </div>
             <div class="text-center my-3">
-              <b-button size="sm" variant="outline-secondary" :href="'/retro/network/?target=' + encodeURIComponent(selected.smiles)" target="_blank"
-                >Synthesize this with the Interactive Path Planner</b-button
+              <v-btn size="sm" variant="outline-secondary" :href="'/retro/network/?target=' + encodeURIComponent(selected.smiles)" target="_blank"
+                >Synthesize this with the Interactive Path Planner</v-btn
               >
             </div>
             <table class="table table-sm table-striped table-borderless">
@@ -423,7 +422,7 @@
               <smiles-image class="my-3" :smiles="selected.smiles" :align="settingsStore.ippSettings.alignPrecursorsToProduct"></smiles-image>
             </div>
             <div class="text-center my-3">
-              <b-button size="sm" variant="outline-secondary" :href="'/smynth_interactive/?mode=context&rxnsiles=' + encodeURIComponent(selected.smiles)" target="_blank">Evaluate reaction</b-button>
+              <v-btn size="sm" variant="outline-secondary" :href="'/smynth_interactive/?mode=context&rxnsiles=' + encodeURIComponent(selected.smiles)" target="_blank">Evaluate reaction</v-btn>
             </div>
             <table class="table table-sm table-striped table-borderless">
               <tbody>
@@ -476,11 +475,11 @@
         <div class="m-3">
           <b-pagination v-model="treeListCurrentPage" :total-rows="trees.length" :per-page="treeListItemsPerPage" align="center" class="mb-3"></b-pagination>
           <div v-for="(tree, index) in treeListItems" :key="index" class="mb-3">
-            <b-button-toolbar class="justify-content-between">
-              <b-button v-b-toggle:[`tree-collapse-${index}`] size="sm" variant="primary"> Tree {{ (treeListCurrentPage - 1) * treeListItemsPerPage + index + 1 }} </b-button>
-              <b-button-group class="float-right">
-                <b-button size="sm" variant="outline-dark" @click="addTreeToIpp(trees[(treeListCurrentPage - 1) * treeListItemsPerPage + index])"> Add to IPP </b-button>
-                <b-button
+            <v-btn-toolbar class="justify-content-between">
+              <v-btn v-b-toggle:[`tree-collapse-${index}`] size="sm" variant="primary"> Tree {{ (treeListCurrentPage - 1) * treeListItemsPerPage + index + 1 }} </v-btn>
+              <v-btn-group class="float-right">
+                <v-btn size="sm" variant="outline-dark" @click="addTreeToIpp(trees[(treeListCurrentPage - 1) * treeListItemsPerPage + index])"> Add to IPP </v-btn>
+                <v-btn
                   size="sm"
                   variant="outline-dark"
                   @click="
@@ -488,9 +487,9 @@
                     currentTreeId = (treeListCurrentPage - 1) * treeListItemsPerPage + index;
                   ">
                   View in main window
-                </b-button>
-              </b-button-group>
-            </b-button-toolbar>
+                </v-btn>
+              </v-btn-group>
+            </v-btn-toolbar>
             <b-collapse :id="`tree-collapse-${index}`" class="mt-2" visible>
               <div :id="`treeList-${index}`" class="list-view-tree"></div>
             </b-collapse>

@@ -17,6 +17,8 @@
     "file-saver": "^2.0.5",
     "js-cookie": "^3.0.5",
     "jspanel4": "^4.16.1",
+    "oidc-client": "^1.11.5",
+    "papaparse": "^5.3.1",
     "pinia": "^2.0.0",
     "roboto-fontface": "*",
     "three": "^0.155.0",
@@ -30,8 +32,7 @@
     "vue-timeago3": "^2.3.1",
     "vuetify": "^3.0.0",
     "vuetify-use-dialog": "^0.6.2",
-    "webfontloader": "^1.0.0",
-    "papaparse": "^5.3.1"
+    "webfontloader": "^1.0.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.22.10",
