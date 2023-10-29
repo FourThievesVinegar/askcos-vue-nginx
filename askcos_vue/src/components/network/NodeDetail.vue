@@ -38,12 +38,12 @@
               </v-switch>
             </div>
             <div id="chemical-node-toolbar" class="d-flex justify-center flex-gap-2 flex-wrap m-2">
-              <v-btn id="expand-btn-side" variant="success" @click="expandNode"> Expand Node </v-btn>
-              <v-btn data-cy="network-view_button_view-notes" id="notes" variant="outline-success"
+              <v-btn id="expand-btn-side" variant="outlined" @click="expandNode"> Expand Node </v-btn>
+              <v-btn data-cy="network-view_button_view-notes" id="notes" variant="outlined"
                 @click="dispNotes = !dispNotes"> View Notes </v-btn>
-              <v-btn id="add-precursor-btn" variant="outline-success" @click="openAddNewPrecursorModal()"> Add Precursor
+              <v-btn id="add-precursor-btn" variant="outlined" @click="openAddNewPrecursorModal()"> Add Precursor
               </v-btn>
-              <v-btn id="view-rec-templates-btn" v-b-modal.rec-templates-modal variant="outline-primary"> View Recommended
+              <v-btn id="view-rec-templates-btn" v-b-modal.rec-templates-modal variant="outlined"> View Recommended
                 Templates </v-btn>
               <ban-button id="ban-chemical-btn" :smiles="selected.smiles" :type="selected.type"></ban-button>
               <v-select :items="sortingCategoryItems" label="Sort By" style="width: 100%" class="px-2" hide-details
@@ -148,14 +148,14 @@
               </div>
             </div>
             <div v-else class="scroll-list">
-              <div v-for="res in currentPrecursors" :key="res.rank">
-                <v-card no-body class="custom-shadow text-center m-2 p-2">
+              <div v-for="res in currentPrecursors" :key="res.rank" class="my-2 mx-2">
+                <v-card no-body class="custom-shadow text-center py-2 px-2">
                   <v-row class="justify-center align-center">
                     <v-col>
                       <v-img :src="getMolDrawEndPoint(res, true)" fluid></v-img>
                     </v-col>
                     <v-col>
-                      <table class="table table-sm table-bordered m-0">
+                      <table class="table table-sm table-border m-0">
                         <tbody>
                           <tr>
                             <td>Rank</td>
@@ -584,50 +584,36 @@
             <v-btn variant="outline-secondary" @click="close()">Close</v-btn>
           </div>
         </template>
-      </b-modal>
-  
-      <b-modal title="Add Precursor" centered v-model="showAddNewPrecursorModal" @close="closeAddNewPrecursorModal">
-        <b-form-group label-cols="4" label="Precursor">
-          <b-input-group>
-            <b-input v-model="addNewPrecursorModal['newPrecursorSmiles']"></b-input>
-            <b-input-group-append v-if="enableResolver">
-              <b-input-group-text @click="toggleResolver" role="button">
-                <i
-                  v-if="allowResolve"
-                  v-b-tooltip
-                  style="color: darkgreen"
-                  class="fas fa-server"
-                  title="Connection to NIH name resolver is ON, structures may be sent to an external service. This can be turned off in the settings menu, or by clicking this icon."></i>
-                <i
-                  v-else
-                  v-b-tooltip
-                  style="color: darkred"
-                  class="fas fa-server"
-                  title="Connection to NIH name resolver is OFF, structures will NOT be sent to an external service. Target query must be a SMILES string. This can be turned on in the settings menu, or by clicking this icon."></i>
-              </b-input-group-text>
-            </b-input-group-append>
-          </b-input-group>
-        </b-form-group>
-        <b-form-group label-cols="4" label="Group">
+      </b-modal>  -->
+    <v-dialog v-model="showAddNewPrecursorModal" width="auto" min-width="500px">
+      <v-card>
+        <v-card-title>Add Precursor</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <!-- ADD NIH Resolver -->
+          <v-text-field label="Precursor" variant="outlined" hide-details density="compact"
+            v-model="addNewPrecursorModal['newPrecursorSmiles']" class="mb-2"></v-text-field>
+          <label for="precursorCluster">Cluster Number: </label>
           <select id="precursorCluster" v-model.number="addNewPrecursorModal['clusterId']" class="form-control">
             <option value="-1">Create new cluster</option>
-            <option v-for="idx in resultsStore.clusteredResultsIndex[addNewPrecursorModal['selectedSmiles']]" :value="idx" :key="idx">
+            <option v-for="idx in resultsStore.clusteredResultsIndex[addNewPrecursorModal['selectedSmiles']]" :value="idx"
+              :key="idx">
               {{ addNewPrecursorModalName(idx) }}
             </option>
           </select>
-        </b-form-group>
-        <b-form-group v-show="addNewPrecursorModal['clusterId'] === -1" label-cols="4" label="Cluster Name">
-          <b-input v-model="addNewPrecursorModal['newClusterName']"></b-input>
-        </b-form-group>
-        <b-form-group label-cols="4" label="No duplicate check" label-sr-only>
-          <b-checkbox v-model="addNewPrecursorModal['noDupCheck']">No duplicate check</b-checkbox>
-        </b-form-group>
-  
-        <template #modal-footer>
-          <v-btn variant="secondary" @click="closeAddNewPrecursorModal()">Cancel</v-btn>
-          <v-btn variant="success" @click="addNewPrecursorModalSubmit()">Add Precursor</v-btn>
-        </template>
-      </b-modal> -->
+
+          <v-text-field v-if="addNewPrecursorModal['clusterId'] === -1" label="Cluster Name" variant="outlined"
+            hide-details density="compact" v-model="addNewPrecursorModal['newClusterName']" class="mt-2"></v-text-field>
+          <v-checkbox v-model="addNewPrecursorModal['noDupCheck']" label="No Duplicate check" hide-details></v-checkbox>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" @click="closeAddNewPrecursorModal()">Cancel</v-btn>
+          <v-btn color="primary" @click="addNewPrecursorModalSubmit()">Add Precursor</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
   
@@ -1451,6 +1437,13 @@ export default {
 </script>
   
 <style>
+table,
+th,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
 .scroll-list {
   max-height: 55vh;
   overflow-y: scroll;
