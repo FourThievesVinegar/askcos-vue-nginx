@@ -42,7 +42,6 @@ function makeNodeTitleEl(node) {
 function makeChemicalDisplayNode({
   id, data, target, align = false, scale = true,
 }) {
-  console.log(data)
   return {
     id,
     smiles: data.id,
@@ -58,7 +57,7 @@ function makeChemicalDisplayNode({
 }
 
 function makeReactionDisplayNode({ id, data, detail = false }) {
-  const node = {
+    const node = {
     id,
     smiles: data.id,
     label: `#${data.rank}`,

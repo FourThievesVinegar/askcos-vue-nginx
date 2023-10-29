@@ -225,13 +225,13 @@ export const useResultsStore = defineStore("results", {
       });
       this.setTarget(this.dispGraph.nodes.get(NIL_UUID)["smiles"]);
       // Retrieve template example count and template set metadata
-      // let templates = [];
-      // this.dataGraph.nodes
-      //   .get({ filter: isReaction })
-      //   .forEach((n) => templates.push(...n["templateIds"]));
+      let templates = [];
+      this.dataGraph.nodes
+        .get({ filter: isReaction })
+        .forEach((n) => templates.push(...n["templateIds"]));
       let promises = [];
-      // promises.push(this.apiTemplateCount(templates));
-      // promises.push(this.apiTemplateSet(templates));
+      promises.push(this.apiTemplateCount(templates));
+      promises.push(this.apiTemplateSet(templates));
       return Promise.all(promises);
     },
     importTreeBuilderResult({ data, numTrees }) {
@@ -422,9 +422,7 @@ export const useResultsStore = defineStore("results", {
           let node = {
             id: reactionSmiles,
             model: reaction["retro_backend"],
-            ...(reaction["retro_backend"] !== "template_relevance" && {
-              trainingSet: reaction["retro_model_name"],
-            }),
+            trainingSet: reaction["retro_model_name"],
             rank: reaction["rank"],
             ffScore: reaction["plausibility"],
             retroScore: reaction["score"],
@@ -453,9 +451,9 @@ export const useResultsStore = defineStore("results", {
             templateIds.push(...node.templateIds);
           }
 
-          if ("outcomes" in reaction) {
-            node["outcomes"] = reaction["outcomes"].split(".");
-            node["selectivity"] = new Array(node.outcomes.length);
+          if ("outcome" in reaction) {
+            node["outcome"] = reaction["outcome"].split(".");
+            node["selectivity"] = new Array(node.outcome.length);
             node["mappedPrecursors"] = reaction["mapped_precursors"];
             node["mappedOutcomes"] = reaction["mapped_outcomes"];
           } else if ("selec_error" in reaction) {
@@ -763,6 +761,7 @@ export const useResultsStore = defineStore("results", {
               type: node["type"],
             };
           } else {
+            console.log(node)
             if (node["tforms"]) {
               templateIds.push(...node["tforms"]);
             }
