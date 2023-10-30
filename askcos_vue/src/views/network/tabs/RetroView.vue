@@ -7,7 +7,10 @@
                         density="compact" variant="outlined" label="Target" placeholder="SMILES" type="text" clearable
                         hide-details class="target-input">
                         <template v-slot:append-inner>
-                            <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil">Draw</v-btn>
+                            <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil" @click="() => {
+                                showKetcher = true;
+                                ketcherRef.smilesToKetcher();
+                            }">Draw</v-btn>
                         </template>
                     </v-text-field>
                     <div v-if="!!target" class="my-3">
@@ -160,6 +163,8 @@
             </v-col>
         </v-row>
     </v-container>
+    <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="target" @input="showKetcher = false"
+        @update:smiles="(ketcherSmiles) => target = ketcherSmiles" />
 </template>
 
 <script>
@@ -194,7 +199,7 @@ export default {
     },
     data() {
         return {
-            emptyVoid: emptyVoid
+            emptyVoid: emptyVoid,
         }
     },
     setup() {
@@ -213,6 +218,8 @@ export default {
         const showTemplateInfoModal = ref(false);
         const carouselSlide = ref(0);
         const retroResultTable = ref(null);
+        const ketcherRef = ref(null)
+        const showKetcher = ref(false)
 
         function hide(key) {
             predictions.value[key].show = false;
@@ -241,7 +248,6 @@ export default {
                         item.available_model_names.forEach((trainingSet) => sets.add(trainingSet))
                     }
                 });
-            console.log(Array.from(sets).sort())
             return Array.from(sets).sort();
         });
 
@@ -250,7 +256,6 @@ export default {
             const precursors = {};
             Object.entries(results.value).forEach(([index, resultsN]) => {
                 resultsN.forEach((res) => {
-                    console.log(res)
                     if (res.outcome in precursors) {
                         precursors[res.outcome][index] = res;
                     } else {
@@ -292,12 +297,11 @@ export default {
         });
 
         const tableItems = computed(() => {
-            let test = Object.entries(precursors.value).map(([smiles, item]) => ({
+            let items = Object.entries(precursors.value).map(([smiles, item]) => ({
                 smiles: smiles,
                 ...item,
             }));
-            console.log(test)
-            return test
+            return items
         });
 
         const allowResolve = computed({
@@ -332,14 +336,12 @@ export default {
         };
 
         const resolve = () => {
-            console.log("done")
             if (enableResolver.value && allowResolve.value && target.value && !validSmiles.value) {
                 resolveChemName(target.value)
                     .then((smiles) => canonicalize(smiles))
                     .then((smiles) => {
                         target.value = smiles;
                         validSmiles.value = true;
-                        console.log(validSmiles.value)
                     })
                     .catch((error) => {
                         console.error(error);
@@ -360,7 +362,6 @@ export default {
             //     return;
             // }
             const newIndex = maxIndex.value + 1;
-            console.log(maxIndex.value)
             carouselSlide.value = Object.keys(predictions.value).length;
 
             const url = "/api/tree-search/expand-one/call-async";
@@ -389,7 +390,6 @@ export default {
             labels.value[newIndex] = `Prediction #${newIndex}`;
             API.runCeleryTask(url, body)
                 .then((output) => {
-                    console.log(output)
                     results.value[newIndex] = output["result"];
                     /* eslint-disable */
                     nextTick(() => {
@@ -552,6 +552,8 @@ export default {
             deleteAttributeFilter,
             updateAttributeFilter,
             num2str,
+            showKetcher,
+            ketcherRef
         };
     },
 };
