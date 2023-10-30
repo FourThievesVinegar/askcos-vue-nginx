@@ -82,7 +82,7 @@ export const useResultsStore = defineStore("results", {
         (id) => this.templateNumExamples[id] === undefined
       );
       if (lookup.length > 0) {
-        API.post("/api/v2/template/lookup/", {
+        API.post("/api/template/lookup/", {
           ids: lookup,
           field: "count",
         }).then((json) => {
@@ -95,7 +95,7 @@ export const useResultsStore = defineStore("results", {
         (id) => this.templateSetSource[id] === undefined
       );
       if (lookup.length > 0) {
-        API.post("/api/v2/template/lookup/", {
+        API.post("/api/template/lookup/", {
           ids: lookup,
           field: "template_set",
         }).then((json) => {
