@@ -1397,7 +1397,6 @@ export default {
       API[method](url, body)
         .then((json) => {
           if (json.success) {
-            console.log(json),
             this.resultsStore.updateSavedResultInfo({
               result_id: json['result_id'],
               user: localStorage.getItem('username'),
