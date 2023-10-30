@@ -140,11 +140,17 @@
               </div> -->
             <div v-if="!resultsAvailable" class="text-center mt-5">
               <p class="lead">Click Expand Node above to expand this node and predict precursors for this target.</p>
-              <div class="form-inline justify-content-center">
-                Add top
-                <v-input type="number" class="text-center mx-2" style="width: 3rem" v-model="reactionLimit"
-                  number></v-input>
-                {{ allowCluster ? "clusters" : "precursors" }} to the graph visualization
+              <div class="text-center justify-center mx-10">
+                <v-text-field variant="outlined" v-model="reactionLimit"
+                  hide-details density="compact" number size="small">
+                  <template v-slot:prepend>
+                    Add top
+                  </template>
+                  <template v-slot:append>
+                    {{ allowCluster ? "Clusters" : "Precursors" }} to the graph visualization
+                  </template>
+                </v-text-field>
+
               </div>
             </div>
             <div v-else class="scroll-list">
