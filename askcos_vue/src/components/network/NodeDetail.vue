@@ -141,8 +141,8 @@
             <div v-if="!resultsAvailable" class="text-center mt-5">
               <p class="lead">Click Expand Node above to expand this node and predict precursors for this target.</p>
               <div class="text-center justify-center mx-10">
-                <v-text-field variant="outlined" v-model="reactionLimit"
-                  hide-details density="compact" number size="small">
+                <v-text-field variant="outlined" v-model="reactionLimit" hide-details density="compact" number
+                  size="small">
                   <template v-slot:prepend>
                     Add top
                   </template>
@@ -161,7 +161,7 @@
                       <v-img :src="getMolDrawEndPoint(res, true)" fluid></v-img>
                     </v-col>
                     <v-col>
-                      <table class="table table-sm table-border m-0">
+                      <v-table class="table table-sm table-border ma-0" density="compact">
                         <tbody>
                           <tr>
                             <td>Rank</td>
@@ -196,7 +196,7 @@
                             <td>{{ res.clusterName }}</td>
                           </tr>
                         </tbody>
-                      </table>
+                      </v-table>
                     </v-col>
                   </v-row>
                   <div class="row no-gutters">
@@ -254,7 +254,7 @@
                 :href="'/forward?tab=context&rxnsmiles=' + encodeURIComponent(selected.smiles)" target="_blank">Evaluate
                 reaction</v-btn>
               <div class="text-left mx-2">
-                <table class="table table-sm table-striped table-borderless">
+                <v-table class="ma-0" density="compact">
                   <tbody>
                     <tr>
                       <th>Score</th>
@@ -289,7 +289,7 @@
                       </td>
                     </tr>
                   </tbody>
-                </table>
+                </v-table>
               </div>
               <div class="btn-toolbar justify-content-end mx-2">
                 <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button>
@@ -1443,12 +1443,12 @@ export default {
 </script>
   
 <style scoped>
-table,
+/* table,
 th,
 td {
   border: 1px solid black;
   border-collapse: collapse;
-}
+} */
 
 .scroll-list {
   max-height: 55vh;
