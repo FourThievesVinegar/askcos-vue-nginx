@@ -12,7 +12,8 @@
               @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }">Draw</v-btn>
           </template>
           <template v-slot:append>
-            <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large" @click="canonicalize()">Canonicalize</v-btn>
+            <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large"
+              @click="canonicalize()">Canonicalize</v-btn>
           </template>
         </v-text-field>
       </v-col>

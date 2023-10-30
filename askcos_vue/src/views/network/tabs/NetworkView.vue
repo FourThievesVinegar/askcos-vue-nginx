@@ -6,9 +6,10 @@
       <v-container fluid>
         <v-row class="justify-center align-center">
           <v-col cols="12" md="10"><v-text-field v-model="resultsStore.target" density="compact" variant="outlined"
-              label="Target" placeholder="SMILES" type="text" clearable class="target-input" hide-details prepend-inner-icon="mdi mdi-flask">
+              label="Target" placeholder="SMILES" type="text" clearable class="target-input" hide-details
+              prepend-inner-icon="mdi mdi-flask">
               <template v-slot:append-inner>
-                <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil">Draw</v-btn>
+                <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil" @click="showKetcherModal()">Draw</v-btn>
               </template>
               <template v-slot:append>
                 <v-btn variant="flat" color="green-darken-1" prepend-icon="mdi mdi-play" class="mr-2"
@@ -255,7 +256,8 @@
       <v-card-title>Save Network JSON</v-card-title>
       <v-divider></v-divider>
       <v-card-text>
-        <v-text-field label="File Name" variant="outlined" hide-details density="compact" v-model="downloadName"></v-text-field>
+        <v-text-field label="File Name" variant="outlined" hide-details density="compact"
+          v-model="downloadName"></v-text-field>
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
@@ -270,7 +272,9 @@
     @expandNode="expandNode" @updatePendingTasks="pendingTasksHandler" ref="node-detail" />
 
   <SettingsModal :visible="settingsVisible" @update:settingsVisible="settingsVisible = $event"
-    :template-attributes="templateAttributes" :template-sets="templateSets" @changeNetopt="updateNetworkOptions"/>
+    :template-attributes="templateAttributes" :template-sets="templateSets" @changeNetopt="updateNetworkOptions" />
+  <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="resultsStore.target" @input="showKetcher = false"
+    @update:smiles="(ketcherSmiles) => resultsStore.target = ketcherSmiles" />
 </template>
 
 <script>
@@ -292,6 +296,7 @@ import NodeDetail from "@/components/network/NodeDetail";
 import SettingsModal from "@/components/network/SettingsModal";
 import { interpolateHexColor } from "@/common/color";
 import { saveAs } from "file-saver";
+import KetcherModal from "@/components/KetcherModal";
 // import { tbSettingsJsToApi } from "@/common/tb-settings";
 
 const BG_OPACITY = 0.2; // Background opacity
@@ -300,7 +305,8 @@ export default {
   components: {
     SmilesImage,
     NodeDetail,
-    SettingsModal
+    SettingsModal,
+    KetcherModal
   },
   props: {
     tabActive: {
@@ -337,6 +343,7 @@ export default {
       showEnumeratePaths: false,
       showImportNetwork: false,
       showDownloadNetwork: false,
+      showKetcher: false,
       downloadName: "network.json",
       tb: {
         modes: TB_PRESETS,
@@ -559,7 +566,8 @@ export default {
     saveImage() {
       // Getting the current canvas element
       const canvas = document.getElementsByTagName("canvas")[0];
-      if (canvas === undefined) {e
+      if (canvas === undefined) {
+        e
         this.createConfirm({ title: 'Alert', content: 'No tree created yet to export as PNG', dialogProps: { width: "auto" } })
         return;
       }
@@ -778,7 +786,7 @@ export default {
         })
         .then((smiles) => this.canonicalize(smiles, "target"))
         .then(() => {
-            this.saveTarget();
+          this.saveTarget();
           if (this.resultsStore.target !== undefined) {
             this.resultsStore.clearDataGraph();
             this.resultsStore.clearDispGraph();
@@ -963,7 +971,7 @@ export default {
       this.pendingTasks += 1;
       this.isCanvasEmpty = false;
       this.visible = false;
-      let reader = new FileReader(); 
+      let reader = new FileReader();
       console.log(this.uploadFile)
       reader.readAsText(this.uploadFile[0]);
       reader.onload = (e) => {
@@ -1201,6 +1209,10 @@ export default {
           this.selected.disp = newDisp;
         });
       }
+    },
+    showKetcherModal(){
+      this.showKetcher = true;
+      this.$refs["ketcherRef"].smilesToKetcher();
     },
     showNodeDetail() {
       this.nodeDetailVisible = true;
@@ -1753,5 +1765,4 @@ export default {
   padding: 5px 15px;
   border: 1px solid #d3d3d3;
   border-radius: 30px;
-}
-</style>
+}</style>
