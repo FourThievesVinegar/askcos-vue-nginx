@@ -1399,7 +1399,7 @@ export default {
           if (json.success) {
             console.log(json),
             this.resultsStore.updateSavedResultInfo({
-              result_id: json["result_id"],
+              result_id: json['result_id'],
               user: localStorage.getItem('username'),
               modified: json["modified"],
               modifiedDisp: dayjs(json["modified"]).format(
