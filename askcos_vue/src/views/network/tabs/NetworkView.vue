@@ -1738,6 +1738,7 @@ export default {
   padding: 5px;
   background-color: #BBDEFB;
   border-radius: 30px;
+  z-index:9999;
 }
 
 .result-btn {

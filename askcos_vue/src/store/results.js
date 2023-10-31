@@ -131,9 +131,10 @@ export const useResultsStore = defineStore("results", {
       let sources = settings.tbSettings.buyablesSourceAll
         ? null
         : settings.tree_builder_settings.build_tree_options.buyables_source;
-      let templateSets = settings.interactive_path_planner_settings.retro_backend_options.map(
-        (tp) => tp["retro_model_name"]
-      );
+      let templateSets =
+        settings.interactive_path_planner_settings.retro_backend_options.map(
+          (tp) => tp["retro_model_name"]
+        );
       let promises = [];
       promises.push(getHistory(smiles, templateSets));
       promises.push(getPrice(smiles, sources));
@@ -256,7 +257,7 @@ export const useResultsStore = defineStore("results", {
         ),
         tbSettings: resultObj["settings"],
       };
-      let status = null
+      let status = null;
       // let status = resultObj["result"]["stats"];
       let stats = resultObj["result"]["stats"];
       if (status) {
@@ -279,7 +280,7 @@ export const useResultsStore = defineStore("results", {
       this.setTreeNodeMap(nodeMap);
       this.setTreeEdgeMap(edgeMap);
       let promises = [];
-      console.log(dataGraph)
+      console.log(dataGraph);
       if (dataGraph) {
         promises.push(this.addTreeBuilderResultToDataGraph(dataGraph));
       }
@@ -380,9 +381,14 @@ export const useResultsStore = defineStore("results", {
             existingNode["model_score"],
             reaction["score"]
           );
-          if (existingNode["templateScore"] <= reaction["template"]["template_score"]) {
-            existingNode["templateRank"] = reaction["template"]["template_rank"];
-            existingNode["templateScore"] = reaction["template"]["template_score"];
+          if (
+            existingNode["templateScore"] <=
+            reaction["template"]["template_score"]
+          ) {
+            existingNode["templateRank"] =
+              reaction["template"]["template_rank"];
+            existingNode["templateScore"] =
+              reaction["template"]["template_score"];
           }
           let isNew = false;
           if (reaction["templates"]) {
@@ -426,16 +432,17 @@ export const useResultsStore = defineStore("results", {
             rank: reaction["rank"],
             ffScore: reaction["plausibility"],
             retroScore: reaction["score"],
-            templateScore: reaction["template"]["template_score"],
-            templateRank: reaction["template"]["template_rank"],
-            templateIds: reaction["template"]["tforms"],
+            templateScore: reaction["template"]?.template_score ?? undefined,
+            templateRank: reaction["template"]?.template_rank ?? undefined,
+            templateIds: reaction["template"]?.tforms ?? undefined,
             clusterId: reaction["group_id"],
             clusterName: reaction["group_name"],
             clusterRep: !clusterTracker.has(reaction["group_id"]), // Tag first result in each cluster as the representative
             precursors: reaction["smiles_split"],
             precursorSmiles: reaction["outcome"],
-            numExamples: reaction["template"]["num_examples"],
-            necessaryReagent: reaction["template"]["necessary_reagent"],
+            numExamples: reaction["template"]?.num_examples ?? undefined,
+            necessaryReagent:
+              reaction["template"]?.necessary_reagent ?? undefined,
             mappedSmiles: reaction["mapped_smiles"],
             reactingAtoms: reaction["reacting_atoms"],
             numRings: reaction["num_rings"],
@@ -739,7 +746,6 @@ export const useResultsStore = defineStore("results", {
           });
         })
       );
-
     },
     addTreeBuilderResultToDataGraph(data) {
       let templateIds = [];
@@ -761,7 +767,7 @@ export const useResultsStore = defineStore("results", {
               type: node["type"],
             };
           } else {
-            console.log(node)
+            console.log(node);
             if (node["tforms"]) {
               templateIds.push(...node["tforms"]);
             }
@@ -847,7 +853,7 @@ export const useResultsStore = defineStore("results", {
       const body = {
         smiles: smiles,
       };
-      Object.assign(body, settings.interactive_path_planner_settings)
+      Object.assign(body, settings.interactive_path_planner_settings);
       // if (strategy.model === "template_relevance") {
       //   checkTemplatePrioritizers(body["template_prioritizers"]);
       // }
@@ -870,22 +876,23 @@ export const useResultsStore = defineStore("results", {
       const smiles = node.smiles;
       const settings = useSettingsStore();
 
-      if (settings.interactive_path_planner_settings.retro_backend_options.length === 0) {
+      if (
+        settings.interactive_path_planner_settings.retro_backend_options
+          .length === 0
+      ) {
         alert("Please add atleast one strategy");
         return;
       }
 
       const strategyPromise = new Promise((resolve, reject) => {
-        this.requestRetro({ smiles: smiles }).then(
-          (response) => {
-            if (response.length === 0) {
-              reject(new Error("No precursors found!"));
-            } else {
-              resolve(response);
-            }
+        this.requestRetro({ smiles: smiles }).then((response) => {
+          if (response.length === 0) {
+            reject(new Error("No precursors found!"));
+          } else {
+            resolve(response);
           }
-        );
-      })
+        });
+      });
 
       await strategyPromise.then(
         async (response) => {
@@ -896,7 +903,11 @@ export const useResultsStore = defineStore("results", {
             });
 
             let reactionsToAdd = [];
-            if (settings.interactive_path_planner_settings.retro_backend_options[idx].retro_backend === "template_relevance") {
+            if (
+              settings.interactive_path_planner_settings.retro_backend_options[
+                idx
+              ].retro_backend === "template_relevance"
+            ) {
               reactionsToAdd = addedReactions
                 .filter((reactionSmiles) => {
                   return (
@@ -917,7 +928,8 @@ export const useResultsStore = defineStore("results", {
         (error) => {
           console.error(error);
           alert("Error occurred while expanding: ", error.message);
-        });
+        }
+      );
     },
     templateRelevance(smiles) {
       const settings = useSettingsStore();
@@ -997,11 +1009,17 @@ export const useResultsStore = defineStore("results", {
       let body = {
         original: smiles,
         outcomes: outcomes,
-        feature: settings.interactive_path_planner_settings.cluster_setting.feature,
-        cluster_method: settings.interactive_path_planner_settings.cluster_setting.cluster_method,
-        fp_type: settings.interactive_path_planner_settings.cluster_setting.fp_type,
-        fp_length: settings.interactive_path_planner_settings.cluster_setting.fp_length,
-        fp_radius: settings.interactive_path_planner_settings.cluster_setting.fp_radius,
+        feature:
+          settings.interactive_path_planner_settings.cluster_setting.feature,
+        cluster_method:
+          settings.interactive_path_planner_settings.cluster_setting
+            .cluster_method,
+        fp_type:
+          settings.interactive_path_planner_settings.cluster_setting.fp_type,
+        fp_length:
+          settings.interactive_path_planner_settings.cluster_setting.fp_length,
+        fp_radius:
+          settings.interactive_path_planner_settings.cluster_setting.fp_radius,
         scores: scores,
       };
       return API.runCeleryTask(url, body)
@@ -1023,7 +1041,7 @@ export const useResultsStore = defineStore("results", {
         .catch((error) => {
           alert(
             "There was an error fetching cluster results for this target with the supplied settings: " +
-            error
+              error
           );
         });
     },
