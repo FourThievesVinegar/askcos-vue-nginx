@@ -232,17 +232,16 @@
               <div v-if="selected.data.model !== 'new'">
                 <p class="h6 mb-2">
                   <i class="fas fa-info-circle mr-1"></i>Reaction predicted by
-                  <v-chip variant="tonal">
+                  <v-chip variant="tonal" class="py-5">
                     {{ selected.data.model }}
                     <div v-if="selected.data.model === 'template_relevance'">
-                      <v-chip v-for="(prioritizer, pIdx) in selected.data.templatePrioritizers" :key="pIdx" class="mx-1">
-                        {{ prioritizer.template_set }}
-                        (v{{ prioritizer.version }}<template v-if="prioritizer.attribute_filter.length"> with {{
-                          prioritizer.attribute_filter.length }} attribute filters</template>)
+                      <!-- TODO: fix attribute filter -->
+                      <v-chip class="ml-1">
+                        {{ selected.data.trainingSet }}
                       </v-chip>
                     </div>
                     <div v-else>
-                      <v-chip>
+                      <v-chip class="ml-1">
                         {{ selected.data.trainingSet }}
                       </v-chip>
                     </div>
