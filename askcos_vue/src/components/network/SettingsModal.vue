@@ -1,5 +1,6 @@
 <template>
-    <v-dialog id="settings-modal" scrollable v-model="showSettings" width="900px" @close="clearEmit" @click:outside="clearEmit">
+    <v-dialog id="settings-modal" scrollable v-model="showSettings" width="900px" @close="clearEmit"
+        @click:outside="clearEmit">
         <v-card>
             <v-card-title>Strategy Settings</v-card-title>
             <v-divider></v-divider>
