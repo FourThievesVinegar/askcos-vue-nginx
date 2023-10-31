@@ -31,8 +31,20 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               SCScore
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
-                Task</v-btn></v-card-actions>
+            <v-card-actions class="justify-center">
+              <template v-if="scscore === undefined">
+                <v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                  @click="getScscore(smiles)">Evaluate</v-btn>
+              </template>
+              <template v-else-if="scscore === 'evaluating'">
+                <v-progress-circular indeterminate color="primary"></v-progress-circular>
+              </template>
+              <template v-else>
+                <v-chip color="primary">
+                  <p class="text-body-1">{{ scscore }}</p>
+                </v-chip>
+              </template>
+            </v-card-actions>
           </v-card>
         </v-col>
         <v-col cols="12" sm="4" md="4">
@@ -40,7 +52,8 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Interactive Path Planner
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                :href="`/network?tab=IPP&target=${encodeURIComponent(smiles)}`" target="_blank">Run
                 Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
@@ -49,8 +62,46 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Tree Builder
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
-                Task</v-btn></v-card-actions>
+            <v-card-actions class="justify-center">
+              <template v-if="tbStatus === undefined">
+                <v-btn-group density="compact" color="primary">
+                  <v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                    @click="sendTreeBuilderJob(smiles)">Run
+                    Task</v-btn>
+                  <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
+                    <template v-slot:activator="{ props }">
+                      <v-btn v-bind="props" icon="mdi mdi-menu-down" variant="tonal" color="primary" />
+                    </template>
+                    <v-card width="auto" min-width="250px">
+                      <v-text-field v-model="tbDesc" label="Job name/description" variant="outlined" hide-details
+                        class="pa-3" density="compact"></v-text-field>
+                      <v-divider class="ma-2" :thickness="2"></v-divider>
+                      <p class="text-subtitle-2 pl-3">Quick Settings</p>
+                      <v-list density="compact">
+                        <v-list-item v-for="(value, name) in tbPresetOptions" :key="name">
+                          <v-list-item-title>
+                            <v-checkbox v-model="tbPreset" :value="name" hide-details>
+                              <template v-slot:label>
+                                {{ value.label }}
+                              </template>
+                            </v-checkbox>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
+                </v-btn-group>
+              </template>
+              <template v-else-if="tbStatus === 'pending'">
+                <v-progress-circular indeterminate color="primary"></v-progress-circular>
+              </template>
+              <template v-else-if="tbStatus === 'error'">
+                <v-chip variant="tonal" color="red" class="text-body-1">Submission Error</v-chip>
+              </template>
+              <template v-else>
+                <v-chip variant="tonal" class="text-body-1"><a href="/my-results/" target="_blank">Go to My Results</a></v-chip>
+              </template>
+            </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
@@ -61,7 +112,8 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Predict Forward Synthesis
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                :href="`/forward?tab=forward&reactants=${encodeURIComponent(smiles)}`" target="_blank">Run
                 Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
@@ -70,7 +122,8 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Predict Impurities
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                :href="`/forward?tab=impurity&reactants=${encodeURIComponent(smiles)}`" target="_blank">Run
                 Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
@@ -79,7 +132,8 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Predict Aromatic Site Selectivity
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                :href="`/forward?tab=sites&reactants=${encodeURIComponent(smiles)}`" target="_blank">Run
                 Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
@@ -91,7 +145,8 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Solvent Screen
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                :disabled="true">Run
                 Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
@@ -100,7 +155,8 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Buyables
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary">Run
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                :href="`/buyables/?q=${encodeURIComponent(smiles)}`" target="_blank">Run
                 Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
@@ -224,13 +280,13 @@ export default {
 
     const getScscore = (smiles) => {
       scscore.value = "evaluating";
-      const url = "/api/v2/scscore/";
+      const url = "/api/scscore/call-sync";
       const body = {
         smiles: smiles,
       };
       API.post(url, body)
         .then((json) => {
-          scscore.value = num2str(json.score);
+          scscore.value = num2str(json.result);
         })
         .catch((error) => {
           console.error("Could not evaluate SCScore:", error);
@@ -319,7 +375,7 @@ export default {
 
     const sendTreeBuilderJob = (smiles) => {
       tbStatus.value = "pending";
-      const url = "/api/v2/tree-builder/";
+      const url = "/api/tree-builder/";
       const body = {
         description: tbDesc.value ? tbDesc.value : smiles,
         smiles: smiles,
