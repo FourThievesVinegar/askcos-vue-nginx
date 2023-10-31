@@ -1,5 +1,5 @@
 <template>
-    <v-dialog id="settings-modal" scrollable v-model="showSettings" width="900px" @close="clearEmit">
+    <v-dialog id="settings-modal" scrollable v-model="showSettings" width="900px" @close="clearEmit" @click:outside="clearEmit">
         <v-card>
             <v-card-title>Strategy Settings</v-card-title>
             <v-divider></v-divider>
@@ -558,7 +558,7 @@
             <v-divider></v-divider>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn variant="tonal" @click="clearEmit">Close</v-btn>
+                <v-btn variant="tonal" @click="clearEmit">Save</v-btn>
                 <v-btn variant="tonal" color="red" @click="resetSettings">Reset</v-btn>
             </v-card-actions>
         </v-card>
