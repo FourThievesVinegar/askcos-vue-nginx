@@ -3,25 +3,37 @@
     <v-row class="justify-center">
       <v-col cols="12" sm="8" md="10">
         <v-sheet elevation="2" class="pa-10">
+          <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="currentSmiles" @input="showKetcher = false"
+            @update:smiles="(ketcherSmiles) => updateSmiles(ketcherSmiles)" />
           <v-form @submit.prevent>
             <v-row>
               <v-col>
                 <v-text-field :rules="[v => !!v || 'Solute is required']" variant="outlined" label="Solute"
-                  v-model="solute" clearable></v-text-field>
+                  v-model="solute" clearable>
+                  <template v-slot:append-inner>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solute')">Draw</v-btn>
+                  </template>
+                </v-text-field>
                 <div v-if="!!solute" class="my-3">
-                  <smiles-image :smiles="solute" height="100px"></smiles-image>
+                  <smiles-image :smiles="solute" height="100px">
+                  </smiles-image>
                 </div>
               </v-col>
               <v-col>
                 <v-text-field :rules="[v => !!v || 'Solvent is required']" variant="outlined" label="Solvent"
-                  v-model="solvent" clearable></v-text-field>
+                  v-model="solvent" clearable>
+                  <template v-slot:append-inner>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solvent')">Draw</v-btn>
+                  </template>
+                </v-text-field>
                 <div v-if="!!solvent" class="my-3">
                   <smiles-image :smiles="solvent" height="100px"></smiles-image>
                 </div>
               </v-col>
               <v-col>
                 <v-text-field :rules="[v => !!v || 'Temperature is required']" variant="outlined" label="Temperature"
-                  v-model="temperature" clearable></v-text-field>
+                  v-model="temperature" clearable>
+                </v-text-field>
               </v-col>
             </v-row>
             <v-row align="center" justify-start>
@@ -121,7 +133,11 @@
           <v-expansion-panels v-model="panel" multiple>
             <v-expansion-panel title="Reference Information (Optional)" class="text-primary">
               <v-expansion-panel-text class="text-black">
-                <v-text-field variant="outlined" label="Ref. Solvent" v-model="refSolvent"></v-text-field>
+                <v-text-field variant="outlined" label="Ref. Solvent" v-model="refSolvent">
+                  <template v-slot:append-inner>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('refSolvent')">Draw</v-btn>
+                  </template>
+                </v-text-field>
                 <div v-if="!!refSolvent" class="my-3">
                   <smiles-image :smiles="refSolvent" height="100px"></smiles-image>
                 </div>
@@ -145,8 +161,7 @@
 </template>
   
 <script>
-// import LoadingButton from "@/components/LoadingButton";
-// import SettingInput from "@/components/SettingInput";
+import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage";
 import SmilesInput from "@/components/SmilesInput";
 import { API } from "@/common/api";
@@ -156,8 +171,6 @@ import * as Papa from "papaparse";
 export default {
   name: "SolubilityPrediction",
   components: {
-    // LoadingButton,
-    // SettingInput,
     SmilesImage,
     SmilesInput,
   },
@@ -177,6 +190,8 @@ export default {
       dialog: false,
       showUploadModal: false,
       results: [],
+      currentInputSource: '',
+      showKetcher: false,
       tab: "one",
       uploadFile: null,
       selectedColumnCategories: [
@@ -218,9 +233,18 @@ export default {
       }
       return baseName + '_solubility_export'
     },
-    //  showHeaders() {
-    //   return this.headers.filter(s => this.selectedHeaders.includes(s));
-    // },
+    currentSmiles() {
+      switch (this.currentInputSource) {
+        case 'solute':
+          return this.solute;
+        case 'solvent':
+          return this.solvent;
+        case 'refSolvent':
+          return this.refSolvent;
+        default:
+          return '';
+      }
+    }
   },
   created() {
     // Prompt user before going back to previous page
@@ -242,9 +266,6 @@ export default {
     if (solvent) {
       this.solvent = solvent
     }
-
-    // this.headers = Object.values(this.headersMap);
-    // this.selectedHeaders = this.headers;
   },
   methods: {
     predict() {
@@ -325,6 +346,24 @@ export default {
 
       reader.readAsText(this.uploadFile)
     },
+    openKetcher(source) {
+      this.currentInputSource = source;
+      this.showKetcher = true;
+        this.$refs['ketcherRef'].smilesToKetcher()
+    },
+    updateSmiles(ketcherSmiles) {
+      switch (this.currentInputSource) {
+        case 'solute':
+          this.solute = ketcherSmiles;
+          break;
+        case 'solvent':
+          this.solvent = ketcherSmiles;
+          break;
+        case 'refSolvent':
+          this.refSolvent = ketcherSmiles;
+          break;
+      }
+    },
     downloadCSV() {
       if (!this.results.length) {
         alert('There are no results to download!')
@@ -346,11 +385,3 @@ export default {
   },
 }
 </script>
-  
-<style scoped>
-#solubility-left-pane {
-  overflow-y: auto;
-  max-height: calc(100vh - 14rem);
-}
-</style>
-  

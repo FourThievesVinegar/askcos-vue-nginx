@@ -98,9 +98,6 @@
             <v-text-field v-model="newDesc" label="Description" maxlength="150" autocomplete="off" density="comfortable"
               variant="outlined" hide-details clearable></v-text-field>
           </v-col>
-          <v-col cols="12">
-            <v-checkbox v-model="newActive" label="Active" density="comfortable" hide-details></v-checkbox>
-          </v-col>
         </v-row>
       </v-card-text>
       <v-card-actions class="mb-2">
@@ -135,13 +132,22 @@ const filterOptions = ref([
   { key: 'active', title: 'Active' },
   { key: 'inactive', title: 'Inactive' },
 ]);
-const headers = ref([
-  { key: 'active', title: 'Active' },
-  { key: 'created', title: 'Created' },
-  { key: 'smiles', title: 'Chemical' },
-  { key: 'description', title: 'Description' },
-  { key: 'delete', title: 'Delete' },
-]);
+
+const headers = computed(() => {
+  const baseHeaders = [
+    { key: 'active', title: 'Active' },
+    { key: 'created', title: 'Created' },
+    { key: 'smiles', title: 'Chemical' },
+    { key: 'description', title: 'Description' },
+    { key: 'delete', title: 'Delete' },
+  ];
+
+  if (activeTab.value === 1) {
+    baseHeaders[2].title = 'Reaction';
+  }
+
+  return baseHeaders;
+});
 
 const loadCollection = (category) => {
   pendingTasks.value++;
