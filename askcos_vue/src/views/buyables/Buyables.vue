@@ -122,30 +122,6 @@
     </v-row>
   </v-container>
 
-  <!-- <v-dialog v-model="showSourcesDialog" max-width="600px">
-    <v-card>
-      <v-card-title class="mt-2">
-        <v-col cols="12">Select Sources</v-col>
-      </v-card-title>
-      <v-card-text class="text-justify">
-        <v-row>
-          <v-col cols="12">
-            <v-checkbox data-cy="all-sources-checkbox" v-model="buyablesSourceAll" @change="searchSourceQuery = []"
-              label="All"></v-checkbox>
-            <v-checkbox v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery" :value="source"
-              :disabled="buyablesSourceAll" :label="source === NO_SOURCE ? NO_SOURCE_TEXT : source"></v-checkbox>
-          </v-col>
-        </v-row>
-      </v-card-text>
-      <v-card-actions class="mb-2">
-        <v-spacer></v-spacer>
-        <v-btn color="success" @click="showSourcesDialog = false">
-          OK
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog> -->
-
   <v-dialog v-model="showAddModal" max-width="600px">
     <v-card>
       <v-card-title class="mt-2">
