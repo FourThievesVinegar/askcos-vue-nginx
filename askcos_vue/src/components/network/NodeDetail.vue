@@ -281,7 +281,7 @@
                       <td>
                         <ul>
                           <li v-for="id in selected.data.templateIds" :key="id">
-                            <a :href="'/template/?id=' + id" target="_blank"> {{ id }} ({{
+                            <a :href="'/template?id=' + id" target="_blank"> {{ id }} ({{
                               resultsStore.templateSetSource[id] }}, {{ resultsStore.templateNumExamples[id] }} examples)
                             </a>
                           </li>
