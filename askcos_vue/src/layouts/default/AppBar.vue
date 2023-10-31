@@ -57,7 +57,6 @@
       </v-list-group>
       <v-list-item to="/status" prepend-icon="mdi-list-status" title="Server Status" value="status"
         :active="route.path === '/status'"></v-list-item>
-      <v-list-item prepend-icon="mdi-book-information-variant" title="Quick Reference" value="reference"></v-list-item>
       <v-divider></v-divider>
       <v-list-item prepend-icon="mdi-book-open-variant" title="Wiki" value="wiki" :active="false"
         href="https://gitlab.com/mlpds_mit/askcosv2/askcos-docs/-/wikis/home" target="_blank" />
