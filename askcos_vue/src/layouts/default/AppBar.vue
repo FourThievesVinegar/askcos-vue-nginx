@@ -2,7 +2,8 @@
   <v-navigation-drawer expand-on-hover rail elevation="2" width="1000px" class="sidebar"
     @update:rail="($event) => rail = $event">
     <v-list>
-      <v-list-item prepend-icon="mdi-tools" title="ASKCOS" subtitle="Demo"></v-list-item>
+      <v-list-item prepend-icon="mdi-tools" title="ASKCOS" subtitle="Demo" to="/" value="home"
+        :active="false"></v-list-item>
     </v-list>
 
     <v-divider></v-divider>
