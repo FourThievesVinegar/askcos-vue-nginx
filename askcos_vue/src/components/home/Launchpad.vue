@@ -78,7 +78,7 @@
                       <v-divider class="ma-2" :thickness="2"></v-divider>
                       <p class="text-subtitle-2 pl-3">Quick Settings</p>
                       <v-list density="compact">
-                        <v-list-item v-for="(value, name) in tbPresetOptions" :key="name">
+                        <v-list-item v-for="(value, name) in mapperOptions" :key="name">
                           <v-list-item-title>
                             <v-checkbox v-model="tbPreset" :value="name" hide-details>
                               <template v-slot:label>
@@ -99,7 +99,8 @@
                 <v-chip variant="tonal" color="red" class="text-body-1">Submission Error</v-chip>
               </template>
               <template v-else>
-                <v-chip variant="tonal" class="text-body-1"><a href="/my-results/" target="_blank">Go to My Results</a></v-chip>
+                <v-chip variant="tonal" class="text-body-1"><a href="/my-results/" target="_blank">Go to My
+                    Results</a></v-chip>
               </template>
             </v-card-actions>
           </v-card>
@@ -163,6 +164,157 @@
       </v-row>
     </template>
 
+    <template v-if="validSmiles && type === 'rxn'">
+      <v-row>
+        <v-col cols="12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
+              Fast Filter Score
+            </v-card-title>
+            <v-card-actions class="justify-center">
+              <template v-if="reactionScore === undefined">
+                <v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                  @click="getReactionScore(smiles)">Evaluate</v-btn>
+              </template>
+              <template v-else-if="reactionScore === 'evaluating'">
+                <v-progress-circular indeterminate color="primary"></v-progress-circular>
+              </template>
+              <template v-else>
+                <v-chip color="primary">
+                  <p class="text-body-1">{{ reactionScore }}</p>
+                </v-chip>
+              </template>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+        <v-col cols=" 12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
+              Generate Atom Mapping
+            </v-card-title>
+            <v-card-actions class="justify-center">
+              <template v-if="mappedSmiles === undefined || !!mappedSmiles.length >0 || mappedSmiles === 'error'">
+                <v-btn-group density="compact" color="primary">
+                  <v-btn v-if="mappedSmiles === undefined" prepend-icon="mdi mdi-play" variant="tonal" color="primary" @click="getMappedSmiles(smiles)">Evaluate</v-btn>
+                  <v-btn v-if="!!mappedSmiles" prepend-icon="mdi mdi-play" variant="tonal" 
+                  @click="showMappedSmiles = !showMappedSmiles"> {{ showMappedSmiles ? 'Hide' :
+                    'Show' }}</v-btn>
+                  <v-menu location="bottom" id="mapper-settings" :close-on-content-click="false">
+                    <template v-slot:activator="{ props }">
+                      <v-btn v-bind="props" icon="mdi mdi-menu-down" variant="tonal" color="primary" />
+                    </template>
+                    <v-card width="auto" min-width="250px">
+                      <v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary" @click="getMappedSmiles(smiles)"
+                        class="pa-3 justify-center" :disabled="mappedSmiles === undefined">Re-evaluate</v-btn>
+                      <v-divider class="ma-2" :thickness="2"></v-divider>
+                      <p class="text-subtitle-2 pl-3">Quick Settings</p>
+                      <v-list density="compact">
+                        <v-list-item v-for="name in mapperOptions" :key="name">
+                          <v-list-item-title>
+                            <v-checkbox v-model="mapper" :value="name" hide-details>
+                              <template v-slot:label>
+                                {{ name }}
+                              </template>
+                            </v-checkbox>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
+                </v-btn-group>
+              </template>
+              <template v-else-if="mappedSmiles === 'evaluating'">
+                <v-progress-circular indeterminate color="primary"></v-progress-circular>
+              </template>
+              <template v-else-if="mappedSmiles === 'error'">
+                <v-chip variant="tonal" color="red" class="text-body-1">Submission Error</v-chip>
+              </template>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+        <v-col cols=" 12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
+              Predict Forward Synthesis
+            </v-card-title>
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                :href="'/forward?tab=forward&rxnsmiles=' + encodeURIComponent(smiles)">Run
+                Task</v-btn></v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-row v-if="!!mappedSmiles" v-show="!!showMappedSmiles" class="my-4 pa-4">
+          <v-col cols="12" class="justify-center">
+            <smiles-image :smiles="mappedSmiles" draw-map highlight allow-copy></smiles-image>
+                <p class="text-body-1 text-center">SMILES: {{ mappedSmiles }}</p>
+          </v-col>
+        </v-row>
+
+      <v-row>
+        <v-col cols="12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
+              Predict Conditions
+            </v-card-title>
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                :href="'/forward?tab=context&rxnsmiles=' + encodeURIComponent(smiles)">Run
+                Task</v-btn></v-card-actions>
+          </v-card>
+        </v-col>
+        <v-col cols=" 12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
+              Predict Impurities
+            </v-card-title>
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                :href="'/forward?tab=impurity&rxnsmiles=' + encodeURIComponent(smiles)">Run
+                Task</v-btn></v-card-actions>
+          </v-card>
+        </v-col>
+        <v-col cols=" 12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
+              Predict Regioselectivity
+            </v-card-title>
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                :href="'/forward?tab=selectivity&rxnsmiles=' + encodeURIComponent(smiles)">Run
+                Task</v-btn></v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-row class="justify-center">
+        <v-col cols=" 12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
+              Classify Reaction
+              <a href="https://doi.org/10.26434/chemrxiv.9897365.v4" target="_blank">
+                <v-icon icon="mdi-information" size="x-small"></v-icon></a>
+            </v-card-title>
+            <v-card-actions class="justify-center">
+              <v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                v-if="classificationStatus === 'not started'" @click="getClassification(smiles)">Evaluate</v-btn>
+              <template v-if="classificationStatus === 'evaluating'">
+                <v-progress-circular indeterminate color="primary"></v-progress-circular>
+              </template>
+              <v-btn variant="tonal" color="primary" v-if="classificationResults.length"
+                @click="showClassificationResults = !showClassificationResults"> {{ showClassificationResults ? 'Hide' :
+                  'Show' }}</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-row v-if="!!classificationResults.length" v-show="showClassificationResults" class="my-4 pa-4">
+        <v-col cols="12">
+          <v-data-table :headers="headers" :items="classificationResults" :items-per-page="100">
+            <template #bottom></template>
+          </v-data-table>
+        </v-col>
+      </v-row>
+    </template>
+
     <template v-if="smiles && !validSmiles">
       <v-row>
         <v-col cols="12" sm="4" md="4">
@@ -207,19 +359,7 @@
   </div>
 </template>
 
-<style scoped>
-.centered-input :deep(input) {
-  text-align: center;
-}
-
-.centered-input .v-label {
-  text-align: center;
-  left: 50% !important;
-  transform: translateX(-50%);
-}
-</style>
-
-<script>
+<script setup>
 import { ref, computed, watch } from "vue";
 import KetcherModal from "@/components/KetcherModal";
 import CopyTooltip from "@/components/CopyTooltip";
@@ -229,237 +369,187 @@ import { API } from "@/common/api";
 import { TB_PRESETS } from "@/common/tb-presets";
 import { num2str } from "@/common/utils";
 
-export default {
-  name: "LaunchPad",
-  components: {
-    KetcherModal,
-    CopyTooltip,
-    SmilesImage,
-  },
-  setup() {
-    const smiles = ref("");
-    const validSmiles = ref(false);
-    const scscore = ref(undefined);
-    const reactionScore = ref(undefined);
-    const mappedSmiles = ref(undefined);
-    const mapper = ref("WLN atom mapper");
-    const mapperOptions = ["WLN atom mapper", "Transformer"];
-    const showMappedSmiles = ref(true);
-    const classificationResults = ref([]);
-    const showClassificationResults = ref(true);
-    const classificationStatus = ref("not started");
-    const tbStatus = ref(undefined);
-    const tbPreset = ref("normal");
-    const tbPresetOptions = ref(TB_PRESETS);
-    const tbDesc = ref("");
-    const showKetcher = ref(false);
-    const ketcherRef = ref(null);
 
-    const context = computed(() =>
-      JSON.parse(document.getElementById("django-context").textContent)
-    );
 
-    const type = computed(() => {
-      if (smiles.value.includes(">")) {
-        return "rxn";
-      } else {
-        return "mol";
-      }
+const smiles = ref("");
+const validSmiles = ref(false);
+const scscore = ref(undefined);
+const reactionScore = ref(undefined);
+const mappedSmiles = ref(undefined);
+const mapper = ref("indigo",);
+const mapperOptions = ["indigo", "wln", "rxnmapper"];
+const showMappedSmiles = ref(true);
+const classificationResults = ref([]);
+const showClassificationResults = ref(true);
+const classificationStatus = ref("not started");
+const tbStatus = ref(undefined);
+const tbPreset = ref("normal");
+const tbPresetOptions = ref(TB_PRESETS);
+const tbDesc = ref("");
+const showKetcher = ref(false);
+const ketcherRef = ref(null);
+const headers = [
+  { key: 'rank', title: 'Rank', align: 'center' },
+  { key: 'reaction_num', title: 'Reaction Number', align: 'center' },
+  { key: 'reaction_superclassname', title: 'Reaction Name (Lvl 1)', align: 'center' },
+  { key: 'reaction_classname', title: 'Reaction Name (Lvl 2)', align: 'center' },
+  { key: 'reaction_name', title: 'Reaction Name (Lvl 3)', align: 'center' },
+  { key: 'prediction_certainty', title: 'Prediction Certainty', align: 'center' },
+];
+
+const type = computed(() => {
+  if (smiles.value.includes(">")) {
+    return "rxn";
+  } else {
+    return "mol";
+  }
+});
+
+const canonicalize = () => {
+  API.post("/api/rdkit/canonicalize/", { smiles: smiles.value })
+    .then((json) => {
+      console.log(json);
+      smiles.value = json.smiles;
+    })
+    .catch((error) => {
+      console.log("Could not canonicalize: " + error);
     });
-
-    const canonicalize = () => {
-      API.post("/api/rdkit/canonicalize/", { smiles: smiles.value })
-        .then((json) => {
-          console.log(json);
-          smiles.value = json.smiles;
-        })
-        .catch((error) => {
-          console.log("Could not canonicalize: " + error);
-        });
-    };
-
-    const getScscore = (smiles) => {
-      scscore.value = "evaluating";
-      const url = "/api/scscore/call-sync";
-      const body = {
-        smiles: smiles,
-      };
-      API.post(url, body)
-        .then((json) => {
-          scscore.value = num2str(json.result);
-        })
-        .catch((error) => {
-          console.error("Could not evaluate SCScore:", error);
-        });
-    };
-
-    const getReactionScore = (smiles) => {
-      reactionScore.value = "evaluating";
-      const url = "/api/v2/fast-filter/";
-      const split = smiles.split(">");
-      const body = {
-        reactants: split[0],
-        products: split[split.length - 1],
-      };
-      API.runCeleryTask(url, body)
-        .then((output) => {
-          reactionScore.value = num2str(output);
-        })
-        .catch((error) => {
-          console.error("Could not evaluate reaction score:", error);
-        });
-    };
-
-    const getMappedSmiles = (smiles) => {
-      mappedSmiles.value = "evaluating";
-      showMappedSmiles.value = true;
-      const url = "/api/v2/atom-mapper/";
-      const body = {
-        rxnsmiles: smiles,
-        mapper: mapper.value,
-      };
-      API.runCeleryTask(url, body)
-        .then((output) => {
-          mappedSmiles.value = output;
-        })
-        .catch((error) => {
-          console.error("Could not generate atom mapping:", error);
-        });
-    };
-
-    const getClassification = (smiles) => {
-      classificationStatus.value = "evaluating";
-      showClassificationResults.value = true;
-      classificationResults.value = [];
-      const url = "/api/v2/reaction-classification/";
-      const data = smiles.split(">>");
-      const body = {
-        reactants: data[0],
-        products: data[1],
-      };
-      API.runCeleryTask(url, body)
-        .then((output) => {
-          classificationResults.value = output["result"];
-          if (output["status"] === "FAILED") {
-            classificationStatus.value = "failed";
-          } else {
-            classificationStatus.value = "ok";
-          }
-        })
-        .catch((error) => {
-          console.error("Could not generate reaction classification:", error);
-        });
-    };
-
-    const tbPresetToArgs = () => {
-      // Convert tree builder preset options to API arguments
-      const preset = tbPresetOptions.value[tbPreset.value].settings;
-      const mapping = {
-        expansionTime: "expansion_time",
-        maxDepth: "max_depth",
-        maxBranching: "max_branching",
-        numTemplates: "template_count",
-        maxCumProb: "max_cum_prob",
-        minPlausibility: "filter_threshold",
-        chemicalPopularityLogic: "chemical_popularity_logic",
-        chemicalPopularityReactants: "min_chempop_reactants",
-        chemicalPopularityProducts: "min_chempop_products",
-        returnFirst: "return_first",
-      };
-      const args = {};
-      for (const [key, val] of Object.entries(preset)) {
-        args[mapping[key]] = val;
-      }
-      return args;
-    };
-
-    const sendTreeBuilderJob = (smiles) => {
-      tbStatus.value = "pending";
-      const url = "/api/tree-builder/";
-      const body = {
-        description: tbDesc.value ? tbDesc.value : smiles,
-        smiles: smiles,
-        template_set: "reaxys",
-        template_prioritizer_version: 1,
-        max_trees: 500,
-        store_results: true,
-        json_format: "nodelink",
-      };
-      Object.assign(body, tbPresetToArgs());
-      API.post(url, body)
-        .then((json) => {
-          tbStatus.value = json.task_id;
-        })
-        .catch((error) => {
-          tbStatus.value = "error";
-          console.error("Failed to submit tree builder job:", error);
-        });
-    };
-
-    watch(smiles, (newVal, oldVal) => {
-      if (newVal !== oldVal) {
-        validSmiles.value = false;
-        scscore.value = undefined;
-        reactionScore.value = undefined;
-        mappedSmiles.value = undefined;
-        tbStatus.value = undefined;
-        classificationStatus.value = "not started";
-        classificationResults.value = [];
-      }
-    });
-
-    return {
-      smiles,
-      validSmiles,
-      scscore,
-      reactionScore,
-      mappedSmiles,
-      mapper,
-      mapperOptions,
-      showMappedSmiles,
-      classificationResults,
-      showClassificationResults,
-      classificationStatus,
-      tbStatus,
-      tbPreset,
-      tbPresetOptions,
-      tbDesc,
-      context,
-      type,
-      canonicalize,
-      getScscore,
-      getReactionScore,
-      getMappedSmiles,
-      getClassification,
-      tbPresetToArgs,
-      sendTreeBuilderJob,
-      showKetcher,
-      ketcherRef,
-    };
-  },
 };
+
+const getScscore = (smiles) => {
+  scscore.value = "evaluating";
+  const url = "/api/scscore/call-sync";
+  const body = {
+    smiles: smiles,
+  };
+  API.post(url, body)
+    .then((json) => {
+      scscore.value = num2str(json.result);
+    })
+    .catch((error) => {
+      console.error("Could not evaluate SCScore:", error);
+    });
+};
+
+const getReactionScore = (smiles) => {
+  reactionScore.value = "evaluating";
+  const url = "/api/fast-filter/call-async";
+  const split = smiles.split(">");
+  const body = {
+    "smiles":
+      [split[0], split[split.length - 1]]
+  };
+  API.runCeleryTask(url, body)
+    .then((output) => {
+      console.log(output)
+      reactionScore.value = num2str(output.result.score);
+    })
+    .catch((error) => {
+      console.error("Could not evaluate reaction score:", error);
+    });
+};
+
+const getMappedSmiles = (smiles) => {
+  mappedSmiles.value = "evaluating";
+  showMappedSmiles.value = true;
+  const url = "/api/atom-map/controller/call-async";
+  const body = {
+    "backend": mapper.value,
+    "smiles": [
+      smiles
+    ]
+  };
+  API.runCeleryTask(url, body)
+    .then((output) => {
+      mappedSmiles.value = output.result[0];
+    })
+    .catch((error) => {
+      mappedSmiles.value = "error";
+      console.error("Could not generate atom mapping:", error);
+    });
+};
+
+const getClassification = (smiles) => {
+  classificationStatus.value = "evaluating";
+  showClassificationResults.value = true;
+  classificationResults.value = [];
+  const url = "/api/reaction-classification/call-async";
+  // const data = smiles.split(">>");
+  const body = {
+    "smiles": [
+      smiles
+    ],
+    "num_results": 10
+  }
+  API.runCeleryTask(url, body)
+    .then((output) => {
+      classificationResults.value = output["result"];
+      if (output["status"] === "FAILED") {
+        classificationStatus.value = "failed";
+      } else {
+        classificationStatus.value = "ok";
+      }
+    })
+    .catch((error) => {
+      console.error("Could not generate reaction classification:", error);
+    });
+};
+
+
+const tbPresetToArgs = () => {
+  // Convert tree builder preset options to API arguments
+  const preset = tbPresetOptions.value[tbPreset.value].settings;
+  const mapping = {
+    expansionTime: "expansion_time",
+    maxDepth: "max_depth",
+    maxBranching: "max_branching",
+    numTemplates: "template_count",
+    maxCumProb: "max_cum_prob",
+    minPlausibility: "filter_threshold",
+    chemicalPopularityLogic: "chemical_popularity_logic",
+    chemicalPopularityReactants: "min_chempop_reactants",
+    chemicalPopularityProducts: "min_chempop_products",
+    returnFirst: "return_first",
+  };
+  const args = {};
+  for (const [key, val] of Object.entries(preset)) {
+    args[mapping[key]] = val;
+  }
+  return args;
+};
+
+const sendTreeBuilderJob = (smiles) => {
+  tbStatus.value = "pending";
+  const url = "/api/tree-builder/";
+  const body = {
+    description: tbDesc.value ? tbDesc.value : smiles,
+    smiles: smiles,
+    template_set: "reaxys",
+    template_prioritizer_version: 1,
+    max_trees: 500,
+    store_results: true,
+    json_format: "nodelink",
+  };
+  Object.assign(body, tbPresetToArgs());
+  API.post(url, body)
+    .then((json) => {
+      tbStatus.value = json.task_id;
+    })
+    .catch((error) => {
+      tbStatus.value = "error";
+      console.error("Failed to submit tree builder job:", error);
+    });
+};
+
+watch(smiles, (newVal, oldVal) => {
+  if (newVal !== oldVal) {
+    validSmiles.value = false;
+    scscore.value = undefined;
+    reactionScore.value = undefined;
+    mappedSmiles.value = undefined;
+    tbStatus.value = undefined;
+    classificationStatus.value = "not started";
+    classificationResults.value = [];
+  }
+});
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.launchcard-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  min-height: 100px;
-}
-</style>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.launchcard-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  min-height: 100px;
-}
-</style>

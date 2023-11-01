@@ -3,9 +3,9 @@
     <v-row class="justify-center">
       <v-col cols="12" sm="8" md="10">
         <div class="mt-8 mb-5">
-          <v-breadcrumbs class="pa-0" :items="['Home', 'Buyables']"></v-breadcrumbs>
+          <v-breadcrumbs class="pa-0" :items="['Home', 'Drawing']"></v-breadcrumbs>
           <h1>
-            Buyable Compounds
+            Drawing
           </h1>
         </div>
       </v-col>
@@ -17,15 +17,12 @@
 
           <v-row class="px-5 pt-5 justify-center" density="compact">
             <v-col cols="12" md="10" my="10">
-              <v-text-field v-model="searchSmilesQuery" placeholder="SMILES/SMARTS" prepend-inner-icon="mdi mdi-flask"
-                density="comfortable" variant="outlined" label="Enter SMILES/SMART to explore" hide-details clearable>
-                <template v-slot:append>
-                  <v-btn color="primary" @click="search" size="large">
-                    Search
-                  </v-btn>
-                  <v-checkbox-btn v-model="searchRegex" label="Use SMARTS" hide-details>
-                  </v-checkbox-btn>
-                </template>
+              <v-text-field v-model="searchSmilesQuery" placeholder="SMILES" prepend-inner-icon="mdi mdi-flask"
+                density="comfortable" variant="outlined" label="Enter a molecule or reaction SMILES to explore available tasks" hide-details clearable>
+              <template v-slot:append>
+                <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large"
+                  @click="canonicalize()">Canonicalize</v-btn>
+              </template>
                 <template v-slot:append-inner>
                   <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
                     @click="openKetcher(searchSmilesQuery)">Draw</v-btn>
@@ -38,78 +35,12 @@
             @update:smiles="updateSmiles" />
 
           <v-row class="mb-2 px-5 pt-5">
-            <v-col cols="12" md="4">
-              <v-slider hide-details v-model="simThresh" label="Similarity Threshold" min="0" max="1" step="0.0001"
-                color="primary">
-                <template v-slot:append>
-                  <v-text-field data-cy="similarity-input-element" v-model="simThresh" type="number" style="width: 80px"
-                    density="compact" hide-details variant="outlined"></v-text-field>
-                </template>
-              </v-slider>
-            </v-col>
-            <v-col cols="12" md="4">
-              <v-slider hide-details v-model="searchLimit" label="Limit Results" min="1" max="100" step="1"
-                color="primary">
-                <template v-slot:append>
-                  <v-text-field data-cy="result-input-element" v-model="searchLimit" type="number" style="width: 80px"
-                    density="compact" hide-details variant="outlined"></v-text-field>
-                </template>
-              </v-slider>
-            </v-col>
-            <v-col cols="12" md="4" class="d-flex justify-space-evenly align-center">
-
-              <v-menu location="bottom" :close-on-content-click="false">
-                <template v-slot:activator="{ props }">
-                  <v-btn color="primary" size="small" variant="flat" v-bind="props">
-                    Select Sources
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery"
-                    @click="selectSource(source)">
-
-                    <v-row align="center">
-                      <v-col cols="auto">
-                        <v-list-item-title>{{ source }}<v-icon class="ml-1 mb-2" v-show="selectedSource === source"
-                            icon="mdi-check"></v-icon></v-list-item-title>
-                      </v-col>
-                    </v-row>
-
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-
-              <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
-                <template v-slot:activator="{ props }">
-                  <v-btn color="primary" prepend-icon="mdi mdi-menu-down" size="small" variant="flat" v-bind="props">
-                    Upload
-                  </v-btn>
-                </template>
-
-                <v-list>
-                  <v-list-item @click="showAddModal = !showAddModal">Add Compound</v-list-item>
-                  <v-list-item @click="showUploadModal = !showUploadModal">Upload File</v-list-item>
-                </v-list>
-              </v-menu>
-
-              <v-btn color="primary" variant="tonal" size="small" @click="clear()" :disabled="!buyables.length">
-                Clear
-              </v-btn>
-            </v-col>
+            
           </v-row>
           <v-divider class="border-opacity-25 mb-6"></v-divider>
-          <v-row v-if="buyables.length">
+          <v-row v-if="searchSmilesQuery.length">
             <v-col cols="12">
-              <v-data-table :headers="headers" :items="buyables" :loading="showLoader">
-                <template v-slot:item.smiles="{ item }">
-                  <copy-tooltip :data="item.columns.smiles">
-                    <smiles-image :smiles="item.columns.smiles" height="80px"></smiles-image>
-                  </copy-tooltip>
-                </template>
-                <template v-slot:item.delete="{ item }">
-                  <v-icon @click="deleteBuyable(item.raw._id)" class="text-center">mdi-delete</v-icon>
-                </template>
-              </v-data-table>
+                   <v-col><smiles-image :smiles="searchSmilesQuery" allow-copy></smiles-image></v-col>
             </v-col>
           </v-row>
           <v-row v-else class="px-5 pb-5"> <v-col cols="12" class="d-flex justify-center align-center">
@@ -121,98 +52,6 @@
       </v-col>
     </v-row>
   </v-container>
-
-  <v-dialog v-model="showAddModal" max-width="600px">
-    <v-card>
-      <v-card-title class="mt-2">
-        <v-col cols="12">Add new buyable compound</v-col>
-      </v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="12">
-            <v-text-field data-cy="smiles-input" :rules="[v => !!v || 'SMILES is required']" label="SMILES"
-              v-model="addBuyableSmiles" density="comfortable" variant="outlined" clearable></v-text-field>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12">
-            <v-text-field id="pricePerGram" :rules="[v => !!v || 'Price is required']" label="Price per gram"
-              v-model="addBuyablePrice" density="comfortable" variant="outlined" clearable></v-text-field>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12">
-            <v-text-field id="source" label="Source" v-model="addBuyableSource"
-              :rules="[v => !!v || 'Source is required']" density="comfortable" variant="outlined"
-              clearable></v-text-field>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12">
-            <v-checkbox label="Allow overwriting exisiting result" v-model="allowOverwrite"></v-checkbox>
-          </v-col>
-        </v-row>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="showAddModal = false">Close</v-btn>
-        <v-btn color="green darken-1" text @click="addBuyable">Add Entry</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-
-  <v-dialog v-model="showUploadModal" max-width="600px">
-    <v-card>
-      <v-card-title class="mt-2">
-        <v-col cols="12">Upload buyable compound file</v-col>
-      </v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="12" class="mb-2">
-            <span>
-              File uploads should be in CSV format containing "smiles", "ppg", and "source" columns or
-              in
-              JSON format as an
-              array of objects containing "smiles", "ppg", and "source" fields. Optionally, a
-              "properties" field containing additional metadata can be specified as an array of JSON
-              objects
-              with "name" and
-              "value" fields.
-            </span>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12">
-            <v-file-input label="File" v-model="uploadFile" :rules="[v => !!v || 'File is required']"
-              density="comfortable" variant="outlined" clearable></v-file-input>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12">
-            <v-select label="Format" v-model="uploadFileFormat" :items="['json', 'csv']" density="comfortable"
-              variant="outlined" hide-details clearable></v-select>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12">
-            <v-checkbox label="Allow overwriting exisiting result" v-model="allowOverwrite"></v-checkbox>
-          </v-col>
-        </v-row>
-      </v-card-text>
-
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="showUploadModal = false">Close</v-btn>
-        <v-btn color="green darken-1" text @click="handleUploadSubmit">Upload</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
 </template>
 
 <script setup>
@@ -307,6 +146,17 @@ onMounted(() => {
     search();
   }
 });
+
+const canonicalize = () => {
+  API.post("/api/rdkit/canonicalize/", { smiles: smiles.value })
+    .then((json) => {
+      console.log(json);
+      smiles.value = json.smiles;
+    })
+    .catch((error) => {
+      console.log("Could not canonicalize: " + error);
+    });
+};
 
 const search = () => {
   pendingTasks.value++;
