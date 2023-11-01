@@ -36,7 +36,7 @@
             </v-card-text>
             <v-card-actions class="mb-2">
                 <v-spacer></v-spacer>
-                <v-btn color="success" @click="submitSupport, dialog = false">Submit</v-btn>
+                <v-btn color="success" @click="submitSupport">Submit</v-btn>
                 <v-btn text @click="dialog = false">Cancel</v-btn>
             </v-card-actions>
         </v-card>
@@ -69,16 +69,16 @@ const categoryOptions = ref([
 ]);
 const supportSubject = ref("");
 const supportShared = ref(false);
-// const context = computed(() => JSON.parse(document.getElementById("django-context").textContent));
 
 const submitSupport = () => {
-    let mailtoString = `mailto:${context.value.supportEmails}`;
-    mailtoString += `?subject=${selectedModule.value}`;
-    mailtoString += `|${selectedCategory.value}`;
-    mailtoString += `|${supportShared.value ? "shared" : ""}`;
-    mailtoString += `|${supportSubject.value}`;
+    let mailtoString = `mailto:askcos_support@mit.edu`;
+    mailtoString += `?subject=${encodeURIComponent(selectedModule.value.title)} `;
+    mailtoString += `| ${encodeURIComponent(selectedCategory.value.title)} `;
+    mailtoString += `${supportShared.value ? "| Shared " : ""}`;
+    mailtoString += `| ${encodeURIComponent(supportSubject.value)} `;
     mailtoString += "&body=Please add your comments here. Please don't modify the beginning of the subject line; we use this for internal purposes.";
     window.open(mailtoString, "_blank");
+    dialog.value = false;
 };
 
 </script>
