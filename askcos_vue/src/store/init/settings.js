@@ -15,8 +15,8 @@ const interactive_path_planner_settings_default = {
   banned_chemicals: [],
   banned_reactions: [],
   use_fast_filter: true,
-  fast_filter_threshold: 0.75,
-  retro_rerank_backend: "scscore",
+  fast_filter_threshold: 0.001,
+  retro_rerank_backend: "relevance_heuristic",
   cluster_precursors: false,
   cluster_setting: {
     feature: "original",
