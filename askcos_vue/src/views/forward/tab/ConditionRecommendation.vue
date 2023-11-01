@@ -13,7 +13,7 @@
                 <v-col cols="auto">
                     <v-btn variant="flat" v-show="!!results.length" @click="handleClick" :disabled="evaluating"
                         height="30px" color="primary mx-2">
-                        Evaluate Reaction(s)
+                        Get Reaction Score
                     </v-btn>
                 </v-col>
             </v-row>

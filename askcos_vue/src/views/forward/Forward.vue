@@ -28,7 +28,7 @@
                   </template>
                 </v-text-field>
               </v-col>
-              <v-col cols="6" v-if="mode === 'context' || mode === 'impurity' || mode === 'selectivity'">
+              <v-col cols="6" v-if="mode !== 'forward' && mode !== 'sites'">
                 <v-text-field v-model="product" label="Product" class="centered-input" variant="outlined"
                   prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
                   <template v-slot:append-inner>
@@ -110,7 +110,7 @@
                     </v-list-item>
                   </v-list>
                 </v-menu>
-                <v-btn variant="tonal" class="mr-5" @click="clear()" :disabled="contextResults = [] && reactants === ''">
+                <v-btn variant="tonal" class="mr-5" @click="clear()">
                   Clear
                 </v-btn>
                 <v-btn icon @click="dialog = !dialog">
@@ -570,13 +570,20 @@ const goToForward = (index) => {
       if (context['catalyst']) {
         reagentsValue += '.' + context['catalyst'];
       }
-      reagents.value = reagentsValue; ``
+      reagents.value = reagentsValue;
       if (context['solvent']) {
         solvent.value = context['solvent'];
       }
       changeMode('forward');
       tab.value = 'forward';
+      router.push({
+        path: '/forward',
+        query: {
+          tab: 'forward'
+        }
+      })
       forwardPredict();
+      console.log(contextResults.value)
     });
 };
 
@@ -587,6 +594,12 @@ const goToImpurity = (index) => {
       product.value = index;
       changeMode('impurity');
       tab.value = 'impurity';
+      router.push({
+        path: '/forward',
+        query: {
+          tab: 'impurity'
+        }
+      })
       impurityPredict();
     });
 };
@@ -597,6 +610,12 @@ const goToSelectivity = (index) => {
       product.value = index
       changeMode('selectivity')
       tab.value = 'selectivity';
+      router.push({
+        path: '/forward',
+        query: {
+          tab: 'selectivity'
+        }
+      })
       selectivityPredict()
     })
 }
@@ -634,13 +653,13 @@ const predict = async () => {
   try {
     await canonicalizeAll()
     switch (mode.value) {
-      case 'forward':
-        clearForward()
-        forwardPredict()
-        break
       case 'context':
         clearContext()
         contextPredict()
+        break
+      case 'forward':
+        clearForward()
+        forwardPredict()
         break
       case 'impurity':
         clearImpurity()
@@ -669,9 +688,9 @@ const clearInputs = () => {
   solvent.value = '';
 }
 
-const clear = async (skipConfirm = false) => {
+const clear = (skipConfirm = false) => {
   if (!skipConfirm) {
-    const isConfirmed = await createConfirm({
+    const isConfirmed = createConfirm({
       title: 'Please Confirm',
       content: 'This will clear all of your current results. Continue anyway?',
       dialogProps: { width: "auto" }
