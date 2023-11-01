@@ -53,7 +53,7 @@
           <v-list-item to="/solprop?tab=solscreen" title="Solvent Screening" value="USS"
             :active="route.query.tab === 'solscreen'"></v-list-item>
           <v-list-item to="/buyables" title="Buyable Look-up" value="UBLU"></v-list-item>
-          <v-list-item title="Drawing" value="UD"></v-list-item>
+          <v-list-item to="/drawing" title="Drawing" value="UD"></v-list-item>
         </v-list-group>
       </v-list-group>
       <v-list-item to="/status" prepend-icon="mdi-list-status" title="Server Status" value="status"
