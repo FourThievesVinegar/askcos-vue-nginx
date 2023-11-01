@@ -41,19 +41,21 @@
                                     <v-switch label="" v-model="allowResolve" id="allowResolve" hide-details
                                         color="primary"></v-switch>
                                 </setting-input>
-                                <setting-input label="Highlight changed atoms"
-                                    help-text="When enabled, chemical structure images will highlight the atoms involved in a transformation.">
-                                    <v-switch label="" v-model="isHighlightAtom" id="checkHighlight" hide-details
-                                        color="primary"></v-switch>
+                                <setting-input label="Precursor scoring" label-for="precursorScoring"
+                                    help-text="This settings changes how the precursors are ranked by the server. Results can also be re-ordered dynamically as explained in the tutorial.">
+                                    <v-select :model-value="precursorScoring" :items="precursorScoringItems"
+                                        @update:modelValue="($event) => precursorScoring = $event" variant="outlined"
+                                        class="mt-4 mb-2" hide-details density="compact"></v-select>
                                 </setting-input>
-                                <setting-input label="Align node images to target"
-                                    help-text="When enabled, ASKCOS will attempt to align chemical node drawings to the target molecule in the graph visualization.">
-                                    <v-switch label="" v-model="alignNodeImagesToTarget" id="alignMols" hide-details
-                                        color="primary"></v-switch>
+                                <setting-input label="Min. plausibility" label-for="minPlausibility"
+                                    help-text="This is the minimum plausibility that a predictor transformation must receive from the Fast Filter model in order to be kept and returned as a result.
+        The plausibility score can help filter out bad suggestions, but in some cases can be over conservative and filter out false negatives.">
+                                    <v-text-field variant="outlined" type="number" :model-value="minPlausibility" min="0"
+                                        max="1" step="0.000001" hide-details density="compact" class="mb-2"></v-text-field>
                                 </setting-input>
-                                <setting-input label="Align precursors to product"
-                                    help-text="When enabled, ASKCOS will attempt to align reactants to products for precursors and reaction drawings.">
-                                    <v-switch label="" v-model="alignPrecursorsToProduct" id="alignRxns" hide-details
+                                <setting-input label="Apply regio-selectivity checking"
+                                    help-text="When enabled, will automatically identify reactions which have potential regio-selectivity considerations.">
+                                    <v-switch label="" v-model="allowSelec" id="checkSelec" hide-details
                                         color="primary"></v-switch>
                                 </setting-input>
                                 <setting-input label="Top-N result to add to graph" label-for="reactionLimit"
@@ -214,21 +216,19 @@
                                         </template>
                                     </v-alert>
                                 </div>
-                                <setting-input label="Precursor scoring" label-for="precursorScoring"
-                                    help-text="This settings changes how the precursors are ranked by the server. Results can also be re-ordered dynamically as explained in the tutorial.">
-                                    <v-select :model-value="precursorScoring" :items="precursorScoringItems"
-                                        @update:modelValue="($event) => precursorScoring = $event" variant="outlined"
-                                        class="mt-4 mb-2" hide-details density="compact"></v-select>
+                                <setting-input label="Highlight changed atoms"
+                                    help-text="When enabled, chemical structure images will highlight the atoms involved in a transformation.">
+                                    <v-switch label="" v-model="isHighlightAtom" id="checkHighlight" hide-details
+                                        color="primary"></v-switch>
                                 </setting-input>
-                                <setting-input label="Min. plausibility" label-for="minPlausibility"
-                                    help-text="This is the minimum plausibility that a predictor transformation must receive from the Fast Filter model in order to be kept and returned as a result.
-        The plausibility score can help filter out bad suggestions, but in some cases can be over conservative and filter out false negatives.">
-                                    <v-text-field variant="outlined" type="number" :model-value="minPlausibility" min="0"
-                                        max="1" step="0.000001" hide-details density="compact" class="mb-2"></v-text-field>
+                                <setting-input label="Align node images to target"
+                                    help-text="When enabled, ASKCOS will attempt to align chemical node drawings to the target molecule in the graph visualization.">
+                                    <v-switch label="" v-model="alignNodeImagesToTarget" id="alignMols" hide-details
+                                        color="primary"></v-switch>
                                 </setting-input>
-                                <setting-input label="Apply regio-selectivity checking"
-                                    help-text="When enabled, will automatically identify reactions which have potential regio-selectivity considerations.">
-                                    <v-switch label="" v-model="allowSelec" id="checkSelec" hide-details
+                                <setting-input label="Align precursors to product"
+                                    help-text="When enabled, ASKCOS will attempt to align reactants to products for precursors and reaction drawings.">
+                                    <v-switch label="" v-model="alignPrecursorsToProduct" id="alignRxns" hide-details
                                         color="primary"></v-switch>
                                 </setting-input>
                             </v-container>
