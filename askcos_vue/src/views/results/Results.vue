@@ -181,6 +181,8 @@ const headers = ref([
 ]);
 
 onMounted(async () => {
+  const currentUrl = window.location.href;
+  console.log(currentUrl);
   const urlParams = new URLSearchParams(window.location.search);
   let sharedId = urlParams.get("shared");
   if (sharedId) {
@@ -200,22 +202,19 @@ watch(selectAll, (newVal) => {
   }
 });
 
-async function shareResult(id) {
+const shareResult = (id) => {
   pendingTasks.value += 1;
   try {
+    const currentUrl = window.location.href;
     const params = new URLSearchParams();
     params.append('result_id', id);
-    const json = await API.get(`/api/results/share?${params.toString()}`);
-    shareLink.value = json.url;
-    console.log(json.url)
-    showShareModal.value = true;
+    shareLink.value = `${currentUrl}/api/results/share?${params.toString()}`;
+    API.get(`/api/results/share?${params.toString()}`);
     for (const res of allResults.value) {
-      console.log(allResults.value)
       if (res.result_id === id) {
         res.public = true;
         break;
       }
-      console.log(shareLink.value)
     }
   } catch (error) {
     alert("Could not share result: " + error);
