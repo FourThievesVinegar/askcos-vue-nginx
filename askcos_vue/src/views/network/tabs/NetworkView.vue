@@ -1128,7 +1128,7 @@ export default {
         if (!isConfirmed)
           return
       }
-      this.resultsStore.target = "";
+      // this.resultsStore.target = ""; // as requested in #41
       this.selected = null;
       this.resultsStore.clearDataGraph();
       this.resultsStore.clearDispGraph();
