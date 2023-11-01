@@ -78,7 +78,7 @@
                       <v-divider class="ma-2" :thickness="2"></v-divider>
                       <p class="text-subtitle-2 pl-3">Quick Settings</p>
                       <v-list density="compact">
-                        <v-list-item v-for="(value, name) in tbPresetOptions" :key="name">
+                        <v-list-item v-for="(value, name) in mapperOptions" :key="name">
                           <v-list-item-title>
                             <v-checkbox v-model="tbPreset" :value="name" hide-details>
                               <template v-slot:label>
@@ -172,18 +172,18 @@
               Fast Filter Score
             </v-card-title>
             <v-card-actions class="justify-center">
-                <template v-if="reactionScore === undefined">
-                  <v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
-                    @click="getReactionScore(smiles)">Evaluate</v-btn>
-                </template>
-                <template v-else-if="reactionScore === 'evaluating'">
-                  <v-progress-circular indeterminate color="primary"></v-progress-circular>
-                </template>
-                <template v-else>
-                  <v-chip color="primary">
-                    <p class="text-body-1">{{ reactionScore }}</p>
-                  </v-chip>
-                </template>
+              <template v-if="reactionScore === undefined">
+                <v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                  @click="getReactionScore(smiles)">Evaluate</v-btn>
+              </template>
+              <template v-else-if="reactionScore === 'evaluating'">
+                <v-progress-circular indeterminate color="primary"></v-progress-circular>
+              </template>
+              <template v-else>
+                <v-chip color="primary">
+                  <p class="text-body-1">{{ reactionScore }}</p>
+                </v-chip>
+              </template>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -193,7 +193,42 @@
               Generate Atom Mapping
             </v-card-title>
             <v-card-actions class="justify-center">
-
+              <template v-if="mappedSmiles === undefined || !!mappedSmiles.length >0 || mappedSmiles === 'error'">
+                <v-btn-group density="compact" color="primary">
+                  <v-btn v-if="mappedSmiles === undefined" prepend-icon="mdi mdi-play" variant="tonal" color="primary" @click="getMappedSmiles(smiles)">Evaluate</v-btn>
+                  <v-btn v-if="!!mappedSmiles" prepend-icon="mdi mdi-play" variant="tonal" 
+                  @click="showMappedSmiles = !showMappedSmiles"> {{ showMappedSmiles ? 'Hide' :
+                    'Show' }}</v-btn>
+                  <v-menu location="bottom" id="mapper-settings" :close-on-content-click="false">
+                    <template v-slot:activator="{ props }">
+                      <v-btn v-bind="props" icon="mdi mdi-menu-down" variant="tonal" color="primary" />
+                    </template>
+                    <v-card width="auto" min-width="250px">
+                      <v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary" @click="getMappedSmiles(smiles)"
+                        class="pa-3 justify-center" :disabled="mappedSmiles === undefined">Re-evaluate</v-btn>
+                      <v-divider class="ma-2" :thickness="2"></v-divider>
+                      <p class="text-subtitle-2 pl-3">Quick Settings</p>
+                      <v-list density="compact">
+                        <v-list-item v-for="name in mapperOptions" :key="name">
+                          <v-list-item-title>
+                            <v-checkbox v-model="mapper" :value="name" hide-details>
+                              <template v-slot:label>
+                                {{ name }}
+                              </template>
+                            </v-checkbox>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
+                </v-btn-group>
+              </template>
+              <template v-else-if="mappedSmiles === 'evaluating'">
+                <v-progress-circular indeterminate color="primary"></v-progress-circular>
+              </template>
+              <template v-else-if="mappedSmiles === 'error'">
+                <v-chip variant="tonal" color="red" class="text-body-1">Submission Error</v-chip>
+              </template>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -208,6 +243,13 @@
           </v-card>
         </v-col>
       </v-row>
+
+      <v-row v-if="!!mappedSmiles" v-show="!!showMappedSmiles" class="my-4 pa-4">
+          <v-col cols="12" class="justify-center">
+            <smiles-image :smiles="mappedSmiles" draw-map highlight allow-copy></smiles-image>
+                <p class="text-body-1 text-center">SMILES: {{ mappedSmiles }}</p>
+          </v-col>
+        </v-row>
 
       <v-row>
         <v-col cols="12" sm="4" md="4">
@@ -334,8 +376,8 @@ const validSmiles = ref(false);
 const scscore = ref(undefined);
 const reactionScore = ref(undefined);
 const mappedSmiles = ref(undefined);
-const mapper = ref("WLN atom mapper");
-const mapperOptions = ["WLN atom mapper", "Transformer"];
+const mapper = ref("indigo",);
+const mapperOptions = ["indigo", "wln", "rxnmapper"];
 const showMappedSmiles = ref(true);
 const classificationResults = ref([]);
 const showClassificationResults = ref(true);
@@ -354,9 +396,6 @@ const headers = [
   { key: 'reaction_name', title: 'Reaction Name (Lvl 3)', align: 'center' },
   { key: 'prediction_certainty', title: 'Prediction Certainty', align: 'center' },
 ];
-// const context = computed(() =>
-//   JSON.parse(document.getElementById("django-context").textContent)
-// );
 
 const type = computed(() => {
   if (smiles.value.includes(">")) {
@@ -413,16 +452,19 @@ const getReactionScore = (smiles) => {
 const getMappedSmiles = (smiles) => {
   mappedSmiles.value = "evaluating";
   showMappedSmiles.value = true;
-  const url = "/api/v2/atom-mapper/";
+  const url = "/api/atom-map/controller/call-async";
   const body = {
-    rxnsmiles: smiles,
-    mapper: mapper.value,
+    "backend": mapper.value,
+    "smiles": [
+      smiles
+    ]
   };
   API.runCeleryTask(url, body)
     .then((output) => {
-      mappedSmiles.value = output;
+      mappedSmiles.value = output.result[0];
     })
     .catch((error) => {
+      mappedSmiles.value = "error";
       console.error("Could not generate atom mapping:", error);
     });
 };
@@ -511,27 +553,3 @@ watch(smiles, (newVal, oldVal) => {
   }
 });
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.launchcard-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  min-height: 100px;
-}
-</style>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.launchcard-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  min-height: 100px;
-}
-</style>
