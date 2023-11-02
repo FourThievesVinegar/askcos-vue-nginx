@@ -1,7 +1,7 @@
 <template>
   <v-container fluid style="min-height: calc(100vh-50px)">
     <v-row class="justify-center">
-      <v-col cols="12" sm="8" md="10">
+      <v-col cols="12" sm="8" md="12">
         <v-sheet elevation="2" class="pa-10">
           <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="currentSmiles" @input="showKetcher = false"
             @update:smiles="(ketcherSmiles) => updateSmiles(ketcherSmiles)" />
@@ -39,18 +39,16 @@
             <v-row align="center" justify-start>
               <v-col>
                 <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict">Submit</v-btn>
-                <!-- 
-                  <v-btn variant="tonal" class="mr-5" @click="clear()" :disabled="contextResults = [] && reactants === ''">
-                    Clear
-                  </v-btn> -->
+                <v-btn variant="tonal" class="mr-5" :disabled="true">
+                  Clear
+                </v-btn>
                 <v-btn type="submit" variant="flat" color="primary" class="mr-5"
                   @click="showUploadModal = true">Upload</v-btn>
-                <v-btn icon @click="dialog = !dialog">
+                <v-btn icon @click="dialog = !dialog" variant="outlined">
                   <v-icon>mdi-cog</v-icon>
                 </v-btn>
               </v-col>
             </v-row>
-            <!-- <v-btn type="submit" block class="mt-4" color="success" @click="predict">Submit</v-btn> -->
           </v-form>
         </v-sheet>
       </v-col>
@@ -62,8 +60,8 @@
             <v-col md="5">
               <v-menu location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-btn v-show="!!results.length" @click="handleClick" :disabled="evaluating" height="30px"
-                    color="primary mr-2" v-bind="props" prepend-icon="mdi mdi-download">
+                  <v-btn v-show="!!results.length" @click="handleClick" :disabled="evaluating"
+                    color="primary" v-bind="props" prepend-icon="mdi mdi-download" variant="flat">
                     Download
                   </v-btn>
                 </template>
@@ -74,17 +72,18 @@
               </v-menu>
             </v-col>
             <v-spacer md="2"></v-spacer>
-            <v-col md="4">
-              <v-select v-model="selectedHeaders" :items="headers" label="Select Columns" density="comfortable"
-                variant="outlined" hide-details clearable>
+            <v-col md="5">
+              <v-select :model-value="selectedColumnCategories" :items="allfields" label="Select Columns"
+                density="comfortable" variant="outlined" hide-details clearable @update:modelValue="onSelectedCategory"
+                multiple>
                 <template v-slot:selection="{ item, index }">
-                  <v-chip v-if="index < 2">
-                    <span>{{ item.text }}</span>
+                  <v-chip>
+                    <span>{{ item.title }}</span>
                   </v-chip>
                 </template>
               </v-select>
             </v-col>
-            <v-row class="mt-3 pa-4">
+            <v-row class="mt-3 pa-4" style="overflow-x:scroll">
               <v-data-table :headers="fields" :items="results"></v-data-table>
             </v-row>
           </v-row>
@@ -199,31 +198,29 @@ export default {
         'Solubility(298) [mg/mL]',
       ],
       columnCategories: {
-        'Input Ref. Data': ['Ref. Solv', 'Ref. Solub', 'Ref. Temp'],
-        'Input Solute Data': ['Input Hsub298', 'Input Cpg298', 'Input Cps298'],
-        'logST': ['logST (method1) [log10(mol/L)]', 'logST (method2) [log10(mol/L)]'],
-        'Solubility(T) [mg/mL]': ['ST (method1) [mg/mL]', 'ST (method2) [mg/mL]'],
-        'dGsolvT': ['dGsolvT [kcal/mol]'],
-        'dHsolvT': ['dHsolvT [kcal/mol]'],
-        'dSsolvT': ['dSsolvT [cal/K/mol]'],
-        'logS298': ['logS298 [log10(mol/L)]', 'uncertainty logS298 [log10(mol/L)]'],
-        'Solubility(298) [mg/mL]': ['S298 [mg/mL]'],
-        'dGsolv298': ['dGsolv298 [kcal/mol]', 'uncertainty dGsolv298 [kcal/mol]'],
-        'dHsolv298': ['dHsolv298 [kcal/mol]', 'uncertainty dHsolv298 [kcal/mol]'],
-        'Pred. Solute Data': ['Pred. Hsub298 [kcal/mol]', 'Pred. Cpg298 [cal/K/mol]', 'Pred. Cps298 [cal/K/mol]'],
+        'Input Ref. Data': ['ref_solvent', 'ref_solubility', 'ref_temp'],
+        'Input Solute Data': ['hsub298', 'cp_gas_298', 'cp_solid_298'],
+        'logST': ['log_st_1', 'log_st_2'],
+        'Solubility(T) [mg/mL]': ['st_1', 'st_2'],
+        'dGsolvT': ['dg_solv_t'],
+        'dHsolvT': ['dh_solv_t'],
+        'dSsolvT': ['ds_solv_t'],
+        'logS298': ['log_s_298', 'uncertainty_log_s_298'],
+        'Solubility(298) [mg/mL]': ['s_298'],
+        'dHsolv298': ['dh_solv_298', 'uncertainty_dh_solv_298'],
+        'Pred. Solute Data': ['pred_hsub298', 'pred_cpg298', 'pred_cps298'],
         'Solute Abraham Parameters': ['E', 'S', 'A', 'B', 'L', 'V'],
-        'Messages': ['Error Message', 'Warning Message'],
+        'Messages': ['error_message', 'warning_message'],
       },
+      fields: [
+
+      ],
       loading: false,
     }
   },
   computed: {
-    fields() {
-      const _fields = ['Solute', 'Solvent', 'Temp']
-      this.selectedColumnCategories.forEach((category) => {
-        _fields.push(...this.columnCategories[category])
-      })
-      return _fields.map((key) => ({ key: key, title: key, sortable: true }))
+    allfields() {
+      return Object.keys(this.columnCategories).map((key) => ({ key: key, title: key }))
     },
     exportFileName() {
       let baseName = 'askcos'
@@ -266,8 +263,20 @@ export default {
     if (solvent) {
       this.solvent = solvent
     }
+
+    this.onSelectedCategory();
   },
   methods: {
+    onSelectedCategory(value) {
+      if (value) {
+        this.selectedColumnCategories = value
+      }
+      const _fields = ['Solute', 'Solvent', 'Temp']
+      this.selectedColumnCategories.forEach((category) => {
+        _fields.push(...this.columnCategories[category])
+      })
+      this.fields = _fields.map((key) => ({ key: key, title: key, sortable: true }))
+    },
     predict() {
       this.pendingTasks += 1
       this.loading = true
@@ -349,7 +358,7 @@ export default {
     openKetcher(source) {
       this.currentInputSource = source;
       this.showKetcher = true;
-        this.$refs['ketcherRef'].smilesToKetcher()
+      this.$refs['ketcherRef'].smilesToKetcher()
     },
     updateSmiles(ketcherSmiles) {
       switch (this.currentInputSource) {
