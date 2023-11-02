@@ -8,12 +8,17 @@
                 <v-spacer></v-spacer>
             </v-row>
 
-            <v-row class="justify-center my-auto" density="compact">
-                <v-col cols="12" md="8" justify-center v-if="!pending && results.length">
-                    <v-text-field label="Filter Reactants" density="comfortable" variant="outlined" hide-details clearable
+            <v-row class="justify-center my-auto" density="compact" v-if="!pending && results.length">
+                <v-col cols="12" md="8" justify-center>
+                    <v-text-field label="Filter Reactants" density="compact" variant="outlined" hide-details clearable
                         placeholder="Filter reactants based on substring match to SMILES." v-model="resultsQuery"
                         @input="filterResult"></v-text-field>
-                    <ketcher-min ref="ketcherMinRef" @change="siteSelectedAtoms = $event"></ketcher-min>
+                </v-col>
+            </v-row>
+            <v-row class="justify-center align-center" v-if="!pending && results.length">
+                <v-col class="d-flex align-center justify-center" cols="12" md="10">
+                    <ketcher-min ref="ketcherMinRef" @change="siteSelectedAtoms = $event" 
+                       ></ketcher-min>
                 </v-col>
             </v-row>
 
@@ -88,7 +93,6 @@ import { createReaxysUrl } from "@/common/reaxys";
 const panel = ref([0])
 const disabled = ref(false)
 const resultsQuery = ref('')
-// const sitesSelectivityRef = ref(null)
 const ketcherMinRef = ref(null)
 
 const { results, pending } = defineProps({
@@ -125,6 +129,10 @@ const headers = ref([
     { key: 'references', title: 'References', align: 'center', width: "500px" },
 
 ])
+
+defineExpose({
+    ketcherMinRef
+})
 
 
 </script>

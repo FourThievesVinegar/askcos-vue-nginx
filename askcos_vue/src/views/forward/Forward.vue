@@ -145,7 +145,7 @@
               @download-selectivity="downloadSelectivityResults" />
           </v-window-item>
           <v-window-item value="sites">
-            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" ref="sitesSelectivityRef"
+            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" ref="ssref"
               :reactingAtoms="reactingAtoms" :pending="pendingTasks" @get-sites-refs="getSitesRefs"
               @download-sites-refs="downloadSitesRefs" @copy-to-clipboard="copyToClipboard" />
           </v-window-item>
@@ -346,7 +346,7 @@ const ketcherMinRef = ref(null);
 const forwardFileName = ref('forward.csv');
 const impurityFileName = ref('impurity.csv');
 const selectivityFileName = ref('selectivity.csv');
-const sitesSelectivityRef = ref(null)
+const ssref = ref(null)
 
 const downloadSitesRefs = (result) => {
   console.log(result.references)
@@ -1099,12 +1099,11 @@ const sitesPredict = () => {
   API.runCeleryTask('/api/legacy/selectivity/', postData)
     .then(output => {
       siteResults.value = output
-      console.log(sitesSelectivityRef.ketcherMinRef)
-      sitesSelectivityRef.ketcherMinRef.setSmiles(reactants.value);
-      console.log(siteResults.value)
     })
-    .finally(() => {
+    .finally(async () => {
       pendingTasks.value--
+      await nextTick()
+      ssref.value.ketcherMinRef.setSmiles(reactants.value)
     })
 }
 

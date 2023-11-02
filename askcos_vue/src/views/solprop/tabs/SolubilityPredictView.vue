@@ -52,16 +52,17 @@
           </v-form>
         </v-sheet>
       </v-col>
+    </v-row>
 
-
-      <v-col v-show="pendingTasks > 0 || results.length" cols="12">
+    <v-row>
+      <v-col v-show="pendingTasks > 0 || results.length" cols="12" md="12">
         <v-sheet elevation="2" class="pa-4" rounded="lg">
           <v-row v-if="!pendingTasks > 0" align="center" justify="space-between" class="mx-auto my-auto pa-2">
             <v-col md="5">
               <v-menu location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-btn v-show="!!results.length" @click="handleClick" :disabled="evaluating"
-                    color="primary" v-bind="props" prepend-icon="mdi mdi-download" variant="flat">
+                  <v-btn v-show="!!results.length" @click="handleClick" :disabled="evaluating" color="primary"
+                    v-bind="props" prepend-icon="mdi mdi-download" variant="flat">
                     Download
                   </v-btn>
                 </template>
@@ -83,7 +84,7 @@
                 </template>
               </v-select>
             </v-col>
-            <v-row class="mt-3 pa-4" style="overflow-x:scroll">
+            <v-row class="mt-3" style="overflow-x:scroll">
               <v-data-table :headers="fields" :items="results"></v-data-table>
             </v-row>
           </v-row>
