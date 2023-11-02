@@ -28,7 +28,7 @@
                     <smiles-image :smiles="item.columns.task" max-height="120px"></smiles-image>
                 </template>
                 <template v-slot:item.smiles="{ item }">
-                    <smiles-image :smiles="item.columns.smiles" max-height="200px"></smiles-image>
+                    <smiles-image :smiles="item.columns.smiles" :reacting-atoms="item.raw.atom_scores" :highlight=true max-height="200px"></smiles-image>
                 </template>
                 <template v-slot:item.references="{ item }">
                     <div v-if="item.columns.references === undefined">
