@@ -87,8 +87,8 @@
                 </template>
 
                 <v-list>
-                  <v-list-item @click="showAddModal = !showAddModal">Add Compound</v-list-item>
-                  <v-list-item @click="showUploadModal = !showUploadModal">Upload File</v-list-item>
+                  <v-list-item @click="showAddModal = !showAddModal">Add One</v-list-item>
+                  <v-list-item @click="showUploadModal = !showUploadModal">Add Buyable(s)</v-list-item>
                 </v-list>
               </v-menu>
 
