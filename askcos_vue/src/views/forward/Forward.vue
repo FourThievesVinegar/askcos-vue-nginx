@@ -146,7 +146,7 @@
           </v-window-item>
           <v-window-item value="sites">
             <SiteSelectivity value="sites" rounded="lg" :results="siteResults" ref="ssref"
-              :reactingAtoms="reactingAtoms" :pending="pendingTasks" @get-sites-refs="getSitesRefs"
+              :pending="pendingTasks" @get-sites-refs="getSitesRefs"
               @download-sites-refs="downloadSitesRefs" @copy-to-clipboard="copyToClipboard" />
           </v-window-item>
         </v-window>
