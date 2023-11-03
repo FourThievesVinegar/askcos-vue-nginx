@@ -33,7 +33,7 @@
             <v-row align="center" justify-start>
               <v-col>
                 <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict">Submit</v-btn>
-                <v-btn variant="tonal" class="mr-5" :disabled="true">
+                <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0" @click="clear(false)">
                   Clear
                 </v-btn>
                 <v-btn icon @click="dialog = !dialog" variant="outlined">
@@ -87,7 +87,8 @@
             </v-row>
             <v-row>
               <v-col cols="12" md="12">
-                <v-data-table :headers="fields" :items="tableData" fixed-header style="height: 100%" class="mt-3">
+                <v-data-table :headers="fields" :items="tableData" fixed-header style="height: 100%" class="mt-3"
+                  density="compact">
                   <template v-slot:item.image="{ item }">
                     <smiles-image :smiles="item.raw['solvent']"></smiles-image>
                   </template>
@@ -95,9 +96,12 @@
               </v-col>
             </v-row>
           </div>
-          <div v-else class="text-center">
+          <v-skeleton-loader v-else-if="loading" class="mx-auto my-auto" min-height="80px" type="table">
+          </v-skeleton-loader>
+          <div v-else class="text-center d-flex justify-center align-center flex-column">
+            <v-img :width="400" cover :src="emptyChartSrc" class="mb-3"></v-img>
             <h2 class="mt-5">No Results</h2>
-            <p class="lead">Begin by running a new prediction!</p>
+            <p class="text-body-1">Begin by running a new prediction!</p>
           </div>
         </v-sheet>
       </v-col>
@@ -116,6 +120,8 @@ import * as Papa from "papaparse";
 import 'chart.js/auto';
 import { Bar, Line } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
+import emptyChart from '@/assets/emptyChart.svg'
+import { useConfirm } from 'vuetify-use-dialog';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
@@ -151,6 +157,13 @@ export default {
       selectedUnits: 'mg/mL',
       unitOptions: ['log10(mol/L)', 'mg/mL'],
       loading: false,
+      emptyChartSrc: emptyChart
+    }
+  },
+  setup() {
+    const createConfirm = useConfirm();
+    return {
+      createConfirm
     }
   },
   computed: {
@@ -313,6 +326,19 @@ export default {
     this.solvents = this.solventSets[this.solventSet].join('\n')
   },
   methods: {
+    async clear(skipConfirm = false) {
+      if (!skipConfirm) {
+        const isConfirmed = await this.createConfirm({
+          title: 'Please Confirm',
+          content: 'This will clear all of your current results. Continue anyway?',
+          dialogProps: { width: "auto" }
+        });
+        if (!isConfirmed) {
+          return;
+        }
+      }
+      this.results = []
+    },
     predict() {
       this.loading = true
       this.results = []
