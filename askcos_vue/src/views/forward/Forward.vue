@@ -688,33 +688,40 @@ const clearInputs = () => {
   solvent.value = '';
 }
 
-const clear = (skipConfirm = false) => {
+const clear = async (skipConfirm = false) => {
   if (!skipConfirm) {
-    const isConfirmed = createConfirm({
+    const isConfirmed = await createConfirm({
       title: 'Please Confirm',
       content: 'This will clear all of your current results. Continue anyway?',
       dialogProps: { width: "auto" }
     });
-    if (!isConfirmed) return;
+    if (!isConfirmed) {
+      return;
+    }
   }
   switch (tab.value) {
     case 'forward':
       clearForward()
       clearInputs()
+      break;
     case 'context':
       clearContext()
       clearInputs()
+      break;
     case 'impurity':
       clearImpurity()
       clearInputs()
+      break;
     case 'selectivity':
       clearSelectivity()
       clearInputs()
+      break;
     case 'sites':
       clearSites()
       clearInputs()
-    // default:
-    //   alert('unsupported mode')
+      break;
+    default:
+      alert('unsupported mode')
   }
 }
 
