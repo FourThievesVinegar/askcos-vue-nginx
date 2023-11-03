@@ -50,7 +50,7 @@
                                 <setting-input label="Min. plausibility" label-for="minPlausibility"
                                     help-text="This is the minimum plausibility that a predictor transformation must receive from the Fast Filter model in order to be kept and returned as a result.
         The plausibility score can help filter out bad suggestions, but in some cases can be over conservative and filter out false negatives.">
-                                    <v-text-field variant="outlined" type="number" :model-value="minPlausibility" min="0"
+                                    <v-text-field variant="outlined" type="number" v-model="minPlausibility" min="0"
                                         max="1" step="0.000001" hide-details density="compact" class="mb-2"></v-text-field>
                                 </setting-input>
                                 <setting-input label="Apply regio-selectivity checking"
