@@ -141,7 +141,6 @@
               Save Results
             </v-btn>
           </template>
-
           <v-list>
             <v-list-item @click="showDownloadNetwork = true">My PC</v-list-item>
             <v-list-item @click="resultDialogVisible = true">My Account</v-list-item>
@@ -157,6 +156,7 @@
           @click="treeViewEnabled = !treeViewEnabled">
         </v-btn>
       </div>
+      <network-legend></network-legend>
     </div>
     <div v-else class="d-flex justify-center pa-16">
       <div v-if="!!resultsStore.target">
@@ -297,6 +297,7 @@ import SettingsModal from "@/components/network/SettingsModal";
 import { interpolateHexColor } from "@/common/color";
 import { saveAs } from "file-saver";
 import KetcherModal from "@/components/KetcherModal";
+import NetworkLegend from "@/components/network/NetworkLegend";
 // import { tbSettingsJsToApi } from "@/common/tb-settings";
 
 const BG_OPACITY = 0.2; // Background opacity
@@ -306,7 +307,8 @@ export default {
     SmilesImage,
     NodeDetail,
     SettingsModal,
-    KetcherModal
+    KetcherModal,
+    NetworkLegend,
   },
   props: {
     tabActive: {
