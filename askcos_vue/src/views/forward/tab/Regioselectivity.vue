@@ -20,7 +20,7 @@
                     <copy-tooltip :data="item.columns.smiles">
                         <smiles-image :smiles="item.columns.smiles" max-height="125px"></smiles-image>
                     </copy-tooltip>
-                    <v-tooltip activator="parent" location="top">
+                    <v-tooltip activator="parent" location="bottom">
                         <span>{{ item.columns.smiles }}</span>
                     </v-tooltip>
                 </template>
