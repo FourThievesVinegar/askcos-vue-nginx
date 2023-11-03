@@ -681,6 +681,10 @@ export default {
       return true;
     },
     sendTreeBuilderJob() {
+      if (this.settingsStore.interactive_path_planner_settings.retro_backend_options.length === 0) {
+        alert("Please add atleast one strategy");
+        return;
+      }
       if (this.tb.taskName === "") {
         this.tb.taskName = this.resultsStore.target;
       }
@@ -714,7 +718,6 @@ export default {
       delete body.expand_one_options.group_by_strategy;
       delete body.expand_one_options.fast_filter_threshold;
       // checkTemplatePrioritizers(body["template_prioritizers"]);
-      console.log(body);
       API.post(url, body)
         .then((json) => {
           this.tb.taskId = json;
@@ -1212,7 +1215,7 @@ export default {
         });
       }
     },
-    showKetcherModal(){
+    showKetcherModal() {
       this.showKetcher = true;
       this.$refs["ketcherRef"].smilesToKetcher();
     },
@@ -1740,7 +1743,7 @@ export default {
   padding: 5px;
   background-color: #BBDEFB;
   border-radius: 30px;
-  z-index:9999;
+  z-index: 9999;
 }
 
 .result-btn {
@@ -1768,4 +1771,5 @@ export default {
   padding: 5px 15px;
   border: 1px solid #d3d3d3;
   border-radius: 30px;
-}</style>
+}
+</style>
