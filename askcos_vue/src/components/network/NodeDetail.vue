@@ -59,85 +59,68 @@
                 </template>
               </v-select>
             </div>
-            <!-- <div id="Notes" v-if="dispNotes" class="scroll-list">
-                <div v-for="(note, idx) in selected.disp.notes" :key="note.date + idx">
-                  <b-card :title="note.user" :sub-title="note.date" :data-cy="'network-view_card_note_' + idx">
-                    <div v-if="editIdx !== idx">
-                      <b-card-text>{{ note.comment }}</b-card-text>
-                      <div class="d-flex flex-gap-2">
-                        <v-btn
-                          data-cy="network-view_button_edit-note"
-                          variant="outline-success"
-                          @click="
-                            editIdx = idx;
-                            oldNote = note.comment;
-                          "
-                          >Edit Note</v-btn
-                        >
+
+            <div id="Notes" v-if="dispNotes" class="my-2 scroll-list">
+              <v-row v-for="(note, idx) in selected.disp.notes" :key="note.date + idx" class="mx-2">
+                <v-col cols="12">
+                  <v-card>
+                    <v-card-title class="d-flex justify-space-between">
+                      <span>{{ note.user }}</span>
+                      <small>{{ note.date }}</small>
+                    </v-card-title>
+                    <v-card-text v-if="editIdx !== idx">
+                      {{ note.comment }}
+                    </v-card-text>
+                    <v-card-actions v-if="editIdx !== idx">
+                      <v-btn outlined color="success" @click="editIdx = idx; oldNote = note.comment;">Edit Note</v-btn>
+                    </v-card-actions>
+                    <v-card-text v-if="editIdx === idx">
+                      <v-textarea v-model="note.comment" :counter="1000" outlined rows="4"></v-textarea>
+                    </v-card-text>
+                    <v-card-actions v-if="editIdx === idx" class="d-flex justify-space-between">
+                      <v-btn outlined color="success" @click="editIdx = -1; note.comment = oldNote; oldNote = '';">Cancel
+                        Change</v-btn>
+                      <div>
+                        <v-btn outlined color="success" @click="editNote(idx, false); editIdx = -1; oldNote = '';">Save
+                          Change</v-btn>
+                        <v-btn outlined color="error" @click="editNote(idx, true); editIdx = -1; oldNote = '';">Delete
+                          Note</v-btn>
                       </div>
-                    </div>
-                    <div v-if="editIdx === idx">
-                      <div class="form-group">
-                        <textarea class="form-control" type="text" v-model="note.comment" maxlength="1000" />
-                      </div>
-                      <div class="d-flex flex-gap-2">
-                        <v-btn
-                          data-cy="network-view_button_cancel-change-note"
-                          variant="outline-success"
-                          @click="
-                            editIdx = -1;
-                            note.comment = oldNote;
-                            oldNote = '';
-                          "
-                          >Cancel Change</v-btn
-                        >
-                        <v-btn
-                          data-cy="network-view_button_save-change-note"
-                          variant="outline-success"
-                          @click="
-                            editNote(idx, false);
-                            editIdx = -1;
-                            oldNote = '';
-                          "
-                          >Save Change</v-btn
-                        >
-                        <v-btn
-                          data-cy="network-view_button_delete-note"
-                          variant="outline-danger"
-                          @click="
-                            editNote(idx, true);
-                            editIdx = -1;
-                            oldNote = '';
-                          "
-                          >Delete Note</v-btn
-                        >
-                      </div>
-                    </div>
-                  </b-card>
-                </div>
-                <v-btn data-cy="network-view_button_add-note" id="addNote" class="m-2" variant="outline-success" @click="addNote = !addNote"> Add Note </v-btn>
-              </div> -->
-            <!-- <div v-show="addNote" id="addNotes" class="m-2 p-2">
-                <div class="form-group">
-                  <label for="usr">Name:</label>
-                  <input type="text" v-model="noteUrsName" placeholder="Enter your name" class="form-control" id="note-user-name" data-cy="network-view_input_user-name" />
-                </div>
-                <div class="form-group">
-                  <label for="comment">Comment:</label>
-                  <textarea
-                    v-model="noteComment"
-                    class="form-control"
-                    rows="4"
-                    id="note-comment"
-                    data-cy="network-view_input_user-comment"
-                    placeholder="Enter your comment here. There is a max. character length of 1000."
-                    maxlength="1000"></textarea>
-                </div>
-                <v-btn-group>
-                  <v-btn data-cy="network-view_button_save-note" variant="outline-success" @click="saveNote">Save Note</v-btn>
-                  <v-btn data-cy="network-view_button_cancel-note" variant="outline-secondary" @click="clearNote">Cancel</v-btn>
-                </v-btn-group>
-              </div> -->
+                    </v-card-actions>
+                  </v-card>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="d-flex justify-center">
+                  <v-btn class="align-center" variant="flat" color="green-darken-1" id="addNote"
+                    @click="addNote = !addNote">Add Note</v-btn>
+                </v-col>
+              </v-row>
+            </div>
+            <div v-show="addNote" id="addNotes" class="mx-2 px-2 scroll-list">
+              <v-row>
+                <v-col>
+                  <v-text-field label="Name" v-model="noteUrsName" placeholder="Enter your name" density="compact"
+                    variant="outlined" hide-details clearable id="note-user-name"
+                    data-cy="network-view_input_user-name"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-textarea label="Comment" v-model="noteComment" density="compact" variant="outlined"
+                    placeholder="Enter your comment here. There is a max. character length of 1000." :rows="4"
+                    hide-details :counter="1000" id="note-comment" data-cy="network-view_input_user-comment"></v-textarea>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="d-flex justify-center flex-gap-2 flex-wrap mb-2">
+                  <v-btn variant="flat" color="green-darken-1" class="mr-2" data-cy="network-view_button_save-note"
+                    @click="saveNote">Save Note</v-btn>
+                  <v-btn variant="outlined" data-cy="network-view_button_cancel-note" @click="clearNote">Cancel</v-btn>
+                </v-col>
+              </v-row>
+            </div>
+
             <div v-if="!resultsAvailable" class="text-center mt-5">
               <p class="lead">Click Expand Node above to expand this node and predict precursors for this target.</p>
               <div class="text-center justify-center mx-10">
@@ -635,6 +618,7 @@ import { getMolImageUrl } from "@/common/drawing";
 import { mapStores } from "pinia";
 import { useResultsStore } from "@/store/results";
 import { useSettingsStore } from "@/store/settings";
+import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
 
 export default {
   name: "NodeDetail",
@@ -658,6 +642,14 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  setup() {
+    const createConfirm = useConfirm()
+    const createSnackbar = useSnackbar()
+    return {
+      createConfirm,
+      createSnackbar
+    }
   },
   data() {
     return {
@@ -752,23 +744,7 @@ export default {
         date: new Date().toLocaleString(),
         comment: this.noteComment,
       };
-      const h = this.$createElement;
-      const MesasgeVNode = h("div", [
-        h("p", { class: ["m-1"] }, "Please review your comment:"),
-        h("p", { class: ["m-1", "font-weight-bold"] }, this.noteComment),
-        h("p", { class: ["m-1"] }, "Do you wish to save your comment?"),
-      ]);
-      this.$bvModal
-        .msgBoxConfirm([MesasgeVNode], {
-          title: "Please Confirm",
-          size: "sm",
-          okVariant: "success",
-          okTitle: "Yes",
-          cancelTitle: "No",
-          footerClass: "p-2",
-          hideHeaderClose: false,
-          centered: true,
-        })
+      this.createConfirm({ title: 'Please Confirm', content: `Please review your comment: \n ${this.noteComment}`, dialogProps: { width: "auto" } })
         .then((value) => {
           if (value) {
             dispNode.notes.push(note);
@@ -785,17 +761,7 @@ export default {
     async editNote(index, shouldDelete) {
       let note = this.selected.disp.notes[index];
       if (shouldDelete) {
-        await this.$bvModal
-          .msgBoxConfirm(`Are your sure that you want to delete \n ${note.comment}?`, {
-            title: "Please Confirm",
-            size: "sm",
-            okVariant: "success",
-            okTitle: "Yes",
-            cancelTitle: "No",
-            footerClass: "p-2",
-            hideHeaderClose: false,
-            centered: true,
-          })
+        await this.createConfirm({ title: 'Please Confirm', content: `Are your sure that you want to delete \n ${note.comment}?`, dialogProps: { width: "auto" } })
           .then((value) => {
             if (value) {
               /* eslint-disable */
@@ -831,9 +797,13 @@ export default {
         tags: this.resultsStore.savedResultInfo.tags.join(","),
         result_type: "ipp",
       };
-      let url = `/api/v2/results/`;
+      let url = `/api/results/create`;
       let method = "post";
-      if (!!this.resultsStore.savedResultInfo.id && this.resultsStore.savedResultInfo.type === "ipp" && this.savedResultOverwrite) {
+      if (
+        !!this.resultsStore.savedResultInfo.id &&
+        this.resultsStore.savedResultInfo.type === "ipp" &&
+        this.resultsStore.savedResultOverwrite
+      ) {
         url += this.resultsStore.savedResultInfo.id + "/";
         body["check_date"] = this.resultsStore.savedResultInfo.modified;
         method = "put";
@@ -842,41 +812,17 @@ export default {
         .then((json) => {
           if (json.success) {
             this.resultsStore.updateSavedResultInfo({
-              id: json["id"],
+              result_id: json['result_id'],
               modified: json["modified"],
               modifiedDisp: dayjs(json["modified"]).format("MMMM D, YYYY h:mm A"),
             });
-            this.$bvModal.msgBoxOk("Result saved successfully!", {
-              title: "Success",
-              size: "sm",
-              okVariant: "success",
-              okTitle: "Ok",
-              hideHeaderClose: true,
-              centered: true,
-              footerClass: "p-2",
-            });
+            this.createSnackbar({ text: 'Result saved successfully!', snackbarProps: { timeout: -1, vertical: true } })
           } else {
-            this.$bvModal.msgBoxOk("Unable to save result.", {
-              title: "Alert",
-              size: "sm",
-              okVariant: "danger",
-              okTitle: "Ok",
-              hideHeaderClose: true,
-              centered: true,
-              footerClass: "p-2",
-            });
+            this.createSnackbar({ text: "Tree builder job complete! Visit results page for more details", snackbarProps: { timeout: -1, vertical: true } })
           }
         })
         .catch((error) => {
-          this.$bvModal.msgBoxOk("Error while attempting to save result: " + error.message, {
-            title: "Alert",
-            size: "sm",
-            okVariant: "danger",
-            okTitle: "Ok",
-            hideHeaderClose: true,
-            centered: true,
-            footerClass: "p-2",
-          });
+          this.createSnackbar({ text: 'Error while attempting to save result:' + error.messages, snackbarProps: { timeout: -1, vertical: true } })
         })
         .finally(() => {
           this.$emit("updatePendingTasks", "sub");
@@ -1507,6 +1453,5 @@ td {
 
 .flex-gap-2 {
   gap: 0.5rem;
-}
-</style>
+}</style>
   
