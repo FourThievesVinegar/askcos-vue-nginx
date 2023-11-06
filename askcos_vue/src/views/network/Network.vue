@@ -51,7 +51,8 @@ export default {
     const tab = ref("IPP");
 
     const replaceRoute = (tab) => {
-      router.replace({ path: '/network', query: { tab } })
+      const newPath = { path: '/network', query: { tab: tab, id: route.query.id } }
+      router.replace(newPath)
     }
 
     const loadResultFromURL = async (payload) => {
