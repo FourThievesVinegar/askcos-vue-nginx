@@ -177,7 +177,7 @@ export const useResultsStore = defineStore("results", {
       });
     },
     loadResult({ resultId, numTrees }) {
-      let url = `/api/results/retrieve/`;
+      let url = `/api/results/retrieve`;
       return API.get(url, { result_id: resultId }).then((json) => {
         if (json.error) {
           alert(json.error);
