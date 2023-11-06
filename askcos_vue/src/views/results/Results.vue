@@ -82,7 +82,7 @@
                               View in IPP
                             </v-btn>
                             <v-btn color="primary" variant="tonal" v-if="item.columns.result_type === 'tree_builder'"
-                              @click="sendTreeBuilderJob(data.item.description, data.item.settings)">
+                              @click="openSetting(item.raw.result_id)">
                               View Settings
                             </v-btn>
                             <v-btn class="bg-teal-lighten-3" variant="tonal" @click="showShareModal = !showShareModal">
@@ -111,6 +111,22 @@
       </v-col>
     </v-row>
   </v-container>
+
+  <v-dialog v-model="treeDialog" max-width="700px">
+    <v-card>
+      <v-card-title class="text-justify">
+        <v-col cols="12">Tree Builder Job Settings</v-col>
+      </v-card-title>
+      <v-card-text class="pt-0">
+          <tb-settings-table v-if="viewSettings" :settings="viewSettings"></tb-settings-table>
+          <v-alert v-else type="warning" class="mb-0" dense text>Settings not available.</v-alert>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" text @click="treeDialog = false">Close</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 
   <v-dialog v-model="showShareModal" max-width="600px">
     <v-card>
@@ -141,6 +157,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
 import CopyTooltip from "@/components/CopyTooltip";
+import TbSettingsTable from '@/components/TbSettingsTable.vue';
 import results from "@/assets/emptyResults.svg";
 import { API } from "@/common/api";
 import dayjs from "dayjs";
@@ -157,6 +174,8 @@ const showShareModal = ref(false);
 const shareLink = ref("");
 const sharedResult = ref(null);
 const sortDescending = ref(true);
+const treeDialog = ref(false);
+const viewSettings = ref(null);
 
 // const showLoader = computed(() => pendingTasks.value > 0);
 
@@ -218,6 +237,22 @@ const shareResult = (id) => {
     }
   } catch (error) {
     alert("Could not share result: " + error);
+  } finally {
+    pendingTasks.value -= 1;
+  }
+}
+
+const openSetting = async (id) => {
+  pendingTasks.value += 1;
+  try {
+    const json = await API.get(`/api/results/retrieve?result_id=${id}`);
+    console.log(id)
+    if (json) {
+      treeDialog.value = true
+      viewSettings.value = json
+      // viewSettings.value.push({ smiles: json.target_smiles });
+      console.log(json)
+    }
   } finally {
     pendingTasks.value -= 1;
   }
