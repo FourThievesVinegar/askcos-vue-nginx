@@ -43,11 +43,12 @@
                 @click="dispNotes = !dispNotes"> View Notes </v-btn>
               <v-btn id="add-precursor-btn" variant="outlined" @click="openAddNewPrecursorModal()"> Add Precursor
               </v-btn>
-              <v-btn id="view-rec-templates-btn" variant="outlined" @click="showRecTemplate = !showRecTemplate"> View Recommended
+              <v-btn id="view-rec-templates-btn" variant="outlined" @click="showRecTemplate = !showRecTemplate"> View
+                Recommended
                 Templates </v-btn>
               <ban-button id="ban-chemical-btn" :smiles="selected.smiles" :type="selected.type"></ban-button>
               <v-select :items="sortingCategoryItems" label="Sort By" style="width: 100%" class="px-2" hide-details
-                variant="outlined" density="compact" @update:modelValue="selectSortingOrder" v-model="sortingCategory">
+                variant="outlined" density="compact" v-model="sortingCategory">
                 <template v-slot:append>
                   <v-btn @click="sortOrderAscending = !sortOrderAscending" variant="tonal">
                     <template v-slot:append>
@@ -59,153 +60,151 @@
                 </template>
               </v-select>
             </div>
-            
-            <v-dialog v-model="showRecTemplate"></v-dialog >
 
-              <div id="Notes" v-if="dispNotes" class="my-2 scroll-list">
-                <v-row v-for="(note, idx) in selected.disp.notes" :key="note.date + idx" class="mx-2">
-                  <v-col cols="12">
-                    <v-card>
-                      <v-card-title class="d-flex justify-space-between">
-                        <span>{{ note.user }}</span>
-                        <small>{{ note.date }}</small>
-                      </v-card-title>
-                      <v-card-text v-if="editIdx !== idx">
-                        {{ note.comment }}
-                      </v-card-text>
-                      <v-card-actions v-if="editIdx !== idx">
-                        <v-btn outlined color="success" @click="editIdx = idx; oldNote = note.comment;">Edit Note</v-btn>
-                      </v-card-actions>
-                      <v-card-text v-if="editIdx === idx">
-                        <v-textarea v-model="note.comment" :counter="1000" outlined rows="4"></v-textarea>
-                      </v-card-text>
-                      <v-card-actions v-if="editIdx === idx" class="d-flex justify-space-between">
-                        <v-btn outlined color="success"
-                          @click="editIdx = -1; note.comment = oldNote; oldNote = '';">Cancel
+            <v-dialog v-model="showRecTemplate"></v-dialog>
+
+            <div id="Notes" v-if="dispNotes" class="my-2 scroll-list">
+              <v-row v-for="(note, idx) in selected.disp.notes" :key="note.date + idx" class="mx-2">
+                <v-col cols="12">
+                  <v-card>
+                    <v-card-title class="d-flex justify-space-between">
+                      <span>{{ note.user }}</span>
+                      <small>{{ note.date }}</small>
+                    </v-card-title>
+                    <v-card-text v-if="editIdx !== idx">
+                      {{ note.comment }}
+                    </v-card-text>
+                    <v-card-actions v-if="editIdx !== idx">
+                      <v-btn outlined color="success" @click="editIdx = idx; oldNote = note.comment;">Edit Note</v-btn>
+                    </v-card-actions>
+                    <v-card-text v-if="editIdx === idx">
+                      <v-textarea v-model="note.comment" :counter="1000" outlined rows="4"></v-textarea>
+                    </v-card-text>
+                    <v-card-actions v-if="editIdx === idx" class="d-flex justify-space-between">
+                      <v-btn outlined color="success" @click="editIdx = -1; note.comment = oldNote; oldNote = '';">Cancel
+                        Change</v-btn>
+                      <div>
+                        <v-btn outlined color="success" @click="editNote(idx, false); editIdx = -1; oldNote = '';">Save
                           Change</v-btn>
-                        <div>
-                          <v-btn outlined color="success" @click="editNote(idx, false); editIdx = -1; oldNote = '';">Save
-                            Change</v-btn>
-                          <v-btn outlined color="error" @click="editNote(idx, true); editIdx = -1; oldNote = '';">Delete
-                            Note</v-btn>
-                        </div>
-                      </v-card-actions>
-                    </v-card>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col class="d-flex justify-center">
-                    <v-btn class="align-center" variant="flat" color="green-darken-1" id="addNote"
-                      @click="addNote = !addNote">Add Note</v-btn>
-                  </v-col>
-                </v-row>
-              </div>
-              <div v-show="addNote" id="addNotes" class="mx-2 px-2 scroll-list">
-                <v-row>
-                  <v-col>
-                    <v-text-field label="Name" v-model="noteUrsName" placeholder="Enter your name" density="compact"
-                      variant="outlined" hide-details clearable id="note-user-name"
-                      data-cy="network-view_input_user-name"></v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <v-textarea label="Comment" v-model="noteComment" density="compact" variant="outlined"
-                      placeholder="Enter your comment here. There is a max. character length of 1000." :rows="4"
-                      hide-details :counter="1000" id="note-comment"
-                      data-cy="network-view_input_user-comment"></v-textarea>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col class="d-flex justify-center flex-gap-2 flex-wrap mb-2">
-                    <v-btn variant="flat" color="green-darken-1" class="mr-2" data-cy="network-view_button_save-note"
-                      @click="saveNote">Save Note</v-btn>
-                    <v-btn variant="outlined" data-cy="network-view_button_cancel-note" @click="clearNote">Cancel</v-btn>
-                  </v-col>
-                </v-row>
-              </div>
-
-              <div v-if="!resultsAvailable" class="text-center mt-5">
-                <p class="lead">Click Expand Node above to expand this node and predict precursors for this target.</p>
-                <div class="text-center justify-center mx-10">
-                  <v-text-field variant="outlined" v-model="reactionLimit" hide-details density="compact" number
-                    size="small">
-                    <template v-slot:prepend>
-                      Add top
-                    </template>
-                    <template v-slot:append>
-                      {{ allowCluster ? "Clusters" : "Precursors" }} to the graph visualization
-                    </template>
-                  </v-text-field>
-
-                </div>
-              </div>
-              <div v-else class="scroll-list">
-                <div v-for="res in currentPrecursors" :key="res.rank" class="my-2 mx-2">
-                  <v-card no-body class="custom-shadow text-center py-2 px-2">
-                    <v-row class="justify-center align-center">
-                      <v-col>
-                        <v-img :src="getMolDrawEndPoint(res, true)" fluid></v-img>
-                      </v-col>
-                      <v-col>
-                        <v-table class="table table-sm table-border ma-0" density="compact">
-                          <tbody>
-                            <tr>
-                              <td>Rank</td>
-                              <td>#{{ res.rank }}</td>
-                            </tr>
-                            <tr>
-                              <td>Score</td>
-                              <td>{{ num2str(res.retroScore) }}</td>
-                            </tr>
-                            <tr>
-                              <td>Synthetic complexity</td>
-                              <td>{{ num2str(res.scscore) }}</td>
-                            </tr>
-                            <tr>
-                              <td># Examples</td>
-                              <td>{{ res.numExamples }}</td>
-                            </tr>
-                            <tr>
-                              <td>Template rank</td>
-                              <td>{{ res.templateRank }}</td>
-                            </tr>
-                            <tr>
-                              <td>Template score</td>
-                              <td>{{ num2str(res.templateScore) }}</td>
-                            </tr>
-                            <tr>
-                              <td>Plausibility</td>
-                              <td>{{ num2str(res.ffScore) }}</td>
-                            </tr>
-                            <tr>
-                              <td>Reaction cluster</td>
-                              <td>{{ res.clusterName }}</td>
-                            </tr>
-                          </tbody>
-                        </v-table>
-                      </v-col>
-                    </v-row>
-                    <div class="row no-gutters">
-                      <div class="col my-2">
-                        <v-btn v-show="!(selected.id in res.inVis)" variant="flat" color="green" class="addRes mr-1"
-                          :data-rank="res.rank" @click="addFromResults(selected, res)" icon="mdi-plus" density="compact">
-                        </v-btn>
-                        <v-btn v-show="selected.id in res.inVis" variant="flat" color="red" class="remRes mr-1"
-                          title="Remove node(s)" :data-rank="res.rank" @click="remFromResults(selected, res)"
-                          icon="mdi-minus" density="compact">
-                        </v-btn>
-                        <v-btn variant="flat" :data-rank="res.rank" title="Open cluser modal"
-                          @click="openClusterPopoutModal(selected, res)" icon="mdi-group" density="compact">
-                        </v-btn>
-                        <v-btn id="permanent-delete-btn" variant="flat" color="red" @click="deleteFromGraph(res)"
-                          title="Delete permanently" class="ml-1" density="compact" icon="mdi-delete">
-                        </v-btn>
+                        <v-btn outlined color="error" @click="editNote(idx, true); editIdx = -1; oldNote = '';">Delete
+                          Note</v-btn>
                       </div>
-                    </div>
+                    </v-card-actions>
                   </v-card>
-                </div>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="d-flex justify-center">
+                  <v-btn class="align-center" variant="flat" color="green-darken-1" id="addNote"
+                    @click="addNote = !addNote">Add Note</v-btn>
+                </v-col>
+              </v-row>
+            </div>
+            <div v-show="addNote" id="addNotes" class="mx-2 px-2 scroll-list">
+              <v-row>
+                <v-col>
+                  <v-text-field label="Name" v-model="noteUrsName" placeholder="Enter your name" density="compact"
+                    variant="outlined" hide-details clearable id="note-user-name"
+                    data-cy="network-view_input_user-name"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-textarea label="Comment" v-model="noteComment" density="compact" variant="outlined"
+                    placeholder="Enter your comment here. There is a max. character length of 1000." :rows="4"
+                    hide-details :counter="1000" id="note-comment" data-cy="network-view_input_user-comment"></v-textarea>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="d-flex justify-center flex-gap-2 flex-wrap mb-2">
+                  <v-btn variant="flat" color="green-darken-1" class="mr-2" data-cy="network-view_button_save-note"
+                    @click="saveNote">Save Note</v-btn>
+                  <v-btn variant="outlined" data-cy="network-view_button_cancel-note" @click="clearNote">Cancel</v-btn>
+                </v-col>
+              </v-row>
+            </div>
+
+            <div v-if="!resultsAvailable" class="text-center mt-5">
+              <p class="lead">Click Expand Node above to expand this node and predict precursors for this target.</p>
+              <div class="text-center justify-center mx-10">
+                <v-text-field variant="outlined" v-model="reactionLimit" hide-details density="compact" number
+                  size="small">
+                  <template v-slot:prepend>
+                    Add top
+                  </template>
+                  <template v-slot:append>
+                    {{ allowCluster ? "Clusters" : "Precursors" }} to the graph visualization
+                  </template>
+                </v-text-field>
+
               </div>
+            </div>
+            <div v-else class="scroll-list">
+              <div v-for="res in currentPrecursors" :key="res.rank" class="my-2 mx-2">
+                <v-card no-body class="custom-shadow text-center py-2 px-2">
+                  <v-row class="justify-center align-center">
+                    <v-col>
+                      <v-img :src="getMolDrawEndPoint(res, true)" fluid></v-img>
+                    </v-col>
+                    <v-col>
+                      <v-table class="table table-sm table-border ma-0" density="compact">
+                        <tbody>
+                          <tr>
+                            <td>Rank</td>
+                            <td>#{{ res.rank }}</td>
+                          </tr>
+                          <tr>
+                            <td>Score</td>
+                            <td>{{ num2str(res.retroScore) }}</td>
+                          </tr>
+                          <tr>
+                            <td>Synthetic complexity</td>
+                            <td>{{ num2str(res.scscore) }}</td>
+                          </tr>
+                          <tr>
+                            <td># Examples</td>
+                            <td>{{ res.numExamples }}</td>
+                          </tr>
+                          <tr>
+                            <td>Template rank</td>
+                            <td>{{ res.templateRank }}</td>
+                          </tr>
+                          <tr>
+                            <td>Template score</td>
+                            <td>{{ num2str(res.templateScore) }}</td>
+                          </tr>
+                          <tr>
+                            <td>Plausibility</td>
+                            <td>{{ num2str(res.ffScore) }}</td>
+                          </tr>
+                          <tr>
+                            <td>Reaction cluster</td>
+                            <td>{{ res.clusterName }}</td>
+                          </tr>
+                        </tbody>
+                      </v-table>
+                    </v-col>
+                  </v-row>
+                  <div class="row no-gutters">
+                    <div class="col my-2">
+                      <v-btn v-show="!(selected.id in res.inVis)" variant="flat" color="green" class="addRes mr-1"
+                        :data-rank="res.rank" @click="addFromResults(selected, res)" icon="mdi-plus" density="compact">
+                      </v-btn>
+                      <v-btn v-show="selected.id in res.inVis" variant="flat" color="red" class="remRes mr-1"
+                        title="Remove node(s)" :data-rank="res.rank" @click="remFromResults(selected, res)"
+                        icon="mdi-minus" density="compact">
+                      </v-btn>
+                      <v-btn variant="flat" :data-rank="res.rank" title="Open cluser modal"
+                        @click="openClusterPopoutModal(selected, res)" icon="mdi-group" density="compact">
+                      </v-btn>
+                      <v-btn id="permanent-delete-btn" variant="flat" color="red" @click="deleteFromGraph(res)"
+                        title="Delete permanently" class="ml-1" density="compact" icon="mdi-delete">
+                      </v-btn>
+                    </div>
+                  </div>
+                </v-card>
+              </div>
+            </div>
           </template>
           <template v-else-if="selected.type === 'reaction'">
             <div class="details-top text-center">
@@ -623,7 +622,7 @@ import { mapStores } from "pinia";
 import { useResultsStore } from "@/store/results";
 import { useSettingsStore } from "@/store/settings";
 import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
-import  RecTemplatesModal from "@/components/RecTemplatesModal";
+import RecTemplatesModal from "@/components/RecTemplatesModal";
 
 export default {
   name: "NodeDetail",
@@ -635,7 +634,7 @@ export default {
     KetcherMin,
     SmilesImage,
     RecTemplatesModal
-},
+  },
   props: {
     selected: {
       type: Object,
@@ -1293,7 +1292,7 @@ export default {
         return this.settingsStore.sortingCategory;
       },
       set(value) {
-        this.settingsStore.setOption({ key: "sortingCategory", value: value });
+        this.settingsStore.sortingCategory = value;
       },
     },
     sortOrderAscending: {
@@ -1301,7 +1300,7 @@ export default {
         return this.settingsStore.sortOrderAscending;
       },
       set(value) {
-        this.settingsStore.setOption({ key: "sortOrderAscending", value: value });
+        this.settingsStore.sortOrderAscending = value;
       },
     },
     allowCluster: {
@@ -1309,7 +1308,7 @@ export default {
         return this.settingsStore.allowCluster;
       },
       set(value) {
-        this.settingsStore.setOption({ key: "allowCluster", value: value });
+        this.settingsStore.allowCluster = value;
       },
     },
     reactionLimit: {
@@ -1317,7 +1316,7 @@ export default {
         return this.settingsStore.reactionLimit;
       },
       set(value) {
-        this.settingsStore.setOption({ key: "reactionLimit", value: value });
+        this.settingsStore.reactionLimit = value;
       },
     },
     savedResultOverwrite: {
@@ -1396,13 +1395,6 @@ export default {
 </script>
   
 <style scoped>
-/* table,
-th,
-td {
-  border: 1px solid black;
-  border-collapse: collapse;
-} */
-
 .scroll-list {
   max-height: 55vh;
   overflow-y: scroll;
