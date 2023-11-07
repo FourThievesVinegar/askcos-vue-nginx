@@ -4,9 +4,6 @@
       <h3>Current Target</h3>
       <smiles-image :smiles="selected.smiles"></smiles-image>
     </div>
-    <b-pagination v-model="rtmCurrentPage" :total-rows="rtmItems.length" :per-page="rtmItemsPerPage" align="center"></b-pagination>
-
-    <b-skeleton-table v-if="loading" :rows="20" :columns="4"></b-skeleton-table>
     <b-table v-else ref="rtmTable" :items="rtmItems" :fields="rtmFields" :current-page="rtmCurrentPage" :per-page="rtmItemsPerPage" hover responsive="true">
       <template #cell(reaction_smarts)="data">
         <smiles-image :smiles="data.value" transparent lazy allow-copy></smiles-image>
@@ -29,8 +26,26 @@
       <b-button variant="outline-secondary" @click="close()">Close</b-button>
     </template>
   </b-modal> -->
-
-  <template>
+  <v-dialog v-show="openRecTemplatesModal">
+        <v-card>
+          <v-card-text>
+            <v-col cols="12" class="text-center pa-0">
+              <h3>Current Target</h3>
+            </v-col>
+             <v-col cols="12" align="center" justify="center" class="pa-0">
+              <smiles-image class="align-center justify-center" :smiles="selected.smiles" max-width="300px"></smiles-image>
+             </v-col>
+             <v-data-table :headers="rtmFields"  :items="rtmItems"></v-data-table>
+          </v-card-text>
+           <v-card-actions>
+             <v-spacer></v-spacer>
+            <v-btn color="info" :loading="loading" @click="predict(selected.smiles)">Re-evaluate</v-btn>
+            <v-btn text @click="dialog = false">Close</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      
+<!-- 
     <v-dialog v-model="dialog" width="90%">
       <template #activator="{ on, attrs }">
         <v-btn v-bind="attrs" v-on="on">Open Dialog</v-btn>
@@ -79,14 +94,12 @@
           <v-btn text @click="dialog = false">Close</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
-  </template>
-
+    </v-dialog> -->
 </template>
 
 <script>
   import { ref, computed } from "vue";
-  // import LoadingButton from "@/components/LoadingButton";
+  import CopyTooltip from "@/components/CopyTooltip";
   import SmilesImage from "@/components/SmilesImage";
   import { num2str } from "@/common/utils";
   import { useResultsStore } from "@/store/results";
@@ -105,11 +118,11 @@
     setup(props) {
       const resultsStore = useResultsStore();
       const rtmFields = ref([
-        { key: "rank", label: "Original Rank", class: "text-center" },
-        { key: "score", label: "Score", class: "text-center", formatter: (val) => num2str(val) },
-        { key: "p_index", label: "Prioritizer", class: "text-center" },
-        { key: "reaction_smarts", label: "Template", class: "text-center" },
-        { key: "results", label: "Result", class: "text-center" },
+        { key: "rank", title: "Original Rank", class: "text-center" },
+        { key: "sc_score", title: "Score", class: "text-center", formatter: (val) => num2str(val) },
+        { key: "p_index", title: "Prioritizer", class: "text-center" },
+        { key: "reaction_smarts", title: "Template", class: "text-center" },
+        { key: "results", title: "Result", class: "text-center" },
       ]);
       const rtmItemsPerPage = ref(20);
       const rtmCurrentPage = ref(1);
@@ -118,6 +131,8 @@
       const rtmTable = ref(null);
 
       const rtmItems = computed(() => {
+        console.log(resultsStore)
+        console.log(resultsStore.recommendedTemplates)
         if (resultsStore.recommendedTemplates[props.selected.smiles]) {
           return Object.values(resultsStore.recommendedTemplates[props.selected.smiles]);
         } else {
@@ -126,6 +141,7 @@
       });
 
       const openRecTemplatesModal = () => {
+        console.log(resultsStore)
         if (!resultsStore.recommendedTemplates[props.selected.smiles]) {
           predict(props.selected.smiles);
         }
@@ -133,7 +149,9 @@
 
       const predict = (smiles) => {
         loading.value = true;
-        resultsStore.templateRelevance(smiles).finally(() => {
+        console.log(resultsStore.templateRelevance(smiles))
+        resultsStore.templateRelevance(smiles)
+        .finally(() => {
           loading.value = false;
         });
       };
