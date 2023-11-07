@@ -57,7 +57,7 @@
     <v-row>
       <v-col v-show="pendingTasks > 0 || results.length" cols="12" md="12">
         <v-sheet elevation="2" class="pa-4" rounded="lg">
-          <v-row v-if="!pendingTasks > 0" align="center" justify="space-between" class="mx-auto my-auto pa-2">
+          <v-row v-if="pendingTasks === 0" align="center" justify="space-between" class="mx-auto my-auto pa-2">
             <v-col md="5">
               <v-menu location="bottom">
                 <template v-slot:activator="{ props }">
@@ -119,7 +119,8 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="showUploadModal = false">Close</v-btn>
-          <v-btn color="green darken-1" text @click="handleUploadSubmit">Upload</v-btn>
+          <v-btn color="green darken-1" text
+            @click="() => { showUploadModal = false; handleUploadSubmit() }">Upload</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -330,10 +331,10 @@ export default {
     },
     handleUploadSubmit() {
       let fileFormat
-      if (this.uploadFile) {
-        if (this.uploadFile.name.endsWith('.json')) {
+      if (this.uploadFile[0]) {
+        if (this.uploadFile[0].name.endsWith('.json')) {
           fileFormat = 'json'
-        } else if (this.uploadFile.name.endsWith('.csv')) {
+        } else if (this.uploadFile[0].name.endsWith('.csv')) {
           fileFormat = 'csv'
         } else {
           alert('Unsupported file format! Expecting .csv or .json')
@@ -357,7 +358,7 @@ export default {
         this.predictBatch(data)
       }
 
-      reader.readAsText(this.uploadFile)
+      reader.readAsText(this.uploadFile[0])
     },
     openKetcher(source) {
       this.currentInputSource = source;
