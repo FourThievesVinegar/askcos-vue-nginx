@@ -201,7 +201,6 @@ const headers = ref([
 
 onMounted(async () => {
   const currentUrl = window.location.href;
-  console.log(currentUrl);
   const urlParams = new URLSearchParams(window.location.search);
   let sharedId = urlParams.get("shared");
   if (sharedId) {
@@ -246,12 +245,10 @@ const openSetting = async (id) => {
   pendingTasks.value += 1;
   try {
     const json = await API.get(`/api/results/retrieve?result_id=${id}`);
-    console.log(id)
     if (json) {
       treeDialog.value = true
       viewSettings.value = json
       // viewSettings.value.push({ smiles: json.target_smiles });
-      console.log(json)
     }
   } finally {
     pendingTasks.value -= 1;

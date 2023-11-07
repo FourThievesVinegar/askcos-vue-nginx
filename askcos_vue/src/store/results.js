@@ -280,7 +280,6 @@ export const useResultsStore = defineStore("results", {
       this.setTreeNodeMap(nodeMap);
       this.setTreeEdgeMap(edgeMap);
       let promises = [];
-      console.log(dataGraph);
       if (dataGraph) {
         promises.push(this.addTreeBuilderResultToDataGraph(dataGraph));
       }
@@ -767,7 +766,6 @@ export const useResultsStore = defineStore("results", {
               type: node["type"],
             };
           } else {
-            console.log(node);
             if (node["tforms"]) {
               templateIds.push(...node["tforms"]);
             }

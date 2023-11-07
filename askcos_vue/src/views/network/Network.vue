@@ -18,7 +18,7 @@
             <RetroView />
           </v-window-item>
           <v-window-item value="TE">
-            <TreeView ref="treeDetail" />
+            <TreeView ref="treeDetail" :tab-active="tab === 'TE'" />
           </v-window-item>
         </v-window>
       </v-col>

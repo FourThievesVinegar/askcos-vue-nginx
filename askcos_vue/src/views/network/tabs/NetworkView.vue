@@ -268,7 +268,7 @@
     </v-card>
   </v-dialog>
 
-  <NodeDetail :visible="nodeDetailVisible" :enable-resolver="enableResolver" :selected="selected" @close="closeNodeDetail"
+  <NodeDetail :visible="tabActive && nodeDetailVisible" :enable-resolver="enableResolver" :selected="selected" @close="closeNodeDetail"
     @expandNode="expandNode" @updatePendingTasks="pendingTasksHandler" ref="node-detail" />
 
   <SettingsModal :visible="settingsVisible" @update:settingsVisible="settingsVisible = $event"
@@ -424,6 +424,7 @@ export default {
       return this.pendingTasks > 0;
     },
     currentTree() {
+      conso
       return this.trees[this.currentTreeIndex];
     },
     currentTreeData() {
@@ -1340,7 +1341,7 @@ export default {
     },
     requestClusterId(smiles) {
       this.pendingTasks += 1;
-      return this.recluster(smiles).finally(() => {
+      return this.resultsStore.recluster(smiles).finally(() => {
         this.pendingTasks -= 1;
       });
     },
@@ -1604,6 +1605,7 @@ export default {
     updateTreeOpacity() {
       this.resetOpacity();
       let tree = this.currentTree;
+      console.log(tree)
       let treeNodes = tree.nodes.map((node) => node.id);
       let treeEdges = tree.edges.map((edge) => edge.id);
       let nodes = this.resultsStore.dispGraph.nodes.getIds().map((node) => ({

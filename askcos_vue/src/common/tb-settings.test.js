@@ -78,7 +78,6 @@ const jsSettings = {
 
 test('can convert py settings to api', () => {
   const result = tbSettingsPyToApi(pySettings);
-  console.log(result);
   // Check output size
   expect(Object.keys(result).length).toBe(21);
   // Check keys
@@ -96,7 +95,6 @@ test('can convert py settings to api', () => {
 
 test('can convert py settings to js', () => {
   const result = tbSettingsPyToJs(pySettings);
-  console.log(result);
   // Check output size
   expect(Object.keys(result).length).toBe(17);
   // Check keys
@@ -113,7 +111,6 @@ test('can convert py settings to js', () => {
 
 test('can convert js settings to api', () => {
   const result = tbSettingsJsToApi(jsSettings);
-  console.log(result);
   // Check output size
   expect(Object.keys(result).length).toBe(34);
   // Check keys

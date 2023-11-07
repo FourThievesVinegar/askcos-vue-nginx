@@ -17,7 +17,7 @@
                     <v-text-field label="First N Trees" variant="outlined" hide-details v-model="numTreesInput"
                         density="compact" class="mt-2">
                         <template v-slot:append>
-                            <v-btn @click="addTreesToIpp()">Add</v-btn>
+                            <v-btn @click="addTreesToIpp()" :disabled="trees.length === 0">Add</v-btn>
                         </template>
                     </v-text-field>
                     <p class="mt-3">
@@ -25,59 +25,60 @@
                         <i v-b-tooltip class="fas fa-question-circle ml-1"
                             title="Add results from the full reaction network to the IPP network visualization. Depth is the number of reaction steps to descend. Top-N is the number of precursor suggestions to add for each intermediate."></i>
                     </p>
-                    <v-text-field label="Depth" variant="outlined" hide-details v-model="maxDepthInput" density="compact"
-                        class="mt-2">
-                        <template v-slot:append>
-                            <v-btn @click="addResultsToIpp()">Add</v-btn>
-                        </template>
-                    </v-text-field>
-                    <v-text-field label="Top-N" variant="outlined" hide-details v-model="maxNumInput" density="compact"
-                        class="mt-2">
-                        <template v-slot:append>
-                            <v-btn @click="addResultsToIpp()">Add</v-btn>
-                        </template>
-                    </v-text-field>
+                    <v-row class="justify-center align-center">
+                        <v-col cols="12" md="4">
+                            <v-text-field label="Depth" variant="outlined" hide-details v-model="maxDepthInput"
+                                density="compact" class="mt-2">
+                            </v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="4">
+                            <v-text-field label="Top-N" variant="outlined" hide-details v-model="maxNumInput"
+                                density="compact" class="mt-2">
+                            </v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="4"> <v-btn @click="addResultsToIpp()"
+                                :disabled="trees.length === 0">Add</v-btn></v-col>
+                    </v-row>
                 </div>
                 <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4 align-self-start">
                     <h6 class="text-h6">Analyze trees</h6>
-                    <v-btn width="100%" @click="runPathwayRanking()" class="my-1">Run pathway ranking</v-btn>
-                    <v-btn width="100%" @click="runReactionClassification()" class="my-1">Run reaction
+                    <v-btn width="100%" @click="runPathwayRanking()" class="my-1" variant="outlined"
+                        :disabled="trees.length === 0">Run pathway
+                        ranking</v-btn>
+                    <v-btn width="100%" @click="runReactionClassification()" class="my-1" variant="outlined"
+                        :disabled="trees.length === 0">Run reaction
                         classification</v-btn>
-                    <v-btn-group class="mt-2">
-                        <v-btn variant="tonal">Run PMI calculation</v-btn>
-                        <v-menu location="bottom" :close-on-content-click="false">
-                            <template v-slot:activator="{ props }">
-                                <v-btn v-bind="props" icon="mdi mdi-menu-down" />
-                            </template>
-                            <v-list density="compact">
-                                <v-list-item @click="runPmiCalculation(true)">For this tree only</v-list-item>
-                                <v-list-item @click="runPmiCalculation()">For all trees</v-list-item>
-                            </v-list>
-                        </v-menu>
-                    </v-btn-group>
-                    <v-btn-group class="mt-2">
-                        <v-btn variant="tonal">Count analogs</v-btn>
-                        <v-menu location="bottom" :close-on-content-click="false">
-                            <template v-slot:activator="{ props }">
-                                <v-btn v-bind="props" icon="mdi mdi-menu-down" />
-                            </template>
-                            <v-list density="compact">
-                                <v-list-item @click="runAnalogCounting(true)">For this tree only</v-list-item>
-                                <v-list-item @click="runAnalogCounting()">For all trees</v-list-item>
-                            </v-list>
-                        </v-menu>
-                    </v-btn-group>
+                    <v-menu location="bottom" :close-on-content-click="false">
+                        <template v-slot:activator="{ props }">
+                            <v-btn v-bind="props" append-icon="mdi mdi-menu-down" variant="outlined" class="mt-1"
+                                width="100%" :disabled="trees.length === 0">Run PMI calculation</v-btn>
+                        </template>
+                        <v-list density="compact">
+                            <v-list-item @click="runPmiCalculation(true)">For this tree only</v-list-item>
+                            <v-list-item @click="runPmiCalculation()">For all trees</v-list-item>
+                        </v-list>
+                    </v-menu>
+                    <v-menu location="bottom" :close-on-content-click="false">
+                        <template v-slot:activator="{ props }">
+                            <v-btn v-bind="props" append-icon="mdi mdi-menu-down" class="mt-1" width="100%"
+                                variant="outlined" :disabled="trees.length === 0">Count analogs</v-btn>
+                        </template>
+                        <v-list density="compact">
+                            <v-list-item @click="runAnalogCounting(true)">For this tree only</v-list-item>
+                            <v-list-item @click="runAnalogCounting()">For all trees</v-list-item>
+                        </v-list>
+                    </v-menu>
                 </div>
-                <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4 align-self-start">
+                <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-2 align-self-start">
                     <h6 class="text-h6">Cluster Trees</h6>
-                    <v-switch id="clusterSwitch" v-model="cluster" :disabled="clusterDisabled" hide-details>
-                        View by cluster
+                    <v-switch id="clusterSwitch" v-model="cluster" :disabled="clusterDisabled" hide-details
+                        label="View by cluster">
                     </v-switch>
                 </div>
                 <div class="align-self-start">
                     <h6 class="text-h6">Sort trees</h6>
                     <div v-for="(sortInput, index) in treeSortInput" :key="index" class="d-flex flex-gap-2 mb-2">
-                        <v-input hide-details>
+                        <v-input hide-details :disabled="trees.length === 0">
                             <template v-slot:prepend class="justify-content-center" style="width: 2.5rem">
                                 {{ index + 1 }}
                             </template>
@@ -91,7 +92,7 @@
                             </template>
                         </v-input>
                     </div>
-                    <v-btn @click="addSortField">Add sort field</v-btn>
+                    <v-btn @click="addSortField" :disabled="trees.length === 0">Add sort field</v-btn>
                 </div>
                 <div class="mt-2">
                     <h6 class="text-h6">Filter trees</h6>
@@ -106,18 +107,22 @@
                         </v-btn>
                         of the selected components.
                     </p>
-                    <a href="#" role="button">Select starting materials by
-                        image</a>
-                    <!--
-                    <b-form-group label="Starting materials" v-slot="{ ariaDescribedby }">
-                        <div class="overflow-auto" style="max-height: 10rem">
-                            <b-form-checkbox-group v-model="selectedStartingMaterials" :options="startingMaterialOptions"
-                                :aria-describedby="ariaDescribedby" name="starting-materials"
-                                stacked></b-form-checkbox-group>
-                        </div>
-                    </b-form-group>
-                    <a v-b-modal.intermediate-select-modal href="#" role="button">Select intermediates by image</a>
-                    <b-form-group label="Intermediates" v-slot="{ ariaDescribedby }">
+                    <a href="#" role="button">
+                        <p>Select starting materials by
+                            image</p>
+                    </a>
+                    <v-select label="Starting materials" :items="startingMaterialOptions"
+                        v-model="selectedStartingMaterials" multiple variant="outlined" density="compact"
+                        class="mt-1"></v-select>
+                    <a href="#" role="button">
+                        <p>Select intermediates by image</p>
+                    </a>
+                    <v-select label="Intermediates" :items="intermediateOptions" v-model="selectedIntermediates" multiple
+                        variant="outlined" density="compact" class="mt-1"></v-select>
+                    <v-select v-if="reactionClassOptions.length" label="Reaction classes" :items="reactionClassOptions"
+                        v-model="selectedReactionClasses" multiple variant="outlined" density="compact"
+                        class="mt-1"></v-select>
+                    <!--<b-form-group label="Intermediates" v-slot="{ ariaDescribedby }">
                         <div class="overflow-auto" style="max-height: 10rem">
                             <b-form-checkbox-group v-model="selectedIntermediates" :options="intermediateOptions"
                                 :aria-describedby="ariaDescribedby" name="intermediates" stacked></b-form-checkbox-group>
@@ -131,7 +136,7 @@
                     </b-form-group> -->
                 </div>
             </v-col>
-            <v-col cols="12" md="9" id="tree-view-right" style="overflow-y: hide;">
+            <v-col cols="12" md="9" id="tree-view-right" style="overflow-y: hide" v-show="trees.length !== 0">
                 <div class="my-2 d-flex justify-space-around align-center">
                     <v-btn-group variant="outlined" density="comfortable" divided :border="true">
                         <v-btn icon="mdi mdi-chevron-double-left" @click="changeClusterId('first')"
@@ -144,7 +149,6 @@
                         <v-btn icon="mdi mdi-chevron-double-right" @click="changeClusterId('last')"
                             :disabled="!cluster"></v-btn>
                     </v-btn-group>
-
                     <v-btn-group variant="outlined" density="comfortable" divided :border="true">
                         <v-btn icon="mdi mdi-chevron-double-left" @click="changeTreeId('first')"></v-btn>
                         <v-btn icon="mdi mdi-chevron-left" @click="changeTreeId('prev')"></v-btn>
@@ -165,338 +169,145 @@
                             </tr>
                         </table>
                     </div>
-                    <!-- <network-legend></network-legend> -->
+                    <network-legend></network-legend>
                 </v-sheet>
+            </v-col>
+            <v-col cols="12" md="9" id="tree-view-right" style="overflow-y: hide" v-if="trees.length === 0"
+                class="d-flex justify-center align-center">
+                <div class="text-center">
+                    <v-img :width="400" cover :src="emptyTrees" class="mb-3"></v-img>
+                    <h2 class="text-h6">No trees found</h2>
+                    <p class="text-body-1">Try a different strategy setting or change filter settings</p>
+                </div>
             </v-col>
         </v-row>
     </v-container>
-    <!-- <div>
-      <div class="row mb-3">
-        <div id="tree-view-left" class="col-xl-2 border-right overflow-auto" style="height: calc(100vh - 14rem)">
-          <v-btn-toolbar class="flex-gap-2">
-            <v-btn v-b-modal.result-info-modal class="flex-grow-1" variant="info">Result Info</v-btn>
-            <v-btn class="flex-grow-1" variant="primary" @click="showListView = true">Open List View</v-btn>
-          </v-btn-toolbar>
-          <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4">
-            <h4>Add results to IPP network</h4>
-            <p>
-              Add by tree
-              <i
-                v-b-tooltip
-                class="fas fa-question-circle ml-1"
-                title="Add the requested number of trees to the IPP network visualization based on the current cluster, sorting, and filtering options."></i>
-            </p>
-            <b-form inline class="flex-gap-2" @submit.prevent="addTreesToIpp()">
-              <b-input-group class="flex-grow-1" style="flex-basis: 11rem">
-                <b-input-group-prepend>
-                  <b-input-group-text> First N Trees </b-input-group-text>
-                </b-input-group-prepend>
-                <b-input class="text-center" v-model="numTreesInput"></b-input>
-              </b-input-group>
-              <v-btn class="flex-grow-1" variant="outline-dark" type="submit">Add</v-btn>
-            </b-form>
-            <p class="mt-3">
-              Add by depth
-              <i
-                v-b-tooltip
-                class="fas fa-question-circle ml-1"
-                title="Add results from the full reaction network to the IPP network visualization. Depth is the number of reaction steps to descend. Top-N is the number of precursor suggestions to add for each intermediate."></i>
-            </p>
-            <b-form inline class="flex-gap-2" @submit.prevent="addResultsToIpp()">
-              <b-input-group class="flex-grow-1" style="flex-basis: 7rem">
-                <b-input-group-prepend>
-                  <b-input-group-text> Depth </b-input-group-text>
-                </b-input-group-prepend>
-                <b-input class="text-center" v-model="maxDepthInput"></b-input>
-              </b-input-group>
-              <b-input-group class="flex-grow-1" style="flex-basis: 7rem">
-                <b-input-group-prepend>
-                  <b-input-group-text> Top-N </b-input-group-text>
-                </b-input-group-prepend>
-                <b-input class="text-center" v-model="maxNumInput"></b-input>
-              </b-input-group>
-              <v-btn class="flex-grow-1" variant="outline-dark" type="submit">Add</v-btn>
-            </b-form>
-          </div>
-          <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4">
-            <h4>Analyze trees</h4>
-            <v-btn block @click="runPathwayRanking()">Run pathway ranking</v-btn>
-            <v-btn block @click="runReactionClassification()">Run reaction classification</v-btn>
-            <v-btn block @click="runGraphOptimization()">Find optimal pathway</v-btn>
-            <v-btn-group class="w-100 mt-2">
-              <v-btn @click="runPmiCalculation()" disabled>Run PMI calculation</v-btn>
-              <b-dropdown right>
-                <b-dropdown-item @click="runPmiCalculation(true)">For this tree only</b-dropdown-item>
-                <b-dropdown-item @click="runPmiCalculation()">For all trees</b-dropdown-item>
-              </b-dropdown>
-            </v-btn-group>
-            <v-btn-group class="w-100 mt-2">
-              <v-btn @click="runAnalogCounting()" disabled>Count analogs</v-btn>
-              <b-dropdown right>
-                <b-dropdown-item @click="runAnalogCounting(true)">For this tree only</b-dropdown-item>
-                <b-dropdown-item @click="runAnalogCounting()">For all trees</b-dropdown-item>
-              </b-dropdown>
-            </v-btn-group>
-          </div>
-          <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4">
-            <h4>Cluster trees</h4>
-            <b-form-checkbox id="clusterSwitch" v-model="cluster" :disabled="clusterDisabled" switch> View by cluster </b-form-checkbox>
-          </div>
-          <div class="mt-4">
-            <h4>Sort trees</h4>
-            <div v-for="(sortInput, index) in treeSortInput" :key="index" class="d-flex flex-gap-2 mb-2">
-              <b-input-group>
-                <b-input-group-prepend>
-                  <b-input-group-text class="justify-content-center" style="width: 2.5rem">
-                    {{ index + 1 }}
-                  </b-input-group-text>
-                </b-input-group-prepend>
-                <b-form-select id="sortingCategory" v-model="sortInput.key" :options="treeSortOptions" @change="setDefaultSortOrder(sortInput)"> </b-form-select>
-                <b-input-group-append role="button" @click="sortInput.ascending = !sortInput.ascending">
-                  <b-input-group-text v-if="sortInput.ascending" title="Ascending">
-                    <i class="fas fa-sort-amount-up ml-1"></i>
-                  </b-input-group-text>
-                  <b-input-group-text v-else title="Descending">
-                    <i class="fas fa-sort-amount-down ml-1"></i>
-                  </b-input-group-text>
-                </b-input-group-append>
-              </b-input-group>
-              <v-btn variant="link" class="text-danger px-0" @click="deleteSortField(index)">
-                <i class="fas fa-times"></i>
-              </v-btn>
-            </div>
-            <v-btn variant="link" class="px-0" @click="addSortField"> Add sort field <i class="fas fa-plus"></i> </v-btn>
-          </div>
-          <div class="mt-4">
-            <h4>Filter trees</h4>
-            <p>
-              Show pathways which
-              <b-form-checkbox id="filterInvertCheck" v-model="filterInvert" size="sm" button>
-                {{ filterInvert ? "do not" : "do" }}
-              </b-form-checkbox>
-              include
-              <b-form-checkbox id="filterAnyCheck" v-model="filterAny" size="sm" button>
-                {{ filterAny ? "any" : "all" }}
-              </b-form-checkbox>
-              of the selected components.
-            </p>
-            <a v-b-modal.starting-material-select-modal href="#" role="button">Select starting materials by image</a>
-            <b-form-group label="Starting materials" v-slot="{ ariaDescribedby }">
-              <div class="overflow-auto" style="max-height: 10rem">
-                <b-form-checkbox-group
-                  v-model="selectedStartingMaterials"
-                  :options="startingMaterialOptions"
-                  :aria-describedby="ariaDescribedby"
-                  name="starting-materials"
-                  stacked></b-form-checkbox-group>
-              </div>
-            </b-form-group>
-            <a v-b-modal.intermediate-select-modal href="#" role="button">Select intermediates by image</a>
-            <b-form-group label="Intermediates" v-slot="{ ariaDescribedby }">
-              <div class="overflow-auto" style="max-height: 10rem">
-                <b-form-checkbox-group v-model="selectedIntermediates" :options="intermediateOptions" :aria-describedby="ariaDescribedby" name="intermediates" stacked></b-form-checkbox-group>
-              </div>
-            </b-form-group>
-            <b-form-group v-if="reactionClassOptions.length" label="Reaction classes" v-slot="{ ariaDescribedby }">
-              <div class="overflow-auto" style="max-height: 10rem">
-                <b-form-checkbox-group v-model="selectedReactionClasses" :options="reactionClassOptions" :aria-describedby="ariaDescribedby" name="reaction-classes" stacked></b-form-checkbox-group>
-              </div>
-            </b-form-group>
-          </div>
-        </div>
-        <div id="tree-view-right" class="col-xl-10">
-          <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'">
-            <p class="lead text-center">
-              Discovered {{ allTrees.length }} trees after exploring {{ resultsStore.savedResultInfo.tbStats.total_chemicals }} total chemicals and
-              {{ resultsStore.savedResultInfo.tbStats.total_reactions }} total reactions.
-            </p>
-          </div>
-          <div>
-            <div class="btn-toolbar justify-content-center flex-gap-2 mb-3">
-              <b-input-group>
-                <b-input-group-prepend>
-                  <v-btn variant="outline-dark" @click="changeClusterId('first')" :disabled="!cluster">&laquo; First</v-btn>
-                  <v-btn variant="outline-dark" @click="changeClusterId('prev')" :disabled="!cluster">&lsaquo; Previous</v-btn>
-                </b-input-group-prepend>
-                <b-input-group-text class="justify-content-center" style="width: 8rem">
-                  {{ !cluster ? "Cluster N/A" : currentClusterId === -1 ? "Unclustered" : `Cluster ${currentClusterId + 1} of ${maxClusterId + 1}` }}
-                </b-input-group-text>
-                <b-input-group-append>
-                  <v-btn variant="outline-dark" @click="changeClusterId('next')" :disabled="!cluster">Next &rsaquo;</v-btn>
-                  <v-btn variant="outline-dark" @click="changeClusterId('last')" :disabled="!cluster">Last &raquo;</v-btn>
-                </b-input-group-append>
-              </b-input-group>
-              <b-input-group>
-                <b-input-group-prepend>
-                  <v-btn variant="outline-dark" @click="changeTreeId('first')">&laquo; First</v-btn>
-                  <v-btn variant="outline-dark" @click="changeTreeId('prev')">&lsaquo; Previous</v-btn>
-                </b-input-group-prepend>
-                <b-input-group-text class="justify-content-center" style="width: 8rem"> Tree {{ currentTreeId + 1 }} of {{ trees.length }} </b-input-group-text>
-                <b-input-group-append>
-                  <v-btn variant="outline-dark" @click="changeTreeId('next')">Next &rsaquo;</v-btn>
-                  <v-btn variant="outline-dark" @click="changeTreeId('last')">Last &raquo;</v-btn>
-                </b-input-group-append>
-              </b-input-group>
-              <v-btn v-b-tooltip title="Add the current tree to the IPP network visualization" variant="outline-dark" @click="addTreeToIpp(currentTree)"> Add to IPP </v-btn>
-            </div>
-          </div>
-          <div class="position-relative">
-            <div id="graph"></div>
-            <div v-if="currentTreeData" id="tree-data-overlay">
-              <table>
-                <tr v-for="(value, key) in currentTreeData" :key="key">
-                  <th class="px-1">{{ key }}</th>
-                  <td class="px-1">{{ Number.isInteger(value) ? value : num2str(value) }}</td>
-                </tr>
-              </table>
-            </div>
-            <network-legend></network-legend>
-          </div>
-        </div>
-      </div>
-  
-      <b-modal id="intermediate-select-modal" title="Filter by intermediates" size="xl" centered scrollable ok-only>
-        <div class="grid-wrapper">
-          <b-card v-for="smi in intermediateOptions" :key="smi">
-            <b-form-checkbox v-model="selectedIntermediates" :value="smi">Select</b-form-checkbox>
-            <div class="d-flex w-100 h-100 align-items-center justify-content-center">
-              <smiles-image :smiles="smi"></smiles-image>
-            </div>
-          </b-card>
-        </div>
-      </b-modal>
-  
-      <b-modal id="starting-material-select-modal" title="Filter by starting materials" size="xl" centered scrollable ok-only>
-        <div class="grid-wrapper">
-          <b-card v-for="smi in startingMaterialOptions" :key="smi">
-            <b-form-checkbox v-model="selectedStartingMaterials" :value="smi">Select</b-form-checkbox>
-            <div class="d-flex w-100 h-100 align-items-center justify-content-center">
-              <smiles-image :smiles="smi"></smiles-image>
-            </div>
-          </b-card>
-        </div>
-      </b-modal>
-  
-      <js-panel :visible="tabActive && !!selected" :options="detailPanelOptions" @close="clearSelection">
+    <js-panel :visible="tabActive && !!selected" :options="detailPanelOptions" @close="clearSelection">
         <div v-if="selected" class="m-3">
-          <div v-if="selected.type === 'chemical'">
-            <div class="text-center">
-              <copy-tooltip :data="selected.smiles">
-                <b>Smiles: </b><span class="smiles">{{ selected.smiles }}</span>
-              </copy-tooltip>
-              <div><b>Price ($/g): </b>{{ selected.data.ppg > 0 ? selected.data.ppg : "not buyable" }}</div>
-              <div v-if="selected.data.source"><b>Source: </b>{{ selected.data.source }}</div>
-              <smiles-image class="my-3" :smiles="selected.smiles"></smiles-image>
+            <div v-if="selected.type === 'chemical'">
+                <div class="text-center">
+                    <copy-tooltip :data="selected.smiles">
+                        <b>Smiles: </b><span class="smiles">{{ selected.smiles }}</span>
+                    </copy-tooltip>
+                    <div><b>Price ($/g): </b>{{ selected.data.ppg > 0 ? selected.data.ppg : "not buyable" }}</div>
+                    <div v-if="selected.data.source"><b>Source: </b>{{ selected.data.source }}</div>
+                    <smiles-image class="my-3" :smiles="selected.smiles"></smiles-image>
+                </div>
+                <div class="text-center my-3">
+                    <v-btn size="sm" variant="outline-secondary"
+                        :href="'/retro/network/?target=' + encodeURIComponent(selected.smiles)" target="_blank">Synthesize
+                        this with the Interactive Path Planner</v-btn>
+                </div>
+                <table class="table table-sm table-striped table-borderless">
+                    <tbody>
+                        <tr>
+                            <th>As reactant</th>
+                            <td>{{ selected.data["asReactant"] }}</td>
+                        </tr>
+                        <tr>
+                            <th>As product</th>
+                            <td>{{ selected.data["asProduct"] }}</td>
+                        </tr>
+                        <tr v-if="selected.data['scscore']">
+                            <th>Synthetic complexity</th>
+                            <td>{{ num2str(selected.data["scscore"]) }}</td>
+                        </tr>
+                        <tr v-if="selected.data['molwt']">
+                            <th>Molecular weight</th>
+                            <td>{{ selected.data["molwt"].toFixed(2) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="text-center my-3">
-              <v-btn size="sm" variant="outline-secondary" :href="'/retro/network/?target=' + encodeURIComponent(selected.smiles)" target="_blank"
-                >Synthesize this with the Interactive Path Planner</v-btn
-              >
+            <div v-if="selected.type === 'reaction'">
+                <div class="text-center">
+                    <copy-tooltip :data="selected.smiles">
+                        <b>Smiles: </b><span class="smiles">{{ selected.smiles }}</span>
+                    </copy-tooltip>
+                    <smiles-image class="my-3" :smiles="selected.smiles"
+                        :align="settingsStore.ippSettings.alignPrecursorsToProduct"></smiles-image>
+                </div>
+                <div class="text-center my-3">
+                    <v-btn size="sm" variant="outline-secondary"
+                        :href="'/smynth_interactive/?mode=context&rxnsiles=' + encodeURIComponent(selected.smiles)"
+                        target="_blank">Evaluate reaction</v-btn>
+                </div>
+                <table class="table table-sm table-striped table-borderless">
+                    <tbody>
+                        <tr>
+                            <th>Plausibility</th>
+                            <td>{{ num2str(selected.data["ffScore"]) }}</td>
+                        </tr>
+                        <tr v-if="selected.data['forwardScore']">
+                            <th>Forward predictor score</th>
+                            <td>{{ num2str(selected.data["forwardScore"]) }}</td>
+                        </tr>
+                        <tr>
+                            <th>Template score</th>
+                            <td>{{ num2str(selected.data["templateScore"]) }}</td>
+                        </tr>
+                        <tr>
+                            <th>Template examples</th>
+                            <td>{{ selected.data["numExamples"] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Necessary reagent</th>
+                            <td>{{ Array.isArray(selected.data["necessaryReagent"]) ?
+                                selected.data["necessaryReagent"].filter((item) => item).join(".") :
+                                selected.data["necessaryReagent"] }}</td>
+                        </tr>
+                        <tr v-if="selected.data['className']">
+                            <th>Reaction class</th>
+                            <td>{{ selected.data["className"] }} ({{ selected.data["classNum"] }})</td>
+                        </tr>
+                        <tr>
+                            <th>Supporting templates</th>
+                            <td>
+                                <ul>
+                                    <li v-for="(id, index) in selected.data['templateIds']" :key="id">
+                                        <a :href="'/template/?id=' + id" target="_blank">
+                                            {{ id }} <template v-if="selected.data['templateSets']">({{
+                                                selected.data["templateSets"][index] }})</template>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <table class="table table-sm table-striped table-borderless">
-              <tbody>
-                <tr>
-                  <th>As reactant</th>
-                  <td>{{ selected.data["asReactant"] }}</td>
-                </tr>
-                <tr>
-                  <th>As product</th>
-                  <td>{{ selected.data["asProduct"] }}</td>
-                </tr>
-                <tr v-if="selected.data['scscore']">
-                  <th>Synthetic complexity</th>
-                  <td>{{ num2str(selected.data["scscore"]) }}</td>
-                </tr>
-                <tr v-if="selected.data['molwt']">
-                  <th>Molecular weight</th>
-                  <td>{{ selected.data["molwt"].toFixed(2) }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div v-if="selected.type === 'reaction'">
-            <div class="text-center">
-              <copy-tooltip :data="selected.smiles">
-                <b>Smiles: </b><span class="smiles">{{ selected.smiles }}</span>
-              </copy-tooltip>
-              <smiles-image class="my-3" :smiles="selected.smiles" :align="settingsStore.ippSettings.alignPrecursorsToProduct"></smiles-image>
+            <div class="btn-toolbar justify-content-end">
+                <!-- <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button> -->
             </div>
-            <div class="text-center my-3">
-              <v-btn size="sm" variant="outline-secondary" :href="'/smynth_interactive/?mode=context&rxnsiles=' + encodeURIComponent(selected.smiles)" target="_blank">Evaluate reaction</v-btn>
-            </div>
-            <table class="table table-sm table-striped table-borderless">
-              <tbody>
-                <tr>
-                  <th>Plausibility</th>
-                  <td>{{ num2str(selected.data["ffScore"]) }}</td>
-                </tr>
-                <tr v-if="selected.data['forwardScore']">
-                  <th>Forward predictor score</th>
-                  <td>{{ num2str(selected.data["forwardScore"]) }}</td>
-                </tr>
-                <tr>
-                  <th>Template score</th>
-                  <td>{{ num2str(selected.data["templateScore"]) }}</td>
-                </tr>
-                <tr>
-                  <th>Template examples</th>
-                  <td>{{ selected.data["numExamples"] }}</td>
-                </tr>
-                <tr>
-                  <th>Necessary reagent</th>
-                  <td>{{ Array.isArray(selected.data["necessaryReagent"]) ? selected.data["necessaryReagent"].filter((item) => item).join(".") : selected.data["necessaryReagent"] }}</td>
-                </tr>
-                <tr v-if="selected.data['className']">
-                  <th>Reaction class</th>
-                  <td>{{ selected.data["className"] }} ({{ selected.data["classNum"] }})</td>
-                </tr>
-                <tr>
-                  <th>Supporting templates</th>
-                  <td>
-                    <ul>
-                      <li v-for="(id, index) in selected.data['templateIds']" :key="id">
-                        <a :href="'/template/?id=' + id" target="_blank">
-                          {{ id }} <template v-if="selected.data['templateSets']">({{ selected.data["templateSets"][index] }})</template>
-                        </a>
-                      </li>
-                    </ul>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="btn-toolbar justify-content-end">
-            <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button>
-          </div>
         </div>
-      </js-panel>
-  
-      <js-panel :visible="tabActive && showListView" :options="listPanelOptions" @close="showListView = false">
+    </js-panel>
+
+    <js-panel :visible="tabActive && showListView" :options="listPanelOptions" @close="showListView = false">
         <div class="m-3">
-          <b-pagination v-model="treeListCurrentPage" :total-rows="trees.length" :per-page="treeListItemsPerPage" align="center" class="mb-3"></b-pagination>
-          <div v-for="(tree, index) in treeListItems" :key="index" class="mb-3">
-            <v-btn-toolbar class="justify-content-between">
-              <v-btn v-b-toggle:[`tree-collapse-${index}`] size="sm" variant="primary"> Tree {{ (treeListCurrentPage - 1) * treeListItemsPerPage + index + 1 }} </v-btn>
-              <v-btn-group class="float-right">
-                <v-btn size="sm" variant="outline-dark" @click="addTreeToIpp(trees[(treeListCurrentPage - 1) * treeListItemsPerPage + index])"> Add to IPP </v-btn>
-                <v-btn
-                  size="sm"
-                  variant="outline-dark"
-                  @click="
-                    showListView = false;
-                    currentTreeId = (treeListCurrentPage - 1) * treeListItemsPerPage + index;
-                  ">
-                  View in main window
-                </v-btn>
-              </v-btn-group>
-            </v-btn-toolbar>
-            <b-collapse :id="`tree-collapse-${index}`" class="mt-2" visible>
+            <b-pagination v-model="treeListCurrentPage" :total-rows="trees.length" :per-page="treeListItemsPerPage"
+                align="center" class="mb-3"></b-pagination>
+            <div v-for="(tree, index) in treeListItems" :key="index" class="mb-3">
+                <v-btn-toolbar class="justify-content-between">
+                    <v-btn v-b-toggle:[`tree-collapse-${index}`] size="sm" variant="primary"> Tree {{ (treeListCurrentPage -
+                        1) * treeListItemsPerPage + index + 1 }} </v-btn>
+                    <v-btn-group class="float-right">
+                        <v-btn size="sm" variant="outline-dark"
+                            @click="addTreeToIpp(trees[(treeListCurrentPage - 1) * treeListItemsPerPage + index])"> Add to
+                            IPP </v-btn>
+                        <v-btn size="sm" variant="outline-dark" @click="
+                            showListView = false;
+                        currentTreeId = (treeListCurrentPage - 1) * treeListItemsPerPage + index;
+                        ">
+                            View in main window
+                        </v-btn>
+                    </v-btn-group>
+                </v-btn-toolbar>
+                <!-- <b-collapse :id="`tree-collapse-${index}`" class="mt-2" visible>
               <div :id="`treeList-${index}`" class="list-view-tree"></div>
-            </b-collapse>
-          </div>
+            </b-collapse> -->
+            </div>
         </div>
-      </js-panel>
-    </div> -->
+    </js-panel>
 </template>
   
 <script>
@@ -504,7 +315,7 @@
 import CopyTooltip from "@/components/CopyTooltip";
 import JsPanel from "@/components/JsPanel";
 import SmilesImage from "@/components/SmilesImage";
-// import NetworkLegend from "@/components/network/NetworkLegend";
+import NetworkLegend from "@/components/network/NetworkLegend";
 import { API } from "@/common/api";
 import { getMolImageUrl } from "@/common/drawing";
 import { RetroGraph } from "@/common/graph";
@@ -515,6 +326,7 @@ import { Network } from "vis-network";
 import { mapStores } from "pinia";
 import { useResultsStore } from "@/store/results";
 import { useSettingsStore } from "@/store/settings";
+import emptyTrees from '@/assets/emptyTrees.svg'
 
 function initializeNetwork(data, container, showDetail = true) {
     const options = showDetail ? visjsOptionsTreeDefault : visjsOptionsTreeCondensed;
@@ -528,7 +340,7 @@ export default {
         CopyTooltip,
         JsPanel,
         SmilesImage,
-        // NetworkLegend,
+        NetworkLegend,
     },
     props: {
         tabActive: {
@@ -589,6 +401,7 @@ export default {
                 panelSize: { width: () => (window.innerWidth * 10) / 12, height: "calc(100vh - 22rem)" },
                 callback: this.buildTreeList,
             },
+            emptyTrees: emptyTrees,
         };
     },
     computed: {
@@ -776,14 +589,12 @@ export default {
                 /* For detail view, add extra visual attributes */
                 graph.nodes.update(
                     data.nodes.map((node) => {
-                        console.log(this.resultsStore.dataGraph.nodes.get())
                         // this.resultsStore.dataGraph.nodes.map((node) => {
                         //     console.log(node)
                         // })
                         // console.log(this.resultsStore.dataGraph.nodes)
                         let dataNode = this.resultsStore.dataGraph.nodes.get(node["smiles"]);
                         if (node["type"] === "chemical") {
-                            console.log(dataNode)
                             return makeChemicalDisplayNode({
                                 id: node["id"],
                                 data: dataNode,
@@ -839,14 +650,12 @@ export default {
             // if (!this.tabActive || !this.currentTree) {
             //     return;
             // }
-            console.log("Called")
             this.clearSelection();
             const elem = document.getElementById("graph");
             this.networkData = this.loadNodeLinkGraph(this.currentTree, true);
             this.network = initializeNetwork(this.networkData, elem, true);
             this.network.on("selectNode", this.showNode);
             this.network.on("deselectNode", this.clearSelection);
-            console.log(this.currentTree)
         },
         addSortField() {
             this.treeSortInput.push({
@@ -975,6 +784,8 @@ export default {
                     return a;
                 }, new Set()),
             ].sort();
+
+            console.log(this.startingMaterialOptions)
         },
         showNode(selection) {
             const nodeId = selection.nodes[0];
@@ -988,11 +799,11 @@ export default {
                 disp: dispNode,
             };
             if (dataNode.type === "chemical" && !dataNode.source) {
-                this.updatePrice([dataNode.id]).then(() => {
+                this.resultsStore.updatePrice([dataNode.id]).then(() => {
                     let newData = this.resultsStore.dataGraph.nodes.get(dispNode.smiles);
                     let newDisp = this.networkData.nodes.get(dispNode.id);
-                    this.$set(this.selected, "data", newData);
-                    this.$set(this.selected, "disp", newDisp);
+                    this.selected["data"] = newData;
+                    this.selected["disp"] = newDisp;
                 });
             }
         },
@@ -1197,7 +1008,6 @@ export default {
                 task: "pmi_calculation",
                 index: selectTreeIdx,
             };
-            console.log(body)
             API.post(url, body)
                 .then((json) => {
                     // this.$bvToast.toast("PMI job submitted!", {
@@ -1223,7 +1033,7 @@ export default {
     watch: {
         allTrees(newVal) {
             if (newVal.length) {
-                // this.initializeFilterData();
+                this.initializeFilterData();
             }
         },
         cluster() {
@@ -1234,12 +1044,12 @@ export default {
             if (newVal) {
                 this.buildTree();
             } else {
-                // this.network.destroy();
+                this.network.destroy();
             }
         },
         tabActive(newVal) {
             if (newVal) {
-                this.init();
+                // this.init();
             }
         },
         trees() {
@@ -1279,6 +1089,5 @@ export default {
     background-color: #eee !important;
     font-family: unset !important;
     text-align: center !important;
-}
-</style>
+}</style>
   

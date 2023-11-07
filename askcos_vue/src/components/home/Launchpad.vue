@@ -408,7 +408,6 @@ const type = computed(() => {
 const canonicalize = () => {
   API.post("/api/rdkit/canonicalize/", { smiles: smiles.value })
     .then((json) => {
-      console.log(json);
       smiles.value = json.smiles;
     })
     .catch((error) => {
@@ -441,7 +440,6 @@ const getReactionScore = (smiles) => {
   };
   API.runCeleryTask(url, body)
     .then((output) => {
-      console.log(output)
       reactionScore.value = num2str(output.result.score);
     })
     .catch((error) => {

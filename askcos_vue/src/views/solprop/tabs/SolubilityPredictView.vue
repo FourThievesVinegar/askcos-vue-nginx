@@ -299,7 +299,6 @@ export default {
       API.runCeleryTask(url, body)
         .then(output => {
           this.results.push(...output)
-          console.log(output)
         })
         .catch(error => {
           alert('There was an error predicting solubility: ' + error)
