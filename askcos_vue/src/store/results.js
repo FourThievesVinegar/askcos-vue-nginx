@@ -933,20 +933,23 @@ export const useResultsStore = defineStore("results", {
     },
     templateRelevance(smiles) {
       const settings = useSettingsStore();
-      const url = "/api/v2/template-relevance/";
+      const url = "/api/retro/template-relevance/call-async";
       const body = {
-        smiles: smiles,
-        template_prioritizers: settings.tbSettings.templatePrioritizers,
+        model_name: "reaxys",
+        smiles: [smiles],
+        // template_prioritizers: settings.tbSettings.templatePrioritizers,
         num_templates: settings.tbSettings.numTemplates,
         max_cum_prob: settings.tbSettings.maxCumProb,
-        return_templates: true,
+        // return_templates: true,
+        attribute_filter: []
       };
-      checkTemplatePrioritizers(body["template_prioritizers"]);
+      // checkTemplatePrioritizers(body["template_prioritizers"]);
       return API.runCeleryTask(url, body)
         .then((output) => {
+          console.log(output)
           this.setRecTemplates({
             smiles: smiles,
-            data: Object.fromEntries(output.map((item) => [item._id, item])),
+            data: Object.fromEntries(output["result"][0].templates.map((item) => [item._id, item])),
           });
           // Update templates with existing results
           let precursorSmiles = this.dataGraph.getSuccessors(smiles);

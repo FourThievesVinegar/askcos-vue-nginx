@@ -145,8 +145,8 @@
               @download-selectivity="downloadSelectivityResults" />
           </v-window-item>
           <v-window-item value="sites">
-            <SiteSelectivity value="sites" rounded="lg" :results="siteResults" ref="ssref"
-              :pending="pendingTasks" @get-sites-refs="getSitesRefs"
+            <SiteSelectivity value="sites" rounded="lg" :results="siteResultsFilter" :resultsQuery="siteResultsQuery" ref="ssref"
+              :pending="pendingTasks" @get-sites-refs="getSitesRefs" 
               @download-sites-refs="downloadSitesRefs" @copy-to-clipboard="copyToClipboard" />
           </v-window-item>
         </v-window>
@@ -347,6 +347,37 @@ const forwardFileName = ref('forward.csv');
 const impurityFileName = ref('impurity.csv');
 const selectivityFileName = ref('selectivity.csv');
 const ssref = ref(null)
+
+const siteResultsFilter = computed (() =>  {
+  // Returns site results where reactant matches siteResultsQuery
+  console.log(siteResultsQuery)
+  return sortSiteResults(siteResults.value.filter((result) => {
+    return result.task.includes(siteResultsQuery.value) && checkFilter(result)
+  }))
+})
+
+const checkFilter = (result) => {
+  if (!siteSelectedAtoms.value.length) {
+    return true;
+  }
+  let reactingAtoms = result['atom_scores'].reduce((accum, score, index) => {
+    if (Math.round(score * 100) > 5) {
+      accum.push(index);
+    }
+    return accum;
+  }, []);
+
+  return reactingAtoms.some(element => siteSelectedAtoms.value.includes(element));
+}
+
+const sortSiteResults = (results) => {
+  if (!siteSelectedAtoms.value.length) {
+    return results;
+  }
+  return results.sort((a, b) => {
+    return b['atom_scores'][siteSelectedAtoms.value[0]] - a['atom_scores'][siteSelectedAtoms.value[0]];
+  });
+}
 
 const downloadSitesRefs = (result) => {
   console.log(result.references)

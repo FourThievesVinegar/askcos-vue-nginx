@@ -63,8 +63,6 @@
             
             <rec-templates-modal :selected="selected" v-model="showRecTemplate"></rec-templates-modal>
 
-            <v-dialog v-model="showRecTemplate"></v-dialog>
-
             <div id="Notes" v-if="dispNotes" class="my-2 scroll-list">
               <v-row v-for="(note, idx) in selected.disp.notes" :key="note.date + idx" class="mx-2">
                 <v-col cols="12">
