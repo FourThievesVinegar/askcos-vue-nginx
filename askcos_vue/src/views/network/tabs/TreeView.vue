@@ -122,18 +122,6 @@
                     <v-select v-if="reactionClassOptions.length" label="Reaction classes" :items="reactionClassOptions"
                         v-model="selectedReactionClasses" multiple variant="outlined" density="compact"
                         class="mt-1"></v-select>
-                    <!--<b-form-group label="Intermediates" v-slot="{ ariaDescribedby }">
-                        <div class="overflow-auto" style="max-height: 10rem">
-                            <b-form-checkbox-group v-model="selectedIntermediates" :options="intermediateOptions"
-                                :aria-describedby="ariaDescribedby" name="intermediates" stacked></b-form-checkbox-group>
-                        </div>
-                    </b-form-group>
-                    <b-form-group v-if="reactionClassOptions.length" label="Reaction classes" v-slot="{ ariaDescribedby }">
-                        <div class="overflow-auto" style="max-height: 10rem">
-                            <b-form-checkbox-group v-model="selectedReactionClasses" :options="reactionClassOptions"
-                                :aria-describedby="ariaDescribedby" name="reaction-classes" stacked></b-form-checkbox-group>
-                        </div>
-                    </b-form-group> -->
                 </div>
             </v-col>
             <v-col cols="12" md="9" id="tree-view-right" style="overflow-y: hide" v-show="trees.length !== 0">
@@ -567,9 +555,8 @@ export default {
             this.buildTree();
         },
         addResultsToIpp() {
-            this.resultsStore.addResultsToDispGraph({ maxDepth: this.maxDepthInput, maxNum: this.maxNumInput }).then(() => {
-                this.$emit("switch-tab", "0");
-            });
+            this.resultsStore.addResultsToDispGraph({ maxDepth: this.maxDepthInput, maxNum: this.maxNumInput })
+            this.$emit("switch-tab", "IPP");
         },
         addTreeToIpp(tree) {
             // console.log(tree)
@@ -579,7 +566,7 @@ export default {
         addTreesToIpp() {
             let selected = this.numTreesInput ? this.trees.slice(0, this.numTreesInput) : this.trees;
             selected.forEach(this.resultsStore.addTreeToDispGraph);
-            this.$emit("switch-tab", "0");
+            this.$emit("switch-tab", "IPP");
         },
         loadNodeLinkGraph(data, showDetail = true) {
             /* Load tree in node link format into visjs and add visualization related attributes. */

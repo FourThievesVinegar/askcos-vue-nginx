@@ -676,17 +676,18 @@ export const useResultsStore = defineStore("results", {
         reactions = reactions
           .filter((rxn) => !(root in rxn["inVis"]))
           .map((rxn) => rxn.id);
-        return this.addRetroResultToDispGraph({
+
+        this.addRetroResultToDispGraph({
           data: reactions,
           parentId: root,
-        }).then(() => {
-          this.dispGraph.getSuccessors(root).forEach((rxn) => {
-            this.dispGraph.getSuccessors(rxn).forEach((chem) => {
-              _helper(chem, depth + 1);
-            });
+        });
+        this.dispGraph.getSuccessors(root).forEach((rxn) => {
+          this.dispGraph.getSuccessors(rxn).forEach((chem) => {
+            _helper(chem, depth + 1);
           });
         });
       };
+
       return _helper(NIL_UUID, 1);
     },
     addTreeToDispGraph(data) {
@@ -769,6 +770,7 @@ export const useResultsStore = defineStore("results", {
             if (node["tforms"]) {
               templateIds.push(...node["tforms"]);
             }
+            // console.log(node)
             return {
               id: node["id"],
               rank: node["rank"],
@@ -778,8 +780,8 @@ export const useResultsStore = defineStore("results", {
               templateScore: node["template_score"],
               templateIds: node["tforms"],
               templateSets: node["tsources"],
-              precursors: node["id"].split("."),
-              precursorSmiles: node["id"],
+              precursors: node["precursor_smiles"].split("."),
+              precursorSmiles: node["precursor_smiles"],
               numExamples: node["num_examples"],
               necessaryReagent: node["necessary_reagent"],
               numRings: node["num_rings"],
