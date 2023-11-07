@@ -36,17 +36,17 @@
                 </v-text-field>
               </v-col>
             </v-row>
-            <v-row align="center" justify-start>
+            <v-row justify-start class="align-center justify-center">
               <v-col>
                 <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict">Submit</v-btn>
-                <v-btn variant="tonal" class="mr-5" :disabled="true">
+                <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0">
                   Clear
                 </v-btn>
                 <v-btn type="submit" variant="flat" color="primary" class="mr-5"
                   @click="showUploadModal = true">Upload</v-btn>
-                <v-btn icon @click="dialog = !dialog" variant="outlined">
-                  <v-icon>mdi-cog</v-icon>
+                <v-btn @click="dialog = !dialog" variant="outlined" class="mr-5" icon="mdi-cog">
                 </v-btn>
+                <v-btn class="mr-5" variant="outlined" @click="showInfo = !showInfo">Model I/O Details</v-btn>
               </v-col>
             </v-row>
           </v-form>
@@ -158,12 +158,14 @@
       </v-card>
     </v-dialog>
   </v-container>
+  <solubility-modal :visible="showInfo" width="auto" @close-dialog="$event => showInfo = $event"></solubility-modal>
 </template>
   
 <script>
 import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage";
 import SmilesInput from "@/components/SmilesInput";
+import SolubilityModal from '@/components/solprop/SolubilityModal'
 import { API } from "@/common/api";
 import { saveAs } from "file-saver";
 import * as Papa from "papaparse";
@@ -173,6 +175,7 @@ export default {
   components: {
     SmilesImage,
     SmilesInput,
+    SolubilityModal,
   },
   data() {
     return {
@@ -217,6 +220,7 @@ export default {
 
       ],
       loading: false,
+      showInfo: false,
     }
   },
   computed: {

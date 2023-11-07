@@ -118,8 +118,8 @@
         <v-col cols="12">Tree Builder Job Settings</v-col>
       </v-card-title>
       <v-card-text class="pt-0">
-          <tb-settings-table v-if="viewSettings" :settings="viewSettings"></tb-settings-table>
-          <v-alert v-else type="warning" class="mb-0" dense text>Settings not available.</v-alert>
+        <tb-settings-table v-if="viewSettings" :settings="viewSettings"></tb-settings-table>
+        <v-alert v-else type="warning" class="mb-0" dense text>Settings not available.</v-alert>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>

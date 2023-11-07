@@ -98,7 +98,7 @@ onMounted(() => {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-fill-color: transparent;
+  text-emphasis-color: transparent;
   background-size: 500% auto;
   animation: paint 5s ease-in-out infinite alternate;
 }

@@ -1089,5 +1089,6 @@ export default {
     background-color: #eee !important;
     font-family: unset !important;
     text-align: center !important;
-}</style>
+}
+</style>
   
