@@ -268,8 +268,8 @@
     </v-card>
   </v-dialog>
 
-  <NodeDetail :visible="tabActive && nodeDetailVisible" :enable-resolver="enableResolver" :selected="selected" @close="closeNodeDetail"
-    @expandNode="expandNode" @updatePendingTasks="pendingTasksHandler" ref="node-detail" />
+  <NodeDetail :visible="tabActive && nodeDetailVisible" :enable-resolver="enableResolver" :selected="selected"
+    @close="closeNodeDetail" @expandNode="expandNode" @updatePendingTasks="pendingTasksHandler" ref="node-detail" />
 
   <SettingsModal :visible="settingsVisible" @update:settingsVisible="settingsVisible = $event"
     :template-attributes="templateAttributes" :template-sets="templateSets" @changeNetopt="updateNetworkOptions" />
@@ -542,7 +542,7 @@ export default {
           this.network = network;
         },
       });
-      this.network.on("dragStart", this.clearSelection);
+      // this.network.on("dragStart", this.clearSelection);
       this.network.on("zoom", this.clearSelection);
       this.network.on("selectNode", this.showHoverBtn);
       this.network.on("deselectNode", this.clearSelection);
