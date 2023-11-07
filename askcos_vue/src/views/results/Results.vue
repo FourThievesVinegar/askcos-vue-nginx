@@ -43,7 +43,7 @@
             <v-sheet width="100%" class="pa-6">
               <v-row v-if="allResults.length">
                 <v-col cols="12">
-                  <v-data-table :headers="headers" item-value="result_id" :items="allResults" show-select
+                  <v-data-table :headers="headers" item-value="result_id" :items="sortedAllResults" show-select
                     v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10"
                     :search="searchQuery">
                     <template v-slot:item.delete="{ item }">
@@ -189,7 +189,7 @@ const sortedAllResults = computed(() => {
     return 0;
   });
 })
-// const sortBy = ref([{ key: 'modified', order: 'desc' }])
+
 const headers = ref([
   { key: 'description', title: 'Result', },
   { key: 'modified', title: 'Modified' },
@@ -338,11 +338,3 @@ const deleteResult = (id, skipConfirm = false) => {
 // }
 
 </script>
-
-<style scoped>
-.left-justify {
-  text-align: justify;
-  text-justify: inter-word;
-}
-</style>
-

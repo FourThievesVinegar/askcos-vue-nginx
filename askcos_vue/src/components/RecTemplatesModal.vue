@@ -35,7 +35,12 @@
              <v-col cols="12" align="center" justify="center" class="pa-0">
               <smiles-image class="align-center justify-center" :smiles="selected.smiles" max-width="300px"></smiles-image>
              </v-col>
-             <v-data-table :headers="rtmFields"  :items="rtmItems"></v-data-table>
+             <v-data-table :headers="rtmFields"  :items="rtmItems">
+              <template v-slot:item.reaction_smarts="{ item }">
+                      <smiles-image :smiles="item.columns.reaction_smarts" max-height="120px"></smiles-image>
+                      <pre>{{ item.columns }}</pre>
+                  </template>
+            </v-data-table>
           </v-card-text>
            <v-card-actions>
              <v-spacer></v-spacer>
@@ -108,6 +113,7 @@
     name: "RecTemplatesModal",
     components: {
       SmilesImage,
+      CopyTooltip,
     },
     props: {
       selected: {
@@ -119,7 +125,7 @@
       const resultsStore = useResultsStore();
       const rtmFields = ref([
         { key: "rank", title: "Original Rank", class: "text-center" },
-        { key: "sc_score", title: "Score", class: "text-center", formatter: (val) => num2str(val) },
+        { key: "score", title: "Score", class: "text-center", formatter: (val) => num2str(val) },
         { key: "p_index", title: "Prioritizer", class: "text-center" },
         { key: "reaction_smarts", title: "Template", class: "text-center" },
         { key: "results", title: "Result", class: "text-center" },
@@ -131,8 +137,6 @@
       const rtmTable = ref(null);
 
       const rtmItems = computed(() => {
-        console.log(resultsStore)
-        console.log(resultsStore.recommendedTemplates)
         if (resultsStore.recommendedTemplates[props.selected.smiles]) {
           return Object.values(resultsStore.recommendedTemplates[props.selected.smiles]);
         } else {
@@ -141,7 +145,6 @@
       });
 
       const openRecTemplatesModal = () => {
-        console.log(resultsStore)
         if (!resultsStore.recommendedTemplates[props.selected.smiles]) {
           predict(props.selected.smiles);
         }
@@ -156,15 +159,15 @@
         });
       };
 
-      const apply = (smiles, template) => {
-        applyingTemplate.value = template._id;
-        resultsStore.applyTemplate({ smiles: smiles, template: template }).finally(() => {
-          if (rtmTable.value) {
-            rtmTable.value.refresh();
-          }
-          applyingTemplate.value = null;
-        });
-      };
+      // const apply = (smiles, template) => {
+      //   applyingTemplate.value = template._id;
+      //   resultsStore.applyTemplate({ smiles: smiles, template: template }).finally(() => {
+      //     if (rtmTable.value) {
+      //       rtmTable.value.refresh();
+      //     }
+      //     applyingTemplate.value = null;
+      //   });
+      // };
 
       return {
         rtmFields,
@@ -175,7 +178,7 @@
         applyingTemplate,
         openRecTemplatesModal,
         predict,
-        apply,
+        // apply,
       };
     },
     mounted() {
