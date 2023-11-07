@@ -60,6 +60,8 @@
                 </template>
               </v-select>
             </div>
+            
+            <rec-templates-modal :selected="selected" v-model="showRecTemplate"></rec-templates-modal>
 
             <v-dialog v-model="showRecTemplate"></v-dialog>
 
@@ -630,7 +632,6 @@ export default {
     JsPanel,
     // BanButton,
     CopyTooltip,
-    RecTemplatesModal,
     KetcherMin,
     SmilesImage,
     RecTemplatesModal
