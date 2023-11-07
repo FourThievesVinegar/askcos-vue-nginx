@@ -39,11 +39,11 @@
             <v-row justify-start class="align-center justify-center">
               <v-col>
                 <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict">Submit</v-btn>
-                <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0">
+                <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0" @click="clear()">
                   Clear
                 </v-btn>
                 <v-btn type="submit" variant="flat" color="primary" class="mr-5"
-                  @click="showUploadModal = true">Upload</v-btn>
+                  @click="showUploadModal = true">Run Batch</v-btn>
                 <v-btn @click="dialog = !dialog" variant="outlined" class="mr-5" icon="mdi-cog">
                 </v-btn>
                 <v-btn class="mr-5" variant="outlined" @click="showInfo = !showInfo">Model I/O Details</v-btn>
@@ -231,7 +231,7 @@ export default {
     exportFileName() {
       let baseName = 'askcos'
       if (this.uploadFile) {
-        const inputName = this.uploadFile.name
+        const inputName = this.uploadFile[0].name
         baseName = inputName.substring(0, inputName.lastIndexOf('.'))
       }
       return baseName + '_solubility_export'
@@ -273,6 +273,9 @@ export default {
     this.onSelectedCategory();
   },
   methods: {
+    clear(){
+      this.results = []
+    },
     onSelectedCategory(value) {
       if (value) {
         this.selectedColumnCategories = value
@@ -383,6 +386,7 @@ export default {
         alert('There are no results to download!')
         return
       }
+      console.log(this.results)
       let downloadData = Papa.unparse(this.results)
       let blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' })
       saveAs(blob, this.exportFileName + '.csv')

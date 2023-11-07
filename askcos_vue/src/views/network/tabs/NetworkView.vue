@@ -424,7 +424,6 @@ export default {
       return this.pendingTasks > 0;
     },
     currentTree() {
-      conso
       return this.trees[this.currentTreeIndex];
     },
     currentTreeData() {
@@ -797,8 +796,6 @@ export default {
             this.resultsStore.clearDataGraph();
             this.resultsStore.clearDispGraph();
             this.resultsStore.clearRemovedReactions();
-            console.log(this.resultsStore.dataGraph)
-            console.log(this.resultsStore.dispGraph)
             return this.initTargetDataNode()
               .then(this.initTargetDispNode)
               .then(this.resultsStore.expand);
@@ -1496,13 +1493,14 @@ export default {
     enumerateTrees() {
       this.currentTreeIndex = 0;
       this.updateTerminalNodes();
+      debugger;
       let trees = getPaths({
         dataGraph: this.resultsStore.dataGraph,
         dispGraph: this.resultsStore.dispGraph,
         root: this.resultsStore.target,
         rootId: NIL_UUID,
-        maxDepth: this.settingsStore.tbSettings.maxDepth,
-        maxTrees: this.settingsStore.tbSettings.maxTrees,
+        maxDepth: this.settingsStore.tree_builder_settings.build_tree_options.max_depth,
+        maxTrees: this.settingsStore.tree_builder_settings.build_tree_options.max_trees,
         dispOnly: this.useDispNodesOnly,
       });
       trees.forEach((tree) => this.calculateTreeMetadata(tree));
@@ -1539,50 +1537,46 @@ export default {
       // Note: chemicalPropertyLogic and chemicalPopularityLogic not yet supported
       // Expects node to be a data node object
       let checks = {
-        buyableLogic: (n) => {
+        buyable_logic: (n) => {
           return !!n.ppg && n.ppg !== "not buyable";
         },
-        maxPPGLogic: (n) => {
+        max_scscore_logic: (n) => {
           return (
-            !!this.settingsStore.tbSettings.maxPPG &&
+            !!this.settingsStore.tree_builder_settings.build_tree_options.max_ppg &&
             !!n.ppg &&
             0 < n.ppg &&
-            n.ppg <= this.settingsStore.tbSettings.maxPPG
+            n.ppg <= this.settingsStore.tree_builder_settings.build_tree_options.max_ppg
           );
         },
-        maxScscoreLogic: (n) => {
+        max_scscore_logic: (n) => {
           return (
-            !!this.settingsStore.tbSettings.maxScscore &&
+            !!this.settingsStore.tree_builder_settings.build_tree_options.max_scscore &&
             !!n.scscore &&
-            n.scscore <= this.settingsStore.tbSettings.maxScscore
+            n.scscore <= this.settingsStore.tree_builder_settings.build_tree_options.max_scscore
           );
         },
-        chemicalPopularityLogic: (n) => {
+        chemical_property_logic: (n) => {
           const reacCheck =
-            !!this.settingsStore.tbSettings.chemicalPopularityReactants &&
             !!n.asReactant &&
-            n.asReactant >=
-            this.settingsStore.tbSettings.chemicalPopularityReactants;
+            n.asReactant >= 5;
           const prodCheck =
-            !!this.settingsStore.tbSettings.chemicalPopularityProducts &&
             !!n.asProduct &&
-            n.asProduct >=
-            this.settingsStore.tbSettings.chemicalPopularityProducts;
+            n.asProduct >= 5;
           return reacCheck || prodCheck;
         },
       };
       let orCriteria = [];
       let andCriteria = [];
       let allCriteria = [
-        "buyableLogic",
-        "maxPPGLogic",
-        "maxScscoreLogic",
-        "chemicalPopularityLogic",
+        "buyable_logic",
+        "max_scscore_logic",
+        "max_scscore_logic",
+        "chemical_property_logic",
       ];
       allCriteria.forEach((crit) => {
-        if (this.settingsStore.tbSettings[crit] === "or") {
+        if (this.settingsStore.tree_builder_settings.build_tree_options[crit] === "or") {
           orCriteria.push(checks[crit](dataNode));
-        } else if (this.settingsStore.tbSettings[crit] === "and") {
+        } else if (this.settingsStore.tree_builder_settings.build_tree_options[crit] === "and") {
           andCriteria.push(checks[crit](dataNode));
         }
       });

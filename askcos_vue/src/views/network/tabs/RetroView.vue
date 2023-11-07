@@ -24,8 +24,10 @@
                             class="my-3"></v-select>
                     </div>
                     <div class="text-center">
-                        <v-btn color="success" @click="runRetro()" :disabled="!target || !validSmiles">Submit</v-btn>
-                        <v-btn variant="plain" class="ml-2" :disabled="!target || !validSmiles">Advanced...</v-btn>
+                        <v-btn variant="flat" color="success" @click="runRetro()"
+                            :disabled="!target || !validSmiles">Submit</v-btn>
+                        <v-btn variant="outlined" class="ml-2" :disabled="!target || !validSmiles"
+                            @click="showAdvSettings = true">Advanced</v-btn>
                     </div>
                 </v-sheet>
             </v-col>
@@ -165,13 +167,171 @@
     </v-container>
     <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="target" @input="showKetcher = false"
         @update:smiles="(ketcherSmiles) => target = ketcherSmiles" />
+    <v-dialog v-model="showAdvSettings" width="500px">
+        <v-card>
+            <v-card-title>
+                Advanced Settings
+            </v-card-title>
+            <v-card-text>
+                <setting-input label="Model" label-for="retro-model-1"
+                    help-text="Select the type of retrosynthesis model to use.">
+                    <v-select hide-details :items="models" v-model="settings.model" variant="outlined" density="compact"
+                        class="my-1"></v-select>
+                </setting-input>
+                <setting-input label="Training Set" label-for="retro-training-set-1"
+                    help-text="Select the reaction training set to use for prediction.">
+                    <v-select hide-details :items="trainingSets" v-model="settings.trainingSet" variant="outlined"
+                        density="compact" class="my-1"></v-select>
+                </setting-input>
+                <setting-input v-if="settings.model === 'template_relevance'" label="Precursor Scoring"
+                    label-for="retro-precursor-scoring" help-text="Method for re-scoring predicted precursors.">
+                    <v-select v-model="settings.precursorScoring" :items="precursorScoringItems" variant="outlined"
+                        class="my-1" hide-details density="compact"></v-select>
+                </setting-input>
+                <setting-input v-if="settings.model === 'template_relevance'" label="Max. num. templates"
+                    label-for="retro-num-templates"
+                    help-text="This is the maximum number of reaction rules/templates to try to apply to your target. Depending on the value of maximum cumulative probability (below), a fewer number of templates may actually be applied.">
+                    <v-text-field v-model="settings.numTemplates" class="my-1" variant="outlined" density="compact"
+                        hide-details></v-text-field>
+                </setting-input>
+                <setting-input v-if="settings.model === 'template_relevance'" label="Max. cum. prob."
+                    label-for="retro-max-prob"
+                    help-text="This is the cumulative template score after which templates will stop being applied to your target.
+For example, if the sum of the scores of the top two templates exceeds this value, only those two template application results will be returned.">
+                    <v-text-field type="number" min="0" max="1" step="0.000001" v-model.number="settings.maxCumProb"
+                        @change="maxCumProb = Math.min(0.99999, maxCumProb)" class="my-1" variant="outlined"
+                        density="compact" hide-details></v-text-field>
+                </setting-input>
+                <setting-input v-if="settings.model === 'template_relevance'" label="Min. plausibility"
+                    label-for="retro-min-plausibility"
+                    help-text="This is the minimum plausibility that a predictor transformation must receive from the Fast Filter model in order to be kept and returned as a result.
+The plausibility score can help filter out bad suggestions, but in some cases can be over conservative and filter out false negatives.">
+                    <v-text-field type="number" min="0" max="1" step="0.000001" v-model.number="settings.minPlausibility"
+                        class="my-1" variant="outlined" density="compact" hide-details></v-text-field>
+                </setting-input>
+                <setting-input
+                    v-if="settings.model === 'template_relevance' && templateAttributes && templateAttributes[settings.trainingSet] && templateAttributes[settings.trainingSet].length"
+                    label="Template attribute filters"
+                    help-text="Template attribute filters to use during retrosynthetic prediction. These are attributes that are
+defined for each template, and only those templates that satisfy the filter provided here will be considered.
+Normally, only the top 'Max. num. templates' will be applied - with these filters, the top 'Max. num. templates' that satisfy the filters will be applied.">
+                    <v-btn icon="mdi-plus" variant="flat" color="success" @click="addAttributeFilter" density="compact">
+                    </v-btn>
+                </setting-input>
+                <div class="form-inline mb-2 ml-3" v-for="(filter, idx) in settings.attributeFilter" :key="idx">
+                    <b-button variant="outline-danger" pill class="mr-2" @click="deleteAttributeFilter(idx)">
+                        <i class="fas fa-times"></i>
+                    </b-button>
+                    <b-form-select class="mr-2" :options="templateAttributes[settings.trainingSet]" :value="filter.name"
+                        @input="updateAttributeFilter(idx, 'name', $event)"> </b-form-select>
+                    <b-form-select class="mr-2" :value="filter.logic" @input="updateAttributeFilter(idx, 'logic', $event)">
+                        <b-form-select-option value=">">&gt;</b-form-select-option>
+                        <b-form-select-option value=">=">&ge;</b-form-select-option>
+                        <b-form-select-option value="<">&lt;</b-form-select-option>
+                        <b-form-select-option value="<=">&le;</b-form-select-option>
+                        <b-form-select-option value="==">=</b-form-select-option>
+                    </b-form-select>
+                    <b-form-input class="mr-2" type="number" :value="filter.value"
+                        @input="updateAttributeFilter(idx, 'value', $event)"></b-form-input>
+                </div>
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn variant="flat" color="primary" @click="showAdvSettings = false;">Save</v-btn>
+                <v-btn variant="flat" color="success" @click="() => {showAdvSettings = false; runRetro()}">Run</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+    <!--
+             <b-modal id="retro-advanced-modal" title="Advanced Settings" centered scrollable ok-title="Submit" ok-variant="success" @ok="runRetro()">
+      
+     
+      <div class="form-inline mb-2 ml-3" v-for="(filter, idx) in settings.attributeFilter" :key="idx">
+        <b-button variant="outline-danger" pill class="mr-2" @click="deleteAttributeFilter(idx)">
+          <i class="fas fa-times"></i>
+        </b-button>
+        <b-form-select class="mr-2" :options="templateAttributes[settings.trainingSet]" :value="filter.name" @input="updateAttributeFilter(idx, 'name', $event)"> </b-form-select>
+        <b-form-select class="mr-2" :value="filter.logic" @input="updateAttributeFilter(idx, 'logic', $event)">
+          <b-form-select-option value=">">&gt;</b-form-select-option>
+          <b-form-select-option value=">=">&ge;</b-form-select-option>
+          <b-form-select-option value="<">&lt;</b-form-select-option>
+          <b-form-select-option value="<=">&le;</b-form-select-option>
+          <b-form-select-option value="==">=</b-form-select-option>
+        </b-form-select>
+        <b-form-input class="mr-2" type="number" :value="filter.value" @input="updateAttributeFilter(idx, 'value', $event)"></b-form-input>
+      </div>
+    </b-modal>
+
+    <b-modal v-if="selectedSettings" v-model="showSettingsViewModal" title="Prediction Settings" centered ok-only>
+      <b-table-simple small class="mb-0">
+        <b-tr>
+          <b-th>Model</b-th>
+          <b-td>{{ selectedSettings.model }}</b-td>
+        </b-tr>
+        <b-tr>
+          <b-th>Training Set</b-th>
+          <b-td>{{ selectedSettings.trainingSet }}</b-td>
+        </b-tr>
+        <b-tr>
+          <b-th>Model Version</b-th>
+          <b-td>{{ selectedSettings.modelVersion }}</b-td>
+        </b-tr>
+        <b-tr>
+          <b-th>Precursor Scoring</b-th>
+          <b-td>{{ selectedSettings.precursorScoring }}</b-td>
+        </b-tr>
+        <b-tr>
+          <b-th>Max. num. templates</b-th>
+          <b-td>{{ selectedSettings.numTemplates }}</b-td>
+        </b-tr>
+        <b-tr>
+          <b-th>Max. cum. probability</b-th>
+          <b-td>{{ selectedSettings.maxCumProb }}</b-td>
+        </b-tr>
+        <b-tr>
+          <b-th>Min. plausibility</b-th>
+          <b-td>{{ selectedSettings.minPlausibility }}</b-td>
+        </b-tr>
+        <b-tr>
+          <b-th>Template attribute filters</b-th>
+          <b-td v-if="selectedSettings.attributeFilter.length">
+            <p v-for="(filter, index) in selectedSettings.attributeFilter" :key="index" class="mb-0">{{ filter.name }} {{ filter.logic }} {{ filter.value }}</p>
+          </b-td>
+          <b-td v-else>None</b-td>
+        </b-tr>
+      </b-table-simple>
+    </b-modal>
+
+    <b-modal v-if="selectedTemplate" v-model="showTemplateInfoModal" title="Template Info" centered size="lg" ok-only>
+      <div class="row">
+        <div class="col-12">
+          <table class="table table-borderless">
+            <tr>
+              <th>Template:</th>
+              <td>
+                <copy-tooltip :data="selectedTemplate">
+                  <span class="smiles">{{ selectedTemplate }}</span>
+                </copy-tooltip>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div v-if="selectedTemplate" class="row">
+        <div class="col-12 text-center">
+          <smiles-image :smiles="selectedTemplate" input-type="template"></smiles-image>
+        </div>
+      </div>
+    </b-modal>
+
+        -->
 </template>
 
 <script>
 import { ref, reactive, computed, watch, onMounted, nextTick } from "vue";
 import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage";
-//   import SettingInput from "@/components/SettingInput";
+import SettingInput from "@/components/network/SettingInput";
 import CopyTooltip from "@/components/CopyTooltip";
 import { API } from "@/common/api";
 import { resolveChemName } from "@/common/resolver";
@@ -193,13 +353,18 @@ export default {
     name: "RetroView",
     components: {
         CopyTooltip,
-        // SettingInput,
+        SettingInput,
         KetcherModal,
         SmilesImage,
     },
     data() {
         return {
             emptyVoid: emptyVoid,
+            showAdvSettings: false,
+            precursorScoringItems: [
+                { title: "Relevance Heuristic", value: "relevance_heuristic" },
+                { title: "SCScore", value: "scscore" }
+            ],
         }
     },
     setup() {

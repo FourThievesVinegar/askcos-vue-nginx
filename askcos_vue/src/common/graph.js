@@ -1,38 +1,39 @@
 /*
  * Graph utility functions
  */
-import { DataSet } from 'vis-data';
-import { v4 as uuidv4 } from 'uuid';
+import { DataSet } from "vis-data";
+import { v4 as uuidv4 } from "uuid";
 
 class RetroGraph {
   constructor(nodes, edges, source, target, visOptions) {
     this.nodes = new DataSet(visOptions);
     this.edges = new DataSet(visOptions);
-    this._source = source || 'from';
-    this._target = target || 'to';
+    this._source = source || "from";
+    this._target = target || "to";
     this._succ = {}; // Precomputed successors for fast retrieval
 
     const graph = this;
-    this.edges.on('*', (event, properties, senderId) => {
+    this.edges.on("*", (event, properties, senderId) => {
       // Update the successors object when a new edge is added
-      if (senderId === 'clear') {
+      if (senderId === "clear") {
         return; // _succ property will be manually reset
       }
       switch (event) {
-        case 'add':
+        case "add":
           for (const id of properties.items) {
             const edge = graph.edges.get(id);
-            graph._succ[edge[graph._source]] = graph._succ[edge[graph._source]] || {};
+            graph._succ[edge[graph._source]] =
+              graph._succ[edge[graph._source]] || {};
             graph._succ[edge[graph._source]][edge[graph._target]] = edge.id;
           }
           break;
-        case 'remove':
+        case "remove":
           for (const obj of properties.oldData) {
             delete graph._succ[obj[graph._source]][obj[graph._target]];
           }
           break;
-        case 'update':
-          console.debug('Not updating graph successors on update event.');
+        case "update":
+          console.debug("Not updating graph successors on update event.");
           break;
         default:
           throw `Cannot handle ${event} event!`;
@@ -45,7 +46,7 @@ class RetroGraph {
 
   clear() {
     this.nodes.clear();
-    this.edges.clear('clear');
+    this.edges.clear("clear");
     this._succ = {};
   }
 
@@ -98,7 +99,7 @@ class RetroGraph {
 
   getAllPredecessors(node_id) {
     const predecessors = [];
-    while (node_id != '00000000-0000-0000-0000-000000000') {
+    while (node_id != "00000000-0000-0000-0000-000000000") {
       if (node_id === undefined || node_id === null) {
         break;
       }
@@ -152,7 +153,9 @@ class RetroGraph {
     // Remove any edges which are only connected on one end
     const nodeIds = this.nodes.getIds();
     const dangling = this.edges.getIds({
-      filter: (edge) => !nodeIds.includes(edge[this._source]) || !nodeIds.includes(edge[this._target]),
+      filter: (edge) =>
+        !nodeIds.includes(edge[this._source]) ||
+        !nodeIds.includes(edge[this._target]),
     });
     this.edges.remove(dangling);
   }
@@ -171,7 +174,14 @@ class RetroGraph {
  * @param {Boolean} args.dispOnly - Whether to enumerate pathways using only nodes present in dispGraph.
  */
 function getPaths({
-  dataGraph, dispGraph, root, rootId, maxDepth, maxTrees, validationFunction, dispOnly = false,
+  dataGraph,
+  dispGraph,
+  root,
+  rootId,
+  maxDepth,
+  maxTrees,
+  validationFunction,
+  dispOnly = false,
 }) {
   if (validationFunction === undefined) {
     validationFunction = (n) => n.terminal;
@@ -181,14 +191,21 @@ function getPaths({
     const paths = [];
     const dataNode = dataGraph.nodes.get(node);
     const successors = dataGraph.getSuccessors(node);
-    if (successors.length === 0 || maxDepth !== undefined && chemPath.length >= maxDepth) {
+    if (
+      successors.length === 0 ||
+      (maxDepth !== undefined && chemPath.length >= maxDepth)
+    ) {
       if (validationFunction(dataNode)) {
         const newNode = {
           id: nodeId,
           smiles: node,
-          type: 'chemical',
+          type: "chemical",
         };
-        paths.push({ nodes: [newNode], edges: [], graph: { depth: chemPath.length } });
+        paths.push({
+          nodes: [newNode],
+          edges: [],
+          graph: { depth: chemPath.length },
+        });
       }
     } else {
       for (const rxn of successors) {
@@ -209,7 +226,7 @@ function getPaths({
           const newNode = {
             id: nodeId,
             smiles: node,
-            type: 'chemical',
+            type: "chemical",
           };
           subPath.nodes.push(newNode);
           const newEdge = {
@@ -239,7 +256,9 @@ function getPaths({
     const edgeIds = {};
     if (dispNode) {
       // Get corresponding node IDs from dispGraph
-      const dispSuccessors = dispGraph.nodes.get(dispGraph.getSuccessors(nodeId));
+      const dispSuccessors = dispGraph.nodes.get(
+        dispGraph.getSuccessors(nodeId)
+      );
       dispSuccessors.forEach((n) => {
         childIds[n.smiles] = n.id;
         edgeIds[n.smiles] = dispGraph._succ[nodeId][n.id];
@@ -250,13 +269,15 @@ function getPaths({
         edgeIds[c] = uuidv4();
       });
     }
-    const subPaths = successors.map((c) => getChemPaths(c, childIds[c], chemPath));
+    const subPaths = successors.map((c) =>
+      getChemPaths(c, childIds[c], chemPath)
+    );
     for (const pathCombo of product(subPaths)) {
       const subPath = mergePaths(pathCombo);
       const newNode = {
         id: nodeId,
         smiles: node,
-        type: 'reaction',
+        type: "reaction",
       };
       subPath.nodes.push(newNode);
       successors.forEach((c) => {
@@ -276,11 +297,11 @@ function getPaths({
 }
 
 function isChemical(node) {
-  return node.type === 'chemical';
+  return node.type === "chemical";
 }
 
 function isReaction(node) {
-  return node.type === 'reaction';
+  return node.type === "reaction";
 }
 
 function product(sets) {
@@ -321,6 +342,4 @@ function mergePaths(paths) {
   return result;
 }
 
-export {
-  RetroGraph, getPaths, isChemical, isReaction,
-};
+export { RetroGraph, getPaths, isChemical, isReaction };
