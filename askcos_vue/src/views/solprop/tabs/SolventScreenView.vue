@@ -36,9 +36,9 @@
                 <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0" @click="clear(false)">
                   Clear
                 </v-btn>
-                <v-btn icon @click="dialog = !dialog" variant="outlined">
-                  <v-icon>mdi-cog</v-icon>
+                <v-btn icon="mdi-cog" @click="dialog = !dialog" variant="outlined" class="mr-5">
                 </v-btn>
+                <v-btn class="mr-5" variant="outlined" @click="showInfo = !showInfo">Model I/O Details</v-btn>
               </v-col>
             </v-row>
           </v-form>
@@ -107,11 +107,13 @@
       </v-col>
     </v-row>
   </v-container>
+  <solubility-modal :visible="showInfo" width="auto" @close-dialog="$event => showInfo = $event"></solubility-modal>
 </template>
   
 <script>
 import SmilesImage from "@/components/SmilesImage";
 import SmilesInput from "@/components/SmilesInput";
+import SolubilityModal from '@/components/solprop/SolubilityModal'
 import { API } from "@/common/api";
 import { colorMap } from "@/common/color";
 import { loadCustomSolventSets, saveCustomSolventSets, solventSets } from "@/views/solprop/solvents";
@@ -130,6 +132,7 @@ export default {
   components: {
     SmilesImage,
     SmilesInput,
+    SolubilityModal,
     'bar-chart': Bar,
     'line-chart': Line,
   },
@@ -157,7 +160,8 @@ export default {
       selectedUnits: 'mg/mL',
       unitOptions: ['log10(mol/L)', 'mg/mL'],
       loading: false,
-      emptyChartSrc: emptyChart
+      emptyChartSrc: emptyChart,
+      showInfo: false
     }
   },
   setup() {
