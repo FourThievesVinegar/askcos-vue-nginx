@@ -177,6 +177,7 @@ export default {
     SmilesImage,
     SmilesInput,
     SolubilityModal,
+    KetcherModal,
   },
   data() {
     return {
