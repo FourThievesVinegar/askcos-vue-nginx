@@ -126,11 +126,12 @@
     </v-dialog>
 
     <v-dialog v-model="dialog" width="auto" class="justify-center align-center">
-      <v-card class="pa-3 m-5">
+      <v-card>
         <v-card-title class="headline">
           Additional Information
         </v-card-title>
-        <v-card-text>
+        <v-divider></v-divider>
+        <v-card-text class="pa-3">
           <v-expand-transition>
             <v-expansion-panels v-model="panel" multiple>
               <v-expansion-panel title="Reference Information (Optional)" class="text-primary">
@@ -158,7 +159,8 @@
             </v-expansion-panels>
           </v-expand-transition>
         </v-card-text>
-        <v-card-action class="d-flex justify-end">
+        <v-divider></v-divider>
+        <v-card-action class="d-flex justify-end pa-3">
           <v-btn class="mr-2" variant="tonal" color="primary" @click="dialog = false">
             Save
           </v-btn>
