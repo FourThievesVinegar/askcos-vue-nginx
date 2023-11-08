@@ -297,8 +297,7 @@ const updateSmiles = (newSmiles) => {
 onMounted(() => {
   API.get('/api/buyables/sources')
     .then(json => {
-      buyablesSources.value = json.sources
-      console.log(buyablesSources.value)
+      buyablesSources.value = json.sources 
     });
   let urlParams = new URLSearchParams(window.location.search);
   let query = urlParams.get('q');

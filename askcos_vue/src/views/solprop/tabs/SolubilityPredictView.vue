@@ -61,7 +61,7 @@
             <v-col md="5">
               <v-menu location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-btn v-show="!!results.length" @click="handleClick" :disabled="evaluating" color="primary"
+                  <v-btn v-show="!!results.length" color="primary"
                     v-bind="props" prepend-icon="mdi mdi-download" variant="flat">
                     Download
                   </v-btn>
@@ -160,14 +160,14 @@
           </v-expand-transition>
         </v-card-text>
         <v-divider></v-divider>
-        <v-card-action class="d-flex justify-end pa-3">
+        <v-card-actions class="d-flex justify-end pa-3">
           <v-btn class="mr-2" variant="tonal" color="success" @click="dialog = false">
             Save
           </v-btn>
           <v-btn variant="tonal" color="primary" @click="() => { dialog = false; predict() }">
             Run
           </v-btn>
-        </v-card-action>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-container>
@@ -398,7 +398,6 @@ export default {
         alert('There are no results to download!')
         return
       }
-      console.log(this.results)
       let downloadData = Papa.unparse(this.results)
       let blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' })
       saveAs(blob, this.exportFileName + '.csv')

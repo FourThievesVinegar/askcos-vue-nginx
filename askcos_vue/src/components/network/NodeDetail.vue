@@ -277,7 +277,7 @@
                 </v-table>
               </div>
               <div class="btn-toolbar justify-content-end mx-2">
-                <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button>
+                <!-- <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button> -->
               </div>
             </div>
             <div class="alert alert-warning m-2" v-if="selected.data.selecError">Could not check regio-selectivity for

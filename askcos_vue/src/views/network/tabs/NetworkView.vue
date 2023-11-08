@@ -387,8 +387,6 @@ export default {
       }
     });
 
-    console.log("Directly from the store:", this.resultsStore.savedResultInfo);
-
     API.get("/api/template/sets/").then((json) => {
       this.templateAttributes = json.attributes;
       for (let templateSet of json["template_sets"]) {

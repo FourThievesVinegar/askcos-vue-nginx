@@ -219,26 +219,26 @@ Normally, only the top 'Max. num. templates' will be applied - with these filter
                     </v-btn>
                 </setting-input>
                 <div class="form-inline mb-2 ml-3" v-for="(filter, idx) in settings.attributeFilter" :key="idx">
-                    <b-button variant="outline-danger" pill class="mr-2" @click="deleteAttributeFilter(idx)">
-                        <i class="fas fa-times"></i>
-                    </b-button>
-                    <b-form-select class="mr-2" :options="templateAttributes[settings.trainingSet]" :value="filter.name"
-                        @input="updateAttributeFilter(idx, 'name', $event)"> </b-form-select>
-                    <b-form-select class="mr-2" :value="filter.logic" @input="updateAttributeFilter(idx, 'logic', $event)">
+                    <v-btn icon="mdi-minus" class="mr-2" color="red" variant="tonal" density="compact"
+                        @click="deleteAttributeFilter(idx)">
+                    </v-btn>
+                    <v-select class="mr-2" :items="templateAttributes[settings.trainingSet]" :value="filter.name"
+                        @input="updateAttributeFilter(idx, 'name', $event)"> </v-select>
+                    <v-select class="mr-2" :value="filter.logic" @input="updateAttributeFilter(idx, 'logic', $event)">
                         <b-form-select-option value=">">&gt;</b-form-select-option>
                         <b-form-select-option value=">=">&ge;</b-form-select-option>
                         <b-form-select-option value="<">&lt;</b-form-select-option>
                         <b-form-select-option value="<=">&le;</b-form-select-option>
                         <b-form-select-option value="==">=</b-form-select-option>
-                    </b-form-select>
-                    <b-form-input class="mr-2" type="number" :value="filter.value"
-                        @input="updateAttributeFilter(idx, 'value', $event)"></b-form-input>
+                    </v-select>
+                    <v-text-field class="mr-2" type="number" :value="filter.value"
+                        @input="updateAttributeFilter(idx, 'value', $event)"></v-text-field>
                 </div>
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn variant="flat" color="primary" @click="showAdvSettings = false;">Save</v-btn>
-                <v-btn variant="flat" color="success" @click="() => {showAdvSettings = false; runRetro()}">Run</v-btn>
+                <v-btn variant="flat" color="success" @click="() => { showAdvSettings = false; runRetro() }">Run</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>

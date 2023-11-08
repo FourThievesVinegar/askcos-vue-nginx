@@ -342,8 +342,7 @@ const selectivityFileName = ref('selectivity.csv');
 const ssref = ref(null)
 
 const siteResultsFilter = computed (() =>  {
-  // Returns site results where reactant matches siteResultsQuery
-  console.log(siteResultsQuery)
+  // Returns site results where reactant matches siteResultsQuery 
   return sortSiteResults(siteResults.value.filter((result) => {
     return result.task.includes(siteResultsQuery.value) && checkFilter(result)
   }))
@@ -1014,8 +1013,7 @@ const contextV1Predict = async () => {
     return;
   }
   API.runCeleryTask('/api/legacy/context/', postData)
-    .then(output => {
-      console.log(output)
+    .then(output => { 
       contextResults.value = output
       console.log(contextResults.value)
     })
@@ -1057,7 +1055,6 @@ const contextV2Predict = () => {
   API.runCeleryTask('/api/legacy/context-v2/', postData)
     .then((output) => {
       postprocessContextV2(output);
-      console.log(contextResults.value)
     })
     .finally(() => {
       pendingTasks.value--;

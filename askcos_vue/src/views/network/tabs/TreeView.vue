@@ -22,7 +22,7 @@
                     </v-text-field>
                     <p class="mt-3">
                         Add by depth
-                        <i v-b-tooltip class="fas fa-question-circle ml-1"
+                        <i class="fas fa-question-circle ml-1"
                             title="Add results from the full reaction network to the IPP network visualization. Depth is the number of reaction steps to descend. Top-N is the number of precursor suggestions to add for each intermediate."></i>
                     </p>
                     <v-row class="justify-center align-center">
@@ -270,7 +270,7 @@
         </div>
     </js-panel>
 
-    <js-panel :visible="tabActive && showListView" :options="listPanelOptions" @close="showListView = false">
+    <!-- <js-panel :visible="tabActive && showListView" :options="listPanelOptions" @close="showListView = false">
         <div class="m-3">
             <v-pagination v-model="treeListCurrentPage" :total-rows="trees.length" :per-page="treeListItemsPerPage"
                 align="center" class="mb-3"></v-pagination>
@@ -290,12 +290,12 @@
                         </v-btn>
                     </v-btn-group>
                 </v-btn-toolbar>
-                <!-- <b-collapse :id="`tree-collapse-${index}`" class="mt-2" visible>
+                <b-collapse :id="`tree-collapse-${index}`" class="mt-2" visible>
               <div :id="`treeList-${index}`" class="list-view-tree"></div>
-            </b-collapse> -->
+            </b-collapse>
             </div>
         </div>
-    </js-panel>
+    </js-panel> -->
 </template>
   
 <script>

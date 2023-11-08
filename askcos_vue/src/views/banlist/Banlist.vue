@@ -175,7 +175,6 @@ onMounted(() => {
 
 const tabItems = computed(() => {
   let items = activeTab.value === 0 ? chemicals.value : reactions.value;
-  console.log(items)
   switch (filterActive.value) {
     case 'active':
       return items.filter(item => item.active === true);

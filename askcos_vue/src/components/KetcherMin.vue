@@ -28,7 +28,6 @@ export default {
                 data['reference'] = reference;
             }
             isLoading.value = true;
-            // console.log(data)
             API.post('/api/rdkit/to-molfile/', data)
                 .then(json => {
                     setMolfile(json.molfile, callback);
@@ -90,8 +89,7 @@ export default {
 
                 // Move canvas slightly so highlight circles do not get cut off along the top and left edges
                 ketcher.editor.render.setScrollOffset(offset, offset);
-                if (callback) {
-                    console.log(ketcher.editor)
+                if (callback) {       
                     callback(ketcher);
                 }
             }

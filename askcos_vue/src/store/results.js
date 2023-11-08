@@ -770,7 +770,6 @@ export const useResultsStore = defineStore("results", {
             if (node["tforms"]) {
               templateIds.push(...node["tforms"]);
             }
-            // console.log(node)
             return {
               id: node["id"],
               rank: node["rank"],
@@ -946,7 +945,6 @@ export const useResultsStore = defineStore("results", {
       // checkTemplatePrioritizers(body["template_prioritizers"]);
       return API.runCeleryTask(url, body)
         .then((output) => {
-          console.log(output)
           this.setRecTemplates({
             smiles: smiles,
             data: Object.fromEntries(output["result"][0].templates.map((item) => [item._id, item])),
