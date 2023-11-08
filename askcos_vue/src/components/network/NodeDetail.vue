@@ -37,16 +37,16 @@
                 label="Invert Atom Filter" density="compact" hide-details>
               </v-switch>
             </div>
-            <div id="chemical-node-toolbar" class="d-flex justify-center flex-gap-2 flex-wrap m-2">
-              <v-btn id="expand-btn-side" variant="outlined" @click="expandNode"> Expand Node </v-btn>
-              <v-btn data-cy="network-view_button_view-notes" id="notes" variant="outlined"
-                @click="dispNotes = !dispNotes"> View Notes </v-btn>
-              <v-btn id="add-precursor-btn" variant="outlined" @click="openAddNewPrecursorModal()"> Add Precursor
+            <div id="chemical-node-toolbar" class="d-flex justify-center flex-gap-2 flex-wrap">
+              <v-btn id="expand-btn-side" variant="flat" color="green" @click="expandNode"> Expand Node </v-btn>
+              <v-btn data-cy="network-view_button_view-notes" id="notes" variant="flat" color="deep-orange"
+                @click="dispNotes = !dispNotes"> {{ !dispNotes ? "View" : "Hide"}} Notes </v-btn>
+              <v-btn id="add-precursor-btn" variant="flat" color="light-blue" @click="openAddNewPrecursorModal()"> Add Precursor
               </v-btn>
-              <v-btn id="view-rec-templates-btn" variant="outlined" @click="toggleRecTemplatesDialog"> View
+              <v-btn id="view-rec-templates-btn" variant="flat" color="primary" @click="toggleRecTemplatesDialog" prepend-icon="mdi-view-list"> View
                 Recommended
                 Templates </v-btn>
-              <ban-button id="ban-chemical-btn" :smiles="selected.smiles" :type="selected.type"></ban-button>
+              <!-- <ban-button id="ban-chemical-btn" :smiles="selected.smiles" :type="selected.type"></ban-button> -->
               <v-select :items="sortingCategoryItems" label="Sort By" style="width: 100%" class="px-2" hide-details
                 variant="outlined" density="compact" v-model="sortingCategory">
                 <template v-slot:append>
