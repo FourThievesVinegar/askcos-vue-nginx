@@ -253,7 +253,7 @@
                             <td>
                                 <ul>
                                     <li v-for="(id, index) in selected.data['templateIds']" :key="id">
-                                        <a :href="'/template/?id=' + id" target="_blank">
+                                        <a :href="'/template?id=' + id" target="_blank">
                                             {{ id }} <template v-if="selected.data['templateSets']">({{
                                                 selected.data["templateSets"][index] }})</template>
                                         </a>
