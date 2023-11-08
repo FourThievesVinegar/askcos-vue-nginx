@@ -43,7 +43,7 @@
                 @click="dispNotes = !dispNotes"> View Notes </v-btn>
               <v-btn id="add-precursor-btn" variant="outlined" @click="openAddNewPrecursorModal()"> Add Precursor
               </v-btn>
-              <v-btn id="view-rec-templates-btn" variant="outlined" @click="showRecTemplate = !showRecTemplate"> View
+              <v-btn id="view-rec-templates-btn" variant="outlined" @click="toggleRecTemplatesDialog"> View
                 Recommended
                 Templates </v-btn>
               <ban-button id="ban-chemical-btn" :smiles="selected.smiles" :type="selected.type"></ban-button>
@@ -61,7 +61,7 @@
               </v-select>
             </div>
             
-            <rec-templates-modal :selected="selected" v-model="showRecTemplate"></rec-templates-modal>
+            <rec-templates-modal :selected="selected" :visible="showRecTemplate" @close-dialog="$event => showRecTemplate = $event"></rec-templates-modal>
 
             <div id="Notes" v-if="dispNotes" class="my-2 scroll-list">
               <v-row v-for="(note, idx) in selected.disp.notes" :key="note.date + idx" class="mx-2">
@@ -710,6 +710,9 @@ export default {
     };
   },
   methods: {
+    toggleRecTemplatesDialog() {
+      this.showRecTemplate = !this.showRecTemplate;
+    },
     toggleResolver() {
       if (this.allowResolve) {
         this.allowResolve = false;
