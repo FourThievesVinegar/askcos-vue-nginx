@@ -125,7 +125,7 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="dialog" max-width="600px" class="justify-center align-center">
+    <v-dialog v-model="dialog" width="auto" class="justify-center align-center">
       <v-card class="pa-3 m-5">
         <v-card-title class="headline">
           Additional Information
