@@ -135,12 +135,10 @@
         <v-row>
           <v-col cols="12">
             <p>Use the following link to share this result:</p>
-            <v-text-field :value="shareLink" readonly append-icon="mdi-content-copy">
-              <div class="input-group-append">
-                <copy-tooltip class="btn btn-outline-secondary" :data="shareLink" no-highlight>
-                </copy-tooltip>
-              </div>
-            </v-text-field>
+            <copy-tooltip :data="shareLink" no-highlight location="bottom-right">
+            <v-text-field :value="shareLink" readonly allow-copy append-icon="mdi-content-copy">
+              </v-text-field>
+            </copy-tooltip>
             <v-alert type="warning">Please note that shared results cannot be edited and saved simultaneously by multiple
               users.</v-alert>
           </v-col>
@@ -175,8 +173,6 @@ const sharedResult = ref(null);
 const sortDescending = ref(true);
 const treeDialog = ref(false);
 const viewSettings = ref(null);
-
-// const showLoader = computed(() => pendingTasks.value > 0);
 
 const sortedAllResults = computed(() => {
   return allResults.value.sort((a, b) => {
@@ -225,7 +221,7 @@ const shareResult = (id) => {
     const currentUrl = window.location.href;
     const params = new URLSearchParams();
     params.append('result_id', id);
-    shareLink.value = `${currentUrl}/api/results/share?${params.toString()}`;
+    shareLink.value = `${currentUrl}/share?${params.toString()}`;
     API.get(`/api/results/share?${params.toString()}`);
     for (const res of allResults.value) {
       if (res.result_id === id) {

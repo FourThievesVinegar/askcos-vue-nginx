@@ -144,8 +144,8 @@
               @download-selectivity="downloadSelectivityResults" />
           </v-window-item>
           <v-window-item value="sites">
-            <SiteSelectivity value="sites" rounded="lg" :results="siteResultsFilter" :resultsQuery="siteResultsQuery" ref="ssref"
-              :pending="pendingTasks" @get-sites-refs="getSitesRefs" 
+            <SiteSelectivity value="sites" rounded="lg" :results="filteredResults" ref="ssref"
+              :pending="pendingTasks" @get-sites-refs="getSitesRefs" @update-selected-atoms="$event => siteSelectedAtoms = $event" @update-result-query="$event => siteResultsQuery = $event" :siteResults="siteResults"
               @download-sites-refs="downloadSitesRefs" @copy-to-clipboard="copyToClipboard" />
           </v-window-item>
         </v-window>
@@ -341,8 +341,8 @@ const impurityFileName = ref('impurity.csv');
 const selectivityFileName = ref('selectivity.csv');
 const ssref = ref(null)
 
-const siteResultsFilter = computed (() =>  {
-  // Returns site results where reactant matches siteResultsQuery 
+const filteredResults = computed (() =>  {
+  console.log(siteResults.value)
   return sortSiteResults(siteResults.value.filter((result) => {
     return result.task.includes(siteResultsQuery.value) && checkFilter(result)
   }))

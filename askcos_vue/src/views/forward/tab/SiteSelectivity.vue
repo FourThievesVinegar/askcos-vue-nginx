@@ -8,20 +8,20 @@
                 <v-spacer></v-spacer>
             </v-row>
 
-            <v-row class="justify-center my-auto" density="compact" v-if="!pending && results.length">
+            <v-row class="justify-center my-auto" density="compact" v-if="!pending && siteResults.length">
                 <v-col cols="12" md="8" justify-center>
-                    <v-text-field label="Filter Reactants" density="compact" variant="outlined" hide-details clearable
-                        placeholder="Filter reactants based on substring match to SMILES." v-model="resultsQuery"
-                        @input="filterResult"></v-text-field>
+                    <v-text-field label="Filter Reactants" density="compact" variant="outlined" hide-details
+                        placeholder="Filter reactants based on substring match to SMILES." :model-value="resultsQuery" @update:modelValue="($event) => { resultsQuery = $event; emitResultQuery() } "
+                        ></v-text-field>
                 </v-col>
             </v-row>
-            <v-row class="justify-center align-center" v-if="!pending && results.length">
+            <v-row class="justify-center align-center" v-if="!pending && siteResults.length">
                 <v-col class="d-flex align-center justify-center" cols="12" md="10">
-                    <ketcher-min ref="ketcherMinRef" @change="siteSelectedAtoms = $event"></ketcher-min>
+                    <ketcher-min ref="ketcherMinRef" @change="($event) => {selectedAtoms = $event; emitSiteAtoms()}"></ketcher-min>
                 </v-col>
             </v-row>
 
-            <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" class="my-3"
+            <v-data-table v-if="!pending && siteResults.length" :headers="headers" :items="results" class="my-3"
                 :items-per-page="5" height="600px">
                 <template v-slot:item.task="{ item }">
                     <smiles-image :smiles="item.columns.task" max-height="120px"></smiles-image>
@@ -94,6 +94,7 @@ const panel = ref([0])
 const disabled = ref(false)
 const resultsQuery = ref('')
 const ketcherMinRef = ref(null)
+const selectedAtoms = ref([])
 
 const { results, pending } = defineProps({
     results: {
@@ -104,9 +105,9 @@ const { results, pending } = defineProps({
         type: Number,
         default: 0
     },
-    resultsQuery: {
-        type: String,
-        default: ''
+    siteResults:{
+        type: Array,
+        default: [],
     }
 })
 
@@ -123,6 +124,14 @@ const emitCopyToClipboard = (index) => {
     emits('copy-to-clipboard', index)
 }
 
+const emitResultQuery = () => {
+    emits("update-result-query", resultsQuery.value)
+}
+
+const emitSiteAtoms = () => {
+    emits("update-selected-atoms", selectedAtoms.value)
+}
+
 const headers = ref([
     { key: 'task', title: 'Reactant', align: 'center', width: "400px" },
     { key: 'smiles', title: 'Sites', align: 'center', },
@@ -133,6 +142,4 @@ const headers = ref([
 defineExpose({
     ketcherMinRef
 })
-
-
 </script>
