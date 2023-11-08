@@ -1,31 +1,4 @@
 <template>
-  <!-- <b-modal id="rec-templates-modal" title="Recommended Templates" size="xxl" footer-class="justify-content-between" centered scrollable @show="openRecTemplatesModal">
-    <div class="text-center mb-3">
-      <h3>Current Target</h3>
-      <smiles-image :smiles="selected.smiles"></smiles-image>
-    </div>
-    <b-table v-else ref="rtmTable" :items="rtmItems" :fields="rtmFields" :current-page="rtmCurrentPage" :per-page="rtmItemsPerPage" hover responsive="true">
-      <template #cell(reaction_smarts)="data">
-        <smiles-image :smiles="data.value" transparent lazy allow-copy></smiles-image>
-        <a :href="`/template/?id=${data.item._id}`" target="_blank">{{ data.item._id }} ({{ data.item.template_set }})</a>
-      </template>
-      <template #cell(results)="data">
-        <template v-if="data.item.results !== undefined">
-          <template v-if="data.item.results[0]">
-            <smiles-image :smiles="data.item.results[0]" transparent lazy></smiles-image>
-          </template>
-          <template v-else> No Precursors </template>
-        </template>
-        <template v-else>
-          <loading-button variant="primary" :loading="applyingTemplate === data.item._id" @click="apply(selected.smiles, data.item)"> Apply Template </loading-button>
-        </template>
-      </template>
-    </b-table>
-    <template #modal-footer="{ close }">
-      <loading-button variant="info" :loading="loading" @click="predict(selected.smiles)"> Re-evaluate </loading-button>
-      <b-button variant="outline-secondary" @click="close()">Close</b-button>
-    </template>
-  </b-modal> -->
   <v-dialog v-model="propShow" @open="openRecTemplatesModal" max-width="85%">
     <v-card>
       <v-card-title class="mt-2">
