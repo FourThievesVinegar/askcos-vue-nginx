@@ -45,9 +45,8 @@
                 <v-col cols="12">
                   <v-data-table :headers="headers" item-value="result_id" :items="sortedAllResults" show-select
                     v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10"
-                    :search="searchQuery">
+                     :search="searchQuery">
                     <template v-slot:item.delete="{ item }">
-                      <!-- <pre>{{ item }}</pre> -->
                       <v-icon @click="deleteResult(item.raw.result_id)" class="text-center">mdi-delete</v-icon>
                     </template>
                     <template #item.public="{ item }">

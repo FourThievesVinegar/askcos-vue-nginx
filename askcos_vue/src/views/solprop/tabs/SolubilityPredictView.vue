@@ -40,7 +40,7 @@
               <v-col>
                 <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict">Submit</v-btn>
                 <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0" @click="clear()">
-                  Clear
+                  Clear Results
                 </v-btn>
                 <v-btn type="submit" variant="flat" color="primary" class="mr-5"
                   @click="showUploadModal = true">Run Batch</v-btn>

@@ -111,10 +111,9 @@
                   </v-list>
                 </v-menu>
                 <v-btn variant="tonal" class="mr-5" @click="clear()">
-                  Clear
+                  Clear Results
                 </v-btn>
-                <v-btn icon @click="dialog = !dialog">
-                  <v-icon>mdi-cog</v-icon>
+                <v-btn icon="mdi-cog" @click="dialog = !dialog" variant="outlined">
                 </v-btn>
               </v-col>
             </v-row>
@@ -194,11 +193,6 @@
                     <v-select label="Forward model training set" v-model="forwardModelTrainingSet" density="comfortable"
                       hide-details clearable variant="outlined" :items="forwardModelTrainingSets"></v-select>
                   </v-col>
-
-                  <!-- <v-col cols="12">
-                    <v-select label="Forward model version" v-model="forwardModelVersion" density="comfortable"
-                      hide-details clearable variant="outlined" :items="forwardModelVersions"></v-select>
-                  </v-col> -->
                 </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
@@ -293,7 +287,6 @@ import Regioselectivity from "@/views/forward/tab/Regioselectivity.vue"
 import SiteSelectivity from "@/views/forward/tab/SiteSelectivity.vue"
 import { saveAs } from 'file-saver';
 import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
-import KetcherMin from "@/components/KetcherMin.vue";
 import { createReaxysQuery } from "@/common/reaxys";
 import { copyToClipboard } from "@/common/utils";
 
