@@ -171,7 +171,7 @@
         </v-row>
     </v-container>
     <js-panel :visible="tabActive && !!selected" :options="detailPanelOptions" @close="clearSelection">
-        <div v-if="selected" class="m-3">
+        <div v-if="selected" class="ma-3">
             <div v-if="selected.type === 'chemical'">
                 <div class="text-center">
                     <copy-tooltip :data="selected.smiles">
@@ -182,11 +182,11 @@
                     <smiles-image class="my-3" :smiles="selected.smiles"></smiles-image>
                 </div>
                 <div class="text-center my-3">
-                    <v-btn size="sm" variant="outline-secondary"
-                        :href="'/retro/network/?target=' + encodeURIComponent(selected.smiles)" target="_blank">Synthesize
+                    <v-btn variant="tonal"
+                        :href="'/network?tab=IPP&target=' + encodeURIComponent(selected.smiles)" target="_blank">Synthesize
                         this with the Interactive Path Planner</v-btn>
                 </div>
-                <table class="table table-sm table-striped table-borderless">
+                <v-table density="compact">
                     <tbody>
                         <tr>
                             <th>As reactant</th>
@@ -205,7 +205,7 @@
                             <td>{{ selected.data["molwt"].toFixed(2) }}</td>
                         </tr>
                     </tbody>
-                </table>
+                </v-table>
             </div>
             <div v-if="selected.type === 'reaction'">
                 <div class="text-center">
@@ -216,11 +216,11 @@
                         :align="settingsStore.ippSettings.alignPrecursorsToProduct"></smiles-image>
                 </div>
                 <div class="text-center my-3">
-                    <v-btn size="sm" variant="outline-secondary"
-                        :href="'/smynth_interactive/?mode=context&rxnsiles=' + encodeURIComponent(selected.smiles)"
+                    <v-btn variant="tonal"
+                        :href="'/forward?tab=context&rxnsmiles=' + encodeURIComponent(selected.smiles)"
                         target="_blank">Evaluate reaction</v-btn>
                 </div>
-                <table class="table table-sm table-striped table-borderless">
+                <v-table density="compact">
                     <tbody>
                         <tr>
                             <th>Plausibility</th>
@@ -262,7 +262,7 @@
                             </td>
                         </tr>
                     </tbody>
-                </table>
+                </v-table>
             </div>
             <div class="btn-toolbar justify-content-end">
                 <!-- <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button> -->
@@ -272,8 +272,8 @@
 
     <js-panel :visible="tabActive && showListView" :options="listPanelOptions" @close="showListView = false">
         <div class="m-3">
-            <b-pagination v-model="treeListCurrentPage" :total-rows="trees.length" :per-page="treeListItemsPerPage"
-                align="center" class="mb-3"></b-pagination>
+            <v-pagination v-model="treeListCurrentPage" :total-rows="trees.length" :per-page="treeListItemsPerPage"
+                align="center" class="mb-3"></v-pagination>
             <div v-for="(tree, index) in treeListItems" :key="index" class="mb-3">
                 <v-btn-toolbar class="justify-content-between">
                     <v-btn v-b-toggle:[`tree-collapse-${index}`] size="sm" variant="primary"> Tree {{ (treeListCurrentPage -
@@ -379,7 +379,7 @@ export default {
                 headerTitle: "Node Details",
                 headerControls: { size: "sm" },
                 position: { my: "right-top", at: "right-top", of: "#graph" },
-                panelSize: { width: 500, height: 500 },
+                panelSize: { width: 500, height: 600 },
             },
             listPanelOptions: {
                 id: "listPanel",
