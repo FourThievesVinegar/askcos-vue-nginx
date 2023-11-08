@@ -161,10 +161,10 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-action class="d-flex justify-end pa-3">
-          <v-btn class="mr-2" variant="tonal" color="primary" @click="dialog = false">
+          <v-btn class="mr-2" variant="tonal" color="success" @click="dialog = false">
             Save
           </v-btn>
-          <v-btn variant="tonal" color="success" @click="() => { dialog = false; predict() }">
+          <v-btn variant="tonal" color="primary" @click="() => { dialog = false; predict() }">
             Run
           </v-btn>
         </v-card-action>
