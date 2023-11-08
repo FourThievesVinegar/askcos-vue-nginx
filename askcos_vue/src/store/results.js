@@ -4,7 +4,7 @@ import { lookupBuyables } from "@/common/buyables";
 import { v4 as uuidv4, NIL as NIL_UUID } from "uuid";
 import { API } from "@/common/api";
 // import { tbSettingsPyToJs } from "@/common/tb-settings";
-import { checkTemplatePrioritizers } from "@/views/network/utils";
+// import { checkTemplatePrioritizers } from "@/views/network/utils";
 import {
   makeChemicalDisplayNode,
   makeReactionDisplayNode,
