@@ -34,7 +34,7 @@
               <v-col>
                 <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict">Submit</v-btn>
                 <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0" @click="clear(false)">
-                  Clear
+                  Clear Results
                 </v-btn>
                 <v-btn icon="mdi-cog" @click="dialog = !dialog" variant="outlined" class="mr-5">
                 </v-btn>
