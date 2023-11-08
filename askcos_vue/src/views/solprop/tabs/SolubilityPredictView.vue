@@ -177,6 +177,7 @@ export default {
     SmilesImage,
     SmilesInput,
     SolubilityModal,
+    KetcherModal,
   },
   data() {
     return {
@@ -321,7 +322,7 @@ export default {
       this.loading = true
       const url = '/api/legacy/solubility/batch/call-async'
       const body = {
-        task_list: data,
+        task_list: [data],
       }
       API.runCeleryTask(url, body)
         .then(output => {
@@ -332,7 +333,7 @@ export default {
         })
         .finally(() => this.loading = false, this.pendingTasks -= 1)
     },
-    handleUploadSubmit() {
+    handleUploadSubmit() {   
       let fileFormat
       if (this.uploadFile[0]) {
         if (this.uploadFile[0].name.endsWith('.json')) {
@@ -340,7 +341,7 @@ export default {
         } else if (this.uploadFile[0].name.endsWith('.csv')) {
           fileFormat = 'csv'
         } else {
-          alert('Unsupported file format! Expecting .csv or .json')
+           alert('No file selected or file has no name!')
           return
         }
       }
@@ -360,7 +361,6 @@ export default {
         }
         this.predictBatch(data)
       }
-
       reader.readAsText(this.uploadFile[0])
     },
     openKetcher(source) {

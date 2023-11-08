@@ -17,8 +17,7 @@
             </v-row>
             <v-row class="justify-center align-center" v-if="!pending && results.length">
                 <v-col class="d-flex align-center justify-center" cols="12" md="10">
-                    <ketcher-min ref="ketcherMinRef" @change="siteSelectedAtoms = $event" 
-                       ></ketcher-min>
+                    <ketcher-min ref="ketcherMinRef" @change="siteSelectedAtoms = $event"></ketcher-min>
                 </v-col>
             </v-row>
 
@@ -28,7 +27,8 @@
                     <smiles-image :smiles="item.columns.task" max-height="120px"></smiles-image>
                 </template>
                 <template v-slot:item.smiles="{ item }">
-                    <smiles-image :smiles="item.columns.smiles" :reacting-atoms="item.raw.atom_scores" :highlight=true max-height="200px"></smiles-image>
+                    <smiles-image :smiles="item.columns.smiles" :reacting-atoms="item.raw.atom_scores" :highlight=true
+                        max-height="200px"></smiles-image>
                 </template>
                 <template v-slot:item.references="{ item }">
                     <div v-if="item.columns.references === undefined">
@@ -103,6 +103,10 @@ const { results, pending } = defineProps({
     pending: {
         type: Number,
         default: 0
+    },
+    resultsQuery: {
+        type: String,
+        default: ''
     }
 })
 
@@ -110,10 +114,6 @@ const emits = defineEmits()
 
 const emitgetSitesRefs = async (index) => {
     emits('get-sites-refs', index)
-}
-
-const filterResult = (query) => {
-    emits('update:filter-results', query);
 }
 
 const emitDownloadSitesRefs = (result) => {

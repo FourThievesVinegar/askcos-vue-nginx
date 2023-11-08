@@ -337,11 +337,3 @@ const deleteResult = (id, skipConfirm = false) => {
 // }
 
 </script>
-
-<style scoped>
-.left-justify {
-  text-align: justify;
-  text-justify: inter-word;
-}
-</style>
-

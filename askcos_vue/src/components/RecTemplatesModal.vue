@@ -4,9 +4,6 @@
       <h3>Current Target</h3>
       <smiles-image :smiles="selected.smiles"></smiles-image>
     </div>
-    <b-pagination v-model="rtmCurrentPage" :total-rows="rtmItems.length" :per-page="rtmItemsPerPage" align="center"></b-pagination>
-
-    <b-skeleton-table v-if="loading" :rows="20" :columns="4"></b-skeleton-table>
     <b-table v-else ref="rtmTable" :items="rtmItems" :fields="rtmFields" :current-page="rtmCurrentPage" :per-page="rtmItemsPerPage" hover responsive="true">
       <template #cell(reaction_smarts)="data">
         <smiles-image :smiles="data.value" transparent lazy allow-copy></smiles-image>
@@ -29,8 +26,34 @@
       <b-button variant="outline-secondary" @click="close()">Close</b-button>
     </template>
   </b-modal> -->
+  <v-dialog v-show="openRecTemplatesModal" max-width="85%">
+    <v-card>
+      <v-card-text>
+        <v-col cols="12" class="text-center pa-0">
+          <h3>Current Target</h3>
+        </v-col>
+        <v-col cols="12" align="center" justify="center" class="pa-0">
+          <smiles-image class="align-center justify-center" :smiles="selected.smiles" max-width="300px"></smiles-image>
+        </v-col>
+        <v-data-table :headers="rtmFields" :items="rtmItems">
+              <template #item.reaction_smarts="{ item }">
+                <smiles-image :smiles="item.columns.reaction_smarts" input-type="template" highlight allow-copy></smiles-image>
+                <a :href="`/template/?id=${item.raw._id}`" target="_blank">{{ item.raw._id }} ({{ item.raw.template_set }})</a>
+              </template>
+              <template #item.rank="{ item }">
+                  <a :href="`/template/?id=${item.raw._id}`" target="_blank">{{ item.raw._id }} ({{ item.raw.template_set }})</a>
+                </template>
+        </v-data-table>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="info" :loading="loading" @click="predict(selected.smiles)">Re-evaluate</v-btn>
+        <v-btn text @click="dialog = false">Close</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 
-  <template>
+  <!-- 
     <v-dialog v-model="dialog" width="90%">
       <template #activator="{ on, attrs }">
         <v-btn v-bind="attrs" v-on="on">Open Dialog</v-btn>
@@ -65,11 +88,6 @@
                 <template v-if="item.results[0]">
                   <smiles-image :smiles="item.results[0]" transparent lazy></smiles-image>
                 </template>
-                <template v-else>No Precursors</template>
-              </template>
-              <template v-else>
-                <v-btn :loading="applyingTemplate === item._id" @click="apply(selected.smiles, item)">Apply Template</v-btn>
-              </template>
             </template>
           </v-data-table>
         </v-card-text>
@@ -79,90 +97,90 @@
           <v-btn text @click="dialog = false">Close</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
-  </template>
-
+    </v-dialog> -->
 </template>
 
 <script>
-  import { ref, computed } from "vue";
-  // import LoadingButton from "@/components/LoadingButton";
-  import SmilesImage from "@/components/SmilesImage";
-  import { num2str } from "@/common/utils";
-  import { useResultsStore } from "@/store/results";
+import { ref, computed } from "vue";
+import CopyTooltip from "@/components/CopyTooltip";
+import SmilesImage from "@/components/SmilesImage";
+import { num2str } from "@/common/utils";
+import { useResultsStore } from "@/store/results";
 
-  export default {
-    name: "RecTemplatesModal",
-    components: {
-      SmilesImage,
+export default {
+  name: "RecTemplatesModal",
+  components: {
+    SmilesImage,
+    CopyTooltip,
+  },
+  props: {
+    selected: {
+      type: Object,
+      default: () => ({}),
     },
-    props: {
-      selected: {
-        type: Object,
-        default: () => ({}),
-      },
-    },
-    setup(props) {
-      const resultsStore = useResultsStore();
-      const rtmFields = ref([
-        { key: "rank", label: "Original Rank", class: "text-center" },
-        { key: "score", label: "Score", class: "text-center", formatter: (val) => num2str(val) },
-        { key: "p_index", label: "Prioritizer", class: "text-center" },
-        { key: "reaction_smarts", label: "Template", class: "text-center" },
-        { key: "results", label: "Result", class: "text-center" },
-      ]);
-      const rtmItemsPerPage = ref(20);
-      const rtmCurrentPage = ref(1);
-      const loading = ref(false);
-      const applyingTemplate = ref(null);
-      const rtmTable = ref(null);
+  },
+  setup(props) {
+    const resultsStore = useResultsStore();
+    const rtmFields = ref([
+      { key: "rank", title: "Original Rank", align: 'center' },
+      { key: "score", title: "Score", align: 'center', formatter: (val) => num2str(val) },
+      { key: "p_index", title: "Prioritizer", align: 'center' },
+      { key: "reaction_smarts", title: "Template", align: 'center' },
+    ]);
+    const rtmItemsPerPage = ref(20);
+    const rtmCurrentPage = ref(1);
+    const loading = ref(false);
+    const applyingTemplate = ref(null);
 
-      const rtmItems = computed(() => {
-        if (resultsStore.recommendedTemplates[props.selected.smiles]) {
-          return Object.values(resultsStore.recommendedTemplates[props.selected.smiles]);
-        } else {
-          return [];
-        }
-      });
+    const rtmItems = computed(() => {
+      console.log(resultsStore)
+      if (resultsStore.recommendedTemplates[props.selected.smiles]) {
+        return Object.values(resultsStore.recommendedTemplates[props.selected.smiles]);
+      } else {
+        return [];
+      }
+    });
 
-      const openRecTemplatesModal = () => {
-        if (!resultsStore.recommendedTemplates[props.selected.smiles]) {
-          predict(props.selected.smiles);
-        }
-      };
+    const openRecTemplatesModal = () => {
+      if (!resultsStore.recommendedTemplates[props.selected.smiles]) {
+        predict(props.selected.smiles);
+      }
+    };
 
-      const predict = (smiles) => {
-        loading.value = true;
-        resultsStore.templateRelevance(smiles).finally(() => {
+    const predict = (smiles) => {
+      loading.value = true;
+      resultsStore.templateRelevance(smiles)
+      console.log(resultsStore.templateRelevance(smiles))
+        .finally(() => {
           loading.value = false;
         });
-      };
+    };
 
-      const apply = (smiles, template) => {
-        applyingTemplate.value = template._id;
-        resultsStore.applyTemplate({ smiles: smiles, template: template }).finally(() => {
-          if (rtmTable.value) {
-            rtmTable.value.refresh();
-          }
-          applyingTemplate.value = null;
-        });
-      };
+    // const apply = (smiles, template) => {
+    //   applyingTemplate.value = template._id;
+    //   resultsStore.applyTemplate({ smiles: smiles, template: template }).finally(() => {
+    //     if (rtmTable.value) {
+    //       rtmTable.value.refresh();
+    //     }
+    //     applyingTemplate.value = null;
+    //   });
+    // };
 
-      return {
-        rtmFields,
-        rtmItemsPerPage,
-        rtmCurrentPage,
-        rtmItems,
-        loading,
-        applyingTemplate,
-        openRecTemplatesModal,
-        predict,
-        apply,
-      };
-    },
-    mounted() {
-      // The mounted lifecycle hook will signal the "ready" event when this component is rendered, allowing the parent to know that this component has finished rendering.
-      this.$emit("ready");
-    },
-  };
+    return {
+      rtmFields,
+      rtmItemsPerPage,
+      rtmCurrentPage,
+      rtmItems,
+      loading,
+      applyingTemplate,
+      openRecTemplatesModal,
+      predict,
+      // apply,
+    };
+  },
+  mounted() {
+    // The mounted lifecycle hook will signal the "ready" event when this component is rendered, allowing the parent to know that this component has finished rendering.
+    this.$emit("ready");
+  },
+};
 </script>
