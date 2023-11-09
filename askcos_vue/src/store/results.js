@@ -176,23 +176,22 @@ export const useResultsStore = defineStore("results", {
         );
       });
     },
-    loadResult({ resultId, numTrees }) {
-      let url = `/api/results/retrieve`;
-      return API.get(url, { result_id: resultId }).then((json) => {
-        if (json.error) {
-          alert(json.error);
-        }
-        if (json["result_type"] === "ipp") {
-          return this.importIppResult({ data: json });
-        } else if (json["result_type"] === "tree_builder") {
-          return this.importTreeBuilderResult({
-            data: json,
-            numTrees: numTrees,
-          });
-        } else if (json["result_type"] === "graph_optimization") {
-          return this.importGraphOptimizationResult({ data: json });
-        }
-      });
+    async loadResult({ resultId, numTrees }) {
+      let url = "/api/results/retrieve";
+      const json = await API.get(url, { result_id: resultId });
+      if (json.error) {
+        alert(json.error);
+      }
+      if (json["result_type"] === "ipp") {
+        return this.importIppResult({ data: json });
+      } else if (json["result_type"] === "tree_builder") {
+        return this.importTreeBuilderResult({
+          data: json,
+          numTrees: numTrees,
+        });
+      } else if (json["result_type"] === "graph_optimization") {
+        return this.importGraphOptimizationResult({ data: json });
+      }
     },
     importIppResult({ data }) {
       const settings = useSettingsStore();
@@ -227,9 +226,11 @@ export const useResultsStore = defineStore("results", {
       this.setTarget(this.dispGraph.nodes.get(NIL_UUID)["smiles"]);
       // Retrieve template example count and template set metadata
       let templates = [];
-      this.dataGraph.nodes
-        .get({ filter: isReaction })
-        .forEach((n) => templates.push(...n["templateIds"]));
+      this.dataGraph.nodes.get({ filter: isReaction }).forEach((n) => {
+        if (n['templateIds']) {
+          templates.push(...n["templateIds"]);
+        }
+      });
       let promises = [];
       promises.push(this.apiTemplateCount(templates));
       promises.push(this.apiTemplateSet(templates));
@@ -940,14 +941,16 @@ export const useResultsStore = defineStore("results", {
         num_templates: settings.tbSettings.numTemplates,
         max_cum_prob: settings.tbSettings.maxCumProb,
         // return_templates: true,
-        attribute_filter: []
+        attribute_filter: [],
       };
       // checkTemplatePrioritizers(body["template_prioritizers"]);
       return API.runCeleryTask(url, body)
         .then((output) => {
           this.setRecTemplates({
             smiles: smiles,
-            data: Object.fromEntries(output["result"][0].templates.map((item) => [item._id, item])),
+            data: Object.fromEntries(
+              output["result"][0].templates.map((item) => [item._id, item])
+            ),
           });
           // Update templates with existing results
           let precursorSmiles = this.dataGraph.getSuccessors(smiles);
