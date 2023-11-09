@@ -13,9 +13,8 @@
 
     <v-row class="justify-center">
       <v-col cols="12" md="10">
-        <v-sheet elevation="2">
-
-          <v-row class="px-5 pt-5 justify-center" density="compact">
+        <v-sheet elevation="2" rounded="lg" class="pa-5">
+          <v-row class="justify-center" density="compact">
             <v-col cols="12" md="10" my="10">
               <v-text-field v-model="smiles" class="centered-input" variant="outlined"
                 label="Enter a molecule or reaction SMILES to explore available tasks" prepend-inner-icon="mdi mdi-flask"
@@ -30,33 +29,27 @@
               </v-text-field>
             </v-col>
           </v-row>
-
-          <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="smiles" @input="showKetcher = false"
-            @update:smiles="updateSmiles" />
-
-          <v-row class="mb-2 px-5 pt-5">
-
-          </v-row>
-          <v-divider class="border-opacity-25 mb-6"></v-divider>
-          <v-row v-if="smiles.length">
-            <v-col cols="12">
-              <v-col><smiles-image :smiles="smiles" allow-copy></smiles-image>
-                 <p class="text-body-1 text-center">SMILES: {{ smiles }}</p>
-              </v-col>
-            </v-col>
-          </v-row>
-          <v-row v-else class="px-5 pb-5">
-            <v-col cols="12" class="d-flex justify-center align-center">
-              <div class="text-center">
-                <v-img class="justify-center mx-auto" :width="400" cover :src="results"></v-img>
-                <p class="mt-6">Utility for drawing images from molecule SMILES, reaction SMILES, and template SMARTS.</p>
-              </div>
-            </v-col>
-          </v-row>
+        </v-sheet>
+      </v-col>
+    </v-row>
+    <v-row class="justify-center" >
+      <v-col cols="12" md="10">
+        <v-sheet class="elevation-2 pa-5" rounded="lg">
+          <div v-if="smiles.length">
+            <smiles-image :smiles="smiles" allow-copy></smiles-image>
+            <p class="text-body-1 text-center">SMILES: {{ smiles }}</p>
+          </div>
+          <div v-else class="text-center">
+            <v-img class="justify-center mx-auto" :width="400" cover :src="results"></v-img>
+            <h6 class="text-h6 mt-2">Empty Board</h6>
+            <p class="mt-2 text-body-1">Utility for drawing images from molecule SMILES, reaction SMILES, and template SMARTS.</p>
+          </div>
         </v-sheet>
       </v-col>
     </v-row>
   </v-container>
+  <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="smiles" @input="showKetcher = false"
+    @update:smiles="updateSmiles" />
 </template>
 
 <script setup>
