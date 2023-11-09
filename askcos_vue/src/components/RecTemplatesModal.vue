@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="propShow" @open="openRecTemplatesModal" width="auto">
+  <v-dialog v-model="propShow" @open="openRecTemplatesModal">
     <v-card>
       <v-card-title>
         Recommended Templates
