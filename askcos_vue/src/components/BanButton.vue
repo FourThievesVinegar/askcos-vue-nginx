@@ -1,5 +1,5 @@
 <template>
-  <v-btn color="primary" variant="flat" @click="ban()">Ban</v-btn>
+  <v-btn color="red-darken-2" variant="flat" @click="ban()">Ban</v-btn>
 </template>
 
 <script>

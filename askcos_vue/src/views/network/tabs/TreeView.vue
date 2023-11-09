@@ -264,7 +264,7 @@
                 </v-table>
             </div>
             <div class="btn-toolbar justify-content-end">
-                <!-- <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button> -->
+                <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button>
             </div>
         </div>
     </js-panel>
@@ -298,7 +298,7 @@
 </template>
   
 <script>
-// import BanButton from "@/components/BanButton";
+import BanButton from "@/components/BanButton";
 import CopyTooltip from "@/components/CopyTooltip";
 import JsPanel from "@/components/JsPanel";
 import SmilesImage from "@/components/SmilesImage";
@@ -323,7 +323,7 @@ function initializeNetwork(data, container, showDetail = true) {
 export default {
     name: "TreeView",
     components: {
-        // BanButton,
+        BanButton,
         CopyTooltip,
         JsPanel,
         SmilesImage,
