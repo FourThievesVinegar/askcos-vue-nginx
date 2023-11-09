@@ -109,7 +109,7 @@
                 <v-btn variant="tonal" class="mr-5" @click="clear()">
                   Clear Results
                 </v-btn>
-                <v-btn icon="mdi-cog" @click="dialog = !dialog" variant="outlined">
+                <v-btn icon="mdi-cog" v-show="mode != 'sites'" @click="dialog = !dialog" variant="outlined">
                 </v-btn>
               </v-col>
             </v-row>
@@ -159,8 +159,8 @@
         <v-expand-transition>
           <v-expansion-panels v-model="openSettingsPanel">
 
-            <v-expansion-panel>
-              <v-expansion-panel-title class="text-primary">Model selections</v-expansion-panel-title>
+            <v-expansion-panel v-if="tab === 'context'" value="condition-settings">
+              <v-expansion-panel-title class="text-primary">Condition recommender settings</v-expansion-panel-title>
               <v-expansion-panel-text>
                 <v-row class="my-6">
                   <v-col cols="12">
@@ -170,7 +170,8 @@
                       item-text="title" item-value="key">
                     </v-select>
                   </v-col>
-                  <v-col cols="12" v-if="contextModel === 'neuralnetworkv2'">
+
+                  <v-col cols="12" v-if="contextModel === 'neuralnetworkv2' ">
                     <v-select label="Neural Network v2 model type" density="comfortable" variant="outlined" hide-details
                       clearable v-model="contextV2ModelType"
                       :items="[{ key: 'graph', title: 'Graph' }, { key: 'fp', title: 'Fingerprint (small)' }]"
@@ -183,45 +184,37 @@
                   </v-col>
 
                   <v-col cols="12">
-                    <v-select label="Forward prediction model" v-model="forwardModel" density="comfortable" hide-details
-                      clearable variant="outlined" :items="forwardModels"></v-select>
+                    <v-text-field label="Num. results" prepend-inner-icon="mdi mdi-flask" density="comfortable"
+                      variant="outlined" placeholder="How many condition recommendation results to return?" hide-details
+                      clearable type="number" v-model="numContextResults"></v-text-field>
                   </v-col>
 
-                  <v-col cols="12">
-                    <v-select label="Forward model training set" v-model="forwardModelTrainingSet" density="comfortable"
-                      hide-details clearable variant="outlined" :items="forwardModelTrainingSets"></v-select>
-                  </v-col>
                 </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
-            <v-expansion-panel value="condition-settings">
-              <v-expansion-panel-title class="text-primary">Condition recommender settings</v-expansion-panel-title>
-              <v-expansion-panel-text>
-                <v-row>
-                  <v-col cols="12">
-                    <v-text-field class="my-6" label="Num. results" prepend-inner-icon="mdi mdi-flask"
-                      density="comfortable" variant="outlined"
-                      placeholder="How many condition recommendation results to return?" hide-details clearable
-                      type="number" v-model="numContextResults"></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-expansion-panel-text>
-            </v-expansion-panel>
-            <v-expansion-panel value="forward-settings">
+            <v-expansion-panel value="forward-settings" v-if="tab === 'forward'">
               <v-expansion-panel-title class="text-primary">Forward predictor settings</v-expansion-panel-title>
               <v-expansion-panel-text>
-                <v-row>
-                  <v-col cols="12">
-                    <v-text-field class="my-6" label="Num. results"
-                      placeholder="How many forward prediction results to return?" prepend-inner-icon="mdi mdi-flask"
-                      hide-details clearable density="comfortable" variant="outlined" type="number"
-                      v-model="numForwardResults"></v-text-field>
-                  </v-col>
-                </v-row>
+                  <v-row class="my-6">
+                    <v-col cols="12">
+                      <v-select label="Forward prediction model" v-model="forwardModel" density="comfortable" hide-details
+                        clearable variant="outlined" :items="forwardModels"></v-select>
+                    </v-col>
+
+                    <v-col cols="12">
+                      <v-select label="Forward model training set" v-model="forwardModelTrainingSet" density="comfortable"
+                        hide-details clearable variant="outlined" :items="forwardModelTrainingSets"></v-select>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-text-field label="Num. results" placeholder="How many forward prediction results to return?"
+                        prepend-inner-icon="mdi mdi-flask" hide-details clearable density="comfortable" variant="outlined"
+                        type="number" v-model="numForwardResults"></v-text-field>
+                    </v-col>
+                  </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
 
-            <v-expansion-panel value="impurity-settings">
+            <v-expansion-panel value="impurity-settings" v-if="tab === 'impurity'">
               <v-expansion-panel-title class="text-primary">Impurity predictor settings</v-expansion-panel-title>
               <v-expansion-panel-text>
                 <v-row class="mt-6">
@@ -251,7 +244,7 @@
                 </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
-            <v-expansion-panel value="selectivity-settings">
+            <v-expansion-panel value="selectivity-settings" v-if="tab === 'selectivity'">
               <v-expansion-panel-title class="text-primary">Regio-selectivity predictor
                 settings</v-expansion-panel-title>
               <v-expansion-panel-text>
