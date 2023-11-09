@@ -2,7 +2,7 @@
   <v-container fluid style="min-height: calc(100vh-50px)">
     <v-row class="justify-center">
       <v-col cols="12" sm="8" md="12">
-        <v-sheet elevation="2" class="pa-10">
+        <v-sheet elevation="2" class="pa-10" rounded="lg">
           <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="currentSmiles" @input="showKetcher = false"
             @update:smiles="(ketcherSmiles) => updateSmiles(ketcherSmiles)" />
           <v-form @submit.prevent>

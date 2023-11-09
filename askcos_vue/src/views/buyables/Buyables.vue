@@ -13,8 +13,8 @@
 
     <v-row class="justify-center">
       <v-col cols="12" md="10">
-        <v-sheet elevation="2" rounded="lg">
-          <v-row class="px-5 pt-5 justify-center" density="compact">
+        <v-sheet elevation="2" rounded="lg" class="pa-5">
+          <v-row class="justify-center" density="compact">
             <v-col cols="12" md="12">
               <v-text-field v-model="searchSmilesQuery" placeholder="SMILES/SMARTS" prepend-inner-icon="mdi mdi-flask"
                 density="compact" variant="outlined" label="Enter SMILES/SMART to explore" hide-details clearable>

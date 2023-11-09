@@ -2,7 +2,7 @@
   <v-container fluid style="min-height: calc(100vh-50px)">
     <v-row class="justify-center align-center">
       <v-col cols="12" md="12">
-        <v-sheet elevation="2" class="pa-10">
+        <v-sheet elevation="2" class="pa-10" rounded="lg">
           <v-form @submit.prevent>
             <v-row class="justify-center align-center">
               <v-col cols="12" md="4">
