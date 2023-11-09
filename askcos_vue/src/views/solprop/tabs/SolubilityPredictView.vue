@@ -337,7 +337,7 @@ export default {
       this.batch = true
       const url = '/api/legacy/solubility/batch/call-async'
       const body = {
-        task_list: [data],
+        task_list: data,
       }
       API.runCeleryTask(url, body)
         .then(output => {
