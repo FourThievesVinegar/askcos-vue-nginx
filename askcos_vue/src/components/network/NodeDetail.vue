@@ -52,8 +52,8 @@
                 <template v-slot:append>
                   <v-btn @click="sortOrderAscending = !sortOrderAscending" variant="tonal">
                     <template v-slot:append>
-                      <v-icon v-if="sortOrderAscending">mdi-sort-ascending</v-icon>
-                      <v-icon v-else>mdi-sort-descending</v-icon>
+                      <v-icon v-if="sortOrderAscending">mdi-sort-descending</v-icon>
+                      <v-icon v-else>mdi-sort-ascending</v-icon>
                     </template>
                     {{ sortOrderAscending ? "Ascending" : "Descending" }}
                   </v-btn>
@@ -703,7 +703,7 @@ export default {
         { value: "scscore", title: "Synthetic Complexity" },
         { value: "numExamples", title: "Examples" },
         { value: "templateRank", title: "Template Rank" },
-        { value: "ffscore", title: "Plausibility" },
+        { value: "ffScore", title: "Plausibility" },
         { value: "rmsMolwt", title: "Root Mean Square Molecular Weight" },
         { value: "numRings", title: "Number of Rings" }
       ]
