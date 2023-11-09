@@ -26,54 +26,55 @@
             </v-col>
           </v-row>
 
+          <v-tabs v-model="activeTab" color="primary" align-tabs="center" grow class="mb-4">
+            <v-tab>Chemicals</v-tab>
+            <v-tab>Reactions</v-tab>
+          </v-tabs>
+        </v-sheet>
+      </v-col>
+    </v-row>
 
-          <v-divider class="border-opacity-30"></v-divider>
-          <v-card>
-            <v-tabs v-model="activeTab" color="primary" align-tabs="center" grow class="mb-4">
-              <v-tab>Chemicals</v-tab>
-              <v-tab>Reactions</v-tab>
-            </v-tabs>
-            <v-sheet width="100%" class="pa-6">
-              <v-select v-if="tabItems.length || filterActive !== 'all'" v-model="filterActive" :items="filterOptions"
-                item-text="title" item-value="key" label="Filter by status" density="comfortable" variant="outlined"
-                hide-details clearable></v-select>
-              <v-row v-if="tabItems.length">
-                <v-col cols="12">
-                  <v-data-table :headers="headers" :items="tabItems" :items-per-page="10" height="400px">
-                    <template v-slot:item.active="{ item }">
-                      <v-btn @click="toggleActivation(item, activeTab === 0 ? 'chemicals' : 'reactions')" small>
-                        <v-icon v-if="item.columns.active">mdi-check-circle</v-icon>
-                        <v-icon v-else>mdi-cancel</v-icon>
-                        {{ item.columns.active ? 'Active' : 'Inactive' }}
-                      </v-btn>
-                    </template>
-                    <template #item.smiles="{ item }">
-                      <copy-tooltip :data="item.columns.smiles">
-                        <smiles-image :smiles="item.columns.smiles"></smiles-image>
-                      </copy-tooltip>
-                    </template>
-                    <template v-slot:item.delete="{ item }">
-                      <v-icon @click="activeTab === 0 ? deleteChemical(item.key) : deleteReaction(item.key)"
-                        class="text-center">mdi-delete</v-icon>
-                    </template>
-                  </v-data-table>
-                </v-col>
-              </v-row>
-              <v-row v-else class="px-10 py-10">
-                <v-col cols="12" class="d-flex justify-center align-center">
-                  <div v-if="filterActive == 'all'" class="text-center">
-                    <v-img :width="400" cover :src="banlist"></v-img>
-                    <h2 class="mt-6">No Ban Items</h2>
-                    <p class="text-body-1">Please check back later</p>
-                  </div>
-                  <div v-else class="text-center">
-                    <v-img :width="400" cover :src="banlist"></v-img>
-                    <h2 class="mt-6">No Ban Items</h2>
-                  </div>
-                </v-col>
-              </v-row>
-            </v-sheet>
-          </v-card>
+    <v-row class="justify-center">
+      <v-col cols="12" md="10">
+        <v-sheet width="100%" class="pa-6" rounded="lg" elevation="2">
+          <v-select v-if="tabItems.length || filterActive !== 'all'" v-model="filterActive" :items="filterOptions"
+            item-text="title" item-value="key" label="Filter by status" density="comfortable" variant="outlined"
+            hide-details clearable></v-select>
+          <v-row v-if="tabItems.length">
+            <v-col cols="12">
+              <v-data-table :headers="headers" :items="tabItems" :items-per-page="10" height="400px">
+                <template v-slot:item.active="{ item }">
+                  <v-btn @click="toggleActivation(item, activeTab === 0 ? 'chemicals' : 'reactions')" small>
+                    <v-icon v-if="item.columns.active">mdi-check-circle</v-icon>
+                    <v-icon v-else>mdi-cancel</v-icon>
+                    {{ item.columns.active ? 'Active' : 'Inactive' }}
+                  </v-btn>
+                </template>
+                <template #item.smiles="{ item }">
+                  <copy-tooltip :data="item.columns.smiles">
+                    <smiles-image :smiles="item.columns.smiles"></smiles-image>
+                  </copy-tooltip>
+                </template>
+                <template v-slot:item.delete="{ item }">
+                  <v-icon @click="activeTab === 0 ? deleteChemical(item.key) : deleteReaction(item.key)"
+                    class="text-center">mdi-delete</v-icon>
+                </template>
+              </v-data-table>
+            </v-col>
+          </v-row>
+          <v-row v-else class="px-10 py-10">
+            <v-col cols="12" class="d-flex justify-center align-center">
+              <div v-if="filterActive == 'all'" class="text-center">
+                <v-img :width="400" cover :src="banlist"></v-img>
+                <h6 class="mt-2 text-h6">No Ban Items</h6>
+                <p class="text-body-1">Add banned chemicals/reactions via IPP/Tree Explorer or add manually above</p>
+              </div>
+              <div v-else class="text-center">
+                <v-img :width="400" cover :src="banlist"></v-img>
+                <h2 class="mt-6">No Ban Items</h2>
+              </div>
+            </v-col>
+          </v-row>
         </v-sheet>
       </v-col>
     </v-row>
