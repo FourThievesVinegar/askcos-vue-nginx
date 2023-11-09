@@ -78,7 +78,7 @@
                       <v-divider class="ma-2" :thickness="2"></v-divider>
                       <p class="text-subtitle-2 pl-3">Quick Settings</p>
                       <v-list density="compact">
-                        <v-list-item v-for="(value, name) in mapperOptions" :key="name">
+                        <v-list-item v-for="(value, name) in tbPresetOptions" :key="name">
                           <v-list-item-title>
                             <v-checkbox v-model="tbPreset" :value="name" hide-details>
                               <template v-slot:label>
@@ -99,7 +99,7 @@
                 <v-chip variant="tonal" color="red" class="text-body-1">Submission Error</v-chip>
               </template>
               <template v-else>
-                <v-chip variant="tonal" class="text-body-1"><a href="/my-results/" target="_blank">Go to My
+                <v-chip variant="tonal" class="text-body-1"><a href="/results" target="_blank">Go to My
                     Results</a></v-chip>
               </template>
             </v-card-actions>
@@ -518,20 +518,15 @@ const tbPresetToArgs = () => {
 
 const sendTreeBuilderJob = (smiles) => {
   tbStatus.value = "pending";
-  const url = "/api/tree-builder/";
+  const url = "/api/tree-search/mcts/call-sync";
   const body = {
     description: tbDesc.value ? tbDesc.value : smiles,
     smiles: smiles,
-    template_set: "reaxys",
-    template_prioritizer_version: 1,
-    max_trees: 500,
-    store_results: true,
-    json_format: "nodelink",
   };
-  Object.assign(body, tbPresetToArgs());
+  // Object.assign(body, tbPresetToArgs());
   API.post(url, body)
     .then((json) => {
-      tbStatus.value = json.task_id;
+      tbStatus.value = json.result
     })
     .catch((error) => {
       tbStatus.value = "error";
