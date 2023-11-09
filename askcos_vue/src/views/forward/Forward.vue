@@ -13,12 +13,8 @@
           </v-tabs>
         </v-sheet>
 
-        <v-sheet elevation="2" class="pa-10">
-          <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="currentSmiles" @input="showKetcher = false"
-            @update:smiles="(ketcherSmiles) => updateSmiles(ketcherSmiles)" />
-
+        <v-sheet elevation="2" class="pa-10" rounded="lg">
           <v-form @submit.prevent="predict">
-
             <v-row align="center">
               <v-col :cols="mode === 'context' || mode === 'impurity' || mode === 'selectivity' ? 6 : 12">
                 <v-text-field v-model="reactants" class="centered-input" variant="outlined" label="Reactants"
@@ -144,15 +140,17 @@
               @download-selectivity="downloadSelectivityResults" />
           </v-window-item>
           <v-window-item value="sites">
-            <SiteSelectivity value="sites" rounded="lg" :results="filteredResults" ref="ssref"
-              :pending="pendingTasks" @get-sites-refs="getSitesRefs" @update-selected-atoms="$event => siteSelectedAtoms = $event" @update-result-query="$event => siteResultsQuery = $event" :siteResults="siteResults"
+            <SiteSelectivity value="sites" rounded="lg" :results="filteredResults" ref="ssref" :pending="pendingTasks"
+              @get-sites-refs="getSitesRefs" @update-selected-atoms="$event => siteSelectedAtoms = $event"
+              @update-result-query="$event => siteResultsQuery = $event" :siteResults="siteResults"
               @download-sites-refs="downloadSitesRefs" @copy-to-clipboard="copyToClipboard" />
           </v-window-item>
         </v-window>
       </v-col>
     </v-row>
 
-
+    <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="currentSmiles" @input="showKetcher = false"
+      @update:smiles="(ketcherSmiles) => updateSmiles(ketcherSmiles)" />
     <v-dialog v-model="dialog" max-width="600px" class="justify-center align-center">
       <v-card class="pa-3 m-5">
         <v-card-title class="headline">
@@ -341,7 +339,7 @@ const impurityFileName = ref('impurity.csv');
 const selectivityFileName = ref('selectivity.csv');
 const ssref = ref(null)
 
-const filteredResults = computed (() =>  {
+const filteredResults = computed(() => {
   console.log(siteResults.value)
   return sortSiteResults(siteResults.value.filter((result) => {
     return result.task.includes(siteResultsQuery.value) && checkFilter(result)
@@ -1013,7 +1011,7 @@ const contextV1Predict = async () => {
     return;
   }
   API.runCeleryTask('/api/legacy/context/', postData)
-    .then(output => { 
+    .then(output => {
       contextResults.value = output
       console.log(contextResults.value)
     })
