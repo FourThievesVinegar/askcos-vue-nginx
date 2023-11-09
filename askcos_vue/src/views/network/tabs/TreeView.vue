@@ -147,7 +147,7 @@
                     </v-btn-group>
                     <v-btn variant="tonal" @click="addTreeToIpp(currentTree)"> Add to IPP </v-btn>
                 </div>
-                <v-sheet class="position-relative elevation-2">
+                <v-sheet class="position-relative elevation-2" rounded="lg">
                     <div id="graph"></div>
                     <div v-if="currentTreeData" id="tree-data-overlay">
                         <table>
@@ -182,8 +182,8 @@
                     <smiles-image class="my-3" :smiles="selected.smiles"></smiles-image>
                 </div>
                 <div class="text-center my-3">
-                    <v-btn variant="tonal"
-                        :href="'/network?tab=IPP&target=' + encodeURIComponent(selected.smiles)" target="_blank">Synthesize
+                    <v-btn variant="tonal" :href="'/network?tab=IPP&target=' + encodeURIComponent(selected.smiles)"
+                        target="_blank">Synthesize
                         this with the Interactive Path Planner</v-btn>
                 </div>
                 <v-table density="compact">
@@ -216,8 +216,7 @@
                         :align="settingsStore.ippSettings.alignPrecursorsToProduct"></smiles-image>
                 </div>
                 <div class="text-center my-3">
-                    <v-btn variant="tonal"
-                        :href="'/forward?tab=context&rxnsmiles=' + encodeURIComponent(selected.smiles)"
+                    <v-btn variant="tonal" :href="'/forward?tab=context&rxnsmiles=' + encodeURIComponent(selected.smiles)"
                         target="_blank">Evaluate reaction</v-btn>
                 </div>
                 <v-table density="compact">

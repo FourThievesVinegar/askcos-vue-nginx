@@ -9,7 +9,7 @@
             <v-tab @click="replaceRoute('TE')" value="TE" :disabled="!treeViewVisible">Tree Explorer</v-tab>
           </v-tabs>
         </v-sheet>
-        <v-window v-model="tab" :class="tab === 'IPP' ? 'elevation-2' : 'elevation-0'">
+        <v-window v-model="tab" :class="tab === 'IPP' ? 'elevation-2 rounded-lg' : 'elevation-0'">
           <v-window-item value="IPP">
             <NetworkView :tab-active="tab === 'IPP'" @update:treeViewVisible="($event) => treeViewVisible = $event"
               ref="network" />

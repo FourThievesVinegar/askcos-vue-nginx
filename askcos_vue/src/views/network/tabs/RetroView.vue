@@ -2,7 +2,7 @@
     <v-container fluid>
         <v-row class="justify-center align-center">
             <v-col cols="12" md="6">
-                <v-sheet elevation="2" class="pa-5">
+                <v-sheet elevation="2" class="pa-5" rounded="lg">
                     <v-text-field id="retro-target" @blur="resolve" @keyup.enter="resolve" v-model="target"
                         density="compact" variant="outlined" label="Target" placeholder="SMILES" type="text" clearable
                         hide-details class="target-input">
@@ -32,7 +32,7 @@
                 </v-sheet>
             </v-col>
             <v-col cols="12" md="6">
-                <v-sheet elevation="2" v-if="Object.keys(predictions).length">
+                <v-sheet elevation="2" v-if="Object.keys(predictions).length" rounded="lg">
                     <v-carousel height="300" hide-delimiters :continuous="false" v-model="carouselSlide">
                         <v-carousel-item v-for="(item, index) in predictions" :key="index">
                             <div class="mx-auto d-flex justify-center align-center" style="height:100%">
@@ -88,7 +88,7 @@
                         <v-btn variant="tonal" class="justify-end" @click="clear()">Clear All</v-btn>
                     </div>
                 </v-sheet>
-                <v-sheet elevation="2" class="d-flex justify-center align-center flex-column text-center pa-5" v-else>
+                <v-sheet v-else  elevation="2" class="d-flex justify-center align-center flex-column text-center pa-5" rounded="lg">
                     <v-img :width="400" cover :src="emptyVoid" class="mb-3"></v-img>
                     <h2>No Predictions</h2>
                     <p class="text-body-1">Begin by running a new prediction on the left!</p>
@@ -97,7 +97,7 @@
         </v-row>
         <v-row v-if="Object.keys(results).length">
             <v-col cols="12">
-                <v-sheet elevation="2">
+                <v-sheet elevation="2" rounded="lg">
                     <v-data-table :headers="headers" :items="tableItems" item-value="smiles" class="elevation-2"
                         ref="retroResultTable" :fixed-header="true">
                         <template v-for="header in headers" v-slot:[`item.${header.key}`]="{ item }">
