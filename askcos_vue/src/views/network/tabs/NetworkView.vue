@@ -733,6 +733,7 @@ export default {
         .then((smiles) => {
           this.resultsStore.target = smiles;
           this.mctsTreeBuilderAPICall();
+          this.tb.taskName = ""
         })
         .catch((error) => {
           let error_msg = error.message || error || "unknown error";
