@@ -12,100 +12,87 @@
     </v-row>
     <v-row class="justify-center">
       <v-col cols="12" md="10">
-        <v-sheet elevation="2" rounded="lg">
-          <v-row class="px-5 pt-4 justify-center">
-            <v-col cols="12" md="11">
-              <v-text-field v-model="searchQuery" prepend-inner-icon="mdi mdi-flask" density="comfortable"
-                variant="outlined" label="Search Result Descriptions" hide-details clearable>
+        <v-sheet elevation="2" rounded="lg" class="pa-10">
+          <v-row class="justify-center">
+            <v-col cols="12" md="12">
+              <v-text-field v-model="searchQuery" prepend-inner-icon="mdi mdi-flask" density="compact" variant="outlined"
+                label="Search Result Descriptions" hide-details clearable>
                 <template v-slot:append>
-                  <v-btn color="primary" size="large">
+                  <v-btn color="primary" variant="flat" class="mr-5">
                     Search
+                  </v-btn>
+                  <v-btn v-if="allResults.length" icon="mdi-delete" class="bg-red mr-5" :disabled="selection.length === 0" variant="flat"
+                    @click="deleteSelection">
+                  </v-btn>
+                  <v-btn icon="mdi-refresh" variant="tonal" @click="update">
                   </v-btn>
                 </template>
               </v-text-field>
             </v-col>
           </v-row>
+        </v-sheet>
+      </v-col>
+    </v-row>
 
-          <v-row class="mb-3 px-3 justify-center">
-            <v-col cols="12" md="11">
-              <v-row class="px-5 py-4 justify-space-between">
-                <v-btn icon class="bg-red" :disabled="selection.length === 0" variant="flat">
-                  <v-icon @click="deleteSelection">mdi-delete</v-icon>
-                </v-btn>
-                <v-btn icon="mdi-refresh" variant="tonal" @click="update">
-                </v-btn>
-              </v-row>
-            </v-col>
-          </v-row>
-
-          <v-divider class="border-opacity-30"></v-divider>
-          <v-card>
-            <v-sheet width="100%" class="pa-6">
-              <v-row v-if="allResults.length">
-                <v-col cols="12">
-                  <v-data-table :headers="headers" item-value="result_id" :items="sortedAllResults" show-select
-                    v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10"
-                     :search="searchQuery">
-                    <template v-slot:item.delete="{ item }">
-                      <v-icon @click="deleteResult(item.raw.result_id)" class="text-center">mdi-delete</v-icon>
-                    </template>
-                    <template #item.public="{ item }">
-                      <v-icon v-if="item.columns.public === true">
-                        mdi-check
+    <v-row class="justify-center">
+      <v-col cols="12" md="10">
+        <v-sheet elevation="2" rounded="lg" class="d-flex justify-center pa-5">
+          <v-data-table v-if="allResults.length" :headers="headers" item-value="result_id" :items="sortedAllResults"
+            show-select v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10"
+            :search="searchQuery">
+            <template v-slot:item.delete="{ item }">
+              <v-icon @click="deleteResult(item.raw.result_id)" class="text-center">mdi-delete</v-icon>
+            </template>
+            <template #item.public="{ item }">
+              <v-icon v-if="item.columns.public === true">
+                mdi-check
+              </v-icon>
+            </template>
+            <template v-slot:item.description="{ item }">
+              <p><strong>{{ item.columns.description || "No Description" }}</strong></p>
+              <p v-if="item.raw.num_trees !== 0">{{ `Found ${item.raw.num_trees} trees` }}</p>
+              <p v-else>No trees found</p>
+            </template>
+            <template v-slot:expanded-row="{ columns, item }">
+              <tr>
+                <td :colspan="columns.length">
+                  <div class="d-flex justify-space-evenly my-3">
+                    <span class="text-center" v-if="item.columns.num_trees !== undefined">Found {{
+                      item.columns.description }} Tree</span>
+                    <span class="text-center" v-if="item.columns.result_type == 'ipp'">Tags:</span>
+                    <v-btn color="primary" variant="tonal"
+                      v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'"
+                      :href="`network?tab=TE&id=${item.raw.result_id}`">
+                      View trees
+                    </v-btn>
+                    <v-btn color="primary" variant="tonal"
+                      v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'"
+                      :href="`network?tab=IPP&id=${item.raw.result_id}&view=25`">
+                      View in IPP
+                    </v-btn>
+                    <v-btn color="primary" variant="tonal" v-if="item.columns.result_type === 'ipp'"
+                      :href="`network?tab=IPP&id=${item.raw.result_id}`">
+                      View in IPP
+                    </v-btn>
+                    <v-btn color="primary" variant="tonal" v-if="item.columns.result_type === 'tree_builder'"
+                      @click="openSetting(item.raw.result_id)">
+                      View Settings
+                    </v-btn>
+                    <v-btn class="bg-teal-lighten-3" variant="tonal" @click="showShareModal = !showShareModal">
+                      <v-icon @click="shareResult(item.key)" color="white">
+                        mdi-share
                       </v-icon>
-                    </template>
-                    <template v-slot:item.description="{ item }">
-                      <p><strong>{{ item.columns.description || "No Description" }}</strong></p>
-                      <p v-if="item.raw.num_trees !== 0">{{ `Found ${item.raw.num_trees} trees` }}</p>
-                      <p v-else>No trees found</p>
-                    </template>
-                    <template v-slot:expanded-row="{ columns, item }">
-                      <tr>
-                        <td :colspan="columns.length">
-                          <div class="d-flex justify-space-evenly my-3">
-                            <span class="text-center" v-if="item.columns.num_trees !== undefined">Found {{
-                              item.columns.description }} Tree</span>
-                            <span class="text-center" v-if="item.columns.result_type == 'ipp'">Tags:</span>
-                            <v-btn color="primary" variant="tonal"
-                              v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'"
-                              :href="`network?tab=TE&id=${item.raw.result_id}`">
-                              View trees
-                            </v-btn>
-                            <v-btn color="primary" variant="tonal"
-                              v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'"
-                              :href="`network?tab=IPP&id=${item.raw.result_id}&view=25`">
-                              View in IPP
-                            </v-btn>
-                            <v-btn color="primary" variant="tonal" v-if="item.columns.result_type === 'ipp'"
-                              :href="`network?tab=IPP&id=${item.raw.result_id}`">
-                              View in IPP
-                            </v-btn>
-                            <v-btn color="primary" variant="tonal" v-if="item.columns.result_type === 'tree_builder'"
-                              @click="openSetting(item.raw.result_id)">
-                              View Settings
-                            </v-btn>
-                            <v-btn class="bg-teal-lighten-3" variant="tonal" @click="showShareModal = !showShareModal">
-                              <v-icon @click="shareResult(item.key)" color="white">
-                                mdi-share
-                              </v-icon>
-                            </v-btn>
-                          </div>
-                        </td>
-                      </tr>
-                    </template>
-                  </v-data-table>
-                </v-col>
-              </v-row>
-              <v-row v-else class="px-10 py-10">
-                <v-col cols="12" class="d-flex justify-center align-center">
-                  <div class="text-center">
-                    <v-img :width="400" cover :src="results"></v-img>
-                    <h2 class="mt-6">No Results Yet...</h2>
+                    </v-btn>
                   </div>
-                </v-col>
-              </v-row>
-            </v-sheet>
-          </v-card>
+                </td>
+              </tr>
+            </template>
+          </v-data-table>
+          <div v-else class="text-center">
+            <v-img :width="400" cover :src="results"></v-img>
+            <h6 class="mt-2 text-h6">No Results Yet...</h6>
+            <p class="mt-2 text-body-1">Try exploring ASKCOS</p>
+          </div>
         </v-sheet>
       </v-col>
     </v-row>
@@ -136,7 +123,7 @@
           <v-col cols="12">
             <p>Use the following link to share this result:</p>
             <copy-tooltip :data="shareLink" no-highlight location="bottom-right">
-            <v-text-field :value="shareLink" readonly allow-copy append-icon="mdi-content-copy">
+              <v-text-field :value="shareLink" readonly allow-copy append-icon="mdi-content-copy">
               </v-text-field>
             </copy-tooltip>
             <v-alert type="warning">Please note that shared results cannot be edited and saved simultaneously by multiple
