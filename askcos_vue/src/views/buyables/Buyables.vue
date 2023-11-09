@@ -16,12 +16,12 @@
         <v-sheet elevation="2" rounded="lg" class="pa-5">
           <v-row class="justify-center" density="compact">
             <v-col cols="12" md="12">
-              <v-text-field v-model="searchSmilesQuery" placeholder="SMILES/SMARTS" prepend-inner-icon="mdi mdi-flask"
+              <v-text-field v-model="searchSmilesQuery" data-cy="all-sources-checkbox" placeholder="SMILES/SMARTS" prepend-inner-icon="mdi mdi-flask"
                 density="compact" variant="outlined" label="Enter SMILES/SMART to explore" hide-details clearable>
                 <template v-slot:append>
                   <v-checkbox-btn v-model="searchRegex" label="Use SMARTS" hide-details class="mr-5">
                   </v-checkbox-btn>
-                  <v-btn color="success" @click="search" variant="flat" class="mr-5" :loading="showLoader">
+                  <v-btn color="success" @click="search"  variant="flat" class="mr-5" :loading="showLoader">
                     Search
                   </v-btn>
                   <v-btn variant="tonal" @click="clear()" :disabled="!buyables.length">
@@ -49,7 +49,7 @@
               <v-slider hide-details v-model="searchLimit" label="Limit Results" min="1" max="100" step="1"
                 color="primary">
                 <template v-slot:append>
-                  <v-text-field data-cy="result-input-element" v-model="searchLimit" type="number" style="width: 80px"
+                  <v-text-field  v-model="searchLimit"  data-cy="result-input-element" type="number" style="width: 80px"
                     density="compact" hide-details variant="outlined"></v-text-field>
                 </template>
               </v-slider>

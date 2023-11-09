@@ -17,7 +17,7 @@
           <v-form @submit.prevent="predict">
             <v-row align="center">
               <v-col :cols="mode === 'context' || mode === 'impurity' || mode === 'selectivity' ? 6 : 12">
-                <v-text-field v-model="reactants" class="centered-input" variant="outlined" label="Reactants"
+                <v-text-field v-model="reactants" data-cy="reactants" class="centered-input" variant="outlined" label="Reactants"
                   prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
                   <template v-slot:append-inner>
                     <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('reactants')">Draw</v-btn>
@@ -25,7 +25,7 @@
                 </v-text-field>
               </v-col>
               <v-col cols="6" v-if="mode !== 'forward' && mode !== 'sites'">
-                <v-text-field v-model="product" label="Product" class="centered-input" variant="outlined"
+                <v-text-field v-model="product" data-cy="product" label="Product" class="centered-input" variant="outlined"
                   prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
                   <template v-slot:append-inner>
                     <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('product')">Draw</v-btn>
@@ -82,7 +82,7 @@
 
             <v-row align="center" justify-start>
               <v-col>
-                <v-btn type="submit" variant="flat" color="success" class="mr-5">
+                <v-btn type="submit" variant="flat" color="success" class="mr-5" data-cy="submit-button" >
                   Get Results
                 </v-btn>
                 <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
@@ -106,7 +106,7 @@
                     </v-list-item>
                   </v-list>
                 </v-menu>
-                <v-btn variant="tonal" class="mr-5" @click="clear()">
+                <v-btn variant="tonal" data-cy="clear-button" class="mr-5" @click="clear()">
                   Clear Results
                 </v-btn>
                 <v-btn icon="mdi-cog" v-show="mode != 'sites'" @click="dialog = !dialog" variant="outlined">

@@ -46,7 +46,7 @@
               <v-btn id="view-rec-templates-btn" variant="flat" color="primary" @click="toggleRecTemplatesDialog" prepend-icon="mdi-view-list"> View
                 Recommended
                 Templates </v-btn>
-              <!-- <ban-button id="ban-chemical-btn" :smiles="selected.smiles" :type="selected.type"></ban-button> -->
+              <ban-button id="ban-chemical-btn" :smiles="selected.smiles" :type="selected.type"></ban-button>
               <v-select :items="sortingCategoryItems" label="Sort By" style="width: 100%" class="px-2" hide-details
                 variant="outlined" density="compact" v-model="sortingCategory">
                 <template v-slot:append>
@@ -277,7 +277,7 @@
                 </v-table>
               </div>
               <div class="btn-toolbar justify-content-end mx-2">
-                <!-- <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button> -->
+                <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button>
               </div>
             </div>
             <div class="alert alert-warning m-2" v-if="selected.data.selecError">Could not check regio-selectivity for
@@ -610,7 +610,7 @@
   
 <script>
 import JsPanel from "@/components/JsPanel";
-// import BanButton from "@/components/BanButton";
+import BanButton from "@/components/BanButton";
 import CopyTooltip from "@/components/CopyTooltip";
 import KetcherMin from "@/components/KetcherMin";
 import SmilesImage from "@/components/SmilesImage";
@@ -628,7 +628,7 @@ export default {
   name: "NodeDetail",
   components: {
     JsPanel,
-    // BanButton,
+    BanButton,
     CopyTooltip,
     KetcherMin,
     SmilesImage,

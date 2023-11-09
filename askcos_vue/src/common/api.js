@@ -71,6 +71,7 @@ const API = {
     else {
       response = await fetch(endpoint + "?" + new URLSearchParams(data).toString(), {
         method: 'POST',
+        headers: this.getHeaders()
       })
     }
     const json = await this.fetchHandler(response);

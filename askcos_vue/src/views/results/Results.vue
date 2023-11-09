@@ -136,6 +136,80 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+    <v-dialog v-model="showSharedResultModal" max-width="600px">
+      <v-card>
+        <v-card-title>
+          View Shared Result
+        </v-card-title>
+      
+        <v-card-text>
+          <p>The following result has been shared with you. It will now appear in your results list.</p>
+          <v-container v-if="sharedResult" fluid>
+            <v-row>
+              <v-col cols="12" sm="3"><strong>Description</strong></v-col>
+              <v-col cols="12" sm="9">{{ sharedResult.description }}</v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="3"><strong>Modified</strong></v-col>
+              <v-col cols="12" sm="9">{{ sharedResult.modified.format("MMMM D, YYYY h:mm A") }}</v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="3"><strong>Type</strong></v-col>
+              <v-col cols="12" sm="9">{{ sharedResult.type }}</v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="3"><strong>Tags</strong></v-col>
+              <v-col cols="12" sm="9">
+                <v-chip v-for="tag in sharedResult.tags" :key="tag" class="mr-1">{{ tag }}</v-chip>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="3"><strong>Actions</strong></v-col>
+              <v-col cols="12" sm="9">
+                <v-btn
+                  v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'"
+                  color="primary"
+                  small
+                  class="mr-1"
+                  :href="`/retro/network/?id=${sharedResult.id}&tab=2`"
+                  target="_blank"
+                >
+                  View trees
+                </v-btn>
+                <v-btn
+                  v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'"
+                  color="primary"
+                  small
+                  class="mr-1"
+                  :href="`/retro/network/?id=${sharedResult.id}&view=25`"
+                  target="_blank"
+                >
+                  View in IPP
+                </v-btn>
+                <v-btn
+                  v-if="sharedResult.type === 'ipp'"
+                  color="primary"
+                  small
+                  class="mr-1"
+                  :href="`network?tab=IPP&id=${sharedResult.result_id}&view=25`"
+                  target="_blank"
+                >
+                  View in IPP
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-container>
+          <v-alert type="warning" dense> Please note that shared results cannot be edited and saved simultaneously by multiple users. </v-alert>
+        </v-card-text>
+      
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="showSharedResultModal = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    
 </template>
 
 <script setup>
@@ -182,10 +256,10 @@ const headers = ref([
 ]);
 
 onMounted(async () => {
-  const currentUrl = window.location.href;
   const urlParams = new URLSearchParams(window.location.search);
-  let sharedId = urlParams.get("shared");
+  let sharedId = urlParams.get("result_id");
   if (sharedId) {
+    console.log(sharedId)
     await addSharedResult(sharedId);
     await update();
     showSharedResultModal.value = true;
@@ -208,7 +282,7 @@ const shareResult = (id) => {
     const currentUrl = window.location.href;
     const params = new URLSearchParams();
     params.append('result_id', id);
-    shareLink.value = `${currentUrl}/share?${params.toString()}`;
+    shareLink.value = `${currentUrl}share?${params.toString()}`;
     API.get(`/api/results/share?${params.toString()}`);
     for (const res of allResults.value) {
       if (res.result_id === id) {
@@ -230,7 +304,6 @@ const openSetting = async (id) => {
     if (json) {
       treeDialog.value = true
       viewSettings.value = json
-      // viewSettings.value.push({ smiles: json.target_smiles });
     }
   } finally {
     pendingTasks.value -= 1;
@@ -240,7 +313,8 @@ const openSetting = async (id) => {
 async function addSharedResult(id) {
   pendingTasks.value += 1;
   try {
-    const json = await API.get(`/api/v2/results/${id}/add/`);
+    const json = await API.get(`/api/add/share?result_id=${id}`);
+    console.log(json)
     json.result.created = dayjs(json.result.created);
     json.result.modified = dayjs(json.result.modified);
     sharedResult.value = json.result;
