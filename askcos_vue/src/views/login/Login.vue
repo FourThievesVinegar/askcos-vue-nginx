@@ -10,7 +10,7 @@
                     <v-sheet elevation="10" rounded="lg">
                         <v-form ref="form" class="pa-5" @submit.prevent>
                             <div class="d-flex flex-column">
-                                <v-btn color="green" size="x-large" block>
+                                <v-btn color="green" size="x-large" block variant="flat">
                                     SSO Login
                                 </v-btn>
                                 <v-container>
@@ -38,12 +38,12 @@
                                 <v-container>
                                     <v-row wrap no-gutters>
                                         <v-col cols="6" class="text-center">
-                                            <v-btn color="primary" size="x-large" @click="login" type="submit">
+                                            <v-btn color="primary" size="x-large" @click="login" type="submit" variant="flat">
                                                 Log In
                                             </v-btn>
                                         </v-col>
                                         <v-col cols="6" class="text-center">
-                                            <v-btn color="primary" size="x-large" @click="signup" type="submit">
+                                            <v-btn color="primary" size="x-large" @click="signup" type="submit" variant="flat">
                                                 Sign Up
                                             </v-btn>
                                         </v-col>
