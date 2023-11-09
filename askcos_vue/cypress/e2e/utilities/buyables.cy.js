@@ -5,7 +5,7 @@ describe('Buyable Compounds Page', () => {
   });
 
   it('can search compounds', () => {
-    cy.get('[data-cy="all-sources-checkbox"]').type('c1ccccc1');
+    cy.get('[placeholder="SMILES/SMARTS"]').type('c1ccccc1');
     cy.get('button').contains('Search').click();
     cy.get('img').first().should('have.attr', 'alt', 'c1ccccc1');
   });
@@ -17,10 +17,25 @@ describe('Buyable Compounds Page', () => {
       .type('0.5');
   });
 
+  it('can input similarity threshold', () => {
+    cy.get('[id^="input-34"]')
+      .clear({force: true})
+      .type('0.5');
+  });
+
   it('can limit number of results', () => {
-    cy.get('[data-cy="result-input-element"] input')
-      .clear()
-      .type('10');
+    cy.get('[id^="input-37"]')
+      .clear({force: true})
+      .type('4');
+  });
+
+  it('can search compounds with limit 2', () => {
+    cy.get('[placeholder="SMILES/SMARTS"]').type('c1ccccc1');
+    cy.get('[id^="input-37"]')
+    .clear({force: true})
+    .type('2');
+    cy.get('button').contains('Search').click();
+    cy.get('img').should('have.length', 2)
   });
 
 });
