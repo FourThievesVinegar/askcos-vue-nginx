@@ -88,21 +88,46 @@
       </div>
 
       <div class="hover-btn justify-center align-center flex-gap-2 elevation-3" id="hoverBtn">
-        <v-btn v-if="!!selected && selected.type === 'chemical'" density="compact" icon="mdi mdi-plus-circle"
-          id="expand-btn" @click="expandNode" title="Expand node" variant="flat" color="green-darken-1">
-        </v-btn>
-        <v-btn id="select-all-btn" class="text-light" @click="selectAllOccur" title="Select all occurrences"
-          density="compact" icon="mdi mdi-select-all" variant="flat" color="orange-darken-1">
-        </v-btn>
-        <v-btn id="delete-btn" @click="deleteChoice" title="Delete children node(s)" density="compact"
-          icon="mdi mdi-delete-empty" variant="flat" color="red-darken-1">
-        </v-btn>
-        <v-btn id="collapse-btn" @click="collapseNode" title="Collapse children node(s)" density="compact"
-          icon="mdi mdi-collapse-all" variant="flat" color="blue-darken-1">
-        </v-btn>
-        <v-btn id="node-detail-btn" @click="showNodeDetail" title="Show Node Detail" density="compact"
-          icon="mdi mdi-information" variant="flat" color="grey-darken-1">
-        </v-btn>
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" v-if="!!selected && selected.type === 'chemical'" density="compact"
+              icon="mdi mdi-plus-circle" id="expand-btn" @click="expandNode" variant="flat" color="green-darken-1">
+            </v-btn>
+          </template>
+          <span>Expand Node</span>
+        </v-tooltip>
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" id="select-all-btn" class="text-light" @click="selectAllOccur" density="compact"
+              icon="mdi mdi-select-all" variant="flat" color="orange-darken-1">
+            </v-btn>
+          </template>
+          <span>Select all occurrences</span>
+        </v-tooltip>
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" id="delete-btn" @click="deleteChoice" density="compact" icon="mdi mdi-delete-empty"
+              variant="flat" color="red-darken-1">
+            </v-btn>
+          </template>
+          <span>Delete children node(s)</span>
+        </v-tooltip>
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" id="collapse-btn" @click="collapseNode" density="compact" icon="mdi mdi-collapse-all"
+              variant="flat" color="blue-darken-1">
+            </v-btn>
+          </template>
+          <span>Collapse children node(s)</span>
+        </v-tooltip>
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" id="node-detail-btn" @click="showNodeDetail" density="compact"
+              icon="mdi mdi-information" variant="flat" color="grey-darken-1">
+            </v-btn>
+          </template>
+          <span>Show Node Detail</span>
+        </v-tooltip>
       </div>
       <div class="canvas-btn d-flex flex-column flex-gap-2 align-items-center">
         <v-tooltip location="end">
@@ -148,13 +173,24 @@
         </v-menu>
       </div>
       <div class="highlight-btn d-flex flex-column align-items-center justify-items-center flex-gap-2">
-        <v-btn :disabled="isCanvasEmpty" title="Enumerate paths to starting materials" density="compact"
-          icon="mdi mdi-map-marker-path" variant="tonal" color="primary" elevation="3" @click="showEnumeratePaths = true">
-        </v-btn>
-        <v-btn :disabled="isCanvasEmpty" title="Enumerate paths to starting materials" density="compact"
-          icon="mdi mdi-marker" variant="tonal" :color="treeViewEnabled ? 'success' : 'primary'" elevation="3"
-          @click="treeViewEnabled = !treeViewEnabled">
-        </v-btn>
+        <v-tooltip location="end">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" :disabled="isCanvasEmpty" title="Enumerate paths to starting materials"
+              density="compact" icon="mdi mdi-map-marker-path" variant="tonal" color="primary" elevation="3"
+              @click="showEnumeratePaths = true">
+            </v-btn>
+          </template>
+          <span>Enumerate paths to starting materials</span>
+        </v-tooltip>
+        <v-tooltip location="end">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" :disabled="isCanvasEmpty" title="Enumerate paths to starting materials"
+              density="compact" icon="mdi mdi-marker" variant="tonal" :color="treeViewEnabled ? 'success' : 'primary'"
+              elevation="3" @click="treeViewEnabled = !treeViewEnabled">
+            </v-btn>
+          </template>
+          <span>Enumerate paths ON/OFF</span>
+        </v-tooltip>
       </div>
       <network-legend></network-legend>
     </div>
