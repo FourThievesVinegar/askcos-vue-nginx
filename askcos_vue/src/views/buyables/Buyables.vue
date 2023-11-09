@@ -13,30 +13,28 @@
 
     <v-row class="justify-center">
       <v-col cols="12" md="10">
-        <v-sheet elevation="2">
-
+        <v-sheet elevation="2" rounded="lg">
           <v-row class="px-5 pt-5 justify-center" density="compact">
-            <v-col cols="12" md="10" my="10">
+            <v-col cols="12" md="12">
               <v-text-field v-model="searchSmilesQuery" placeholder="SMILES/SMARTS" prepend-inner-icon="mdi mdi-flask"
-                density="comfortable" variant="outlined" label="Enter SMILES/SMART to explore" hide-details clearable>
+                density="compact" variant="outlined" label="Enter SMILES/SMART to explore" hide-details clearable>
                 <template v-slot:append>
-                  <v-btn color="primary" @click="search" size="large">
+                  <v-checkbox-btn v-model="searchRegex" label="Use SMARTS" hide-details class="mr-5">
+                  </v-checkbox-btn>
+                  <v-btn color="success" @click="search" variant="flat" class="mr-5" :loading="showLoader">
                     Search
                   </v-btn>
-                  <v-checkbox-btn v-model="searchRegex" label="Use SMARTS" hide-details>
-                  </v-checkbox-btn>
+                  <v-btn variant="tonal" @click="clear()" :disabled="!buyables.length">
+                    Clear Results
+                  </v-btn>
                 </template>
                 <template v-slot:append-inner>
-                  <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
-                    @click="openKetcher(searchSmilesQuery)">Draw</v-btn>
+                  <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher(searchSmilesQuery)"
+                    size="small">Draw</v-btn>
                 </template>
               </v-text-field>
             </v-col>
           </v-row>
-
-          <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="searchSmilesQuery" @input="showKetcher = false"
-            @update:smiles="updateSmiles" />
-
           <v-row class="mb-2 px-5 pt-5">
             <v-col cols="12" md="4">
               <v-slider hide-details v-model="simThresh" label="Similarity Threshold" min="0" max="1" step="0.0001"
@@ -57,70 +55,66 @@
               </v-slider>
             </v-col>
             <v-col cols="12" md="4" class="d-flex justify-space-evenly align-center">
-
               <v-menu location="bottom" :close-on-content-click="false">
                 <template v-slot:activator="{ props }">
-                  <v-btn color="primary" size="small" variant="flat" v-bind="props">
+                  <v-btn color="primary" variant="flat" v-bind="props">
                     Select Sources
                   </v-btn>
                 </template>
                 <v-list>
                   <v-list-item v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery"
                     @click="selectSource(source)">
-
                     <v-row align="center">
                       <v-col cols="auto">
                         <v-list-item-title>{{ source }}<v-icon class="ml-1 mb-2" v-show="selectedSource === source"
                             icon="mdi-check"></v-icon></v-list-item-title>
                       </v-col>
                     </v-row>
-
                   </v-list-item>
                 </v-list>
               </v-menu>
-
               <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
                 <template v-slot:activator="{ props }">
-                  <v-btn color="primary" prepend-icon="mdi mdi-menu-down" size="small" variant="flat" v-bind="props">
-                    Upload
+                  <v-btn color="orange-accent-4" append-icon="mdi mdi-menu-down" variant="flat" v-bind="props">
+                    Add Compound
                   </v-btn>
                 </template>
-
                 <v-list>
                   <v-list-item @click="showAddModal = !showAddModal">Add One</v-list-item>
                   <v-list-item @click="showUploadModal = !showUploadModal">Add Buyable(s)</v-list-item>
                 </v-list>
               </v-menu>
+            </v-col>
+          </v-row>
+        </v-sheet>
+      </v-col>
+    </v-row>
 
-              <v-btn color="primary" variant="tonal" size="small" @click="clear()" :disabled="!buyables.length">
-                Clear
-              </v-btn>
-            </v-col>
-          </v-row>
-          <v-divider class="border-opacity-25 mb-6"></v-divider>
-          <v-row v-if="buyables.length">
-            <v-col cols="12">
-              <v-data-table :headers="headers" :items="buyables" :loading="showLoader">
-                <template v-slot:item.smiles="{ item }">
-                  <copy-tooltip :data="item.columns.smiles">
-                    <smiles-image :smiles="item.columns.smiles" height="80px"></smiles-image>
-                  </copy-tooltip>
-                </template>
-                <template v-slot:item.delete="{ item }">
-                  <v-icon @click="deleteBuyable(item.raw._id)" class="text-center">mdi-delete</v-icon>
-                </template>
-              </v-data-table>
-            </v-col>
-          </v-row>
-          <v-row v-else class="px-5 pb-5"> <v-col cols="12" class="d-flex justify-center align-center">
-              <div>
-                <v-img :width="400" cover :src="emptyCart"></v-img>
-              </div>
-            </v-col></v-row>
+    <v-row class="justify-center">
+      <v-col cols="12" md="10">
+        <v-sheet elevation="2" class="d-flex justify-center align-center pa-5" rounded="lg">
+          <v-data-table v-if="buyables.length" :headers="headers" :items="buyables" :loading="showLoader">
+            <template v-slot:item.smiles="{ item }">
+              <copy-tooltip :data="item.columns.smiles">
+                <smiles-image :smiles="item.columns.smiles" height="80px"></smiles-image>
+              </copy-tooltip>
+            </template>
+            <template v-slot:item.delete="{ item }">
+              <v-icon @click="deleteBuyable(item.raw._id)" class="text-center">mdi-delete</v-icon>
+            </template>
+          </v-data-table>
+          <div v-else class="text-center">
+            <v-img :width="400" cover :src="emptyCart"></v-img>
+            <h6 class="text-h6 mt-2">No Results</h6>
+            <p class="text-body-1">Search SMILES/SMARTS to explore</p>
+          </div>
         </v-sheet>
       </v-col>
     </v-row>
   </v-container>
+
+  <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="searchSmilesQuery" @input="showKetcher = false"
+    @update:smiles="updateSmiles" />
 
   <v-dialog v-model="showAddModal" max-width="600px">
     <v-card>
@@ -297,7 +291,7 @@ const updateSmiles = (newSmiles) => {
 onMounted(() => {
   API.get('/api/buyables/sources')
     .then(json => {
-      buyablesSources.value = json.sources 
+      buyablesSources.value = json.sources
     });
   let urlParams = new URLSearchParams(window.location.search);
   let query = urlParams.get('q');
