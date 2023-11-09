@@ -16,7 +16,7 @@
           <template #item.reaction_smarts="{ item }">
             <smiles-image :smiles="item.columns.reaction_smarts" input-type="template" highlight
               allow-copy></smiles-image>
-            <a :href="`/template/?id=${item.raw._id}`" target="_blank">{{ item.raw._id }} ({{ item.raw.template_set
+            <a :href="`/template?id=${item.raw._id}`" target="_blank">{{ item.raw._id }} ({{ item.raw.template_set
             }})</a>
           </template>
           <template #item.rank="{ item }">
