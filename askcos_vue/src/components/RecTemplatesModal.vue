@@ -68,7 +68,7 @@ export default {
       { key: "rank", title: "Original Rank", align: 'center', width: '10%' },
       { key: "score", title: "Score", align: 'center', width: '10%' },
       { key: "p_index", title: "Prioritizer", align: 'center', width: '10%' },
-      { key: "reaction_smarts", title: "Template", align: 'center', width: '70%'},
+      { key: "reaction_smarts", title: "Template", align: 'center', width: '70%' },
     ]);
     const rtmItemsPerPage = ref(20);
     const rtmCurrentPage = ref(1);
@@ -95,7 +95,7 @@ export default {
           loading.value = false;
         });
     };
-    
+
     const propShow = computed({
       get() {
         return props.visible
