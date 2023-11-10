@@ -21,8 +21,8 @@
                   <v-btn color="primary" variant="flat" class="mr-5">
                     Search
                   </v-btn>
-                  <v-btn v-if="allResults.length" icon="mdi-delete" class="bg-red mr-5" :disabled="selection.length === 0" variant="flat"
-                    @click="deleteSelection">
+                  <v-btn v-if="allResults.length" icon="mdi-delete" class="bg-red mr-5" :disabled="selection.length === 0"
+                    variant="flat" @click="deleteSelection">
                   </v-btn>
                   <v-btn icon="mdi-refresh" variant="tonal" @click="update">
                   </v-btn>
@@ -78,8 +78,8 @@
                       @click="openSetting(item.raw.result_id)">
                       View Settings
                     </v-btn>
-                    <v-btn class="bg-teal-lighten-3" variant="tonal" @click="showShareModal = !showShareModal">
-                      <v-icon @click="shareResult(item.key)" color="white">
+                    <v-btn class="bg-teal-lighten-3" variant="tonal" @click="shareResult(item.key)">
+                      <v-icon  color="white">
                         mdi-share
                       </v-icon>
                     </v-btn>
@@ -116,14 +116,14 @@
 
   <v-dialog v-model="showShareModal" max-width="600px">
     <v-card>
-      <v-card-title class="text-justify">
+      <v-card-title class="text-justify mt-2">
         <v-col cols="12">Share Result</v-col></v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="12">
             <p>Use the following link to share this result:</p>
             <copy-tooltip :data="shareLink" no-highlight location="bottom-right">
-              <v-text-field :value="shareLink" readonly allow-copy append-icon="mdi-content-copy">
+              <v-text-field v-model="shareLink" readonly allow-copy append-icon="mdi-content-copy">
               </v-text-field>
             </copy-tooltip>
             <v-alert type="warning">Please note that shared results cannot be edited and saved simultaneously by multiple
@@ -137,83 +137,66 @@
     </v-card>
   </v-dialog>
 
-    <v-dialog v-model="showSharedResultModal" max-width="600px">
-      <v-card>
-        <v-card-title>
-          View Shared Result
-        </v-card-title>
-      
-        <v-card-text>
-          <p>The following result has been shared with you. It will now appear in your results list.</p>
-          <v-container v-if="sharedResult" fluid>
-            <v-row>
-              <v-col cols="12" sm="3"><strong>Description</strong></v-col>
-              <v-col cols="12" sm="9">{{ sharedResult.description }}</v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="3"><strong>Modified</strong></v-col>
-              <v-col cols="12" sm="9">{{ sharedResult.modified.format("MMMM D, YYYY h:mm A") }}</v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="3"><strong>Type</strong></v-col>
-              <v-col cols="12" sm="9">{{ sharedResult.type }}</v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="3"><strong>Tags</strong></v-col>
-              <v-col cols="12" sm="9">
-                <v-chip v-for="tag in sharedResult.tags" :key="tag" class="mr-1">{{ tag }}</v-chip>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="3"><strong>Actions</strong></v-col>
-              <v-col cols="12" sm="9">
-                <v-btn
-                  v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'"
-                  color="primary"
-                  small
-                  class="mr-1"
-                  :href="`/retro/network/?id=${sharedResult.id}&tab=2`"
-                  target="_blank"
-                >
-                  View trees
-                </v-btn>
-                <v-btn
-                  v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'"
-                  color="primary"
-                  small
-                  class="mr-1"
-                  :href="`/retro/network/?id=${sharedResult.id}&view=25`"
-                  target="_blank"
-                >
-                  View in IPP
-                </v-btn>
-                <v-btn
-                  v-if="sharedResult.type === 'ipp'"
-                  color="primary"
-                  small
-                  class="mr-1"
-                  :href="`network?tab=IPP&id=${sharedResult.result_id}&view=25`"
-                  target="_blank"
-                >
-                  View in IPP
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-container>
-          <v-alert type="warning" dense> Please note that shared results cannot be edited and saved simultaneously by multiple users. </v-alert>
-        </v-card-text>
-      
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="showSharedResultModal = false">Close</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    
+  <v-dialog v-model="showSharedResultModal" max-width="600px">
+    <v-card>
+      <v-card-title class="text-justify">
+         <v-col cols="12">
+        View Shared Result
+      </v-col></v-card-title>
+
+      <v-card-text>
+        <p class="px-3">The following result has been shared with you. It will now appear in your results list.</p>
+        <v-container v-if="sharedResult" fluid>
+          <v-row>
+            <v-col cols="12" sm="3"><strong>Description</strong></v-col>
+            <v-col cols="12" sm="9">{{ sharedResult.description }}</v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" sm="3"><strong>Modified</strong></v-col>
+            <v-col cols="12" sm="9">{{ sharedResult.modified }}</v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" sm="3"><strong>Type</strong></v-col>
+            <v-col cols="12" sm="9">{{ sharedResult.type }}</v-col>
+          </v-row>
+          <v-row>
+            <!-- <v-col cols="12" sm="3"><strong>Tags</strong></v-col> -->
+            <!-- <v-col cols="12" sm="9">
+              <v-chip v-for="tag in sharedResult.tags" :key="tag" class="mr-1">{{ tag }}</v-chip>
+            </v-col> -->
+          </v-row>
+          <v-row>
+            <v-col cols="12" sm="3"><strong>Actions</strong></v-col>
+            <v-col cols="12" sm="9">
+              <v-btn v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'"  variant="flat" color="primary"
+                small class="mr-1" :href="`/network?tab=TE&id=${sharedResult.id}`" target="_blank">
+                View trees
+              </v-btn>
+              <v-btn v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'" variant="flat" color="primary"
+                small class="mr-1" :href="`/network?tab=IPP&id=${sharedResult.id}&view=25`" target="_blank">
+                View in IPP
+              </v-btn>
+              <v-btn v-if="sharedResult.type === 'ipp'" color="primary"  variant="flat" small class="mr-1"
+                :href="`/network?tab=IPP&id=${sharedResult.id}&view=25`" target="_blank">
+                View in IPP
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-alert type="warning" dense> Please note that shared results cannot be edited and saved simultaneously by
+          multiple users. </v-alert>
+      </v-card-text>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" text @click="showSharedResultModal = false">Close</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, watch, computed, nextTick } from 'vue';
 import CopyTooltip from "@/components/CopyTooltip";
 import TbSettingsTable from '@/components/TbSettingsTable.vue';
 import results from "@/assets/emptyResults.svg";
@@ -246,6 +229,18 @@ const sortedAllResults = computed(() => {
   });
 })
 
+const getCurrentBaseUrl = () => {
+  const url = window.location.href;
+  const pathArray = url.split('/');
+  const protocol = pathArray[0];
+  const host = pathArray[2];
+
+  return `${protocol}//${host}`;
+};
+
+const baseUrl = getCurrentBaseUrl();
+
+
 const headers = ref([
   { key: 'description', title: 'Result', },
   { key: 'modified', title: 'Modified' },
@@ -257,9 +252,8 @@ const headers = ref([
 
 onMounted(async () => {
   const urlParams = new URLSearchParams(window.location.search);
-  let sharedId = urlParams.get("result_id");
+  let sharedId = urlParams.get("shared");
   if (sharedId) {
-    console.log(sharedId)
     await addSharedResult(sharedId);
     await update();
     showSharedResultModal.value = true;
@@ -276,16 +270,18 @@ watch(selectAll, (newVal) => {
   }
 });
 
-const shareResult = (id) => {
+const shareResult = async (id) => {
   pendingTasks.value += 1;
   try {
-    const currentUrl = window.location.href;
     const params = new URLSearchParams();
     params.append('result_id', id);
-    shareLink.value = `${currentUrl}share?${params.toString()}`;
-    API.get(`/api/results/share?${params.toString()}`);
+    const json = await API.get(`/api/results/share?${params.toString()}`);
+    console.log(json.url)
+    shareLink.value = baseUrl + json.url;
+    await nextTick();
+    showShareModal.value = true;
     for (const res of allResults.value) {
-      if (res.result_id === id) {
+      if (res.id === id) {
         res.public = true;
         break;
       }
@@ -296,6 +292,9 @@ const shareResult = (id) => {
     pendingTasks.value -= 1;
   }
 }
+
+
+
 
 const openSetting = async (id) => {
   pendingTasks.value += 1;
@@ -313,11 +312,12 @@ const openSetting = async (id) => {
 async function addSharedResult(id) {
   pendingTasks.value += 1;
   try {
-    const json = await API.get(`/api/add/share?result_id=${id}`);
-    console.log(json)
-    json.result.created = dayjs(json.result.created);
-    json.result.modified = dayjs(json.result.modified);
+    const json = await API.post(`/api/results/add?result_id=${id}`);
+    console.log(json.result)
+    json.result.created =json.result.created.toString()
+    json.result.modified = json.result.modified.toString()
     sharedResult.value = json.result;
+   console.log(sharedResult.value);
   } catch (error) {
     alert("Could not add shared result: " + error);
   } finally {
