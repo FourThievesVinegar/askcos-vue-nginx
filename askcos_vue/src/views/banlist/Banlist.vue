@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row class="justify-center">
-      <v-col cols="12" sm="8" md="10">
+      <v-col cols="12" md="12" xl="10">
         <div class="mt-8 mb-5">
           <v-breadcrumbs class="pa-0" :items="['Home', 'Banlist']"></v-breadcrumbs>
           <h1>
@@ -11,7 +11,7 @@
       </v-col>
     </v-row>
     <v-row class="justify-center">
-      <v-col cols="12" md="10">
+      <v-col cols="12" md="12" xl="10">
         <v-sheet elevation="2" rounded="lg">
           <v-row class="mb-3 px-5 pt-2">
             <v-col cols="12">
@@ -35,7 +35,7 @@
     </v-row>
 
     <v-row class="justify-center">
-      <v-col cols="12" md="10">
+      <v-col cols="12" md="12" xl="10">
         <v-sheet width="100%" class="pa-6" rounded="lg" elevation="2">
           <v-select v-if="tabItems.length || filterActive !== 'all'" v-model="filterActive" :items="filterOptions"
             item-text="title" item-value="key" label="Filter by status" density="comfortable" variant="outlined"

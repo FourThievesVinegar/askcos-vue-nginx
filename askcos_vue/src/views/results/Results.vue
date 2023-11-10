@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row class="justify-center">
-      <v-col cols="12" sm="8" md="10">
+      <v-col cols="12" md="12" xl="10">
         <div class="mt-8 mb-5">
           <v-breadcrumbs class="pa-0" :items="['Home', 'Results']"></v-breadcrumbs>
           <h1>
@@ -11,7 +11,7 @@
       </v-col>
     </v-row>
     <v-row class="justify-center">
-      <v-col cols="12" md="10">
+      <v-col cols="12" md="12" xl="10">
         <v-sheet elevation="2" rounded="lg" class="pa-10">
           <v-row class="justify-center">
             <v-col cols="12" md="12">
@@ -35,7 +35,7 @@
     </v-row>
 
     <v-row class="justify-center">
-      <v-col cols="12" md="10">
+      <v-col cols="12" md="12" xl="10">
         <v-sheet elevation="2" rounded="lg" class="d-flex justify-center pa-5">
           <v-data-table v-if="allResults.length" :headers="headers" item-value="result_id" :items="sortedAllResults"
             show-select v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10"

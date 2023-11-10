@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row class="justify-center">
-      <v-col cols="12" sm="8" md="10">
+      <v-col cols="12" md="12" xl="10">
         <div class="mt-8 mb-5">
           <v-breadcrumbs class="pa-0" :items="['Home', 'Drawing']"></v-breadcrumbs>
           <h1>
@@ -12,7 +12,7 @@
     </v-row>
 
     <v-row class="justify-center">
-      <v-col cols="12" md="10">
+      <v-col cols="12" md="12" xl="10">
         <v-sheet elevation="2" rounded="lg" class="pa-5">
           <v-row class="justify-center" density="compact">
             <v-col cols="12" md="10" my="10">
@@ -33,7 +33,7 @@
       </v-col>
     </v-row>
     <v-row class="justify-center" >
-      <v-col cols="12" md="10">
+      <v-col cols="12" md="12" xl="10">
         <v-sheet class="elevation-2 pa-5" rounded="lg">
           <div v-if="smiles.length">
             <smiles-image :smiles="smiles" allow-copy></smiles-image>
