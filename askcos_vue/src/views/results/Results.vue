@@ -168,15 +168,15 @@
           <v-row>
             <v-col cols="12" sm="3"><strong>Actions</strong></v-col>
             <v-col cols="12" sm="9">
-              <v-btn v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'" color="primary"
+              <v-btn v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'"  variant="tonal" color="primary"
                 small class="mr-1" :href="`/network?tab=TE&id=${sharedResult.id}`" target="_blank">
                 View trees
               </v-btn>
-              <v-btn v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'" color="primary"
+              <v-btn v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'" variant="tonal" color="primary"
                 small class="mr-1" :href="`/network?tab=IPP&id=${sharedResult.id}&view=25`" target="_blank">
                 View in IPP
               </v-btn>
-              <v-btn v-if="sharedResult.type === 'ipp'" color="primary" small class="mr-1"
+              <v-btn v-if="sharedResult.type === 'ipp'" color="primary"  variant="tonal" small class="mr-1"
                 :href="`/network?tab=IPP&id=${sharedResult.id}&view=25`" target="_blank">
                 View in IPP
               </v-btn>
