@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row class="justify-center">
-      <v-col cols="12" sm="8" md="10">
+      <v-col cols="12" md="12" xl="10">
         <div class="mt-8 mb-5">
           <v-breadcrumbs class="pa-0" :items="['Home', 'Buyables']"></v-breadcrumbs>
           <h1>
@@ -12,16 +12,17 @@
     </v-row>
 
     <v-row class="justify-center">
-      <v-col cols="12" md="10">
+      <v-col cols="12" md="12" xl="10">
         <v-sheet elevation="2" rounded="lg" class="pa-5">
           <v-row class="justify-center" density="compact">
             <v-col cols="12" md="12">
-              <v-text-field v-model="searchSmilesQuery" data-cy="all-sources-checkbox" placeholder="SMILES/SMARTS" prepend-inner-icon="mdi mdi-flask"
-                density="compact" variant="outlined" label="Enter SMILES/SMART to explore" hide-details clearable>
+              <v-text-field v-model="searchSmilesQuery" data-cy="all-sources-checkbox" placeholder="SMILES/SMARTS"
+                prepend-inner-icon="mdi mdi-flask" density="compact" variant="outlined"
+                label="Enter SMILES/SMART to explore" hide-details clearable>
                 <template v-slot:append>
                   <v-checkbox-btn v-model="searchRegex" label="Use SMARTS" hide-details class="mr-5">
                   </v-checkbox-btn>
-                  <v-btn color="success" @click="search"  variant="flat" class="mr-5" :loading="showLoader">
+                  <v-btn color="success" @click="search" variant="flat" class="mr-5" :loading="showLoader">
                     Search
                   </v-btn>
                   <v-btn variant="tonal" @click="clear()" :disabled="!buyables.length">
@@ -49,7 +50,7 @@
               <v-slider hide-details v-model="searchLimit" label="Limit Results" min="1" max="100" step="1"
                 color="primary">
                 <template v-slot:append>
-                  <v-text-field  v-model="searchLimit"  data-cy="result-input-element" type="number" style="width: 80px"
+                  <v-text-field v-model="searchLimit" data-cy="result-input-element" type="number" style="width: 80px"
                     density="compact" hide-details variant="outlined"></v-text-field>
                 </template>
               </v-slider>
@@ -73,9 +74,9 @@
                   </v-list-item>
                 </v-list>
               </v-menu>
-              <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
+              <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false"  :disabled="!adminName">
                 <template v-slot:activator="{ props }">
-                  <v-btn color="orange-accent-4" append-icon="mdi mdi-menu-down" variant="flat" v-bind="props">
+                  <v-btn color="orange-accent-4" append-icon="mdi mdi-menu-down" variant="flat" v-bind="props" :disabled="!adminName">
                     Add Compound
                   </v-btn>
                 </template>
@@ -91,7 +92,7 @@
     </v-row>
 
     <v-row class="justify-center">
-      <v-col cols="12" md="10">
+      <v-col cols="12" md="12" xl="10">
         <v-sheet elevation="2" class="d-flex justify-center align-center pa-5" rounded="lg">
           <v-data-table v-if="buyables.length" :headers="headers" :items="buyables" :loading="showLoader">
             <template v-slot:item.smiles="{ item }">
@@ -239,6 +240,7 @@ const buyablesSources = ref([]);
 const showKetcher = ref(false);
 const ketcherRef = ref(null);
 const selectedSource = ref(null);
+const adminName = localStorage.getItem("username").startsWith('admin_')
 const createConfirm = useConfirm();
 const createSnackbar = useSnackbar()
 
