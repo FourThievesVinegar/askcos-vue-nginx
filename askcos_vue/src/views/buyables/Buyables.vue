@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row class="justify-center">
-      <v-col cols="12" sm="8" md="10">
+      <v-col cols="12" md="12" xl="10">
         <div class="mt-8 mb-5">
           <v-breadcrumbs class="pa-0" :items="['Home', 'Buyables']"></v-breadcrumbs>
           <h1>
@@ -12,7 +12,7 @@
     </v-row>
 
     <v-row class="justify-center">
-      <v-col cols="12" md="10">
+      <v-col cols="12" md="12" xl="10">
         <v-sheet elevation="2" rounded="lg" class="pa-5">
           <v-row class="justify-center" density="compact">
             <v-col cols="12" md="12">
@@ -76,7 +76,7 @@
               </v-menu>
               <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false"  :disabled="!adminName">
                 <template v-slot:activator="{ props }">
-                  <v-btn color="orange-accent-4" append-icon="mdi mdi-menu-down" variant="flat" v-bind="props">
+                  <v-btn color="orange-accent-4" append-icon="mdi mdi-menu-down" variant="flat" v-bind="props" :disabled="!adminName">
                     Add Compound
                   </v-btn>
                 </template>
@@ -92,7 +92,7 @@
     </v-row>
 
     <v-row class="justify-center">
-      <v-col cols="12" md="10">
+      <v-col cols="12" md="12" xl="10">
         <v-sheet elevation="2" class="d-flex justify-center align-center pa-5" rounded="lg">
           <v-data-table v-if="buyables.length" :headers="headers" :items="buyables" :loading="showLoader">
             <template v-slot:item.smiles="{ item }">
