@@ -172,7 +172,7 @@
                 small class="mr-1" :href="`/network?tab=TE&id=${sharedResult.id}`" target="_blank">
                 View trees
               </v-btn>
-              <v-btn v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'"variant="flat" color="primary"
+              <v-btn v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'" variant="flat" color="primary"
                 small class="mr-1" :href="`/network?tab=IPP&id=${sharedResult.id}&view=25`" target="_blank">
                 View in IPP
               </v-btn>
