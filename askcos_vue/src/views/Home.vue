@@ -1,7 +1,7 @@
 <template>
   <v-container fluid style="min-height: calc(100vh-50px)">
     <v-row class="justify-center">
-      <v-col cols="12" sm="8" md="10">
+      <v-col cols="12" md="12" xl="10">
         <h1 class="header my-6 text-center">
           ASKCOS: Software tools for organic synthesis
         </h1>
@@ -62,6 +62,14 @@
             IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."' class="text-blue-darken-3">
                 <template v-slot:title><v-icon class="mr-1">mdi mdi-license</v-icon><strong>License</strong></template>
               </v-expansion-panel>
+              <v-expansion-panel class="text-blue-darken-3">
+                <template v-slot:title><v-icon class="mr-1">mdi
+                    mdi-account-group</v-icon><strong>Contributors</strong></template>
+                <template v-slot:text>
+                  <v-chip class="ma-1" v-for="person in contributorList"><v-icon start icon="mdi-account"></v-icon><span
+                      class="text-body-1">{{ person }}</span></v-chip>
+                </template>
+              </v-expansion-panel>
             </v-expansion-panels>
           </v-sheet>
         </v-expand-transition>
@@ -82,6 +90,32 @@ import { ref, onMounted } from "vue";
 import LaunchPad from "@/components/home/Launchpad.vue";
 
 const show = ref(false);
+
+const contributorList = ref([
+  "Zhenkgai Tu (Maintainer)",
+  "Sourabh Choure (Maintainer)",
+  "Max Liu",
+  "Samuel Gong",
+  "Mun Hong Fong",
+  "Aaron Chen",
+  "Tony Li",
+  "Mike Fortunato",
+  "Pritha Verma",
+  "Thomas Struble",
+  "David Graff",
+  "Itai Levin",
+  "Jiannan Liu",
+  "Hanyu Gao",
+  "Yunsie Chung",
+  "Florence Vermeire",
+  "Yiming Mo",
+  "Thijs Stuyver",
+  "Yanfei Guan",
+  "Travis Nevins",
+  "Huiqian Lin",
+  "Mark Murnin",
+  "Connor Coley"
+])
 
 onMounted(() => {
   show.value = true; // <div>
