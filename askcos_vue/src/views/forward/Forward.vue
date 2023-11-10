@@ -1,7 +1,7 @@
 <template>
   <v-container fluid style="min-height: calc(100vh-50px)">
     <v-row class="justify-center">
-      <v-col cols="12" sm="8" md="10">
+      <v-col cols="12" md="12" xl="10">
 
         <v-sheet elevation="2" class="my-6">
           <v-tabs v-model="tab" color="primary" align-tabs="center" grow class="mb-4">

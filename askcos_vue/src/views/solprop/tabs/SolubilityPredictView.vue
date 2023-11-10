@@ -1,8 +1,8 @@
 <template>
   <v-container fluid style="min-height: calc(100vh-50px)">
     <v-row class="justify-center">
-      <v-col cols="12" sm="8" md="12">
-        <v-sheet elevation="2" class="pa-10" rounded="lg">
+      <v-col cols="12" md="12" class="pa-0">
+        <v-sheet elevation="2" class="pa-10" rounded="lg" width="100%">
           <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="currentSmiles" @input="showKetcher = false"
             @update:smiles="(ketcherSmiles) => updateSmiles(ketcherSmiles)" />
           <v-form @submit.prevent>
@@ -55,7 +55,7 @@
     </v-row>
 
     <v-row>
-      <v-col v-show="pendingTasks > 0 || results.length" cols="12" md="12">
+      <v-col v-show="pendingTasks > 0 || results.length" cols="12" md="12" class="pa-0 mt-4">
         <v-sheet elevation="2" class="pa-4" rounded="lg">
           <v-row v-if="pendingTasks === 0" align="center" justify="space-between" class="mx-auto my-auto pa-2">
             <v-col md="5">

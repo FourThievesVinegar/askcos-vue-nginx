@@ -5,9 +5,9 @@
         color="green-darken-1"></v-progress-linear>
       <v-container fluid>
         <v-row class="justify-center align-center">
-          <v-col cols="12" md="10"><v-text-field v-model="resultsStore.target" density="compact" variant="outlined"
+          <v-col cols="12" md="10" sm="12"><v-text-field v-model="resultsStore.target" density="compact" variant="outlined"
               label="Target" placeholder="SMILES" type="text" clearable class="target-input" hide-details
-              prepend-inner-icon="mdi mdi-flask">
+              prepend-inner-icon="mdi mdi-flask" min-width="100px">
               <template v-slot:append-inner>
                 <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil" @click="showKetcherModal()">Draw</v-btn>
               </template>
