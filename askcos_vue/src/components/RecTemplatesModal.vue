@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="propShow" @open="openRecTemplatesModal">
+  <v-dialog v-model="propShow" @open="openRecTemplatesModal" scrollable>
     <v-card>
       <v-card-title>
         Recommended Templates

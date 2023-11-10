@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="propShow">
+    <v-dialog v-model="propShow" scrollable>
         <v-card>
             <v-card-title>
                 Model Input/Output Details
