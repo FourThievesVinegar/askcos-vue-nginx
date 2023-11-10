@@ -1,7 +1,7 @@
 <template>
   <v-container fluid style="min-height: calc(100vh-50px)">
     <v-row class="justify-center align-center">
-      <v-col cols="12" md="12">
+      <v-col cols="12" md="12" class="pa-0">
         <v-sheet elevation="2" class="pa-10" rounded="lg">
           <v-form @submit.prevent>
             <v-row class="justify-center align-center">
@@ -47,7 +47,7 @@
     </v-row>
 
     <v-row>
-      <v-col>
+      <v-col class="pa-0 mt-4">
         <v-sheet elevation="2" class="pa-4" rounded="lg">
           <div v-if="results.length">
             <v-row>
