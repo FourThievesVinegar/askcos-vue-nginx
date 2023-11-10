@@ -78,8 +78,8 @@
                       @click="openSetting(item.raw.result_id)">
                       View Settings
                     </v-btn>
-                    <v-btn class="bg-teal-lighten-3" variant="tonal" @click="showShareModal = !showShareModal">
-                      <v-icon @click="shareResult(item.key)" color="white">
+                    <v-btn class="bg-teal-lighten-3" variant="tonal" @click="shareResult(item.key)">
+                      <v-icon  color="white">
                         mdi-share
                       </v-icon>
                     </v-btn>
@@ -145,7 +145,7 @@
       </v-col></v-card-title>
 
       <v-card-text>
-        <p>The following result has been shared with you. It will now appear in your results list.</p>
+        <p class="px-3">The following result has been shared with you. It will now appear in your results list.</p>
         <v-container v-if="sharedResult" fluid>
           <v-row>
             <v-col cols="12" sm="3"><strong>Description</strong></v-col>
@@ -196,7 +196,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, watch, computed, nextTick } from 'vue';
 import CopyTooltip from "@/components/CopyTooltip";
 import TbSettingsTable from '@/components/TbSettingsTable.vue';
 import results from "@/assets/emptyResults.svg";
@@ -278,7 +278,8 @@ const shareResult = async (id) => {
     const json = await API.get(`/api/results/share?${params.toString()}`);
     console.log(json.url)
     shareLink.value = baseUrl + json.url;
-    console.log(baseUrl + json.url)
+    await nextTick();
+    showShareModal.value = true;
     for (const res of allResults.value) {
       if (res.id === id) {
         res.public = true;
