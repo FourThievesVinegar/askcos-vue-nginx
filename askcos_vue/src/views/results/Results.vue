@@ -39,7 +39,7 @@
         <v-sheet elevation="2" rounded="lg" class="d-flex justify-center pa-5">
           <v-data-table v-if="allResults.length" :headers="headers" item-value="result_id" :items="sortedAllResults"
             show-select v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10"
-            :search="searchQuery">
+            :search="searchQuery" @click:row="clickRow">
             <template v-slot:item.delete="{ item }">
               <v-icon @click="deleteResult(item.raw.result_id)" class="text-center">mdi-delete</v-icon>
             </template>
@@ -79,7 +79,7 @@
                       View Settings
                     </v-btn>
                     <v-btn class="bg-teal-lighten-3" variant="tonal" @click="shareResult(item.key)">
-                      <v-icon  color="white">
+                      <v-icon color="white">
                         mdi-share
                       </v-icon>
                     </v-btn>
@@ -140,9 +140,9 @@
   <v-dialog v-model="showSharedResultModal" max-width="600px">
     <v-card>
       <v-card-title class="text-justify">
-         <v-col cols="12">
-        View Shared Result
-      </v-col></v-card-title>
+        <v-col cols="12">
+          View Shared Result
+        </v-col></v-card-title>
 
       <v-card-text>
         <p class="px-3">The following result has been shared with you. It will now appear in your results list.</p>
@@ -168,15 +168,16 @@
           <v-row>
             <v-col cols="12" sm="3"><strong>Actions</strong></v-col>
             <v-col cols="12" sm="9">
-              <v-btn v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'"  variant="flat" color="primary"
-                small class="mr-1" :href="`/network?tab=TE&id=${sharedResult.id}`" target="_blank">
+              <v-btn v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'" variant="flat"
+                color="primary" small class="mr-1" :href="`/network?tab=TE&id=${sharedResult.id}`" target="_blank">
                 View trees
               </v-btn>
-              <v-btn v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'" variant="flat" color="primary"
-                small class="mr-1" :href="`/network?tab=IPP&id=${sharedResult.id}&view=25`" target="_blank">
+              <v-btn v-if="sharedResult.type === 'tree_builder' && sharedResult.state === 'completed'" variant="flat"
+                color="primary" small class="mr-1" :href="`/network?tab=IPP&id=${sharedResult.id}&view=25`"
+                target="_blank">
                 View in IPP
               </v-btn>
-              <v-btn v-if="sharedResult.type === 'ipp'" color="primary"  variant="flat" small class="mr-1"
+              <v-btn v-if="sharedResult.type === 'ipp'" color="primary" variant="flat" small class="mr-1"
                 :href="`/network?tab=IPP&id=${sharedResult.id}&view=25`" target="_blank">
                 View in IPP
               </v-btn>
@@ -217,6 +218,15 @@ const sharedResult = ref(null);
 const sortDescending = ref(true);
 const treeDialog = ref(false);
 const viewSettings = ref(null);
+
+const clickRow = (_event, {item}) => {
+  const index = expanded.value.findIndex(i => i === item.key); 
+  if (index !== -1) {
+    expanded.value.splice(index, 1)
+  } else {
+    expanded.value.push(item.key);
+  }
+}
 
 const sortedAllResults = computed(() => {
   return allResults.value.sort((a, b) => {
@@ -314,10 +324,10 @@ async function addSharedResult(id) {
   try {
     const json = await API.post(`/api/results/add?result_id=${id}`);
     console.log(json.result)
-    json.result.created =json.result.created.toString()
+    json.result.created = json.result.created.toString()
     json.result.modified = json.result.modified.toString()
     sharedResult.value = json.result;
-   console.log(sharedResult.value);
+    console.log(sharedResult.value);
   } catch (error) {
     alert("Could not add shared result: " + error);
   } finally {
