@@ -2,11 +2,11 @@
   <v-container id="settings">
     <v-row>
       <v-col cols="12" class="text-center pa-0">
-        <div>Target: {{ settings.target_smiles }}</div>
+        <div>Target: {{ targetSmiles }}</div>
       </v-col>
         <v-col cols="12" align="center" justify="center" class="pa-0">
-        <copy-tooltip :data="settings.target_smiles">
-          <smiles-image v-if="settings.target_smiles" :smiles="settings.target_smiles" max-width="300px"/>
+        <copy-tooltip :data="targetSmiles">
+          <smiles-image v-if="targetSmiles" :smiles="targetSmiles" max-width="300px"/>
           </copy-tooltip>
         </v-col>
     </v-row>
@@ -159,6 +159,10 @@ export default {
     settings: {
       type: Object,
       default: () => ({}),
+    },
+    targetSmiles: {
+      type: String,
+      default: ''
     },
   },
   computed: {
