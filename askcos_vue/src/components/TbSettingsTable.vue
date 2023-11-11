@@ -34,17 +34,17 @@
           </tr>
           <tr>
             <th>Expansion settings:</th>
-            <td>Max. depth: {{ settings.settings.build_tree_options.max_depth }}</td>
-            <td>Max. branching factor: {{ settings.settings.build_tree_options.max_branching }}</td>
+            <td>Max. depth: {{ settings.build_tree_options.max_depth }}</td>
+            <td>Max. branching factor: {{ settings.build_tree_options.max_branching }}</td>
           </tr>
           <tr>
             <th></th>
-            <td>Num. templates: {{ settings.settings.expand_one_options.template_max_count }}</td>
-            <td>Max cum. prob: {{ settings.settings.expand_one_options.template_max_cum_prob }}</td>
+            <td>Num. templates: {{ settings.expand_one_options.template_max_count }}</td>
+            <td>Max cum. prob: {{ settings.expand_one_options.template_max_cum_prob }}</td>
           </tr>
           <tr>
             <th></th>
-            <td>Expansion time (s): {{ settings.settings.build_tree_options.expansion_time }}</td>
+            <td>Expansion time (s): {{ settings.build_tree_options.expansion_time }}</td>
             <td>Max iterations: {{ settings.max_iterations || "N/A" }}</td>
           </tr>
           <tr>
@@ -115,7 +115,7 @@
           </template>
           <tr>
             <th>Evaluation settings:</th>
-            <td>Min. plausibility: {{ settings.settings.expand_one_options['filter_threshold'] }}</td>
+            <td>Min. plausibility: {{ settings.expand_one_options['filter_threshold'] }}</td>
             <td></td>
           </tr>
           <tr>
@@ -123,14 +123,14 @@
             <td>{{ buyablesSources }}</td>
             <td></td>
           </tr>
-          <tr v-if="!!settings.settings.expand_one_options['banned_chemicals']">
+          <tr v-if="!!settings.expand_one_options['banned_chemicals']">
             <th>Banned chemicals(s):</th>
-            <td >{{ settings.settings.expand_one_options['banned_chemicals'].length }}</td>
+            <td >{{ settings.expand_one_options['banned_chemicals'].length }}</td>
             <td></td>
           </tr>
-          <tr v-if="!!settings.settings.expand_one_options['banned_reactions']">
+          <tr v-if="!!settings.expand_one_options['banned_reactions']">
             <th>Banned reactions:</th>
-            <td>{{ settings.settings.expand_one_options['banned_reactions'].length }}</td>
+            <td>{{ settings.expand_one_options['banned_reactions'].length }}</td>
             <td></td>
           </tr>
         </tbody>

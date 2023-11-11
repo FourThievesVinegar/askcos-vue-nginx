@@ -5,8 +5,8 @@
                 <v-sheet elevation="2" class="pa-5 d-flex align-center flex-column" rounded="lg" :border="true">
                     <div class="d-flex align-self-center">
                         <v-btn-group divided variant="flat">
-                            <v-btn color="blue">Result Info</v-btn>
-                            <v-btn color="blue-grey">Open List View</v-btn>
+                            <v-btn color="blue" @click="resultInfo = true">Result Info</v-btn>
+                            <v-btn color="blue-grey" @click="showListView = true">Open List View</v-btn>
                         </v-btn-group>
                     </div>
                     <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4 align-self-start"
@@ -281,32 +281,32 @@
         </div>
     </js-panel>
 
-    <!-- <js-panel :visible="tabActive && showListView" :options="listPanelOptions" @close="showListView = false">
+    <js-panel :visible="tabActive && showListView" :options="listPanelOptions" @close="showListView = false">
         <div class="m-3">
-            <v-pagination v-model="treeListCurrentPage" :total-rows="trees.length" :per-page="treeListItemsPerPage"
-                align="center" class="mb-3"></v-pagination>
+            <v-pagination v-model="treeListCurrentPage" :length="Math.ceil(trees.length/treeListItemsPerPage)" class="mb-3"></v-pagination>
             <div v-for="(tree, index) in treeListItems" :key="index" class="mb-3">
-                <v-btn-toolbar class="justify-content-between">
-                    <v-btn v-b-toggle:[`tree-collapse-${index}`] size="sm" variant="primary"> Tree {{ (treeListCurrentPage -
+                <div class="d-flex justify-space-between">
+                    <v-btn variant="flat" color="primary"> Tree {{ (treeListCurrentPage -
                         1) * treeListItemsPerPage + index + 1 }} </v-btn>
-                    <v-btn-group class="float-right">
-                        <v-btn size="sm" variant="outline-dark"
+                    <v-btn-group class="float-right" variant="outlined" divided :border="true">
+                        <v-btn 
                             @click="addTreeToIpp(trees[(treeListCurrentPage - 1) * treeListItemsPerPage + index])"> Add to
                             IPP </v-btn>
-                        <v-btn size="sm" variant="outline-dark" @click="
+                        <v-btn @click="
                             showListView = false;
                         currentTreeId = (treeListCurrentPage - 1) * treeListItemsPerPage + index;
                         ">
                             View in main window
                         </v-btn>
                     </v-btn-group>
-                </v-btn-toolbar>
-                <b-collapse :id="`tree-collapse-${index}`" class="mt-2" visible>
-              <div :id="`treeList-${index}`" class="list-view-tree"></div>
-            </b-collapse>
+                </div>
+                <!-- <b-collapse :id="`tree-collapse-${index}`" class="mt-2" visible>
+                    <div :id="`treeList-${index}`" class="list-view-tree"></div>
+                </b-collapse> -->
             </div>
         </div>
-    </js-panel> -->
+    </js-panel>
+    <result-info-modal :visible="resultInfo" @close="$event => resultInfo = $event"></result-info-modal>
 </template>
   
 <script>
@@ -315,6 +315,7 @@ import CopyTooltip from "@/components/CopyTooltip";
 import JsPanel from "@/components/JsPanel";
 import SmilesImage from "@/components/SmilesImage";
 import NetworkLegend from "@/components/network/NetworkLegend";
+import ResultInfoModal from "@/components/network/ResultInfoModal";
 import { API } from "@/common/api";
 import { getMolImageUrl } from "@/common/drawing";
 import { RetroGraph } from "@/common/graph";
@@ -336,6 +337,7 @@ export default {
     name: "TreeView",
     components: {
         BanButton,
+        ResultInfoModal,
         CopyTooltip,
         JsPanel,
         SmilesImage,
@@ -401,6 +403,7 @@ export default {
                 callback: this.buildTreeList,
             },
             emptyTrees: emptyTrees,
+            resultInfo: false,
         };
     },
     computed: {
@@ -1086,5 +1089,6 @@ export default {
     background-color: #eee !important;
     font-family: unset !important;
     text-align: center !important;
-}</style>
+}
+</style>
   
