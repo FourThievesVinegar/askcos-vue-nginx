@@ -50,7 +50,8 @@
                 <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0" @click="clear()">
                   Clear Results
                 </v-btn>
-                <v-btn class="mr-5 align-self-end" variant="tonal" @click="showInfo = !showInfo" color="info">Model I/O Details</v-btn>
+                <v-btn class="mr-5 align-self-end" variant="tonal" @click="showInfo = !showInfo" color="info">Model I/O
+                  Details</v-btn>
               </v-col>
             </v-row>
           </v-form>
@@ -61,7 +62,7 @@
     <v-row>
       <v-col v-show="pendingTasks > 0 || results.length" cols="12" md="12" class="pa-0 mt-4">
         <v-sheet elevation="2" class="pa-4" rounded="lg">
-          <v-row v-if="pendingTasks === 0" align="center" justify="space-between" class="mx-auto my-auto pa-2">
+          <v-row v-if="pendingTasks === 0" class="mx-auto my-auto pa-2">
             <v-col md="5">
               <v-menu location="bottom">
                 <template v-slot:activator="{ props }">
@@ -89,11 +90,11 @@
               </v-select>
             </v-col>
             <v-row class="mt-3" style="overflow-x:scroll">
-              <v-data-table :headers="fields" :items="results"></v-data-table>
+              <v-col cols="12"><v-data-table :headers="fields" :items="results"></v-data-table></v-col>
             </v-row>
           </v-row>
-          <v-row v-else align="center" justify="space-between" class="mx-auto my-auto pa-2">
-            <v-skeleton-loader class="mx-auto my-auto" min-height="80px" type="table"></v-skeleton-loader>
+          <v-row v-else justify="space-between" class="mx-auto my-auto pa-2">
+            <v-skeleton-loader class="mx-auto my-auto" min-height="80px" type="table" width="100%"></v-skeleton-loader>
           </v-row>
         </v-sheet>
       </v-col>
@@ -237,6 +238,38 @@ export default {
       fields: [
 
       ],
+      apiKeyToField: {
+        'Solute': 'Solute',
+        'Solvent': 'Solvent',
+        'Temp': 'Temperature',
+        'ref_solvent': 'Ref. Solvent',
+        'ref_solubility': 'Ref. Solubility',
+        'ref_temp': 'Ref. Temperature',
+        'hsub298': 'Input Hsub298',
+        'cp_gas_298': 'Input Cpg298',
+        'cp_solid_298': 'Input Cps298',
+        'log_st_1': 'logST (method1) [log10(mol/L)]',
+        'st_1': 'Solubility (method1) [mg/mL]',
+        'log_st_2': 'logST (method2) [log10(mol/L)]',
+        'st_2': 'Solubility (method2) [mg/mL]',
+        'dg_solv_t': 'dGsolvT',
+        'dh_solv_t': 'dHsolvT',
+        'ds_solv_t': 'dSsolvT',
+        'log_s_298': 'logS298 [log10(mol/L)]',
+        's_298': 'Solubility(298) [mg/mL]',
+        'dh_solv_298': 'dHsolv298',
+        'error_message': 'Error Messages',
+        'warning_message': 'Warning Messages',
+        'pred_hsub298': 'Pred. Hsub298 [kcal/mol]',
+        'pred_cpg298': 'Pred. Cpg298 [cal/K/mol]',
+        'pred_cps298': 'Pred. Cps298 [cal/K/mol]',
+        'E': 'E',
+        'S': 'S',
+        'A': 'A',
+        'B': 'B',
+        'L': 'L',
+        'V': 'V'
+      },
       loading: false,
       showInfo: false,
       batch: false,
@@ -302,7 +335,7 @@ export default {
       this.selectedColumnCategories.forEach((category) => {
         _fields.push(...this.columnCategories[category])
       })
-      this.fields = _fields.map((key) => ({ key: key, title: key, sortable: true }))
+      this.fields = _fields.map((key) => ({ key: key, title: this.apiKeyToField[key], sortable: true }))
     },
     predict() {
       this.pendingTasks += 1
