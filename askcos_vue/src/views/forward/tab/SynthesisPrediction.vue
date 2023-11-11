@@ -15,7 +15,7 @@
 
 
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" v-show="results.length > 0"
-                :items-per-page="10" height="600px">
+                :items-per-page="10">
                 <template #item.outcome="{ item }">
                     <v-tooltip activator="parent" location="bottom">
                         <span>{{ item.columns.outcome }}</span>

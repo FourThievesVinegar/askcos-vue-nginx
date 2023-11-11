@@ -22,7 +22,7 @@
             </v-row>
 
             <v-data-table v-if="!pending && siteResults.length" :headers="headers" :items="results" class="my-3"
-                :items-per-page="5" height="600px">
+                :items-per-page="5">
                 <template v-slot:item.task="{ item }">
                     <smiles-image :smiles="item.columns.task" max-height="120px"></smiles-image>
                 </template>
