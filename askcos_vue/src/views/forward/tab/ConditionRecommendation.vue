@@ -47,10 +47,7 @@
                 </template>
                 <template #item.reagent="{ item }">
                     <template v-if="item.columns.reagent">
-                        <v-tooltip activator="parent" location="bottom">
-                            <span>{{ item.columns.reagent }}</span>
-                        </v-tooltip>
-                        <copy-tooltip :data="item.columns.reagent">
+                        <copy-tooltip :data="item.columns.reagent" :title="'Click to copy: ' + item.columns.reagent">
                             <smiles-image :smiles="item.columns.reagent" height="80px"></smiles-image>
                         </copy-tooltip>
                     </template>
@@ -60,10 +57,7 @@
                 </template>
                 <template #item.solvent="{ item }">
                     <template v-if="item.columns.solvent">
-                        <v-tooltip activator="parent" location="bottom">
-                            <span>{{ item.columns.solvent }}</span>
-                        </v-tooltip>
-                        <copy-tooltip :data="item.columns.solvent">
+                        <copy-tooltip :data="item.columns.solvent" :title="'Click to copy: ' + item.columns.solvent">
                             <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
                         </copy-tooltip>
                     </template>
@@ -114,7 +108,7 @@
                 </template>
                 <template #item.reactants="{ item }">
                     <div v-for="(amount, rct) in item.columns.reactants" class="text-center my-2" :key="rct">
-                        <copy-tooltip :data="rct">
+                        <copy-tooltip :data="rct" :title="'Click to copy: ' + rct">
                             <smiles-image :smiles="rct" max-height="80px"></smiles-image>
                         </copy-tooltip>
                         ({{ amount.toFixed(2) }})
@@ -126,7 +120,7 @@
                 <template v-slot:item.reagents="{ item }">
                     <div v-if="!!item.columns.reagents" class="text-center my-2"
                         v-for="(amount, rgt) in item.columns.reagents" :key="rgt">
-                        <copy-tooltip :data="rgt">
+                        <copy-tooltip :data="rgt" :title="'Click to copy: ' + rgt">
                             <smiles-image :smiles="rgt" max-height="80px"></smiles-image>
                         </copy-tooltip>
                         ({{ (amount > 0.01) ? amount.toFixed(2) : amount.toExponential(2) }})
