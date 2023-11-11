@@ -63,20 +63,23 @@
                   </v-btn>
                 </template>
                 <v-list>
-                  <v-list-item v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery"
-                    @click="selectSource(source)">
+                  <v-list-item v-for="source in buyablesSources" :key="source" @click="selectSource(source)">
                     <v-row align="center">
                       <v-col cols="auto">
-                        <v-list-item-title>{{ source }}<v-icon class="ml-1 mb-2" v-show="selectedSource === source"
-                            icon="mdi-check"></v-icon></v-list-item-title>
+                        <v-list-item-title>
+                          {{ source }}
+                          <v-icon class="ml-1 mb-2" v-show="selectedSources.includes(source)" icon="mdi-check">
+                          </v-icon>
+                        </v-list-item-title>
                       </v-col>
                     </v-row>
                   </v-list-item>
                 </v-list>
               </v-menu>
-              <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false"  :disabled="!adminName">
+              <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false"
+                :disabled="username = null || !adminName">
                 <template v-slot:activator="{ props }">
-                  <v-btn color="orange-accent-4" append-icon="mdi mdi-menu-down" variant="flat" v-bind="props" :disabled="!adminName">
+                  <v-btn color="orange-accent-4" append-icon="mdi mdi-menu-down" variant="flat" v-bind="props">
                     Add Compound
                   </v-btn>
                 </template>
@@ -240,7 +243,9 @@ const buyablesSources = ref([]);
 const showKetcher = ref(false);
 const ketcherRef = ref(null);
 const selectedSource = ref(null);
-const adminName = localStorage.getItem("username").startsWith('admin_')
+const username = localStorage.getItem("username")
+const adminName = username.startsWith('admin_')
+const selectedSources = ref([]);
 const createConfirm = useConfirm();
 const createSnackbar = useSnackbar()
 
@@ -314,7 +319,7 @@ const search = () => {
   )
     .then(json => {
       buyables.value = json['result'];
-      console.log(buyables.value)
+
     })
     .finally(() => {
       pendingTasks.value--
@@ -448,12 +453,13 @@ const deleteBuyable = (_id) => {
 };
 
 const selectSource = (source) => {
-  if (selectedSource.value === source) {
-    selectedSource.value = null;  // Deselect if already selected
+  const index = selectedSources.value.indexOf(source);
+  if (index === -1) {
+    selectedSources.value.push(source);
   } else {
-    selectedSource.value = source;  // Select if not already selected
+    selectedSources.value.splice(index, 1);
   }
-  searchSourceQuery.value = selectedSource.value;
+  searchSourceQuery.value = [...selectedSources.value];
 };
 
 watch(uploadFile, (file) => {
