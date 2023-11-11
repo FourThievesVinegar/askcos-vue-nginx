@@ -1,128 +1,140 @@
 <template>
     <v-container fluid>
         <v-row class="justify-center">
-            <v-col id="tree-view-left" cols="12" md="3" class="d-flex align-center flex-column"
-                style="height: calc(100vh - 14rem); overflow-y: auto;">
-                <v-btn-group divided width="auto">
-                    <v-btn>Result Info</v-btn>
-                    <v-btn>Open List View</v-btn>
-                </v-btn-group>
-                <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4 align-self-start">
-                    <h6 class="text-h6">Add results to IPP network</h6>
-                    <p>
-                        Add by tree
-                        <i class="fas fa-question-circle ml-1"
-                            title="Add the requested number of trees to the IPP network visualization based on the current cluster, sorting, and filtering options."></i>
-                    </p>
-                    <v-text-field label="First N Trees" variant="outlined" hide-details v-model="numTreesInput"
-                        density="compact" class="mt-2">
-                        <template v-slot:append>
-                            <v-btn @click="addTreesToIpp()" :disabled="trees.length === 0">Add</v-btn>
-                        </template>
-                    </v-text-field>
-                    <p class="mt-3">
-                        Add by depth
-                        <i class="fas fa-question-circle ml-1"
-                            title="Add results from the full reaction network to the IPP network visualization. Depth is the number of reaction steps to descend. Top-N is the number of precursor suggestions to add for each intermediate."></i>
-                    </p>
-                    <v-row class="justify-center align-center">
-                        <v-col cols="12" md="4">
-                            <v-text-field label="Depth" variant="outlined" hide-details v-model="maxDepthInput"
-                                density="compact" class="mt-2">
-                            </v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="4">
-                            <v-text-field label="Top-N" variant="outlined" hide-details v-model="maxNumInput"
-                                density="compact" class="mt-2">
-                            </v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="4"> <v-btn @click="addResultsToIpp()"
-                                :disabled="trees.length === 0">Add</v-btn></v-col>
-                    </v-row>
-                </div>
-                <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4 align-self-start">
-                    <h6 class="text-h6">Analyze trees</h6>
-                    <v-btn width="100%" @click="runPathwayRanking()" class="my-1" variant="outlined"
-                        :disabled="trees.length === 0">Run pathway
-                        ranking</v-btn>
-                    <v-btn width="100%" @click="runReactionClassification()" class="my-1" variant="outlined"
-                        :disabled="trees.length === 0">Run reaction
-                        classification</v-btn>
-                    <v-menu location="bottom" :close-on-content-click="false">
-                        <template v-slot:activator="{ props }">
-                            <v-btn v-bind="props" append-icon="mdi mdi-menu-down" variant="outlined" class="mt-1"
-                                width="100%" :disabled="trees.length === 0">Run PMI calculation</v-btn>
-                        </template>
-                        <v-list density="compact">
-                            <v-list-item @click="runPmiCalculation(true)">For this tree only</v-list-item>
-                            <v-list-item @click="runPmiCalculation()">For all trees</v-list-item>
-                        </v-list>
-                    </v-menu>
-                    <v-menu location="bottom" :close-on-content-click="false">
-                        <template v-slot:activator="{ props }">
-                            <v-btn v-bind="props" append-icon="mdi mdi-menu-down" class="mt-1" width="100%"
-                                variant="outlined" :disabled="trees.length === 0">Count analogs</v-btn>
-                        </template>
-                        <v-list density="compact">
-                            <v-list-item @click="runAnalogCounting(true)">For this tree only</v-list-item>
-                            <v-list-item @click="runAnalogCounting()">For all trees</v-list-item>
-                        </v-list>
-                    </v-menu>
-                </div>
-                <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-2 align-self-start">
-                    <h6 class="text-h6">Cluster Trees</h6>
-                    <v-switch id="clusterSwitch" v-model="cluster" :disabled="clusterDisabled" hide-details
-                        label="View by cluster">
-                    </v-switch>
-                </div>
-                <div class="align-self-start">
-                    <h6 class="text-h6">Sort trees</h6>
-                    <div v-for="(sortInput, index) in treeSortInput" :key="index" class="d-flex flex-gap-2 mb-2">
-                        <v-input hide-details :disabled="trees.length === 0">
-                            <template v-slot:prepend class="justify-content-center" style="width: 2.5rem">
-                                {{ index + 1 }}
-                            </template>
-                            <v-select id="sortingCategory" :model-value="sortInput.key" :items="treeSortOptions"
-                                hide-details variant="outlined"
-                                @update:modelValue="setDefaultSortOrder(sortInput)"></v-select>
-                            <template v-slot:append>
-                                <v-btn icon="mdi-sort-ascending" rounded variant="tonal" density="comfortable"></v-btn>
-                                <v-btn icon="mdi-close" size="small" density="compact" @click="deleteSortField(index)"
-                                    variant="tonal" color="red" class="ml-2"></v-btn>
-                            </template>
-                        </v-input>
+            <v-col id="tree-view-left" cols="12" md="3" style="height: calc(100vh - 14rem); overflow-y: auto;">
+                <v-sheet elevation="2" class="pa-5 d-flex align-center flex-column" rounded="lg" :border="true">
+                    <div class="d-flex align-self-center">
+                        <v-btn-group divided variant="flat">
+                            <v-btn color="blue">Result Info</v-btn>
+                            <v-btn color="blue-grey">Open List View</v-btn>
+                        </v-btn-group>
                     </div>
-                    <v-btn @click="addSortField" :disabled="trees.length === 0">Add sort field</v-btn>
-                </div>
-                <div class="mt-2">
-                    <h6 class="text-h6">Filter trees</h6>
-                    <p>
-                        Show pathways which
-                        <v-btn id="filterInvertCheck" @click="filterInvert = !filterInvert" size="small">
-                            {{ filterInvert ? "do not" : "do" }}
-                        </v-btn>
-                        include
-                        <v-btn id="filterAnyCheck" @click="filterAny = !filterAny" size="small">
-                            {{ filterAny ? "any" : "all" }}
-                        </v-btn>
-                        of the selected components.
-                    </p>
-                    <a href="#" role="button">
-                        <p>Select starting materials by
-                            image</p>
-                    </a>
-                    <v-select label="Starting materials" :items="startingMaterialOptions"
-                        v-model="selectedStartingMaterials" multiple variant="outlined" density="compact"
-                        class="mt-1"></v-select>
-                    <a href="#" role="button">
-                        <p>Select intermediates by image</p>
-                    </a>
-                    <v-select label="Intermediates" :items="intermediateOptions" v-model="selectedIntermediates" multiple
-                        variant="outlined" density="compact" class="mt-1"></v-select>
-                    <v-select v-if="reactionClassOptions.length" label="Reaction classes" :items="reactionClassOptions"
-                        v-model="selectedReactionClasses" multiple variant="outlined" density="compact"
-                        class="mt-1"></v-select>
-                </div>
+                    <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4 align-self-start"
+                        style="width:100%">
+                        <h6 class="text-h6">Add results to IPP network</h6>
+                        <p>
+                            Add by tree
+                            <i class="fas fa-question-circle ml-1"
+                                title="Add the requested number of trees to the IPP network visualization based on the current cluster, sorting, and filtering options."></i>
+                        </p>
+                        <v-text-field label="First N Trees" variant="outlined" hide-details v-model="numTreesInput"
+                            density="compact" class="mt-2">
+                            <template v-slot:append>
+                                <v-btn @click="addTreesToIpp()" :disabled="trees.length === 0" variant="tonal"
+                                    color="primary">Add</v-btn>
+                            </template>
+                        </v-text-field>
+                        <p class="mt-3">
+                            Add by depth
+                            <i class="fas fa-question-circle ml-1"
+                                title="Add results from the full reaction network to the IPP network visualization. Depth is the number of reaction steps to descend. Top-N is the number of precursor suggestions to add for each intermediate."></i>
+                        </p>
+                        <v-row class="justify-center align-center">
+                            <v-col cols="12" md="4" class="d-flex align-center justify-center">
+                                <v-text-field label="Depth" variant="outlined" hide-details v-model="maxDepthInput"
+                                    density="compact" class="mt-2">
+                                </v-text-field>
+                            </v-col>
+                            <v-col cols="12" md="4" class="d-flex align-center justify-center">
+                                <v-text-field label="Top-N" variant="outlined" hide-details v-model="maxNumInput"
+                                    density="compact" class="mt-2">
+                                </v-text-field>
+                            </v-col>
+                            <v-col cols="12" md="4" class="d-flex align-center justify-center">
+                                <v-btn @click="addResultsToIpp()" :disabled="trees.length === 0" variant="tonal"
+                                    color="primary">Add</v-btn>
+                            </v-col>
+                        </v-row>
+                    </div>
+                    <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4 align-self-start"
+                        style="width:100%">
+                        <h6 class="text-h6">Analyze trees</h6>
+                        <v-btn width="100%" @click="runPathwayRanking()" class="my-1" :disabled="trees.length === 0"
+                            variant="flat" color="green">Run pathway
+                            ranking</v-btn>
+                        <v-btn width="100%" @click="runReactionClassification()" class="my-1" :disabled="trees.length === 0"
+                            variant="flat" color="green">Run reaction
+                            classification</v-btn>
+                        <v-menu location="bottom" :close-on-content-click="false">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" append-icon="mdi mdi-menu-down" class="mt-1" width="100%"
+                                    :disabled="trees.length === 0" variant="flat" color="green">Run PMI calculation</v-btn>
+                            </template>
+                            <v-list density="compact">
+                                <v-list-item @click="runPmiCalculation(true)">For this tree only</v-list-item>
+                                <v-list-item @click="runPmiCalculation()">For all trees</v-list-item>
+                            </v-list>
+                        </v-menu>
+                        <v-menu location="bottom" :close-on-content-click="false">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" append-icon="mdi mdi-menu-down" class="mt-1" width="100%"
+                                    :disabled="trees.length === 0" variant="flat" color="green">Count analogs</v-btn>
+                            </template>
+                            <v-list density="compact">
+                                <v-list-item @click="runAnalogCounting(true)">For this tree only</v-list-item>
+                                <v-list-item @click="runAnalogCounting()">For all trees</v-list-item>
+                            </v-list>
+                        </v-menu>
+                    </div>
+                    <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-2 align-self-start"
+                        style="width:100%">
+                        <h6 class="text-h6">Cluster Trees</h6>
+                        <v-switch id="clusterSwitch" v-model="cluster" :disabled="clusterDisabled" hide-details
+                            label="View by cluster">
+                        </v-switch>
+                    </div>
+                    <div class="align-self-start" style="width:100%">
+                        <h6 class="text-h6">Sort trees</h6>
+                        <div v-for="(sortInput, index) in treeSortInput" :key="index" class="d-flex flex-gap-2 mb-2">
+                            <v-input hide-details :disabled="trees.length === 0">
+                                <template v-slot:prepend class="justify-content-center" style="width: 2.5rem">
+                                    {{ index + 1 }}
+                                </template>
+                                <v-select id="sortingCategory" :model-value="sortInput.key" :items="treeSortOptions"
+                                    hide-details variant="outlined"
+                                    @update:modelValue="setDefaultSortOrder(sortInput)"></v-select>
+                                <template v-slot:append>
+                                    <v-btn icon="mdi-sort-ascending" rounded variant="tonal" density="comfortable"></v-btn>
+                                    <v-btn icon="mdi-close" size="small" density="compact" @click="deleteSortField(index)"
+                                        variant="tonal" color="red" class="ml-2"></v-btn>
+                                </template>
+                            </v-input>
+                        </div>
+                        <v-btn @click="addSortField" :disabled="trees.length === 0" variant="outlined" color="primary"
+                            width="100%">Add sort field</v-btn>
+                    </div>
+                    <div class="mt-2" style="width:100%">
+                        <h6 class="text-h6">Filter trees</h6>
+                        <p>
+                            Show pathways which
+                            <v-btn id="filterInvertCheck" @click="filterInvert = !filterInvert" size="small" variant="flat"
+                                color="primary">
+                                {{ filterInvert ? "do not" : "do" }}
+                            </v-btn>
+                            include
+                            <v-btn id="filterAnyCheck" @click="filterAny = !filterAny" size="small" variant="flat"
+                                color="primary">
+                                {{ filterAny ? "any" : "all" }}
+                            </v-btn>
+                            of the selected components.
+                        </p>
+                        <a href="#" role="button">
+                            <p>Select starting materials by
+                                image</p>
+                        </a>
+                        <v-select label="Starting materials" :items="startingMaterialOptions"
+                            v-model="selectedStartingMaterials" multiple variant="outlined" density="compact"
+                            class="mt-1"></v-select>
+                        <a href="#" role="button">
+                            <p>Select intermediates by image</p>
+                        </a>
+                        <v-select label="Intermediates" :items="intermediateOptions" v-model="selectedIntermediates"
+                            multiple variant="outlined" density="compact" class="mt-1"></v-select>
+                        <v-select v-if="reactionClassOptions.length" label="Reaction classes" :items="reactionClassOptions"
+                            v-model="selectedReactionClasses" multiple variant="outlined" density="compact"
+                            class="mt-1"></v-select>
+                    </div>
+                </v-sheet>
             </v-col>
             <v-col cols="12" md="9" id="tree-view-right" style="overflow-y: hide" v-show="trees.length !== 0">
                 <div class="my-2 d-flex justify-space-around align-center">
@@ -1075,6 +1087,5 @@ export default {
     background-color: #eee !important;
     font-family: unset !important;
     text-align: center !important;
-}
-</style>
+}</style>
   
