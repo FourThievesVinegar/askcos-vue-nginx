@@ -1,173 +1,162 @@
 <template>
-    <v-container fluid style="min-height: 100vh">
+      <v-container fluid>
         <v-row class="justify-center">
-            <v-col cols="12" sm="8" md="10">
-                <div class="my-8">
-                    <v-breadcrumbs class="pa-0" :items="[{
-                        title: 'Home',
-                        disabled: false,
-                        href: '/',
-                    },
-                    {
-                        title: 'Template',
-                        disabled: true,
-                    }]"></v-breadcrumbs>
-                    <h1>
+          <v-col cols="12" md="12" xl="10">
+            <div class="mt-8 mb-5">
+              <v-breadcrumbs class="pa-0" :items="['Home', 'Template']"></v-breadcrumbs>
+              <h1>
                         Template Info
                     </h1>
                 </div>
             </v-col>
         </v-row>
         <v-row class="justify-center">
-            <v-col cols="12" sm="8" md="10">
-                <table class="table table-borderless">
-                    <tr>
-                        <th>Template:</th>
-                        <td>
+            <v-col cols="12" md="12" xl="10">
+                <v-sheet elevation="2" rounded="lg" class="pa-5">
+                    <v-row class="justify-center">
+                        <v-table class="mt-2" col="12">
+                            <tbody>
+                                <tr>
+                                    <th>Template:</th>
+                                    <td>
+                                        <span class="smiles">{{ templateInfo['reaction_smarts'] }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Template set:</th>
+                                    <td>{{ templateInfo['template_set'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Total references:</th>
+                                    <td>{{ templateInfo.count }} </td>
+                                </tr>
+                            </tbody>
+                        </v-table>
+                        <v-col cols="12" sm="8" md="10">
                             <copy-tooltip :data="templateInfo['reaction_smarts']">
-                                <span class="smiles">{{ templateInfo['reaction_smarts'] }}</span>
+                                <smiles-image v-if="!!templateInfo['reaction_smarts']"
+                                    :smiles="templateInfo['reaction_smarts']" input-type="template"></smiles-image>
                             </copy-tooltip>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Template set:</th>
-                        <td>{{ templateInfo['template_set'] }}</td>
-                    </tr>
-                </table>
-            </v-col>
-        </v-row>
-        <v-row class="justify-center">
-            <v-col cols="12" sm="8" md="10">
-                <smiles-image v-if="!!templateInfo['reaction_smarts']" :smiles="templateInfo['reaction_smarts']"
-                    input-type="template"></smiles-image>
-            </v-col>
-        </v-row>
-        <v-row class="justify-center">
-            <v-col col="12" sm="8" md="10">
-                <p v-if="templateInfo['necessary_reagent']"><em>
-                        Note: This reaction would require a reagent to contribute {{
-                            templateInfo['necessary_reagent'] }}
-                    </em></p>
-                <p v-if="templateInfo['intra_only']"><em>
-                        Note: This template should be used for intramolecular reactions <b>only</b>
-                    </em></p>
-                <p v-if="templateInfo['dimer_only']"><em>
-                        Note: This template should be used for symmetric (dimerization) reactions <b>only</b>
-                    </em></p>
-            </v-col>
-        </v-row>
-        <v-row class="justify-center">
-            <v-col cols="12" sm="8" md="10" class="d-flex flex-row align-center justify-center">
-                <div>
-                    <span>{{ templateInfo.count }} total references</span>
-                </div>
-                <div>
-                    <copy-tooltip class="btn btn-outline-secondary ml-2" :data="allReactionReferences" no-highlight>
-                        <v-btn variant="outlined">Copy all reaction IDs</v-btn>
-                    </copy-tooltip>
-                </div>
-                <div>
-                    <v-btn v-if="templateInfo.template_set === 'reaxys'" variant="outlined" class="ml-2"
-                        @click="downloadReactionQuery">
-                        <i class="fas fa-file-download"></i> Export all reaction IDs as Reaxys query
-                    </v-btn>
-                </div>
-                <div>
-                    <v-btn v-if="templateInfo.template_set === 'reaxys'" variant="outlined" class="ml-2" :href="rexaysURL"
-                        target="_blank">
-                        <i class="fas fa-external-link-alt"></i> Find current page of reactions in Reaxys
-                    </v-btn>
-                </div>
+                        </v-col>
+                        <v-col col="12" sm="8" md="10" v-if="templateInfo['necessary_reagent']">
+                            <p v-if="templateInfo['necessary_reagent']"><em>
+                                    Note: This reaction would require a reagent to contribute {{
+                                        templateInfo['necessary_reagent'] }}
+                                </em></p>
+                            <p v-if="templateInfo['intra_only']"><em>
+                                    Note: This template should be used for intramolecular reactions <b>only</b>
+                                </em></p>
+                            <p v-if="templateInfo['dimer_only']"><em>
+                                    Note: This template should be used for symmetric (dimerization) reactions <b>only</b>
+                                </em></p>
+                        </v-col>
+                        
+                        <v-col cols="12" sm="8" md="10" class="mb-3">
+                            <v-row class="d-flex flex-row align-center justify-space-between">
+                            <div >
+                                <copy-tooltip class="btn btn-outline-secondary" :data="allReactionReferences"
+                                    no-highlight>
+                                    <v-btn variant="outlined"  class="flex-1-0">Copy all reaction IDs</v-btn>
+                                </copy-tooltip>
+                            </div>
+                            <div>
+                                <v-btn v-if="templateInfo.template_set === 'reaxys'" variant="outlined"
+                                    @click="downloadReactionQuery">
+                                     Export all reaction IDs as Reaxys query
+                                </v-btn>
+                            </div>
+                            <div>
+                                <v-btn v-if="templateInfo.template_set === 'reaxys'" variant="outlined"
+                                    :href="rexaysURL" target="_blank">
+                                    Find current page of reactions in Reaxys
+                                </v-btn>
+                            </div>
 
-                <template v-if="templateInfo.template_set === 'cas' && rxnListItems && rxnListItems.length">
-                    <sci-findern-button class="ml-2" @click="casSearch"></sci-findern-button>
-                    <v-menu location="bottom" :close-on-content-click="false" id="proxy-settings">
-                        <template v-slot:activator="{ props }">
-                            <v-btn color="primary" dark v-bind="props">
-                                Proxy Settings
-                            </v-btn>
-                        </template>
-                        <v-card style="width: 18rem;">
-                            <v-card-text>
-                                <span> If your institution requires a proxy connection to access SciFinder<sup>n</sup>,
-                                    enter
-                                    the URL below:</span>
-                                <v-text-field label="Proxy URL" variant="outlined" v-model="proxyUrl"
-                                    hide-details></v-text-field>
-                            </v-card-text>
-                            <v-card-actions>
-                                <v-btn class="ml-2" variant="primary" type="submit" @click="saveProxyUrl">Save</v-btn>
-                            </v-card-actions>
-                        </v-card>
+                            <template v-if="templateInfo.template_set === 'cas' && rxnListItems && rxnListItems.length">
+                                <sci-findern-button class="ml-2" @click="casSearch"></sci-findern-button>
+                                <v-menu location="bottom" :close-on-content-click="false" id="proxy-settings">
+                                    <template v-slot:activator="{ props }">
+                                        <v-btn color="primary" dark v-bind="props">
+                                            Proxy Settings
+                                        </v-btn>
+                                    </template>
+                                    <v-card style="width: 18rem;">
+                                        <v-card-text>
+                                            <span> If your institution requires a proxy connection to access
+                                                SciFinder<sup>n</sup>,
+                                                enter
+                                                the URL below:</span>
+                                            <v-text-field label="Proxy URL" variant="outlined" v-model="proxyUrl"
+                                                hide-details></v-text-field>
+                                        </v-card-text>
+                                        <v-card-actions>
+                                            <v-btn class="ml-2" variant="primary" type="submit"
+                                                @click="saveProxyUrl">Save</v-btn>
+                                        </v-card-actions>
+                                    </v-card>
 
-                    </v-menu>
-                </template>
+                                </v-menu>
+                            </template>
+                        </v-row>
+                        </v-col>
+                    </v-row>
+                </v-sheet>
             </v-col>
         </v-row>
+
         <v-row class="justify-center">
-            <v-col cols="12" md="6">
-                <div class="text-center">
-                    <v-pagination v-model="rxnListCurrentPage" :length="rxnListTotalItems"></v-pagination>
-                </div>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col cols="12" md="10">
-                <table id="reaction-table" class="table table-hover" style="width: 100%">
-                    <thead>
-                        <tr>
-                            <th class="text-center">Reaction ID</th>
-                            <th class="text-center">Reaction</th>
-                            <th class="text-center">Spectators</th>
-                            <th class="text-center">Reference</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <template v-if="loading">
-                            <tr>
-                                <td colspan="4" class="text-center">
-                                    <div class="spinner-border text-secondary" role="status"></div>
-                                </td>
-                            </tr>
-                        </template>
-                        <template v-else-if="!rxnListItems || rxnListItems.length === 0">
-                            There's no reaction information to show
-                            <tr>
-                                <td colspan="4" class="text-center">
-                                    <h4>Reaction data not available!</h4>
-                                </td>
-                            </tr>
-                        </template>
-                        <template v-else>
-                            There is reaction information to show
-                            <tr v-for="reaction in rxnListItems" :key="reaction['reaction_id']">
-                                <td class="text-center">{{ reaction['reaction_id'] }}</td>
-                                <td class="text-center">
-                                    <smiles-image v-if="!!reaction['reaction_smiles']" :smiles="reaction['reaction_smiles']"
-                                        input-type="reaction" lazy></smiles-image>
-                                </td>
-                                <td class="text-center">{{ reaction['spectators'] }}</td>
-                                <td class="text-center" v-if="!!reaction['reference_url']">
-                                    <a v-if="!!reaction['reference']" :href="reaction['reference_url']" target="_blank">
-                                        {{ reaction['reference'] }}
-                                    </a>
-                                    <a v-else :href="reaction['reference_url']" target="_blank">
-                                        link
-                                    </a>
-                                </td>
-                                <td class="text-center" v-else>{{ reaction['reference'] }}</td>
-                            </tr>
-                        </template>
-                    </tbody>
-                </table>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col cols="12">
-                <b>Reaction reference IDs: </b>
-                <copy-tooltip :data="allReactionReferences">
-                    <i class="far fa-copy"></i> {{ allReactionReferences }}
-                </copy-tooltip>
+            <v-col cols="12" md="12" xl="10">
+                <v-sheet elevation="2" class="d-flex justify-center align-center pa-5" rounded="lg">
+                    <v-row class="justify-center">
+                        <v-col cols="12">
+                            <v-data-table :headers="headers" :items="rxnListItems" :loading="loading"
+                                :no-data-text="'Reaction data not available!'" class="pa-2">
+                                <template #item.reaction_id="{ item }">
+                                    {{ item.raw.reaction_id }}
+                                    <smiles-image v-if="item.raw.reaction_smiles" :smiles="item.raw.reaction_smiles"
+                                        input-type="reaction" lazy />
+                                </template>
+                                <template #item.spectators="{ item }">
+                                    {{ item.raw.spectators }}
+                                </template>
+                                <template #item.reference="{ item }">
+                                    <template v-if="item.raw.reference_url">
+                                        <a v-if="item.raw.reference" :href="item.raw.reference_url" target="_blank">
+                                            {{ item.raw.reference }}
+                                        </a>
+                                        <a v-else :href="item.raw.reference_url" target="_blank">
+                                            link
+                                        </a>
+                                    </template>
+                                    <template v-else>
+                                        {{ item.raw.reference }}
+                                    </template>
+                                </template>
+                            </v-data-table>
+                        </v-col>
+
+                        <v-col cols="12">
+                            <v-row align="center" justify="space-between" class="mx-auto my-3">
+                                <v-expansion-panels multiple density="compact">
+                                    <v-expansion-panel density="compact">
+                                        <template v-slot:title>
+                                            <span class="text-body-1 ml-2"> <b>Reaction reference IDs: </b></span>
+                                        </template>
+                                        <template v-slot:text>
+                                            <v-row>
+                                                <v-col>
+                                                    <copy-tooltip :data="allReactionReferences">
+                                                        <span>{{ allReactionReferences }}</span>
+                                                    </copy-tooltip>
+                                                </v-col>
+                                            </v-row>
+                                        </template>
+                                    </v-expansion-panel>
+                                </v-expansion-panels>
+                            </v-row>
+                        </v-col>
+                    </v-row>
+                </v-sheet>
             </v-col>
         </v-row>
     </v-container>
@@ -182,7 +171,7 @@ import { API } from "@/common/api";
 import { createReaxysQuery, createReaxysUrl } from "@/common/reaxys";
 import { createCasClient } from "@/common/cas-client";
 import { storageAvailable } from "@/common/utils";
-// import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver';
 
 const PROXY_STORAGE_KEY = 'casProxyUrl';
 
