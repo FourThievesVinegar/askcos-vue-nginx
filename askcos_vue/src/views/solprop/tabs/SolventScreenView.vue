@@ -173,7 +173,7 @@ export default {
   computed: {
     fields() {
       const _fields = [
-        { key: 'image', title: 'Solvent', tdClass: ['text-center'] },
+        { key: 'image', title: 'Solvent', tdClass: ['text-center'], width:"10%" },
         { key: 'solvent', title: 'SMILES', sortable: true },
       ]
       Object.keys(this.resultsByTemperature).forEach((temp) => {
