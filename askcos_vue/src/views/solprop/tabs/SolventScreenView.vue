@@ -31,14 +31,17 @@
               </v-col>
             </v-row>
             <v-row align="center" justify-start>
-              <v-col>
-                <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict" :loading="loading">Submit</v-btn>
+              <v-col cols="12">
+                <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict"
+                  :loading="loading">Submit</v-btn>
+                <v-btn prepend-icon="mdi-dots-horizontal" @click="dialog = !dialog" variant="flat" color="primary"
+                  class="mr-5">
+                  More Options
+                </v-btn>
                 <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0" @click="clear(false)">
                   Clear Results
                 </v-btn>
-                <v-btn icon="mdi-cog" @click="dialog = !dialog" variant="outlined" class="mr-5">
-                </v-btn>
-                <v-btn class="mr-5" variant="outlined" @click="showInfo = !showInfo">Model I/O Details</v-btn>
+                <v-btn variant="tonal" color="info" @click="showInfo = !showInfo">Model I/O Details</v-btn>
               </v-col>
             </v-row>
           </v-form>
@@ -173,7 +176,7 @@ export default {
   computed: {
     fields() {
       const _fields = [
-        { key: 'image', title: 'Solvent', tdClass: ['text-center'], width:"10%" },
+        { key: 'image', title: 'Solvent', tdClass: ['text-center'], width: "10%" },
         { key: 'solvent', title: 'SMILES', sortable: true },
       ]
       Object.keys(this.resultsByTemperature).forEach((temp) => {

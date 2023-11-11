@@ -17,16 +17,16 @@
           <v-form @submit.prevent="predict">
             <v-row align="center">
               <v-col :cols="mode === 'context' || mode === 'impurity' || mode === 'selectivity' ? 6 : 12">
-                <v-text-field v-model="reactants" data-cy="reactants" class="centered-input" variant="outlined" label="Reactants"
-                  prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
+                <v-text-field v-model="reactants" data-cy="reactants" class="centered-input" variant="outlined"
+                  label="Reactants" prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
                   <template v-slot:append-inner>
                     <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('reactants')">Draw</v-btn>
                   </template>
                 </v-text-field>
               </v-col>
               <v-col cols="6" v-if="mode !== 'forward' && mode !== 'sites'">
-                <v-text-field v-model="product" data-cy="product" label="Product" class="centered-input" variant="outlined"
-                  prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
+                <v-text-field v-model="product" data-cy="product" label="Product" class="centered-input"
+                  variant="outlined" prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
                   <template v-slot:append-inner>
                     <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('product')">Draw</v-btn>
                   </template>
@@ -82,7 +82,7 @@
 
             <v-row align="center" justify-start>
               <v-col>
-                <v-btn type="submit" variant="flat" color="success" class="mr-5" data-cy="submit-button" >
+                <v-btn type="submit" variant="flat" color="success" class="mr-5" data-cy="submit-button">
                   Get Results
                 </v-btn>
                 <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
@@ -106,10 +106,12 @@
                     </v-list-item>
                   </v-list>
                 </v-menu>
-                <v-btn variant="tonal" data-cy="clear-button" class="mr-5" @click="clear()">
-                  Clear Results
+                <v-btn prepend-icon="mdi-cog" v-show="mode != 'sites'" @click="dialog = !dialog" variant="flat"
+                  color="info" class="mr-5">
+                  Settings
                 </v-btn>
-                <v-btn icon="mdi-cog" v-show="mode != 'sites'" @click="dialog = !dialog" variant="outlined">
+                <v-btn variant="tonal" data-cy="clear-button" @click="clear()">
+                  Clear Results
                 </v-btn>
               </v-col>
             </v-row>
@@ -171,7 +173,7 @@
                     </v-select>
                   </v-col>
 
-                  <v-col cols="12" v-if="contextModel === 'neuralnetworkv2' ">
+                  <v-col cols="12" v-if="contextModel === 'neuralnetworkv2'">
                     <v-select label="Neural Network v2 model type" density="comfortable" variant="outlined" hide-details
                       clearable v-model="contextV2ModelType"
                       :items="[{ key: 'graph', title: 'Graph' }, { key: 'fp', title: 'Fingerprint (small)' }]"
@@ -195,22 +197,22 @@
             <v-expansion-panel value="forward-settings" v-if="tab === 'forward'">
               <v-expansion-panel-title class="text-primary">Forward predictor settings</v-expansion-panel-title>
               <v-expansion-panel-text>
-                  <v-row class="my-6">
-                    <v-col cols="12">
-                      <v-select label="Forward prediction model" v-model="forwardModel" density="comfortable" hide-details
-                        clearable variant="outlined" :items="forwardModels"></v-select>
-                    </v-col>
+                <v-row class="my-6">
+                  <v-col cols="12">
+                    <v-select label="Forward prediction model" v-model="forwardModel" density="comfortable" hide-details
+                      clearable variant="outlined" :items="forwardModels"></v-select>
+                  </v-col>
 
-                    <v-col cols="12">
-                      <v-select label="Forward model training set" v-model="forwardModelTrainingSet" density="comfortable"
-                        hide-details clearable variant="outlined" :items="forwardModelTrainingSets"></v-select>
-                    </v-col>
-                    <v-col cols="12">
-                      <v-text-field label="Num. results" placeholder="How many forward prediction results to return?"
-                        prepend-inner-icon="mdi mdi-flask" hide-details clearable density="comfortable" variant="outlined"
-                        type="number" v-model="numForwardResults"></v-text-field>
-                    </v-col>
-                  </v-row>
+                  <v-col cols="12">
+                    <v-select label="Forward model training set" v-model="forwardModelTrainingSet" density="comfortable"
+                      hide-details clearable variant="outlined" :items="forwardModelTrainingSets"></v-select>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-text-field label="Num. results" placeholder="How many forward prediction results to return?"
+                      prepend-inner-icon="mdi mdi-flask" hide-details clearable density="comfortable" variant="outlined"
+                      type="number" v-model="numForwardResults"></v-text-field>
+                  </v-col>
+                </v-row>
               </v-expansion-panel-text>
             </v-expansion-panel>
 

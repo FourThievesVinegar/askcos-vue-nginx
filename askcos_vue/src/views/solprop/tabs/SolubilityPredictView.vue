@@ -37,16 +37,20 @@
               </v-col>
             </v-row>
             <v-row justify-start class="align-center justify-center">
-              <v-col>
-                <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict" :loading="!batch && loading">Submit</v-btn>
-                <v-btn type="submit" variant="flat" color="primary" class="mr-5" @click="showUploadModal = true" :loading="batch && loading">Run
+              <v-col class="d-flex flex-row">
+                <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict"
+                  :loading="!batch && loading">Submit</v-btn>
+                <v-btn type="submit" variant="flat" color="yellow-darken-4" class="mr-5" @click="showUploadModal = true"
+                  :loading="batch && loading">Run
                   Batch</v-btn>
+                <v-btn @click="dialog = true" variant="flat" class="mr-5" prepend-icon="mdi-dots-horizontal"
+                  color="primary">
+                  More Options
+                </v-btn>
                 <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0" @click="clear()">
                   Clear Results
                 </v-btn>
-                <v-btn @click="dialog = true" variant="outlined" class="mr-5" icon="mdi-dots-horizontal">
-                </v-btn>
-                <v-btn class="mr-5" variant="outlined" @click="showInfo = !showInfo">Model I/O Details</v-btn>
+                <v-btn class="mr-5 align-self-end" variant="tonal" @click="showInfo = !showInfo" color="info">Model I/O Details</v-btn>
               </v-col>
             </v-row>
           </v-form>
@@ -61,8 +65,8 @@
             <v-col md="5">
               <v-menu location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-btn v-show="!!results.length" color="primary"
-                    v-bind="props" prepend-icon="mdi mdi-download" variant="flat">
+                  <v-btn v-show="!!results.length" color="primary" v-bind="props" prepend-icon="mdi mdi-download"
+                    variant="flat">
                     Download
                   </v-btn>
                 </template>
