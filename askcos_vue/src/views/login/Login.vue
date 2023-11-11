@@ -6,27 +6,9 @@
                     <h1 class="text-h1 font-weight-bold text-white">ASKCOS</h1>
                     <h6 class="text-h6 font-weight-bold text-white">Computer-aided Design Tools for Organic Synthesis</h6>
                 </v-col>
-                <v-col cols="12" md="6" lg="4" xl="3">
+                <v-col cols="12" md="6" lg="4" xl="3" class="d-flex justify-center align-center">
                     <v-sheet elevation="10" rounded="lg">
                         <v-form ref="form" class="pa-5" @submit.prevent>
-                            <div class="d-flex flex-column">
-                                <v-btn color="green" size="x-large" block variant="flat">
-                                    SSO Login
-                                </v-btn>
-                                <v-container>
-                                    <v-row wrap no-gutters>
-                                        <v-col cols="5" class="text-center">
-                                            <v-divider class="mt-3" />
-                                        </v-col>
-                                        <v-col cols="2" class="text-center text-h6">
-                                            OR
-                                        </v-col>
-                                        <v-col cols="5" class="text-center">
-                                            <v-divider class="mt-3" />
-                                        </v-col>
-                                    </v-row>
-                                </v-container>
-                            </div>
                             <v-text-field label="Username" variant="outlined" v-model="username" :rules="usernameRules"
                                 clearable></v-text-field>
                             <v-text-field label="Password" variant="outlined" required type="password" v-model="password"
@@ -49,9 +31,6 @@
                                         </v-col>
                                     </v-row>
                                 </v-container>
-                                <v-btn color="primary" size="x-large" block variant="plain" disabled>
-                                    Reset Password
-                                </v-btn>
                                 <v-divider class="my-4">
                                 </v-divider>
                                 <v-btn color="primary" size="x-large" block variant="tonal" to="/">
