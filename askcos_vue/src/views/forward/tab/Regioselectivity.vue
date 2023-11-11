@@ -14,8 +14,7 @@
                 </v-col>
             </v-row>
 
-            <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" :items-per-page="10"
-                height="600px">
+            <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" :items-per-page="10">
                 <template #item.smiles="{ item }">
                     <copy-tooltip :data="item.columns.smiles" :title="'Click to copy: ' + item.columns.smiles">
                         <smiles-image :smiles="item.columns.smiles" max-height="125px"></smiles-image>

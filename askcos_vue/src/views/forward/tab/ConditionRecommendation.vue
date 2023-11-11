@@ -19,7 +19,7 @@
             </v-row>
 
             <v-data-table class="mx-auto my-auto mt-3" v-if="models === 'neuralnetwork' && !pending && results.length"
-                :headers="headers" :items="results" v-show="results.length > 0" :items-per-page="10" height="600px">
+                :headers="headers" :items="results" v-show="results.length > 0" :items-per-page="10">
                 <template v-slot:item.index="{ index }">
                     {{ index + 1 }}
                 </template>
