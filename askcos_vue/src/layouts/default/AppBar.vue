@@ -85,7 +85,7 @@ import { useRoute, useRouter } from "vue-router";
 import { ref, computed } from "vue";
 import TheSupportModal from "@/components/TheSupportModal.vue"
 
-const _openedGroups = ref([]);
+const _openedGroups = ref(['modules', 'profile']);
 const route = useRoute();
 const router = useRouter();
 const rail = ref(true)
@@ -93,7 +93,11 @@ const rail = ref(true)
 const openedGroups = computed({
   get: () => rail.value ? [] : _openedGroups.value,
   set: val => {
-    _openedGroups.value = val
+    if (val.length === 0) {
+      _openedGroups.value = ['modules', 'profile']
+    } else {
+      _openedGroups.value = val
+    }
   },
 })
 
