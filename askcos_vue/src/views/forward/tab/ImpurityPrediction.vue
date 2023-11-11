@@ -19,10 +19,7 @@
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" :items-per-page="10"
                 height="600px">
                 <template #item.prd_smiles="{ item }">
-                    <v-tooltip activator="parent" location="bottom">
-                        <span>{{ item.columns.prd_smiles }}</span>
-                    </v-tooltip>
-                    <copy-tooltip :data="item.columns.prd_smiles">
+                    <copy-tooltip :data="item.columns.prd_smiles" :title="'Click to copy: ' + item.columns.prd_smiles">
                         <smiles-image :smiles="item.columns.prd_smiles" height="80px">
                         </smiles-image>
                     </copy-tooltip>
