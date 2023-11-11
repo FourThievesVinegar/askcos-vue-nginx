@@ -181,6 +181,7 @@ const signup = () => {
 
     API.post('/api/user/register', formData, true).then(json => {
         createdAccount.value = true;
+        login()
     }).catch(() => {
         creationFailure.value = true;
     })

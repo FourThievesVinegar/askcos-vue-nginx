@@ -104,7 +104,7 @@
         <v-col cols="12">Tree Builder Job Settings</v-col>
       </v-card-title>
       <v-card-text class="pt-0">
-        <tb-settings-table v-if="viewSettings" :settings="viewSettings"></tb-settings-table>
+        <tb-settings-table v-if="viewSettings" :settings="viewSettings" :targetSmiles="targetSmiles"></tb-settings-table>
         <v-alert v-else type="warning" class="mb-0" dense text>Settings not available.</v-alert>
       </v-card-text>
       <v-card-actions>
@@ -218,7 +218,7 @@ const sharedResult = ref(null);
 const sortDescending = ref(true);
 const treeDialog = ref(false);
 const viewSettings = ref(null);
-
+const targetSmiles = ref("")
 const clickRow = (_event, {item}) => {
   const index = expanded.value.findIndex(i => i === item.key); 
   if (index !== -1) {
@@ -312,7 +312,9 @@ const openSetting = async (id) => {
     const json = await API.get(`/api/results/retrieve?result_id=${id}`);
     if (json) {
       treeDialog.value = true
-      viewSettings.value = json
+      targetSmiles.value = json.target_smiles
+      viewSettings.value = json.settings
+      console.log(targetSmiles.value)
     }
   } finally {
     pendingTasks.value -= 1;
