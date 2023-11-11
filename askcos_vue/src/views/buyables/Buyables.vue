@@ -56,27 +56,35 @@
               </v-slider>
             </v-col>
             <v-col cols="12" md="4" class="d-flex justify-space-evenly align-center">
-              <v-menu location="bottom" :close-on-content-click="false">
+    <v-menu v-model="selectedSources">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn 
+          v-bind="attrs"
+          v-on="on"
+        >
+          Select Sources
+        </v-btn>
+      </template>
+
+      <v-list>
+        <v-list-item
+          v-for="source in buyablesSources"
+          :key="source"
+          @click="toggleSource(source)"   
+        >
+          <v-checkbox
+            :input-value="selectedSources.includes(source)"
+            :value="source"
+            readonly
+          ></v-checkbox>
+          {{ source }}
+        </v-list-item>
+      </v-list>
+
+    </v-menu>
+              <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false"  :disabled="username = null || !adminName">
                 <template v-slot:activator="{ props }">
-                  <v-btn color="primary" variant="flat" v-bind="props">
-                    Select Sources
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item v-for="source in buyablesSources" :key="source" v-model="searchSourceQuery"
-                    @click="selectSource(source)">
-                    <v-row align="center">
-                      <v-col cols="auto">
-                        <v-list-item-title>{{ source }}<v-icon class="ml-1 mb-2" v-show="selectedSource === source"
-                            icon="mdi-check"></v-icon></v-list-item-title>
-                      </v-col>
-                    </v-row>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-              <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false"  :disabled="!adminName">
-                <template v-slot:activator="{ props }">
-                  <v-btn color="orange-accent-4" append-icon="mdi mdi-menu-down" variant="flat" v-bind="props" :disabled="!adminName">
+                  <v-btn color="orange-accent-4" append-icon="mdi mdi-menu-down" variant="flat" v-bind="props">
                     Add Compound
                   </v-btn>
                 </template>
@@ -240,9 +248,19 @@ const buyablesSources = ref([]);
 const showKetcher = ref(false);
 const ketcherRef = ref(null);
 const selectedSource = ref(null);
-const adminName = localStorage.getItem("username").startsWith('admin_')
+const username = localStorage.getItem("username")
+const adminName = username.startsWith('admin_')
 const createConfirm = useConfirm();
 const createSnackbar = useSnackbar()
+
+const toggleSource = (source) => {
+  const index = selectedSources.value.indexOf(source)
+  if (index > -1) {
+    selectedSources.value.splice(index, 1)
+  } else {
+    selectedSources.value.push(source)
+  }
+}
 
 const headers = computed(() => {
   let headers = [
