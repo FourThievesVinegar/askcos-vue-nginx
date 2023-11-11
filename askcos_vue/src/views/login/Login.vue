@@ -38,12 +38,14 @@
                                 <v-container>
                                     <v-row wrap no-gutters>
                                         <v-col cols="6" class="text-center">
-                                            <v-btn color="primary" size="x-large" @click="login" type="submit" variant="flat">
+                                            <v-btn color="primary" size="x-large" @click="login" type="submit"
+                                                variant="flat">
                                                 Log In
                                             </v-btn>
                                         </v-col>
                                         <v-col cols="6" class="text-center">
-                                            <v-btn color="primary" size="x-large" @click="signup" type="submit" variant="flat">
+                                            <v-btn color="primary" size="x-large" @click="signup" type="submit"
+                                                variant="flat">
                                                 Sign Up
                                             </v-btn>
                                         </v-col>
@@ -118,7 +120,6 @@ const usernameRules = ref([
 const passwordRules = ref([
     value => {
         if (value) return true
-
         return 'Password is required'
     },
 ])
@@ -150,17 +151,24 @@ const login = () => {
         localStorage.setItem('accessToken', json.access_token);
         localStorage.setItem('username', username.value);
         // object with path
-        router.push({ path: '/' })
+        const lastRoute = localStorage.getItem('lastRoute') || '/';
+        router.push(lastRoute);
     }).catch(() => {
         loginFailure.value = true;
     })
 }
 
+router.beforeEach((to, from, next) => {
+    if (from.fullPath) {
+        localStorage.setItem('lastRoute', from.fullPath);
+    }
+    next();
+});
+
 const signup = () => {
     if (!username.value || !password.value) {
         return
     }
-
     // show dialog for creation of user
     createdAccount.value = false;
     creationFailure.value = false;
