@@ -1,7 +1,7 @@
 <template>
     <v-container fluid>
         <v-row class="justify-center">
-            <v-col id="tree-view-left" cols="12" md="3" style="height: calc(100vh - 14rem); overflow-y: auto;">
+            <v-col id="tree-view-left" cols="12" md="3" style="height: calc(100vh - 11rem); overflow-y: auto;">
                 <v-sheet elevation="2" class="pa-5 d-flex align-center flex-column" rounded="lg" :border="true">
                     <div class="d-flex align-self-center">
                         <v-btn-group divided variant="flat">
@@ -136,7 +136,7 @@
                     </div>
                 </v-sheet>
             </v-col>
-            <v-col cols="12" md="9" id="tree-view-right" style="overflow-y: hide" v-show="trees.length !== 0">
+            <v-col cols="12" md="9" id="tree-view-right" style="overflow-y: hide" v-show="trees.length !== 0" class="py-0">
                 <div class="my-2 d-flex justify-space-around align-center">
                     <v-btn-group variant="outlined" density="comfortable" divided :border="true">
                         <v-btn icon="mdi mdi-chevron-double-left" @click="changeClusterId('first')"
@@ -1066,8 +1066,7 @@ export default {
 <style>
 #graph {
     width: 100%;
-    height: calc(100vh - 20.5rem);
-    border: 1px solid lightgray;
+    height: calc(100vh - 14rem);
 }
 
 #tree-data-overlay {
