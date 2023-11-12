@@ -5,11 +5,12 @@ const routes = [
   {
     name: "Login",
     path: "/login",
-    component: () => import(/* webpackChunkName: "login" */ "@/views/login/Login.vue")
+    component: () =>
+      import(/* webpackChunkName: "login" */ "@/views/login/Login.vue"),
   },
   {
     path: "/commands",
-    component: () => import("@/views/parse/Parse.vue")
+    component: () => import("@/views/parse/Parse.vue"),
   },
   {
     path: "/",
@@ -31,10 +32,9 @@ const routes = [
     component: () => import("@/layouts/default/Default.vue"),
     beforeEnter: (to, from, next) => {
       if (!isAuthenticated()) {
-        next({ name: 'Login' })
-      }
-      else {
-        next()
+        next({ name: "Login" });
+      } else {
+        next();
       }
     },
     children: [
@@ -48,7 +48,9 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "network" */ "@/views/network/Network.vue"),
+          import(
+            /* webpackChunkName: "network" */ "@/views/network/Network.vue"
+          ),
       },
       {
         path: "",
@@ -60,7 +62,9 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "network" */ "@/views/network/Network.vue"),
+          import(
+            /* webpackChunkName: "network" */ "@/views/network/Network.vue"
+          ),
       },
       {
         path: "",
@@ -72,7 +76,9 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "network" */ "@/views/network/Network.vue"),
+          import(
+            /* webpackChunkName: "network" */ "@/views/network/Network.vue"
+          ),
       },
     ],
   },
@@ -92,60 +98,67 @@ const routes = [
     ],
   },
   {
-    path: '/buyables',
-    component: () => import('@/layouts/default/Default.vue'),
+    path: "/buyables",
+    component: () => import("@/layouts/default/Default.vue"),
     children: [
       {
-        path: '',
-        name: 'Buyables',
+        path: "",
+        name: "Buyables",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "buyables" */ '@/views/buyables/Buyables.vue'),
+        component: () =>
+          import(
+            /* webpackChunkName: "buyables" */ "@/views/buyables/Buyables.vue"
+          ),
       },
     ],
   },
   {
-    path: '/results',
-    component: () => import('@/layouts/default/Default.vue'),
+    path: "/results",
+    component: () => import("@/layouts/default/Default.vue"),
     beforeEnter: (to, from, next) => {
       if (!isAuthenticated()) {
-        next({ name: 'Login' })
-      }
-      else {
-        next()
+        next({ name: "Login" });
+      } else {
+        next();
       }
     },
     children: [
       {
-        path: '',
-        name: 'My Results',
+        path: "",
+        name: "My Results",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "buyables" */ '@/views/results/Results.vue'),
+        component: () =>
+          import(
+            /* webpackChunkName: "buyables" */ "@/views/results/Results.vue"
+          ),
       },
     ],
   },
   {
-    path: '/banlist',
-    component: () => import('@/layouts/default/Default.vue'),
+    path: "/banlist",
+    component: () => import("@/layouts/default/Default.vue"),
     beforeEnter: (to, from, next) => {
       if (!isAuthenticated()) {
-        next({ name: 'Login' })
-      }
-      else {
-        next()
+        next({ name: "Login" });
+      } else {
+        next();
       }
     },
     children: [
       {
-        path: '',
-        name: 'Banlist',
+        path: "",
+        name: "Banlist",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "buyables" */ '@/views/banlist/Banlist.vue'),
+        component: () =>
+          import(
+            /* webpackChunkName: "buyables" */ "@/views/banlist/Banlist.vue"
+          ),
       },
     ],
   },
@@ -163,7 +176,9 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
+          import(
+            /* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"
+          ),
       },
       {
         path: "",
@@ -175,7 +190,9 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
+          import(
+            /* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"
+          ),
       },
       {
         path: "",
@@ -187,7 +204,9 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
+          import(
+            /* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"
+          ),
       },
       {
         path: "",
@@ -199,7 +218,9 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
+          import(
+            /* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"
+          ),
       },
       {
         path: "",
@@ -211,7 +232,9 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"),
+          import(
+            /* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"
+          ),
       },
     ],
   },
@@ -248,73 +271,99 @@ const routes = [
   {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
-    component: () => import('@/layouts/default/Default.vue'),
+    component: () => import("@/layouts/default/Default.vue"),
     children: [
       {
-        path: '',
+        path: "",
         name: "NotFound",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "buyables" */ '@/views/notfound/NotFound.vue'),
+        component: () =>
+          import(
+            /* webpackChunkName: "buyables" */ "@/views/notfound/NotFound.vue"
+          ),
       },
     ],
   },
   {
     path: "/logs",
     name: "Logs",
-    component: () => import('@/layouts/default/Default.vue'),
+    component: () => import("@/layouts/default/Default.vue"),
     children: [
       {
-        path: '',
+        path: "",
         name: "Logs",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "buyables" */ '@/views/logs/Logs.vue'),
+        component: () =>
+          import(/* webpackChunkName: "buyables" */ "@/views/logs/Logs.vue"),
       },
     ],
   },
   {
     path: "/drawing",
     name: "Drawing",
-    component: () => import('@/layouts/default/Default.vue'),
+    component: () => import("@/layouts/default/Default.vue"),
     children: [
       {
-        path: '',
+        path: "",
         name: "Drawing",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "buyables" */ '@/views/drawing/Drawing.vue'),
+        component: () =>
+          import(
+            /* webpackChunkName: "buyables" */ "@/views/drawing/Drawing.vue"
+          ),
       },
     ],
   },
   {
     path: "/template",
     name: "Template",
-    component: () => import('@/layouts/default/Default.vue'),
+    component: () => import("@/layouts/default/Default.vue"),
     children: [
       {
-        path: '',
+        path: "",
         name: "Template",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "buyables" */ '@/views/template/Template.vue'),
+        component: () =>
+          import(
+            /* webpackChunkName: "buyables" */ "@/views/template/Template.vue"
+          ),
       },
     ],
-  }
+  },
 ];
+
+const isAuthenticated = () => {
+  const accessToken = localStorage.getItem("accessToken");
+  return accessToken ? true : false;
+};
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
 
-const isAuthenticated = () => {
-  const accessToken = localStorage.getItem('accessToken');
-  return accessToken ? true : false
-};
+router.beforeResolve((to, _from, next) => {
+  // If this isn't an initial page load.
+  if (to.name) {
+    // Start the route progress bar.
+    // eslint-disable-next-line no-undef
+    NProgress.start();
+  }
+  next();
+});
+
+router.afterEach(() => {
+  // Complete the animation of the route progress bar.
+  // eslint-disable-next-line no-undef
+  NProgress.done();
+});
 
 export default router;
