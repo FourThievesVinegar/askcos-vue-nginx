@@ -38,6 +38,7 @@ export const useResultsStore = defineStore("results", {
       tbSettings: null,
       tbStats: null,
       overwrite: true,
+      target: "",
     },
     removedReactions: {},
   }),
@@ -208,6 +209,7 @@ export const useResultsStore = defineStore("results", {
         modifiedDisp: dayjs(resultObj["modified"]).format(
           "MMMM D, YYYY h:mm A"
         ),
+        target: resultObj["target_smiles"],
       };
       this.updateSavedResultInfo(savedResultInfo);
       // Restore result graphs
@@ -227,7 +229,7 @@ export const useResultsStore = defineStore("results", {
       // Retrieve template example count and template set metadata
       let templates = [];
       this.dataGraph.nodes.get({ filter: isReaction }).forEach((n) => {
-        if (n['templateIds']) {
+        if (n["templateIds"]) {
           templates.push(...n["templateIds"]);
         }
       });
@@ -257,6 +259,7 @@ export const useResultsStore = defineStore("results", {
           "MMMM D, YYYY h:mm A"
         ),
         tbSettings: resultObj["settings"],
+        target: resultObj["target_smiles"],
       };
       let status = null;
       // let status = resultObj["result"]["stats"];

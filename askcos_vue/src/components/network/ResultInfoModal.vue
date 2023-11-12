@@ -33,8 +33,8 @@
                     </v-expansion-panel>
                     <v-expansion-panel v-if="savedResultInfo.type === 'tree_builder'" title="Tree Builder Job Settings">
                         <template v-slot:text>
-                            <tb-settings-table v-if="savedResultInfo.tbSettings"
-                                :settings="savedResultInfo.tbSettings"></tb-settings-table>
+                            <tb-settings-table v-if="savedResultInfo.tbSettings" :settings="savedResultInfo.tbSettings"
+                                :targetSmiles="savedResultInfo.target"></tb-settings-table>
                         </template>
                     </v-expansion-panel>
                     <v-expansion-panel title="Tree Builder Job Statistics">
