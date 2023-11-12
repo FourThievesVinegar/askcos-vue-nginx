@@ -7,10 +7,7 @@
         </h1>
         <v-expand-transition>
           <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6" v-show="show">
-            <h2 class="my-1">Welcome</h2>
-
-            <v-divider></v-divider>
-            <p class="mt-6 mb-3 px-3 text-body-1">
+            <p class="mb-2 px-3 text-body-1">
               Here, we have hosted a number of computational tools to assist in
               synthetic planning and other aspects of organic chemistry. These
               are listed and described in the Modules tab in the top navigation
@@ -20,7 +17,7 @@
               users on the site also performing computationally-expensive
               requests.
             </p>
-            <p class="px-3 mt-2">
+            <p class="mb-2 px-3 text-body-1">
               This work began under the DARPA Make-It program (ARO
               W911NF-16-2-0023) and continues to be supported by the Machine
               Learning for Pharmaceutical Discovery and Synthesis Consortium. The main
@@ -35,11 +32,11 @@
                 </i>
               </q>
             </p>
-            <p class="px-3 mt-2">
+            <p class="mb-2 px-3 text-body-1">
               The other deployed models are described in their respective pages where
               appropriate.
             </p>
-            <p class="px-3 text-body-1 mt-2">
+            <p class="mb-2 px-3 text-body-1">
               The development of ASKCOS has been supported by the DARPA Make-It program (ARO W911NF-16-2-0023), the <a
                 href="http://mlpds.mit.edu" target="_blank">Machine Learning for Pharmaceutical Discovery and Synthesis
                 Consortium</a>, and the National Institutes of Health (1U18TR004149-01).
@@ -75,7 +72,7 @@
         </v-expand-transition>
         <v-expand-transition>
           <v-sheet elevation="2" rounded="lg" width="100%" class="my-6 pa-6" v-show="show">
-            <h2 class="my-3">Quick start</h2>
+            <h5 class="my-3 text-h5"><strong>Quick Start</strong></h5>
             <v-divider></v-divider>
             <LaunchPad></LaunchPad>
           </v-sheet>
