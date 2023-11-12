@@ -58,7 +58,7 @@
             <v-btn id="add-precursor-btn" variant="flat" color="light-blue" @click="openAddNewPrecursorModal()"> Add
               Precursor
             </v-btn>
-            <v-btn id="view-rec-templates-btn" variant="flat" color="primary" @click="toggleRecTemplatesDialog"
+            <v-btn id="view-rec-templates-btn" variant="flat" color="primary" @click="showRecTemplate = true"
               prepend-icon="mdi-view-list"> View
               Recommended
               Templates </v-btn>
@@ -656,8 +656,8 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
-  <!-- <rec-templates-modal :selected="selected" :visible="showRecTemplate"
-    @close-dialog="$event => showRecTemplate = $event"></rec-templates-modal> -->
+  <rec-templates-modal :selected="selected" :visible="showRecTemplate"
+    @close-dialog="$event => showRecTemplate = $event"></rec-templates-modal>
 </template>
   
 <script>
@@ -762,9 +762,6 @@ export default {
     };
   },
   methods: {
-    toggleRecTemplatesDialog() {
-      this.showRecTemplate = !this.showRecTemplate;
-    },
     toggleResolver() {
       if (this.allowResolve) {
         this.allowResolve = false;

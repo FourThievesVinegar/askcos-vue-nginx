@@ -83,6 +83,9 @@ export default {
     });
 
     const openRecTemplatesModal = computed(() => {
+      if(!props.selected){
+        return;
+      }
       if (!resultsStore.recommendedTemplates[props.selected.smiles]) {
         predict(props.selected.smiles);
       }
