@@ -1171,8 +1171,15 @@ export default {
       this.showKetcher = true;
       this.$refs["ketcherRef"].smilesToKetcher();
     },
-    showNodeDetail(obj) {
+    async showNodeDetail(obj) {
       let nodeId = obj.nodes[obj.nodes.length - 1];
+      if (typeof nodeId == "string" && nodeId.startsWith("cluster")) {
+        const isConfirmed = await this.createConfirm({ title: 'Please Confirm', content: 'Do you want to uncollapse this node?', dialogProps: { width: "auto" } })
+        if (isConfirmed) {
+          this.collapseNode();
+        }
+        return;
+      }
       let dispObj = this.resultsStore.dispGraph.nodes.get(nodeId);
       if (!dispObj) return;
       let dataObj = this.resultsStore.dataGraph.nodes.get(dispObj.smiles);

@@ -686,7 +686,7 @@ export default {
     SmilesImage,
     RecTemplatesModal
   },
-  emits:['selectAllOccur', 'deleteChoice', 'collapseNode', 'close', 'expandNode', 'updatePendingTasks'],
+  emits: ['selectAllOccur', 'deleteChoice', 'collapseNode', 'close', 'expandNode', 'updatePendingTasks'],
   props: {
     selected: {
       type: Object,

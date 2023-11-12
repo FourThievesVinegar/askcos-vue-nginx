@@ -1,20 +1,26 @@
 // Composables
 import { createRouter, createWebHistory } from "vue-router";
+import { nextTick } from "vue";
+
+const DEFAULT_TITLE = "ASKCOS";
 
 const routes = [
   {
     name: "Login",
     path: "/login",
+    meta: { title: "Login" },
     component: () =>
       import(/* webpackChunkName: "login" */ "@/views/login/Login.vue"),
   },
   {
     path: "/commands",
+    meta: { title: "Command" },
     component: () => import("@/views/parse/Parse.vue"),
   },
   {
     path: "/",
     component: () => import("@/layouts/default/Default.vue"),
+    meta: { title: "Home" },
     children: [
       {
         path: "",
@@ -37,6 +43,7 @@ const routes = [
         next();
       }
     },
+    meta: { title: "Retrosynthesis" },
     children: [
       {
         path: "",
@@ -85,6 +92,7 @@ const routes = [
   {
     path: "/status",
     component: () => import("@/layouts/default/Default.vue"),
+    meta: { title: "Status" },
     children: [
       {
         path: "",
@@ -100,6 +108,7 @@ const routes = [
   {
     path: "/buyables",
     component: () => import("@/layouts/default/Default.vue"),
+    meta: { title: "Buyables" },
     children: [
       {
         path: "",
@@ -117,6 +126,7 @@ const routes = [
   {
     path: "/results",
     component: () => import("@/layouts/default/Default.vue"),
+    meta: { title: "Results" },
     beforeEnter: (to, from, next) => {
       if (!isAuthenticated()) {
         next({ name: "Login" });
@@ -141,6 +151,7 @@ const routes = [
   {
     path: "/banlist",
     component: () => import("@/layouts/default/Default.vue"),
+    meta: { title: "Banlist" },
     beforeEnter: (to, from, next) => {
       if (!isAuthenticated()) {
         next({ name: "Login" });
@@ -165,6 +176,7 @@ const routes = [
   {
     path: "/forward",
     component: () => import("@/layouts/default/Default.vue"),
+    meta: { title: "Forward Synthesis" },
     children: [
       {
         path: "",
@@ -241,6 +253,7 @@ const routes = [
   {
     path: "/solprop",
     component: () => import("@/layouts/default/Default.vue"),
+    meta: { title: "Solubility Properties" },
     children: [
       {
         path: "",
@@ -271,6 +284,7 @@ const routes = [
   {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
+    meta: { title: "404" },
     component: () => import("@/layouts/default/Default.vue"),
     children: [
       {
@@ -289,6 +303,7 @@ const routes = [
   {
     path: "/logs",
     name: "Logs",
+    meta: { title: "Logs" },
     component: () => import("@/layouts/default/Default.vue"),
     children: [
       {
@@ -305,6 +320,7 @@ const routes = [
   {
     path: "/drawing",
     name: "Drawing",
+    meta: { title: "Drawing" },
     component: () => import("@/layouts/default/Default.vue"),
     children: [
       {
@@ -323,6 +339,7 @@ const routes = [
   {
     path: "/template",
     name: "Template",
+    meta: { title: "Template Info" },
     component: () => import("@/layouts/default/Default.vue"),
     children: [
       {
@@ -360,10 +377,12 @@ router.beforeResolve((to, _from, next) => {
   next();
 });
 
-router.afterEach(() => {
+router.afterEach(async (to) => {
   // Complete the animation of the route progress bar.
   // eslint-disable-next-line no-undef
   NProgress.done();
+  await nextTick();
+  document.title = `${to.meta.title} - ASKCOS` || DEFAULT_TITLE;
 });
 
 export default router;
