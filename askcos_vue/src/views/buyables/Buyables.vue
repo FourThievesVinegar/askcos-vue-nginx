@@ -76,10 +76,10 @@
                   </v-list-item>
                 </v-list>
               </v-menu>
-              <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false"
-                :disabled="username = null || !adminName">
+              <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
                 <template v-slot:activator="{ props }">
-                  <v-btn color="orange-accent-4" append-icon="mdi mdi-menu-down" variant="flat" v-bind="props">
+                  <v-btn color="orange-accent-4" append-icon="mdi mdi-menu-down" variant="flat" v-bind="props"
+                    :disabled="username = null || !adminName">
                     Add Compound
                   </v-btn>
                 </template>
