@@ -777,6 +777,8 @@ export const useResultsStore = defineStore("results", {
             return {
               id: node["id"],
               rank: node["rank"],
+              model: node["retro_backend"],
+              trainingSet: node["retro_model_name"],
               ffScore: node["plausibility"],
               forwardScore: node["forward_score"],
               retroScore: node["template_score"],
