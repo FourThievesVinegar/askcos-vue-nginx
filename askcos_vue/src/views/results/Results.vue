@@ -98,15 +98,17 @@
     </v-row>
   </v-container>
 
-  <v-dialog v-model="treeDialog" max-width="700px">
+  <v-dialog v-model="treeDialog" max-width="700px" scrollable>
     <v-card>
       <v-card-title class="text-justify">
         <v-col cols="12">Tree Builder Job Settings</v-col>
       </v-card-title>
+      <v-divider></v-divider>
       <v-card-text class="pt-0">
         <tb-settings-table v-if="viewSettings" :settings="viewSettings" :targetSmiles="targetSmiles"></tb-settings-table>
         <v-alert v-else type="warning" class="mb-0" dense text>Settings not available.</v-alert>
       </v-card-text>
+      <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="primary" text @click="treeDialog = false">Close</v-btn>
