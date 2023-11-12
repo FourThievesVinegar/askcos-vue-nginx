@@ -281,32 +281,33 @@
         </div>
     </js-panel>
 
-    <js-panel :visible="tabActive && showListView" :options="listPanelOptions" @close="showListView = false">
-        <div class="m-3">
-            <v-pagination v-model="treeListCurrentPage" :length="Math.ceil(trees.length / treeListItemsPerPage)"
-                class="mb-3"></v-pagination>
-            <div v-for="(tree, index) in treeListItems" :key="index" class="mb-3">
-                <div class="d-flex justify-space-between">
-                    <v-btn variant="flat" color="primary"> Tree {{ (treeListCurrentPage -
-                        1) * treeListItemsPerPage + index + 1 }} </v-btn>
-                    <v-btn-group class="float-right" variant="outlined" divided :border="true">
-                        <v-btn @click="addTreeToIpp(trees[(treeListCurrentPage - 1) * treeListItemsPerPage + index])"> Add
-                            to
-                            IPP </v-btn>
-                        <v-btn @click="
-                            showListView = false;
-                        currentTreeId = (treeListCurrentPage - 1) * treeListItemsPerPage + index;
-                        ">
-                            View in main window
-                        </v-btn>
-                    </v-btn-group>
+    <js-panel :visible="tabActive && showListView === true" :options="listPanelOptions" @close="showListView = false">
+            <div class="m-3">
+                <v-pagination v-model="treeListCurrentPage" :length="Math.ceil(trees.length / treeListItemsPerPage)"
+                    class="mb-3"></v-pagination>
+                    <v-expansion-panels v-for="(tree, index) in treeListItems" :key="index" class="mb-3" v-model="panel" >
+                        <v-expansion-panel>
+                            <v-expansion-panel-title>
+                                    <span class="text-body-1 ml-2"><b>Tree {{ (treeListCurrentPage - 1) * treeListItemsPerPage + index + 1 }} </b></span>
+                                </v-expansion-panel-title>
+                                <v-expansion-panel-text>
+                                <div>
+                                    <div :id="`treeList-${index}`" class="list-view-tree"></div>
+                                    <div class="d-flex justify-space-between">
+                                        <v-spacer></v-spacer>
+                                        <v-btn-group class="float-right"  divided :border="true">
+                                            <v-btn variant="flat" color="primary" @click="addTreeToIpp(trees[(treeListCurrentPage - 1) * treeListItemsPerPage + index])"> Add to IPP </v-btn>
+                                            <v-btn variant="outlined" @click="showListView = false; currentTreeId = (treeListCurrentPage - 1) * treeListItemsPerPage + index;">
+                                                View in main window
+                                            </v-btn>
+                                        </v-btn-group>
+                                    </div>
+                                </div>
+                                </v-expansion-panel-text>
+                        </v-expansion-panel>
+                    </v-expansion-panels>
                 </div>
-                <!-- <b-collapse :id="`tree-collapse-${index}`" class="mt-2" visible>
-                    <div :id="`treeList-${index}`" class="list-view-tree"></div>
-                </b-collapse> -->
-            </div>
-        </div>
-    </js-panel>
+        </js-panel>
     <result-info-modal :visible="resultInfo" @close="$event => resultInfo = $event"></result-info-modal>
 </template>
   
@@ -353,6 +354,8 @@ export default {
     },
     data() {
         return {
+            panel: [0, 1],
+            disabled: false,
             showListView: false,
             selected: null,
             currentTreeId: 0,
@@ -407,6 +410,9 @@ export default {
             emptyTrees: emptyTrees,
             resultInfo: false,
         };
+    },
+    created() {
+        this.panelStates = Array(this.treeListItems.length).fill(true)
     },
     computed: {
         trees() {
