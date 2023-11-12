@@ -7,7 +7,8 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn variant="flat" v-show="!!results.length" @click="dialog = true" height="30px" color="primary mx-2">
+                    <v-btn variant="flat" v-show="!!results.length" @click="dialog = true" height="30px"
+                        color="primary mx-2">
                         Export
                     </v-btn>
                 </v-col>
@@ -17,10 +18,7 @@
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" v-show="results.length > 0"
                 :items-per-page="10">
                 <template #item.outcome="{ item }">
-                    <v-tooltip activator="parent" location="bottom">
-                        <span>{{ item.columns.outcome }}</span>
-                    </v-tooltip>
-                    <copy-tooltip :data="item.columns.reagent">
+                    <copy-tooltip :data="item.columns.reagent" :title="'Click to copy: ' + item.columns.outcome">
                         <smiles-image :smiles="item.columns.outcome" height="80px"></smiles-image>
                     </copy-tooltip>
                 </template>
