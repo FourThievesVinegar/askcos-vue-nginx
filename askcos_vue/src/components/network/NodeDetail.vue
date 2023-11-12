@@ -154,7 +154,7 @@
           <div v-if="!resultsAvailable" class="text-center mt-5">
             <p class="lead">Click Expand Node above to expand this node and predict precursors for this target.</p>
             <div class="text-center justify-center mx-10">
-              <v-text-field variant="outlined" v-model="reactionLimit" hide-details density="compact" number size="small">
+              <v-text-field variant="outlined" v-model="reactionLimit" hide-details density="compact" number>
                 <template v-slot:prepend>
                   Add top
                 </template>
@@ -686,6 +686,7 @@ export default {
     SmilesImage,
     RecTemplatesModal
   },
+  emits:['selectAllOccur', 'deleteChoice', 'collapseNode', 'close', 'expandNode', 'updatePendingTasks'],
   props: {
     selected: {
       type: Object,

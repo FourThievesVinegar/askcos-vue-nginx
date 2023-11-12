@@ -127,7 +127,7 @@ export const useResultsStore = defineStore("results", {
           .flat()
       );
     },
-    updateChemicalMetadata(smiles) {
+    async updateChemicalMetadata(smiles) {
       const settings = useSettingsStore();
       let sources = settings.tbSettings.buyablesSourceAll
         ? null
@@ -140,42 +140,39 @@ export const useResultsStore = defineStore("results", {
       promises.push(getHistory(smiles, templateSets));
       promises.push(getPrice(smiles, sources));
       promises.push(getScscore(smiles));
-      return Promise.all(promises).then(([history, price, scscore]) => {
-        this.updateDataNodes(
-          smiles.map((smi) => {
-            return Object.assign(
-              { id: smi },
-              history[smi],
-              price[smi],
-              scscore[smi]
-            );
-          })
-        );
-        this.updateImageUrls(smiles);
-      });
+      const [history, price, scscore] = await Promise.all(promises);
+      this.updateDataNodes(
+        smiles.map((smi) => {
+          return Object.assign(
+            { id: smi },
+            history[smi],
+            price[smi],
+            scscore[smi]
+          );
+        })
+      );
+      this.updateImageUrls(smiles);
     },
-    updatePrice(smiles) {
+    async updatePrice(smiles) {
       const settings = useSettingsStore();
       let sources = settings.tbSettings.buyablesSourceAll
         ? null
         : settings.tbSettings.buyablesSource;
-      return getPrice(smiles, sources).then((price) => {
-        this.updateDataNodes(
-          smiles.map((smi) => {
-            return Object.assign({ id: smi }, price[smi]);
-          })
-        );
-        this.updateImageUrls(smiles);
-      });
+      const price = await getPrice(smiles, sources);
+      this.updateDataNodes(
+        smiles.map((smi) => {
+          return Object.assign({ id: smi }, price[smi]);
+        })
+      );
+      this.updateImageUrls(smiles);
     },
-    updateScscore(smiles) {
-      return getScscore(smiles).then((scscore) => {
-        this.updateDataNodes(
-          smiles.map((smi) => {
-            return Object.assign({ id: smi }, scscore[smi]);
-          })
-        );
-      });
+    async updateScscore(smiles) {
+      const scscore = await getScscore(smiles);
+      this.updateDataNodes(
+        smiles.map((smi) => {
+          return Object.assign({ id: smi }, scscore[smi]);
+        })
+      );
     },
     async loadResult({ resultId, numTrees }) {
       let url = "/api/results/retrieve";
@@ -852,7 +849,7 @@ export const useResultsStore = defineStore("results", {
       });
       this.updateDispNodes(updatedDispNodes);
     },
-    requestRetro({ smiles }) {
+    async requestRetro({ smiles }) {
       const settings = useSettingsStore();
       const url = "/api/tree-search/expand-one/call-async";
       const body = {
@@ -862,7 +859,12 @@ export const useResultsStore = defineStore("results", {
       // if (strategy.model === "template_relevance") {
       //   checkTemplatePrioritizers(body["template_prioritizers"]);
       // }
-      return API.runCeleryTask(url, body);
+      try {
+        const response = await API.runCeleryTask(url, body);
+        return response;
+      } catch (error) {
+        return [];
+      }
     },
     async expand(nodeId) {
       if (typeof nodeId == "string" && nodeId.startsWith("cluster")) {
@@ -932,11 +934,11 @@ export const useResultsStore = defineStore("results", {
         },
         (error) => {
           console.error(error);
-          alert("Error occurred while expanding: ", error.message);
+          alert("Error occurred while expanding: ", error);
         }
       );
     },
-    templateRelevance(smiles) {
+    async templateRelevance(smiles) {
       const settings = useSettingsStore();
       const url = "/api/retro/template-relevance/call-async";
       const body = {
@@ -949,65 +951,63 @@ export const useResultsStore = defineStore("results", {
         attribute_filter: [],
       };
       // checkTemplatePrioritizers(body["template_prioritizers"]);
-      return API.runCeleryTask(url, body)
-        .then((output) => {
-          this.setRecTemplates({
-            smiles: smiles,
-            data: Object.fromEntries(
-              output["result"][0].templates.map((item) => [item._id, item])
-            ),
-          });
-          // Update templates with existing results
-          let precursorSmiles = this.dataGraph.getSuccessors(smiles);
-          let precursors = this.dataGraph.nodes.get(precursorSmiles);
-          let results = {};
-          for (let p of precursors) {
-            for (let t of p["templateIds"]) {
-              // If template settings were changed, results may include IDs which are not in recommended templates
-              if (
-                Object.prototype.hasOwnProperty.call(
-                  this.recommendedTemplates[smiles],
-                  t
-                )
-              ) {
-                if (results[t] === undefined) {
-                  results[t] = [p["precursorSmiles"]];
-                } else {
-                  results[t].push(p["precursorSmiles"]);
-                }
+      try {
+        const output = await API.runCeleryTask(url, body);
+        this.setRecTemplates({
+          smiles: smiles,
+          data: Object.fromEntries(
+            output["result"][0].templates.map((item) => [item._id, item])
+          ),
+        });
+        // Update templates with existing results
+        let precursorSmiles = this.dataGraph.getSuccessors(smiles);
+        let precursors = this.dataGraph.nodes.get(precursorSmiles);
+        let results = {};
+        for (let p of precursors) {
+          for (let t of p["templateIds"]) {
+            // If template settings were changed, results may include IDs which are not in recommended templates
+            if (
+              Object.prototype.hasOwnProperty.call(
+                this.recommendedTemplates[smiles],
+                t
+              )
+            ) {
+              if (results[t] === undefined) {
+                results[t] = [p["precursorSmiles"]];
+              } else {
+                results[t].push(p["precursorSmiles"]);
               }
             }
           }
-          this.setRecTemplatesResults({ smiles: smiles, results: results });
-        })
-        .catch((error) => {
-          console.error(
-            "Could not retrieve template relevance prediction:",
-            error
-          );
-        });
+        }
+        this.setRecTemplatesResults({ smiles: smiles, results: results });
+      } catch (error) {
+        console.error(
+          "Could not retrieve template relevance prediction:",
+          error
+        );
+      }
     },
-    applyTemplate({ smiles, template }) {
+    async applyTemplate({ smiles, template }) {
       const url = "/api/v2/apply-one-template/";
       const body = {
         smiles: smiles,
         template_idx: template.index,
         template_set: template.template_set,
       };
-      return API.runCeleryTask(url, body)
-        .then((output) => {
-          this.setRecTemplatesResults({
-            smiles: smiles,
-            results: {
-              [template._id]: output.map((item) => item.precursors.join(".")),
-            },
-          });
-        })
-        .catch((error) => {
-          console.error("Could not apply template:", error);
+      try {
+        const output = await API.runCeleryTask(url, body);
+        this.setRecTemplatesResults({
+          smiles: smiles,
+          results: {
+            [template._id]: output.map((item) => item.precursors.join(".")),
+          },
         });
+      } catch (error) {
+        console.error("Could not apply template:", error);
+      }
     },
-    recluster(smiles) {
+    async recluster(smiles) {
       const settings = useSettingsStore();
       let rxns = this.dataGraph.nodes
         .get(this.dataGraph.getSuccessors(smiles))
@@ -1031,28 +1031,27 @@ export const useResultsStore = defineStore("results", {
           settings.interactive_path_planner_settings.cluster_setting.fp_radius,
         scores: scores,
       };
-      return API.runCeleryTask(url, body)
-        .then((json) => {
-          let clusterTracker = new Set();
-          let updateData = [];
-          rxns.forEach((rxn, i) => {
-            let cid = json.result[0][i];
-            updateData.push({
-              id: rxn.id,
-              clusterId: cid,
-              clusterName: json.result[1][cid],
-              clusterRep: !clusterTracker.has(cid),
-            });
-            clusterTracker.add(cid);
+      try {
+        const json = await API.runCeleryTask(url, body);
+        let clusterTracker = new Set();
+        let updateData = [];
+        rxns.forEach((rxn_2, i) => {
+          let cid = json.result[0][i];
+          updateData.push({
+            id: rxn_2.id,
+            clusterId: cid,
+            clusterName: json.result[1][cid],
+            clusterRep: !clusterTracker.has(cid),
           });
-          this.updateDataNodes(updateData);
-        })
-        .catch((error) => {
-          alert(
-            "There was an error fetching cluster results for this target with the supplied settings: " +
-              error
-          );
+          clusterTracker.add(cid);
         });
+        this.updateDataNodes(updateData);
+      } catch (error) {
+        alert(
+          "There was an error fetching cluster results for this target with the supplied settings: " +
+            error
+        );
+      }
     },
     updateTreeConnectivity() {
       this.setTreeNodeMap(generateTreeNodeMap(this.trees));
@@ -1281,34 +1280,32 @@ function retroScoreDescending(a, b) {
   return b["retroScore"] - a["retroScore"];
 }
 
-function getHistory(smiles, templateSets) {
+async function getHistory(smiles, templateSets) {
   // Lookup chemhistorian data for a list of SMILES
   const url = "/api/historian/lookup-smiles-list/";
   const body = {
     smiles_list: smiles,
     template_sets: templateSets,
   };
-  return API.post(url, body).then((json) => {
-    let result = json;
-    Object.keys(result).forEach((smi) => {
-      result[smi] = {
-        asReactant: result[smi]["as_reactant"],
-        asProduct: result[smi]["as_product"],
-      };
-    });
-    return result;
+  const json = await API.post(url, body);
+  let result = json;
+  Object.keys(result).forEach((smi) => {
+    result[smi] = {
+      asReactant: result[smi]["as_reactant"],
+      asProduct: result[smi]["as_product"],
+    };
   });
+  return result;
 }
 
-function getPrice(smiles, sources) {
+async function getPrice(smiles, sources) {
   // Lookup prices for a list of SMILES
-  return lookupBuyables(smiles, sources).then((json) => {
-    let result = {};
-    smiles.forEach((smi) => {
-      result[smi] = json["result"][smi] || { ppg: "not buyable", source: "" };
-    });
-    return result;
+  const json = await lookupBuyables(smiles, sources);
+  let result = {};
+  smiles.forEach((smi) => {
+    result[smi] = json["result"][smi] || { ppg: "not buyable", source: "" };
   });
+  return result;
 }
 
 async function getScscore(smiles) {

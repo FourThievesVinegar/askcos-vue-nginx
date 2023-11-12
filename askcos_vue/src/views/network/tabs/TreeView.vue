@@ -283,14 +283,15 @@
 
     <js-panel :visible="tabActive && showListView" :options="listPanelOptions" @close="showListView = false">
         <div class="m-3">
-            <v-pagination v-model="treeListCurrentPage" :length="Math.ceil(trees.length/treeListItemsPerPage)" class="mb-3"></v-pagination>
+            <v-pagination v-model="treeListCurrentPage" :length="Math.ceil(trees.length / treeListItemsPerPage)"
+                class="mb-3"></v-pagination>
             <div v-for="(tree, index) in treeListItems" :key="index" class="mb-3">
                 <div class="d-flex justify-space-between">
                     <v-btn variant="flat" color="primary"> Tree {{ (treeListCurrentPage -
                         1) * treeListItemsPerPage + index + 1 }} </v-btn>
                     <v-btn-group class="float-right" variant="outlined" divided :border="true">
-                        <v-btn 
-                            @click="addTreeToIpp(trees[(treeListCurrentPage - 1) * treeListItemsPerPage + index])"> Add to
+                        <v-btn @click="addTreeToIpp(trees[(treeListCurrentPage - 1) * treeListItemsPerPage + index])"> Add
+                            to
                             IPP </v-btn>
                         <v-btn @click="
                             showListView = false;
@@ -343,6 +344,7 @@ export default {
         SmilesImage,
         NetworkLegend,
     },
+    emits: ['switch-tab'],
     props: {
         tabActive: {
             type: Boolean,
@@ -785,8 +787,6 @@ export default {
                     return a;
                 }, new Set()),
             ].sort();
-
-            console.log(this.startingMaterialOptions)
         },
         showNode(selection) {
             const nodeId = selection.nodes[0];
@@ -1049,8 +1049,9 @@ export default {
             }
         },
         tabActive(newVal) {
+            console.log("watching ", newVal)
             if (newVal) {
-                // this.init();
+                this.init();
             }
         },
         trees() {
