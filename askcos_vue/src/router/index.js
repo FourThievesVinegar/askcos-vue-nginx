@@ -362,7 +362,7 @@ router.beforeResolve((to, _from, next) => {
 
 router.afterEach((_to, _from) => {
   // Complete the animation of the route progress bar.
-  eslint-disable-next-line no-undef
+  // eslint-disable-next-line no-undef
   NProgress.done();
 });
 
