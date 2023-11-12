@@ -1,328 +1,379 @@
 <template>
-  <div>
-    <js-panel :visible="!!selected && visible" :options="detailPanelOptions" @close="clearEmit">
-      <div id="details" class="overflow-auto">
-        <template v-if="selected">
-          <template v-if="selected.type === 'chemical'">
-            <div class="details-top text-center">
-              <copy-tooltip :data="selected.smiles">
-                <i class="far fa-copy mr-1"></i>
-                <b>Smiles: </b>
-                {{ selected.smiles }}
-              </copy-tooltip>
-              <div><b>Price ($/g): </b>{{ selected.data.ppg }}</div>
-              <div v-if="selected.data.source"><b>Source: </b>{{ selected.data.source }}</div>
-              <ketcher-min id="ketcher-min-chemical" ref="ketcher-min" class="position-relative"
-                @change="selectedAtoms = $event"></ketcher-min>
-              <div v-if="!!selected.stats">
-                <p>
-                  <small>
-                    Circle size = # of reactions involving atom ({{ selected.stats.reactions.min }} - {{
-                      selected.stats.reactions.max }})<br />
-                    Circle color = # of clusters involving atom (<span style="color: #c0f0c0">&cir;</span> {{
-                      selected.stats.clusters.min }} - {{ selected.stats.clusters.max }}
-                    <span style="color: #005020">&cir;</span>)
-                  </small>
-                </p>
-              </div>
+  <js-panel :visible="!!selected && visible" :options="detailPanelOptions" @close="clearEmit">
+    <div id="details" class="overflow-auto">
+      <template v-if="selected">
+        <template v-if="selected.type === 'chemical'">
+          <div class="details-top text-center">
+            <copy-tooltip :data="selected.smiles">
+              <i class="far fa-copy mr-1"></i>
+              <b>Smiles: </b>
+              {{ selected.smiles }}
+            </copy-tooltip>
+            <div><b>Price ($/g): </b>{{ selected.data.ppg }}</div>
+            <div v-if="selected.data.source"><b>Source: </b>{{ selected.data.source }}</div>
+            <ketcher-min id="ketcher-min-chemical" ref="ketcher-min" class="position-relative"
+              @change="selectedAtoms = $event"></ketcher-min>
+            <div v-if="!!selected.stats">
+              <p>
+                <small>
+                  Circle size = # of reactions involving atom ({{ selected.stats.reactions.min }} - {{
+                    selected.stats.reactions.max }})<br />
+                  Circle color = # of clusters involving atom (<span style="color: #c0f0c0">&cir;</span> {{
+                    selected.stats.clusters.min }} - {{ selected.stats.clusters.max }}
+                  <span style="color: #005020">&cir;</span>)
+                </small>
+              </p>
             </div>
-            <div class="d-flex flex-row align-center">
-              <h3>Precursors</h3>
-              <v-spacer></v-spacer>
-              <v-switch id="allowCluster" v-model="allowCluster" name="allow-cluster-switch"
-                @change="resetSortingCategory" label="Group Similar" density="compact" hide-details>
-              </v-switch>
-              <v-spacer></v-spacer>
-              <v-switch id="invertAtomFilter" v-model="invertAtomFilter" name="invert-atom-filter-switch"
-                label="Invert Atom Filter" density="compact" hide-details>
-              </v-switch>
-            </div>
-            <div id="chemical-node-toolbar" class="d-flex justify-center flex-gap-2 flex-wrap">
-              <v-btn id="expand-btn-side" variant="flat" color="green" @click="expandNode"> Expand Node </v-btn>
-              <v-btn data-cy="network-view_button_view-notes" id="notes" variant="flat" color="deep-orange"
-                @click="dispNotes = !dispNotes"> {{ !dispNotes ? "View" : "Hide"}} Notes </v-btn>
-              <v-btn id="add-precursor-btn" variant="flat" color="light-blue" @click="openAddNewPrecursorModal()"> Add Precursor
-              </v-btn>
-              <v-btn id="view-rec-templates-btn" variant="flat" color="primary" @click="toggleRecTemplatesDialog" prepend-icon="mdi-view-list"> View
-                Recommended
-                Templates </v-btn>
-              <ban-button id="ban-chemical-btn" :smiles="selected.smiles" :type="selected.type"></ban-button>
-              <v-select :items="sortingCategoryItems" label="Sort By" style="width: 100%" class="px-2" hide-details
-                variant="outlined" density="compact" v-model="sortingCategory">
-                <template v-slot:append>
-                  <v-btn @click="sortOrderAscending = !sortOrderAscending" variant="tonal">
-                    <template v-slot:append>
-                      <v-icon v-if="sortOrderAscending">mdi-sort-descending</v-icon>
-                      <v-icon v-else>mdi-sort-ascending</v-icon>
-                    </template>
-                    {{ sortOrderAscending ? "Ascending" : "Descending" }}
-                  </v-btn>
+          </div>
+          <div class="d-flex justify-center pa-2 ma-2">
+            <v-btn-group divided density="compact" rounded="pill">
+              <v-tooltip location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-btn v-bind="props" id="expand-btn-side" variant="flat" color="orange-darken-1"
+                    @click="$emit('selectAllOccur')" prepend-icon="mdi mdi-select-all">Select</v-btn>
                 </template>
-              </v-select>
-            </div>
-            
-            <rec-templates-modal :selected="selected" :visible="showRecTemplate" @close-dialog="$event => showRecTemplate = $event"></rec-templates-modal>
-
-            <div id="Notes" v-if="dispNotes" class="my-2 scroll-list">
-              <v-row v-for="(note, idx) in selected.disp.notes" :key="note.date + idx" class="mx-2">
-                <v-col cols="12">
-                  <v-card>
-                    <v-card-title class="d-flex justify-space-between">
-                      <span>{{ note.user }}</span>
-                      <small>{{ note.date }}</small>
-                    </v-card-title>
-                    <v-card-text v-if="editIdx !== idx">
-                      {{ note.comment }}
-                    </v-card-text>
-                    <v-card-actions v-if="editIdx !== idx">
-                      <v-btn outlined color="success" @click="editIdx = idx; oldNote = note.comment;">Edit Note</v-btn>
-                    </v-card-actions>
-                    <v-card-text v-if="editIdx === idx">
-                      <v-textarea v-model="note.comment" :counter="1000" outlined rows="4"></v-textarea>
-                    </v-card-text>
-                    <v-card-actions v-if="editIdx === idx" class="d-flex justify-space-between">
-                      <v-btn outlined color="success" @click="editIdx = -1; note.comment = oldNote; oldNote = '';">Cancel
-                        Change</v-btn>
-                      <div>
-                        <v-btn outlined color="success" @click="editNote(idx, false); editIdx = -1; oldNote = '';">Save
-                          Change</v-btn>
-                        <v-btn outlined color="error" @click="editNote(idx, true); editIdx = -1; oldNote = '';">Delete
-                          Note</v-btn>
-                      </div>
-                    </v-card-actions>
-                  </v-card>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col class="d-flex justify-center">
-                  <v-btn class="align-center" variant="flat" color="green-darken-1" id="addNote"
-                    @click="addNote = !addNote">Add Note</v-btn>
-                </v-col>
-              </v-row>
-            </div>
-            <div v-show="addNote" id="addNotes" class="mx-2 px-2 scroll-list">
-              <v-row>
-                <v-col>
-                  <v-text-field label="Name" v-model="noteUrsName" placeholder="Enter your name" density="compact"
-                    variant="outlined" hide-details clearable id="note-user-name"
-                    data-cy="network-view_input_user-name"></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col>
-                  <v-textarea label="Comment" v-model="noteComment" density="compact" variant="outlined"
-                    placeholder="Enter your comment here. There is a max. character length of 1000." :rows="4"
-                    hide-details :counter="1000" id="note-comment" data-cy="network-view_input_user-comment"></v-textarea>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col class="d-flex justify-center flex-gap-2 flex-wrap mb-2">
-                  <v-btn variant="flat" color="green-darken-1" class="mr-2" data-cy="network-view_button_save-note"
-                    @click="saveNote">Save Note</v-btn>
-                  <v-btn variant="outlined" data-cy="network-view_button_cancel-note" @click="clearNote">Cancel</v-btn>
-                </v-col>
-              </v-row>
-            </div>
-
-            <div v-if="!resultsAvailable" class="text-center mt-5">
-              <p class="lead">Click Expand Node above to expand this node and predict precursors for this target.</p>
-              <div class="text-center justify-center mx-10">
-                <v-text-field variant="outlined" v-model="reactionLimit" hide-details density="compact" number
-                  size="small">
-                  <template v-slot:prepend>
-                    Add top
-                  </template>
+                <span>Select all occurrences</span>
+              </v-tooltip>
+              <v-tooltip location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-btn v-bind="props" id="expand-btn-side" variant="flat" color="red-darken-1"
+                    @click="$emit('deleteChoice')" prepend-icon="mdi mdi-delete-empty">Delete</v-btn>
+                </template>
+                <span>Delete children node(s)</span>
+              </v-tooltip>
+              <v-tooltip location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-btn v-bind="props" id="expand-btn-side" variant="flat" color="blue-darken-1"
+                    @click="$emit('collapseNode')" prepend-icon="mdi mdi-collapse-all">Collapse</v-btn>
+                </template>
+                <span>Collapse children node(s)</span>
+              </v-tooltip>
+            </v-btn-group>
+          </div>
+          <v-divider class="my-2" :thickness="2"></v-divider>
+          <div id="chemical-node-toolbar" class="d-flex justify-center flex-gap-2 flex-wrap">
+            <v-btn id="expand-btn-side" variant="flat" color="green" @click="expandNode"> Expand Node </v-btn>
+            <v-btn data-cy="network-view_button_view-notes" id="notes" variant="flat" color="deep-orange"
+              @click="dispNotes = !dispNotes"> {{ !dispNotes ? "View" : "Hide" }} Notes </v-btn>
+            <v-btn id="add-precursor-btn" variant="flat" color="light-blue" @click="openAddNewPrecursorModal()"> Add
+              Precursor
+            </v-btn>
+            <v-btn id="view-rec-templates-btn" variant="flat" color="primary" @click="toggleRecTemplatesDialog"
+              prepend-icon="mdi-view-list"> View
+              Recommended
+              Templates </v-btn>
+            <ban-button id="ban-chemical-btn" :smiles="selected.smiles" :type="selected.type"></ban-button>
+          </div>
+          <div class="d-flex flex-row align-center">
+            <h3>Precursors</h3>
+            <v-spacer></v-spacer>
+            <v-switch id="allowCluster" v-model="allowCluster" name="allow-cluster-switch" @change="resetSortingCategory"
+              label="Group Similar" density="compact" hide-details>
+            </v-switch>
+            <v-spacer></v-spacer>
+            <v-switch id="invertAtomFilter" v-model="invertAtomFilter" name="invert-atom-filter-switch"
+              label="Invert Atom Filter" density="compact" hide-details>
+            </v-switch>
+          </div>
+          <div>
+            <v-select :items="sortingCategoryItems" label="Sort By" style="width: 100%" class="px-2" hide-details
+              variant="outlined" density="compact" v-model="sortingCategory">
+              <template v-slot:append>
+                <v-btn @click="sortOrderAscending = !sortOrderAscending" variant="tonal">
                   <template v-slot:append>
-                    {{ allowCluster ? "Clusters" : "Precursors" }} to the graph visualization
+                    <v-icon v-if="sortOrderAscending">mdi-sort-descending</v-icon>
+                    <v-icon v-else>mdi-sort-ascending</v-icon>
                   </template>
-                </v-text-field>
+                  {{ sortOrderAscending ? "Ascending" : "Descending" }}
+                </v-btn>
+              </template>
+            </v-select>
+          </div>
 
-              </div>
+          <div id="Notes" v-if="dispNotes" class="my-3 scroll-list pa-0">
+            <v-row v-for="(note, idx) in selected.disp.notes" :key="note.date + idx">
+              <v-col cols="12">
+                <v-card>
+                  <v-card-title class="d-flex justify-space-between">
+                    <span>{{ note.user }}</span>
+                    <small>{{ note.date }}</small>
+                  </v-card-title>
+                  <v-card-text v-if="editIdx !== idx">
+                    {{ note.comment }}
+                  </v-card-text>
+                  <v-card-actions v-if="editIdx !== idx">
+                    <v-btn outlined color="success" @click="editIdx = idx; oldNote = note.comment;">Edit Note</v-btn>
+                  </v-card-actions>
+                  <v-card-text v-if="editIdx === idx">
+                    <v-textarea v-model="note.comment" :counter="1000" outlined rows="4"></v-textarea>
+                  </v-card-text>
+                  <v-card-actions v-if="editIdx === idx" class="d-flex justify-space-between">
+                    <v-btn outlined color="success" @click="editIdx = -1; note.comment = oldNote; oldNote = '';">Cancel
+                      Change</v-btn>
+                    <div>
+                      <v-btn outlined color="success" @click="editNote(idx, false); editIdx = -1; oldNote = '';">Save
+                        Change</v-btn>
+                      <v-btn outlined color="error" @click="editNote(idx, true); editIdx = -1; oldNote = '';">Delete
+                        Note</v-btn>
+                    </div>
+                  </v-card-actions>
+                </v-card>
+              </v-col>
+            </v-row>
+            <v-row class="pa-0 ma-0">
+              <v-col class="d-flex justify-center">
+                <v-btn class="align-center" variant="flat" color="green-darken-1" id="addNote"
+                  @click="addNote = !addNote">Add Note</v-btn>
+              </v-col>
+            </v-row>
+          </div>
+          <div v-show="addNote" id="addNotes" class="mx-2 px-2 scroll-list">
+            <v-row class="pa-0 ma-0">
+              <v-col>
+                <v-text-field label="Name" v-model="noteUrsName" placeholder="Enter your name" density="compact"
+                  variant="outlined" hide-details clearable id="note-user-name"
+                  data-cy="network-view_input_user-name"></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row class="pa-0 ma-0">
+              <v-col>
+                <v-textarea label="Comment" v-model="noteComment" density="compact" variant="outlined"
+                  placeholder="Enter your comment here. There is a max. character length of 1000." :rows="4" hide-details
+                  :counter="1000" id="note-comment" data-cy="network-view_input_user-comment"></v-textarea>
+              </v-col>
+            </v-row>
+            <v-row class="pa-0 ma-0">
+              <v-col class="d-flex justify-center flex-gap-2 flex-wrap mb-2">
+                <v-btn variant="flat" color="green-darken-1" class="mr-2" data-cy="network-view_button_save-note"
+                  @click="saveNote">Save Note</v-btn>
+                <v-btn variant="outlined" data-cy="network-view_button_cancel-note" @click="clearNote">Cancel</v-btn>
+              </v-col>
+            </v-row>
+          </div>
+
+          <div v-if="!resultsAvailable" class="text-center mt-5">
+            <p class="lead">Click Expand Node above to expand this node and predict precursors for this target.</p>
+            <div class="text-center justify-center mx-10">
+              <v-text-field variant="outlined" v-model="reactionLimit" hide-details density="compact" number size="small">
+                <template v-slot:prepend>
+                  Add top
+                </template>
+                <template v-slot:append>
+                  {{ allowCluster ? "Clusters" : "Precursors" }} to the graph visualization
+                </template>
+              </v-text-field>
+
             </div>
-            <div v-else class="scroll-list">
-              <div v-for="res in currentPrecursors" :key="res.rank" class="my-2 mx-2">
-                <v-card no-body class="custom-shadow text-center py-2 px-2">
-                  <v-row class="justify-center align-center">
-                    <v-col>
-                      <v-img :src="getMolDrawEndPoint(res, true)" fluid></v-img>
-                    </v-col>
-                    <v-col>
-                      <v-table class="table table-sm table-border ma-0" density="compact">
-                        <tbody>
-                          <tr>
-                            <td>Rank</td>
-                            <td>#{{ res.rank }}</td>
-                          </tr>
-                          <tr>
-                            <td>Score</td>
-                            <td>{{ num2str(res.retroScore) }}</td>
-                          </tr>
-                          <tr>
-                            <td>Synthetic complexity</td>
-                            <td>{{ num2str(res.scscore) }}</td>
-                          </tr>
-                          <tr>
-                            <td># Examples</td>
-                            <td>{{ res.numExamples }}</td>
-                          </tr>
-                          <tr>
-                            <td>Template rank</td>
-                            <td>{{ res.templateRank }}</td>
-                          </tr>
-                          <tr>
-                            <td>Template score</td>
-                            <td>{{ num2str(res.templateScore) }}</td>
-                          </tr>
-                          <tr>
-                            <td>Plausibility</td>
-                            <td>{{ num2str(res.ffScore) }}</td>
-                          </tr>
-                          <tr>
-                            <td>Reaction cluster</td>
-                            <td>{{ res.clusterName }}</td>
-                          </tr>
-                        </tbody>
-                      </v-table>
-                    </v-col>
-                  </v-row>
-                  <div class="row no-gutters">
-                    <div class="col my-2">
-                      <v-btn v-show="!(selected.id in res.inVis)" variant="flat" color="green" class="addRes mr-1"
-                        :data-rank="res.rank" @click="addFromResults(selected, res)" icon="mdi-plus" density="compact">
-                      </v-btn>
-                      <v-btn v-show="selected.id in res.inVis" variant="flat" color="red" class="remRes mr-1"
-                        title="Remove node(s)" :data-rank="res.rank" @click="remFromResults(selected, res)"
-                        icon="mdi-minus" density="compact">
-                      </v-btn>
-                      <v-btn variant="flat" :data-rank="res.rank" title="Open cluser modal"
-                        @click="openClusterPopoutModal(selected, res)" icon="mdi-group" density="compact">
-                      </v-btn>
-                      <v-btn id="permanent-delete-btn" variant="flat" color="red" @click="deleteFromGraph(res)"
-                        title="Delete permanently" class="ml-1" density="compact" icon="mdi-delete">
-                      </v-btn>
+          </div>
+          <div v-else class="scroll-list">
+            <div v-for="res in currentPrecursors" :key="res.rank" class="my-2 mx-2">
+              <v-card no-body class="custom-shadow text-center py-2 px-2">
+                <v-row class="justify-center align-center">
+                  <v-col>
+                    <v-img :src="getMolDrawEndPoint(res, true)" fluid></v-img>
+                  </v-col>
+                  <v-col>
+                    <v-table class="table table-sm table-border ma-0" density="compact">
+                      <tbody>
+                        <tr>
+                          <td>Rank</td>
+                          <td>#{{ res.rank }}</td>
+                        </tr>
+                        <tr>
+                          <td>Score</td>
+                          <td>{{ num2str(res.retroScore) }}</td>
+                        </tr>
+                        <tr>
+                          <td>Synthetic complexity</td>
+                          <td>{{ num2str(res.scscore) }}</td>
+                        </tr>
+                        <tr>
+                          <td># Examples</td>
+                          <td>{{ res.numExamples }}</td>
+                        </tr>
+                        <tr>
+                          <td>Template rank</td>
+                          <td>{{ res.templateRank }}</td>
+                        </tr>
+                        <tr>
+                          <td>Template score</td>
+                          <td>{{ num2str(res.templateScore) }}</td>
+                        </tr>
+                        <tr>
+                          <td>Plausibility</td>
+                          <td>{{ num2str(res.ffScore) }}</td>
+                        </tr>
+                        <tr>
+                          <td>Reaction cluster</td>
+                          <td>{{ res.clusterName }}</td>
+                        </tr>
+                      </tbody>
+                    </v-table>
+                  </v-col>
+                </v-row>
+                <div class="row no-gutters">
+                  <div class="col my-2">
+                    <v-btn v-show="!(selected.id in res.inVis)" variant="flat" color="green" class="addRes mr-1"
+                      :data-rank="res.rank" @click="addFromResults(selected, res)" icon="mdi-plus" density="compact">
+                    </v-btn>
+                    <v-btn v-show="selected.id in res.inVis" variant="flat" color="red" class="remRes mr-1"
+                      title="Remove node(s)" :data-rank="res.rank" @click="remFromResults(selected, res)" icon="mdi-minus"
+                      density="compact">
+                    </v-btn>
+                    <v-btn variant="flat" :data-rank="res.rank" title="Open cluser modal"
+                      @click="openClusterPopoutModal(selected, res)" icon="mdi-group" density="compact">
+                    </v-btn>
+                    <v-btn id="permanent-delete-btn" variant="flat" color="red" @click="deleteFromGraph(res)"
+                      title="Delete permanently" class="ml-1" density="compact" icon="mdi-delete">
+                    </v-btn>
+                  </div>
+                </div>
+              </v-card>
+            </div>
+          </div>
+        </template>
+        <template v-else-if="selected.type === 'reaction'">
+          <div class="details-top text-center">
+            <copy-tooltip :data="selected.smiles">
+              <i class="far fa-copy mr-1"></i>
+              <b>Smiles: </b>
+              {{ selected.smiles }}
+            </copy-tooltip>
+            <smiles-image :smiles="selected.smiles" :align="settingsStore.ippSettings.alignPrecursorsToProduct">
+            </smiles-image>
+            <div class="d-flex justify-center pa-2 ma-2">
+              <v-btn-group divided density="compact" rounded="pill">
+                <v-tooltip location="bottom">
+                  <template v-slot:activator="{ props }">
+                    <v-btn v-bind="props" id="expand-btn-side" variant="flat" color="orange-darken-1"
+                      @click="$emit('selectAllOccur')" prepend-icon="mdi mdi-select-all">Select</v-btn>
+                  </template>
+                  <span>Select all occurrences</span>
+                </v-tooltip>
+                <v-tooltip location="bottom">
+                  <template v-slot:activator="{ props }">
+                    <v-btn v-bind="props" id="expand-btn-side" variant="flat" color="red-darken-1"
+                      @click="$emit('deleteChoice')" prepend-icon="mdi mdi-delete-empty">Delete</v-btn>
+                  </template>
+                  <span>Delete children node(s)</span>
+                </v-tooltip>
+                <v-tooltip location="bottom">
+                  <template v-slot:activator="{ props }">
+                    <v-btn v-bind="props" id="expand-btn-side" variant="flat" color="blue-darken-1"
+                      @click="$emit('collapseNode')" prepend-icon="mdi mdi-collapse-all">Collapse</v-btn>
+                  </template>
+                  <span>Collapse children node(s)</span>
+                </v-tooltip>
+              </v-btn-group>
+            </div>
+            <v-divider class="my-2" :thickness="2"></v-divider>
+            <div v-if="selected.data.model !== 'new'">
+              <p class="h6 mb-2">
+                <i class="fas fa-info-circle mr-1"></i>Reaction predicted by
+                <v-chip variant="tonal" class="py-5">
+                  {{ selected.data.model }}
+                  <div v-if="selected.data.model === 'template_relevance'">
+                    <!-- TODO: fix attribute filter -->
+                    <v-chip class="ml-1">
+                      {{ selected.data.trainingSet }}
+                    </v-chip>
+                  </div>
+                  <div v-else>
+                    <v-chip class="ml-1">
+                      {{ selected.data.trainingSet }}
+                    </v-chip>
+                  </div>
+                </v-chip>
+                model
+              </p>
+            </div>
+            <v-btn class="my-3" variant="outlined"
+              :href="'/forward?tab=context&rxnsmiles=' + encodeURIComponent(selected.smiles)" target="_blank">Evaluate
+              reaction</v-btn>
+            <div class="text-left mx-2">
+              <v-table class="ma-0" density="compact">
+                <tbody>
+                  <tr>
+                    <th>Score</th>
+                    <td>{{ num2str(selected.data.retroScore) }}</td>
+                  </tr>
+                  <tr>
+                    <th>Template rank</th>
+                    <td>{{ selected.data.templateRank }}</td>
+                  </tr>
+                  <tr>
+                    <th>Template score</th>
+                    <td>{{ num2str(selected.data.templateScore) }}</td>
+                  </tr>
+                  <tr>
+                    <th>Plausibility</th>
+                    <td>{{ num2str(selected.data.ffScore) }}</td>
+                  </tr>
+                  <tr>
+                    <th># Examples</th>
+                    <td>{{ selected.data.numExamples }}</td>
+                  </tr>
+                  <tr>
+                    <th>Supporting templates</th>
+                    <td>
+                      <ul>
+                        <li v-for="id in selected.data.templateIds" :key="id">
+                          <a :href="'/template?id=' + id" target="_blank"> {{ id }} ({{
+                            resultsStore.templateSetSource[id] }}, {{ resultsStore.templateNumExamples[id] }} examples)
+                          </a>
+                        </li>
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+              </v-table>
+            </div>
+            <div class="btn-toolbar justify-content-end mx-2">
+              <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button>
+            </div>
+          </div>
+          <div class="alert alert-warning m-2" v-if="selected.data.selecError">Could not check regio-selectivity for
+            this reaction, possibly due to stereochemistry in the product.</div>
+          <template v-if="'outcomes' in selected.data">
+            <div class="m-2">
+              <h3 class="m-0">Regio-selective Products</h3>
+            </div>
+            <div class="d-flex justify-content-center flex-gap-2 flex-wrap m-2">
+              <v-btn id="predict-selectivity" variant="outline-primary" @click="predictSelectivity"> Predict Selectivity
+              </v-btn>
+            </div>
+            <div class="scroll-list">
+              <div class="grid-wrapper">
+                <v-card v-for="(res, index) in selected.data.outcomes" class="custom-shadow m-2 p-2" :key="index">
+                  <div class="container-fluid d-flex flex-column h-100 justify-content-between">
+                    <div class="row">
+                      <div class="col-sm">
+                        <img :src="getMolDrawEndPoint(res)" class="m-1"
+                          :class="res === selected.smiles.split('>>')[1] ? 'grey-border' : ''" style="max-width: 100%" />
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm" v-if="selected.data.selectivity[index]">
+                        Score {{ num2str(selected.data.selectivity[index]) }}
+                        <span v-if="selected.data.selectivity[index] === Math.max(...selected.data.selectivity)">
+                          <i class="fas fa-check"></i>
+                        </span>
+                        <span v-else>
+                          <i class="fas fa-times"></i>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </v-card>
               </div>
             </div>
           </template>
-          <template v-else-if="selected.type === 'reaction'">
-            <div class="details-top text-center">
-              <copy-tooltip :data="selected.smiles">
-                <i class="far fa-copy mr-1"></i>
-                <b>Smiles: </b>
-                {{ selected.smiles }}
-              </copy-tooltip>
-              <smiles-image :smiles="selected.smiles" :align="settingsStore.ippSettings.alignPrecursorsToProduct">
-              </smiles-image>
-              <div v-if="selected.data.model !== 'new'">
-                <p class="h6 mb-2">
-                  <i class="fas fa-info-circle mr-1"></i>Reaction predicted by
-                  <v-chip variant="tonal" class="py-5">
-                    {{ selected.data.model }}
-                    <div v-if="selected.data.model === 'template_relevance'">
-                      <!-- TODO: fix attribute filter -->
-                      <v-chip class="ml-1">
-                        {{ selected.data.trainingSet }}
-                      </v-chip>
-                    </div>
-                    <div v-else>
-                      <v-chip class="ml-1">
-                        {{ selected.data.trainingSet }}
-                      </v-chip>
-                    </div>
-                  </v-chip>
-                  model
-                </p>
-              </div>
-              <v-btn class="my-3" variant="outlined"
-                :href="'/forward?tab=context&rxnsmiles=' + encodeURIComponent(selected.smiles)" target="_blank">Evaluate
-                reaction</v-btn>
-              <div class="text-left mx-2">
-                <v-table class="ma-0" density="compact">
-                  <tbody>
-                    <tr>
-                      <th>Score</th>
-                      <td>{{ num2str(selected.data.retroScore) }}</td>
-                    </tr>
-                    <tr>
-                      <th>Template rank</th>
-                      <td>{{ selected.data.templateRank }}</td>
-                    </tr>
-                    <tr>
-                      <th>Template score</th>
-                      <td>{{ num2str(selected.data.templateScore) }}</td>
-                    </tr>
-                    <tr>
-                      <th>Plausibility</th>
-                      <td>{{ num2str(selected.data.ffScore) }}</td>
-                    </tr>
-                    <tr>
-                      <th># Examples</th>
-                      <td>{{ selected.data.numExamples }}</td>
-                    </tr>
-                    <tr>
-                      <th>Supporting templates</th>
-                      <td>
-                        <ul>
-                          <li v-for="id in selected.data.templateIds" :key="id">
-                            <a :href="'/template?id=' + id" target="_blank"> {{ id }} ({{
-                              resultsStore.templateSetSource[id] }}, {{ resultsStore.templateNumExamples[id] }} examples)
-                            </a>
-                          </li>
-                        </ul>
-                      </td>
-                    </tr>
-                  </tbody>
-                </v-table>
-              </div>
-              <div class="btn-toolbar justify-content-end mx-2">
-                <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button>
-              </div>
-            </div>
-            <div class="alert alert-warning m-2" v-if="selected.data.selecError">Could not check regio-selectivity for
-              this reaction, possibly due to stereochemistry in the product.</div>
-            <template v-if="'outcomes' in selected.data">
-              <div class="m-2">
-                <h3 class="m-0">Regio-selective Products</h3>
-              </div>
-              <div class="d-flex justify-content-center flex-gap-2 flex-wrap m-2">
-                <v-btn id="predict-selectivity" variant="outline-primary" @click="predictSelectivity"> Predict Selectivity
-                </v-btn>
-              </div>
-              <div class="scroll-list">
-                <div class="grid-wrapper">
-                  <v-card v-for="(res, index) in selected.data.outcomes" class="custom-shadow m-2 p-2" :key="index">
-                    <div class="container-fluid d-flex flex-column h-100 justify-content-between">
-                      <div class="row">
-                        <div class="col-sm">
-                          <img :src="getMolDrawEndPoint(res)" class="m-1"
-                            :class="res === selected.smiles.split('>>')[1] ? 'grey-border' : ''"
-                            style="max-width: 100%" />
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-sm" v-if="selected.data.selectivity[index]">
-                          Score {{ num2str(selected.data.selectivity[index]) }}
-                          <span v-if="selected.data.selectivity[index] === Math.max(...selected.data.selectivity)">
-                            <i class="fas fa-check"></i>
-                          </span>
-                          <span v-else>
-                            <i class="fas fa-times"></i>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </v-card>
-                </div>
-              </div>
-            </template>
-          </template>
         </template>
-      </div>
-    </js-panel>
+      </template>
+    </div>
+  </js-panel>
 
-    <!-- <b-modal id="cluster-view-modal" title="View Cluster" size="xl" footer-class="justify-content-between" v-model="showClusterPopoutModal" @close="closeClusterPopoutModal">
+  <!-- <b-modal id="cluster-view-modal" title="View Cluster" size="xl" footer-class="justify-content-between" v-model="showClusterPopoutModal" @close="closeClusterPopoutModal">
         <div class="btn-toolbar justify-content-center mb-3">
           <b-input-group>
             <b-input-group-prepend>
@@ -576,36 +627,37 @@
           </div>
         </template>
       </b-modal>  -->
-    <v-dialog v-model="showAddNewPrecursorModal" width="auto" min-width="500px">
-      <v-card>
-        <v-card-title>Add Precursor</v-card-title>
-        <v-divider></v-divider>
-        <v-card-text>
-          <!-- ADD NIH Resolver -->
-          <v-text-field label="Precursor" variant="outlined" hide-details density="compact"
-            v-model="addNewPrecursorModal['newPrecursorSmiles']" class="mb-2"></v-text-field>
-          <label for="precursorCluster">Cluster Number: </label>
-          <select id="precursorCluster" v-model.number="addNewPrecursorModal['clusterId']" class="form-control">
-            <option value="-1">Create new cluster</option>
-            <option v-for="idx in resultsStore.clusteredResultsIndex[addNewPrecursorModal['selectedSmiles']]" :value="idx"
-              :key="idx">
-              {{ addNewPrecursorModalName(idx) }}
-            </option>
-          </select>
+  <v-dialog v-model="showAddNewPrecursorModal" width="auto" min-width="500px">
+    <v-card>
+      <v-card-title>Add Precursor</v-card-title>
+      <v-divider></v-divider>
+      <v-card-text>
+        <!-- ADD NIH Resolver -->
+        <v-text-field label="Precursor" variant="outlined" hide-details density="compact"
+          v-model="addNewPrecursorModal['newPrecursorSmiles']" class="mb-2"></v-text-field>
+        <label for="precursorCluster">Cluster Number: </label>
+        <select id="precursorCluster" v-model.number="addNewPrecursorModal['clusterId']" class="form-control">
+          <option value="-1">Create new cluster</option>
+          <option v-for="idx in resultsStore.clusteredResultsIndex[addNewPrecursorModal['selectedSmiles']]" :value="idx"
+            :key="idx">
+            {{ addNewPrecursorModalName(idx) }}
+          </option>
+        </select>
 
-          <v-text-field v-if="addNewPrecursorModal['clusterId'] === -1" label="Cluster Name" variant="outlined"
-            hide-details density="compact" v-model="addNewPrecursorModal['newClusterName']" class="mt-2"></v-text-field>
-          <v-checkbox v-model="addNewPrecursorModal['noDupCheck']" label="No Duplicate check" hide-details></v-checkbox>
-        </v-card-text>
-        <v-divider></v-divider>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" @click="closeAddNewPrecursorModal()">Cancel</v-btn>
-          <v-btn color="primary" @click="addNewPrecursorModalSubmit()">Add Precursor</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </div>
+        <v-text-field v-if="addNewPrecursorModal['clusterId'] === -1" label="Cluster Name" variant="outlined" hide-details
+          density="compact" v-model="addNewPrecursorModal['newClusterName']" class="mt-2"></v-text-field>
+        <v-checkbox v-model="addNewPrecursorModal['noDupCheck']" label="No Duplicate check" hide-details></v-checkbox>
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" @click="closeAddNewPrecursorModal()">Cancel</v-btn>
+        <v-btn color="primary" @click="addNewPrecursorModalSubmit()">Add Precursor</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+  <!-- <rec-templates-modal :selected="selected" :visible="showRecTemplate"
+    @close-dialog="$event => showRecTemplate = $event"></rec-templates-modal> -->
 </template>
   
 <script>
@@ -1398,7 +1450,7 @@ export default {
   
 <style scoped>
 .scroll-list {
-  max-height: 55vh;
+  max-height: 50vh;
   overflow-y: scroll;
 }
 
