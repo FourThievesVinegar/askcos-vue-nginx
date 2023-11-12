@@ -27,11 +27,18 @@
               <td>Version: {{ tp.version || 'N/A' }}</td>
             </tr>
           </template>
-          <tr>
+           <template v-else>
+            <tr v-for="(option, index) in settings.expand_one_options['retro_backend_options']" :key="index">
+                <th>Retro options:</th>
+                <td>Backend: {{ option.retro_backend }}</td>
+                <td>Model Name: {{ option.retro_model_name }}</td>
+              </tr>
+            </template>
+          <!-- <tr>
             <th>Tree builder version:</th>
             <td>{{ tbVersion > 1000 ? `C++ v${tbVersion % 1000}` : `v${tbVersion}` }}</td>
             <td></td>
-          </tr>
+          </tr> -->
           <tr>
             <th>Expansion settings:</th>
             <td>Max. depth: {{ settings.build_tree_options.max_depth }}</td>
@@ -166,10 +173,10 @@ export default {
     },
   },
   computed: {
-    tbVersion() {
-      // If version is not present in the result, then it is version 1
-      return this.settings['version'] || 1
-    },
+    // tbVersion() {
+    //   // If version is not present in the result, then it is version 1
+    //   return this.settings['version'] || 1
+    // },
     buyablesSources() {
       if (this.settings['buyables_source']) {
         return sourceArgsToDisplay(sourceQueryToArgs(this.settings.buyables_source))

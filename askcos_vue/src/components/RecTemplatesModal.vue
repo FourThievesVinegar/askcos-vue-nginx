@@ -26,7 +26,7 @@
             {{ item.raw.template_score.toFixed(4) }}
           </template>
           <template #item.p_index="{ item }">
-            {{ item.raw.index }}
+              1
           </template>
         </v-data-table>
       </v-card-text>
