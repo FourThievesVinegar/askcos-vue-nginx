@@ -5,9 +5,9 @@
         color="green-darken-1"></v-progress-linear>
       <v-container fluid>
         <v-row class="justify-center align-center">
-          <v-col cols="12" md="10" sm="12"><v-text-field v-model="resultsStore.target" density="compact" variant="outlined"
-              label="Target" placeholder="SMILES" type="text" clearable class="target-input" hide-details
-              prepend-inner-icon="mdi mdi-flask" min-width="100px">
+          <v-col cols="12" md="10" sm="12"><v-text-field v-model="resultsStore.target" density="compact"
+              variant="outlined" label="Target" placeholder="SMILES" type="text" clearable class="target-input"
+              hide-details prepend-inner-icon="mdi mdi-flask" min-width="100px">
               <template v-slot:append-inner>
                 <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil" @click="showKetcherModal()">Draw</v-btn>
               </template>
@@ -87,7 +87,7 @@
         </div>
       </div>
 
-      <div class="hover-btn justify-center align-center flex-gap-2 elevation-3" id="hoverBtn">
+      <!-- <div class="hover-btn justify-center align-center flex-gap-2 elevation-3" id="hoverBtn">
         <v-tooltip location="bottom">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props" v-if="!!selected && selected.type === 'chemical'" density="compact"
@@ -128,7 +128,7 @@
           </template>
           <span>Show Node Detail</span>
         </v-tooltip>
-      </div>
+      </div> -->
       <div class="canvas-btn d-flex flex-column flex-gap-2 align-items-center">
         <v-tooltip location="end">
           <template v-slot:activator="{ props }">
@@ -577,7 +577,7 @@ export default {
       });
       // this.network.on("dragStart", this.clearSelection);
       this.network.on("zoom", this.clearSelection);
-      this.network.on("selectNode", this.showHoverBtn);
+      this.network.on("selectNode", this.showNodeDetail);
       this.network.on("deselectNode", this.clearSelection);
       this.network.once("afterDrawing", () => {
         this.networkInitialized = true;
@@ -903,6 +903,7 @@ export default {
 
       let nodeId = selected[0];
       this.pendingTasks += 1;
+      this.nodeDetailVisible = false;
 
       this.resultsStore
         .expand(nodeId)
@@ -915,7 +916,7 @@ export default {
         })
         .finally(() => {
           this.pendingTasks -= 1;
-          this.hideHoverBtn();
+          this.network.unselectAll();
         });
     },
     selectAllOccur() {
@@ -956,7 +957,7 @@ export default {
         this.resultsStore.deleteDispNode(node);
       }
       this.clearSelection();
-      this.hideHoverBtn();
+      this.network.unselectAll();
     },
     toggleResolver() {
       if (this.allowResolve) {
@@ -1179,15 +1180,11 @@ export default {
       this.$emit("update:treeViewVisible", false)
     },
     clearSelection() {
-      let hoverBtnElem = document.getElementById("hoverBtn");
-      hoverBtnElem.style.display = "none";
       this.selected = null;
       this.nodeDetailVisible = false;
     },
     closeNodeDetail() {
-      // this.selected = null;
       this.nodeDetailVisible = false;
-      this.hideHoverBtn();
     },
     closeSettings() {
       this.settingsVisible = false;
@@ -1209,28 +1206,18 @@ export default {
           this.network.clustering.cluster(options);
         }
       });
-      this.hideHoverBtn();
-    },
-    hideHoverBtn() {
       this.network.unselectAll();
-      let hoverBtnElem = document.getElementById("hoverBtn");
-      hoverBtnElem.style.display = "none";
     },
-    showHoverBtn(obj) {
+    showKetcherModal() {
+      this.showKetcher = true;
+      this.$refs["ketcherRef"].smilesToKetcher();
+    },
+    showNodeDetail(obj) {
       let nodeId = obj.nodes[obj.nodes.length - 1];
-
-      const data = this.network.getPositions(obj.nodes)[nodeId];
-      const nodePos = this.network.canvasToDOM({ x: data.x, y: data.y });
-      let hoverBtnElem = document.getElementById("hoverBtn");
-      hoverBtnElem.style.display = "flex";
-      hoverBtnElem.style.left = nodePos.x + "px";
-      hoverBtnElem.style.top = (nodePos.y + 120) + "px";
-
       let dispObj = this.resultsStore.dispGraph.nodes.get(nodeId);
       if (!dispObj) return;
       let dataObj = this.resultsStore.dataGraph.nodes.get(dispObj.smiles);
       if (!dataObj) return;
-
       this.selected = {
         id: dispObj.id,
         smiles: dispObj.smiles,
@@ -1238,7 +1225,6 @@ export default {
         data: dataObj,
         disp: dispObj,
       };
-
       if (dispObj.type === "chemical" && !dataObj.source) {
         this.resultsStore.updatePrice([dataObj.id]).then(() => {
           let newData = this.resultsStore.dataGraph.nodes.get(dispObj.smiles);
@@ -1247,15 +1233,7 @@ export default {
           this.selected.disp = newDisp;
         });
       }
-    },
-    showKetcherModal() {
-      this.showKetcher = true;
-      this.$refs["ketcherRef"].smilesToKetcher();
-    },
-    showNodeDetail() {
       this.nodeDetailVisible = true;
-      let dispObj = this.selected.disp;
-      let dataObj = this.selected.data;
       this.$nextTick(() => {
         if (dispObj.type === "chemical") {
           if (
@@ -1276,8 +1254,6 @@ export default {
           }
         }
       });
-      let hoverBtnElem = document.getElementById("hoverBtn");
-      hoverBtnElem.style.display = "none";
     },
     getReactingAtomColormap(smiles) {
       // Apply a colormap to the ketcher drawing corresponding to reacting atom stats
@@ -1768,14 +1744,14 @@ export default {
   gap: 0.5rem;
 }
 
-.hover-btn {
+/* .hover-btn {
   display: none;
   position: absolute;
   padding: 5px;
   background-color: #BBDEFB;
   border-radius: 30px;
   z-index: 9999;
-}
+} */
 
 .result-btn {
   position: absolute;
