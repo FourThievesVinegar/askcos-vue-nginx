@@ -536,6 +536,7 @@ export default {
       // this.network.on("dragStart", this.clearSelection);
       this.network.on("zoom", this.clearSelection);
       this.network.on("selectNode", this.showNodeDetail);
+      this.network.on('doubleClick', this.expandNode)
       this.network.on("deselectNode", this.clearSelection);
       this.network.once("afterDrawing", () => {
         this.networkInitialized = true;
