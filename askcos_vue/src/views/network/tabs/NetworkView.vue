@@ -86,49 +86,6 @@
           </table>
         </div>
       </div>
-
-      <!-- <div class="hover-btn justify-center align-center flex-gap-2 elevation-3" id="hoverBtn">
-        <v-tooltip location="bottom">
-          <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" v-if="!!selected && selected.type === 'chemical'" density="compact"
-              icon="mdi mdi-plus-circle" id="expand-btn" @click="expandNode" variant="flat" color="green-darken-1">
-            </v-btn>
-          </template>
-          <span>Expand Node</span>
-        </v-tooltip>
-        <v-tooltip location="bottom">
-          <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" id="select-all-btn" class="text-light" @click="selectAllOccur" density="compact"
-              icon="mdi mdi-select-all" variant="flat" color="orange-darken-1">
-            </v-btn>
-          </template>
-          <span>Select all occurrences</span>
-        </v-tooltip>
-        <v-tooltip location="bottom">
-          <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" id="delete-btn" @click="deleteChoice" density="compact" icon="mdi mdi-delete-empty"
-              variant="flat" color="red-darken-1">
-            </v-btn>
-          </template>
-          <span>Delete children node(s)</span>
-        </v-tooltip>
-        <v-tooltip location="bottom">
-          <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" id="collapse-btn" @click="collapseNode" density="compact" icon="mdi mdi-collapse-all"
-              variant="flat" color="blue-darken-1">
-            </v-btn>
-          </template>
-          <span>Collapse children node(s)</span>
-        </v-tooltip>
-        <v-tooltip location="bottom">
-          <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" id="node-detail-btn" @click="showNodeDetail" density="compact"
-              icon="mdi mdi-information" variant="flat" color="grey-darken-1">
-            </v-btn>
-          </template>
-          <span>Show Node Detail</span>
-        </v-tooltip>
-      </div> -->
       <div class="canvas-btn d-flex flex-column flex-gap-2 align-items-center">
         <v-tooltip location="end">
           <template v-slot:activator="{ props }">
@@ -305,7 +262,8 @@
   </v-dialog>
 
   <NodeDetail :visible="tabActive && nodeDetailVisible" :enable-resolver="enableResolver" :selected="selected"
-    @close="closeNodeDetail" @expandNode="expandNode" @updatePendingTasks="pendingTasksHandler" ref="node-detail" />
+    @close="closeNodeDetail" @expandNode="expandNode" @updatePendingTasks="pendingTasksHandler"
+    @selectAllOccur="selectAllOccur" @deleteChoice="deleteChoice" @collapseNode="collapseNode" ref="node-detail" />
 
   <SettingsModal :visible="settingsVisible" @update:settingsVisible="settingsVisible = $event"
     :template-attributes="templateAttributes" :template-sets="templateSets" @changeNetopt="updateNetworkOptions" />
