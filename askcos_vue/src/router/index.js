@@ -360,7 +360,7 @@ router.beforeResolve((to, _from, next) => {
   next();
 });
 
-router.afterEach((_to, _from) => {
+router.afterEach(() => {
   // Complete the animation of the route progress bar.
   // eslint-disable-next-line no-undef
   NProgress.done();
