@@ -624,15 +624,9 @@
         <!-- ADD NIH Resolver -->
         <v-text-field label="Precursor" variant="outlined" hide-details density="compact"
           v-model="addNewPrecursorModal['newPrecursorSmiles']" class="mb-2"></v-text-field>
-        <label for="precursorCluster">Cluster Number: </label>
-        <select id="precursorCluster" v-model.number="addNewPrecursorModal['clusterId']" class="form-control">
-          <option value="-1">Create new cluster</option>
-          <option v-for="idx in resultsStore.clusteredResultsIndex[addNewPrecursorModal['selectedSmiles']]" :value="idx"
-            :key="idx">
-            {{ addNewPrecursorModalName(idx) }}
-          </option>
-        </select>
-
+        <v-select label="Cluster Number" :items="clusterItems" v-model="addNewPrecursorModal['clusterId']"
+          variant="outlined" hide-details density="compact">
+        </v-select>
         <v-text-field v-if="addNewPrecursorModal['clusterId'] === -1" label="Cluster Name" variant="outlined" hide-details
           density="compact" v-model="addNewPrecursorModal['newClusterName']" class="mt-2"></v-text-field>
         <v-checkbox v-model="addNewPrecursorModal['noDupCheck']" label="No Duplicate check" hide-details></v-checkbox>
@@ -920,12 +914,12 @@ export default {
     openAddNewPrecursorModal(selectedSmiles, clusterId = -1, clusterName = "") {
       // clusterId == -1 is to add a new cluster
       this.showAddNewPrecursorModal = true;
-      this.$set(this.addNewPrecursorModal, "selectedSmiles", selectedSmiles === undefined ? this.selected.smiles : selectedSmiles);
-      this.$set(this.addNewPrecursorModal, "clusterId", clusterId);
-      this.$set(this.addNewPrecursorModal, "clusterName", clusterName);
-      this.$set(this.addNewPrecursorModal, "newClusterName", "");
-      this.$set(this.addNewPrecursorModal, "newPrecursorSmiles", "");
-      this.$set(this.addNewPrecursorModal, "noDupCheck", false);
+      this.addNewPrecursorModal["selectedSmiles"] = selectedSmiles === undefined ? this.selected.smiles : selectedSmiles;
+      this.addNewPrecursorModal["clusterId"] = clusterId;
+      this.addNewPrecursorModal["clusterName"] = clusterName;
+      this.addNewPrecursorModal["newClusterName"] = "";
+      this.addNewPrecursorModal["newPrecursorSmiles"] = "";
+      this.addNewPrecursorModal["noDupCheck"] = false;
     },
     closeAddNewPrecursorModal() {
       this.showAddNewPrecursorModal = false;
@@ -994,7 +988,10 @@ export default {
     },
     addNewPrecursorModalName(clusterId) {
       let allIds = this.resultsStore.clusteredResultsIndex[this.addNewPrecursorModal["selectedSmiles"]];
-      let idx = allIds.indexOf(clusterId);
+      let idx = allIds.indexOf(parseInt(clusterId));
+      if(idx === -1){
+        return ""
+      }
       return this.resultsStore.clusteredResults[this.addNewPrecursorModal["selectedSmiles"]][idx]["clusterName"];
     },
     getMolDrawEndPoint(precursor, align = false) {
@@ -1286,7 +1283,7 @@ export default {
       }
       let rank = Math.max(...this.resultsStore.dataGraph.nodes.get(successors).map((s) => s.rank)) + 1;
       let res = {
-        smiles: smiles,
+        outcome: smiles,
         smiles_split: smiles.split("."),
         rank: rank,
         group_id: clusterId,
@@ -1351,6 +1348,17 @@ export default {
     num2str,
   },
   computed: {
+    clusterItems() {
+      let items = [{ title: "Create new cluster", value: -1 }];
+      for (let idx in this.resultsStore.clusteredResultsIndex[this.addNewPrecursorModal['selectedSmiles']]) {
+        let clusterName = this.addNewPrecursorModalName(idx)
+        if(clusterName === ""){
+          continue;
+        }
+        items.push({ title: clusterName, value: idx });
+      }
+      return items;
+    },
     allowResolve: {
       get() {
         return this.settingsStore.allowResolve;

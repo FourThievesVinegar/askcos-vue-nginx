@@ -46,7 +46,7 @@ export const useResultsStore = defineStore("results", {
     clusteredResults: (state) => {
       // Mapping of target smiles to list of cluster representatives
       // {'targetSmiles0':[{cluster0_rep}, {cluster1_rep},...], ...}
-      let recomputeData = this.recomputeData;
+      let recomputeData = state.recomputeData;
       console.debug(recomputeData);
       let res = {};
       let options = {
