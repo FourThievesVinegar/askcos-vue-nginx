@@ -989,7 +989,7 @@ export const useResultsStore = defineStore("results", {
       }
     },
     async applyTemplate({ smiles, template }) {
-      const url = "/api/v2/apply-one-template/";
+      const url = "/api/rdkit/apply-one-template-by-idx";
       const body = {
         smiles: smiles,
         template_idx: template.index,
