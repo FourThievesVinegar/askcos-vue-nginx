@@ -271,18 +271,7 @@
               <p class="h6 mb-2">
                 <i class="fas fa-info-circle mr-1"></i>Reaction predicted by
                 <v-chip variant="tonal" class="py-5">
-                  {{ selected.data.model }}
-                  <div v-if="selected.data.model === 'template_relevance'">
-                    <!-- TODO: fix attribute filter -->
-                    <v-chip class="ml-1">
-                      {{ selected.data.trainingSet }}
-                    </v-chip>
-                  </div>
-                  <div v-else>
-                    <v-chip class="ml-1">
-                      {{ selected.data.trainingSet }}
-                    </v-chip>
-                  </div>
+                  {{ selected.data.model }} {{ selected.data.trainingSet }}
                 </v-chip>
                 model
               </p>
@@ -332,28 +321,28 @@
               <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button>
             </div>
           </div>
-          <div class="alert alert-warning m-2" v-if="selected.data.selecError">Could not check regio-selectivity for
+          <div class="alert alert-warning ma-2" v-if="selected.data.selecError">Could not check regio-selectivity for
             this reaction, possibly due to stereochemistry in the product.</div>
-          <template v-if="'outcomes' in selected.data">
-            <div class="m-2">
-              <h3 class="m-0">Regio-selective Products</h3>
+          <template v-if="'outcome' in selected.data">
+            <div class="ma-2">
+              <h6 class="ma-0 text-h6">Regio-selective Products</h6>
             </div>
-            <div class="d-flex justify-content-center flex-gap-2 flex-wrap m-2">
-              <v-btn id="predict-selectivity" variant="outline-primary" @click="predictSelectivity"> Predict Selectivity
+            <div class="d-flex justify-center flex-gap-2 flex-wrap ma-2">
+              <v-btn id="predict-selectivity" variant="outlined" @click="predictSelectivity"> Predict Selectivity
               </v-btn>
             </div>
             <div class="scroll-list">
               <div class="grid-wrapper">
-                <v-card v-for="(res, index) in selected.data.outcomes" class="custom-shadow m-2 p-2" :key="index">
+                <v-card v-for="(res, index) in selected.data.outcome" class="custom-shadow ma-2 pa-2" :key="index">
                   <div class="container-fluid d-flex flex-column h-100 justify-content-between">
-                    <div class="row">
-                      <div class="col-sm">
-                        <img :src="getMolDrawEndPoint(res)" class="m-1"
+                    <v-row>
+                      <v-col>
+                        <img :src="getMolDrawEndPoint(res)" class="ma-1"
                           :class="res === selected.smiles.split('>>')[1] ? 'grey-border' : ''" style="max-width: 100%" />
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-sm" v-if="selected.data.selectivity[index]">
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col v-if="selected.data.selectivity[index]">
                         Score {{ num2str(selected.data.selectivity[index]) }}
                         <span v-if="selected.data.selectivity[index] === Math.max(...selected.data.selectivity)">
                           <i class="fas fa-check"></i>
@@ -361,8 +350,8 @@
                         <span v-else>
                           <i class="fas fa-times"></i>
                         </span>
-                      </div>
-                    </div>
+                      </v-col>
+                    </v-row>
                   </div>
                 </v-card>
               </div>
