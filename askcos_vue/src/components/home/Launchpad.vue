@@ -5,7 +5,7 @@
     <v-row class="my-6 justify-center">
       <v-col cols="12" md="10">
         <v-text-field v-model="smiles" class="centered-input" variant="outlined"
-          label="Enter a molecule or reaction SMILES to explore available tasks" prepend-inner-icon="mdi mdi-flask"
+          label="Target" prepend-inner-icon="mdi mdi-flask"
           placeholder="SMILES" hide-details clearable>
           <template v-slot:append-inner>
             <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
