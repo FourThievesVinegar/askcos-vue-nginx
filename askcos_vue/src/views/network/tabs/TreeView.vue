@@ -376,9 +376,11 @@ import { visjsOptionsTreeDefault, visjsOptionsTreeCondensed } from "@/store/init
 import { makeChemicalDisplayNode, makeReactionDisplayNode, makeDisplayEdge } from "@/views/network/visualization";
 import { Network } from "vis-network";
 import { mapStores } from "pinia";
+import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
 import { useResultsStore } from "@/store/results";
 import { useSettingsStore } from "@/store/settings";
 import emptyTrees from '@/assets/emptyTrees.svg'
+
 
 function initializeNetwork(data, container, showDetail = true) {
     const options = showDetail ? visjsOptionsTreeDefault : visjsOptionsTreeCondensed;
@@ -401,6 +403,14 @@ export default {
             type: Boolean,
             default: false,
         },
+    },
+    setup() {
+        const createConfirm = useConfirm()
+        const createSnackbar = useSnackbar()
+        return {
+            createConfirm,
+            createSnackbar
+        }
     },
     data() {
         return {
@@ -891,29 +901,19 @@ export default {
             };
             API.post(url, body)
                 .then((json) => {
-                    // this.$bvToast.toast("Pathway ranking job submitted!", {
-                    //     title: "Pathway ranking",
-                    // });
+                     this.createSnackbar({ text: "Pathway ranking job submitted!", snackbarProps: { timeout: -1, vertical: true } });
                     return API.pollCeleryResult(json);
                 })
                 .then((output) => {
                     if (output.success) {
-                        this.$bvToast.toast("Pathway ranking job complete! Refresh the page to view updated results.", {
-                            title: "Pathway ranking",
-                            noAutoHide: true,
-                        });
+                    this.createSnackbar({ text: "Pathway ranking job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
                     } else {
-                        this.$bvToast.toast(`Pathway ranking job failed: ${output.error}`, {
-                            title: "Pathway ranking",
-                            noAutoHide: true,
-                        });
+
+                     this.createSnackbar({ text: `Pathway ranking job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
                     }
                 })
                 .catch(() => {
-                    this.$bvToast.toast("Pathway ranking job failed! Please try again or try submitting a new tree builder job.", {
-                        title: "Pathway ranking",
-                        noAutoHide: true,
-                    });
+                     this.createSnackbar({ text: "Pathway ranking job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 })
                 .finally(() => {
                     this.analysisTaskRunning = false;
@@ -941,29 +941,18 @@ export default {
             };
             API.post(url, body)
                 .then((json) => {
-                    // this.$bvToast.toast("Analog counting job submitted!", {
-                    //     title: "Analog counting",
-                    // });
+                     this.createSnackbar({ text: "Analog counting job submitted!", snackbarProps: { timeout: -1, vertical: true } });
                     return API.pollCeleryResult(json);
                 })
                 .then((output) => {
                     if (output.success) {
-                        this.$bvToast.toast("Analog counting job complete! Refresh the page to view updated results.", {
-                            title: "Analog counting",
-                            noAutoHide: true,
-                        });
+                        this.createSnackbar({ text: "Analog counting job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
                     } else {
-                        this.$bvToast.toast(`Analog counting job failed: ${output.error}`, {
-                            title: "Analog counting",
-                            noAutoHide: true,
-                        });
+                        this.createSnackbar({ text: `Analog counting job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
                     }
                 })
                 .catch(() => {
-                    this.$bvToast.toast("Analog counting job failed! Please try again or try submitting a new tree builder job.", {
-                        title: "Analog counting",
-                        noAutoHide: true,
-                    });
+                    this.createSnackbar({ text: "Analog counting job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 })
                 .finally(() => {
                     this.analysisTaskRunning = false;
@@ -983,29 +972,18 @@ export default {
             };
             API.post(url, body)
                 .then((json) => {
-                    this.$bvToast.toast("Reaction classification job submitted!", {
-                        title: "Reaction classification",
-                    });
+                     this.createSnackbar({ text: "Reaction classification job submitted!", snackbarProps: { timeout: -1, vertical: true } });
                     return API.pollCeleryResult(json.task_id);
                 })
                 .then((output) => {
                     if (output.success) {
-                        this.$bvToast.toast("Reaction classification job complete! Refresh the page to view updated results.", {
-                            title: "Reaction classification",
-                            noAutoHide: true,
-                        });
+                        this.createSnackbar({ text: "Reaction classification job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
                     } else {
-                        this.$bvToast.toast(`Reaction classification job failed: ${output.error}`, {
-                            title: "Reaction classification",
-                            noAutoHide: true,
-                        });
+                        this.createSnackbar({ text: `Reaction classification job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
                     }
                 })
                 .catch(() => {
-                    this.$bvToast.toast("Reaction classification job failed! Please try again or try submitting a new tree builder job.", {
-                        title: "Reaction classification",
-                        noAutoHide: true,
-                    });
+                    this.createSnackbar({ text: "Reaction classification job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 });
         },
         runGraphOptimization() {
@@ -1024,24 +1002,24 @@ export default {
             let resultId = "";
             API.post(url, body)
                 .then((json) => {
-                    this.$bvToast.toast("Network optimization job submitted!", {
-                        title: "Network optimization",
-                    });
+                    this.createSnackbar({ text: "Network optimization job submitted!", snackbarProps: { timeout: -1, vertical: true } });
                     resultId = json.task_id;
                     return API.pollCeleryResult(json.task_id);
                 })
                 .then(() => {
-                    this.$bvToast.toast("Network optimization job complete! Click here to view results.", {
-                        title: "Network optimization",
-                        href: `/retro/network/?tab=2&id=${resultId}`,
-                        noAutoHide: true,
-                    });
+                    // this.$bvToast.toast("Network optimization job complete! Click here to view results.", {
+                    //     title: "Network optimization",
+                    //     href: `/retro/network/?tab=2&id=${resultId}`,
+                    //     noAutoHide: true,
+                    // });
+                     this.createSnackbar({ text: "Network optimization job complete! Click here to view results.", snackbarProps: { timeout: -1, vertical: true } });
                 })
                 .catch(() => {
-                    this.$bvToast.toast("Network optimization job failed! Please try again or try submitting a new tree builder job.", {
-                        title: "Network optimization",
-                        noAutoHide: true,
-                    });
+                    // this.$bvToast.toast("Network optimization job failed! Please try again or try submitting a new tree builder job.", {
+                    //     title: "Network optimization",
+                    //     noAutoHide: true,
+                    // });
+                    this.createSnackbar({ text: "Network optimization job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 });
         },
         runPmiCalculation(selectedTree = false) {
@@ -1072,19 +1050,22 @@ export default {
                     // this.$bvToast.toast("PMI job submitted!", {
                     //     title: "pmi_calculation",
                     // });
+                     this.createSnackbar({ text: "PMI job submitted!", snackbarProps: { timeout: -1, vertical: true } });
                     return API.pollCeleryResult(json);
                 })
                 .then(() => {
-                    this.$bvToast.toast("PMI calculation job is complete! Refresh the page to view updated results.", {
-                        title: "pmi calculation",
-                        noAutoHide: true,
-                    });
+                    // this.$bvToast.toast("PMI calculation job is complete! Refresh the page to view updated results.", {
+                    //     title: "pmi calculation",
+                    //     noAutoHide: true,
+                    // });
+                    this.createSnackbar({ text: "PMI calculation job is complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
                 })
                 .catch(() => {
-                    this.$bvToast.toast("PMI calculation job failed! Please try again or try submitting a new tree builder job.", {
-                        title: "PMI calculation",
-                        noAutoHide: true,
-                    });
+                    // this.$bvToast.toast("PMI calculation job failed! Please try again or try submitting a new tree builder job.", {
+                    //     title: "PMI calculation",
+                    //     noAutoHide: true,
+                    // });
+                    this.createSnackbar({ text: "PMI calculation job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 });
         },
         num2str,

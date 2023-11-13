@@ -12,7 +12,7 @@
         <v-col cols="12" align="center" justify="center" class="pa-0">
           <smiles-image class="align-center justify-center" :smiles="selected.smiles" max-width="300px"></smiles-image>
         </v-col>
-        <v-data-table :headers="rtmFields" :items="rtmItems" density="compact">
+        <v-data-table  ref="rtmTable" :headers="rtmFields" :items="rtmItems" density="compact">
           <template #item.reaction_smarts="{ item }">
             <smiles-image :smiles="item.columns.reaction_smarts" input-type="template" highlight
               allow-copy></smiles-image>
@@ -87,6 +87,7 @@ export default {
     const rtmCurrentPage = ref(1);
     const loading = ref(false);
     const applyingTemplate = ref(null);
+    const rtmTable = ref(null);
 
     const rtmItems = computed(() => {
       if (resultsStore.recommendedTemplates[props.selected.smiles]) {
@@ -115,6 +116,7 @@ export default {
 
     const apply = (smiles, template) => {
       applyingTemplate.value = template._id;
+      console.log(applyingTemplate.value)
       resultsStore.applyTemplate({ smiles: smiles, template: template }).finally(() => {
         if (rtmTable.value) {
           rtmTable.value.refresh();
@@ -151,5 +153,10 @@ export default {
       propShow,
     };
   },
+  mounted() {
+    // The mounted lifecycle hook will signal the "ready" event when this component is rendered, allowing the parent to know that this component has finished rendering.
+    this.$emit("ready");
+  },
 };
 </script>
+
