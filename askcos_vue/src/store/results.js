@@ -505,7 +505,7 @@ export const useResultsStore = defineStore("results", {
       let promises = [];
       if (existingReactions && addedReactions.length > 0) {
         promises.push(this.rerankPrecursors(parentSmiles));
-        promises.push(this.recluster(parentSmiles));
+        // promises.push(this.recluster(parentSmiles)); as requested in #175
       }
       if (update && newPrecursors.size > 0) {
         promises.push(this.updateChemicalMetadata([...newPrecursors]));
