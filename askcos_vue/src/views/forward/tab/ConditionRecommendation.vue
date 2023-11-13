@@ -68,11 +68,12 @@
                 <template #item.temperature="{ item }">
                     {{ Math.round(item.columns.temperature) }} &deg;C
                 </template>
-                <template #item.catalyst_name_only="{ item }">
+                <template #item.catalyst="{ item }">
                     <div class="text-center">
                         <template v-if="!!item.columns.catalyst || !!item.columns.catalyst_name_only">
+                             <copy-tooltip :data="item.columns.catalyst" :title="'Click to copy: ' + item.columns.catalyst">
                             <smiles-image v-if="!!item.columns.catalyst" :smiles="item.columns.catalyst"></smiles-image>
-                            {{ item.columns.catalyst_name_only }}
+                                </copy-tooltip>
                         </template>
                         <template v-else>
                             None
@@ -213,7 +214,7 @@ const headers = ref([
     // { key: 'evaluation', title: 'Rank', align: 'center', },
     { key: 'solvent', title: 'Solvent', align: 'center' },
     { key: 'reagent', title: 'Reagents', align: 'center', width: "300px" },
-    { key: 'catalyst_name_only', title: 'Catalyst', align: 'center', },
+    { key: 'catalyst', title: 'Catalyst', align: 'center', },
     { key: 'temperature', title: 'Temperature', align: 'center', },
     { key: 'solvent_score', title: 'Solvent Score', align: 'center', },
     { key: 'predict', title: 'Predict with conditions', align: 'center', width: "50px" }
