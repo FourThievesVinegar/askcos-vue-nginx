@@ -362,16 +362,22 @@
     </div>
   </js-panel>
 
-  <!-- <b-modal id="cluster-view-modal" title="View Cluster" size="xl" footer-class="justify-content-between" v-model="showClusterPopoutModal" @close="closeClusterPopoutModal">
+  <v-dialog id="cluster-view-modal" v-model="showClusterPopoutModal" min-width="600px">
+    <v-card>
+      <v-card-title>View Cluster</v-card-title>
+      <v-divider></v-divider>
+      <v-card-text>
         <div class="btn-toolbar justify-content-center mb-3">
-          <b-input-group>
+          <!-- <b-input-group>
             <b-input-group-prepend>
               <v-btn variant="outline-dark" @click="clusterPopoutModalDecGroupID()">
                 <i class="fas fa-arrow-left"></i>
               </v-btn>
             </b-input-group-prepend>
-            <select id="clusterSelect" v-model="selectedClusterId" class="form-control" @change="clusterPopoutModalSetGroupID()">
-              <option v-for="idx in resultsStore.clusteredResultsIndex[clusterPopoutModalData['selectedSmiles']]" :value="idx" :key="idx">
+            <select id="clusterSelect" v-model="selectedClusterId" class="form-control"
+              @change="clusterPopoutModalSetGroupID()">
+              <option v-for="idx in resultsStore.clusteredResultsIndex[clusterPopoutModalData['selectedSmiles']]"
+                :value="idx" :key="idx">
                 {{ selectPopoutClusterName(idx) }}
               </option>
             </select>
@@ -380,15 +386,15 @@
                 <i class="fas fa-arrow-right"></i>
               </v-btn>
             </b-input-group-append>
-          </b-input-group>
+          </b-input-group> -->
         </div>
-  
+
         <div class="scroll-list">
           <div class="grid-wrapper">
-            <b-card no-body class="custom-shadow m-2 p-2" v-for="res in currentClusterViewPrecursors" :key="res.rank">
-              <div class="d-flex flex-column justify-content-between h-100">
+            <v-card no-body class="custom-shadow ma-2 pa-2" v-for="res in currentClusterViewPrecursors" :key="res.rank">
+              <div class="d-flex flex-column justify-space-between" style="height:100%">
                 <div>
-                  <table class="table table-sm table-bordered m-0">
+                  <v-table class="ma-0">
                     <tbody>
                       <tr>
                         <td>Rank</td>
@@ -419,60 +425,62 @@
                         <td>{{ res.clusterName }}</td>
                       </tr>
                     </tbody>
-                  </table>
+                  </v-table>
                 </div>
                 <div>
-                  <img :src="getMolDrawEndPoint(res, true)" class="mw-100" />
+                  <img :src="getMolDrawEndPoint(res, true)" style="max-width:100%" />
                 </div>
                 <div class="text-right">
-                  <button v-if="clusterPopoutModalData.selected.id in res.inVis" class="remRes btn btn-sm btn-danger" :data-rank="res.rank" @click="remFromResults(clusterPopoutModalData.selected, res)">
+                  <button v-if="clusterPopoutModalData.selected.id in res.inVis" class="remRes btn btn-sm btn-danger"
+                    :data-rank="res.rank" @click="remFromResults(clusterPopoutModalData.selected, res)">
                     <i class="fas fa-minus"></i>
                   </button>
-                  <button v-else class="addRes btn btn-sm btn-success" :data-rank="res.rank" @click="addFromResults(clusterPopoutModalData.selected, res)">
+                  <button v-else class="addRes btn btn-sm btn-success" :data-rank="res.rank"
+                    @click="addFromResults(clusterPopoutModalData.selected, res)">
                     <i class="fas fa-plus"></i>
                   </button>
                 </div>
               </div>
-            </b-card>
+            </v-card>
           </div>
         </div>
-        <template #modal-footer="{ close }">
-          <div>
-            <v-btn
-              variant="success"
-              class="mr-1"
-              @click="openAddNewPrecursorModal(clusterPopoutModalData['selectedSmiles'], clusterPopoutModalData['clusterId'], clusterPopoutModalData['clusterName'])"
-              title="Add precursor">
-              <i class="fas fa-plus"></i>
-            </v-btn>
-            <v-btn
-              variant="outline-dark"
-              @click="
-                showClusterPopoutModal = false;
-                openClusterEditModal(clusterPopoutModalData['selected'], clusterPopoutModalData['clusterId'], clusterPopoutModalData['clusterName']);
-                closeClusterPopoutModal();
-              "
-              title="Edit clusters">
-              <i class="fas fa-edit"></i>
-            </v-btn>
-          </div>
-          <div class="form-check-inline">
-            <input class="form-check-input" id="cpShowScore" type="checkbox" v-model="clusterPopoutModalData.optionsDisplay.showScore" />
-            <label class="form-check-label mr-2" for="cpShowScore">Score</label>
-            <input class="form-check-input" id="cpShowSCScore" type="checkbox" v-model="clusterPopoutModalData.optionsDisplay.showSCScore" />
-            <label class="form-check-label mr-2" for="cpShowSCScore">Synthetic complexity</label>
-            <input class="form-check-input" id="cpShowNumEx" type="checkbox" v-model="clusterPopoutModalData.optionsDisplay.showNumExample" />
-            <label class="form-check-label mr-2" for="cpShowNumEx"># Examples</label>
-            <input class="form-check-input" id="cpShowTemp" type="checkbox" v-model="clusterPopoutModalData.optionsDisplay.showTemplateScore" />
-            <label class="form-check-label mr-2" for="cpShowTemp">Template score</label>
-            <input class="form-check-input" id="cpShowPlaus" type="checkbox" v-model="clusterPopoutModalData.optionsDisplay.showPlausibility" />
-            <label class="form-check-label mr-2" for="cpShowPlaus">Plausibility</label>
-          </div>
-          <v-btn variant="outline-secondary" @click="close()">Close</v-btn>
-        </template>
-      </b-modal>
-  
-      <b-modal v-if="selected" id="cluster-edit-modal" title="Edit Cluster" size="xl" footer-class="justify-content-between" v-model="showClusterEditModal" @close="closeClusterEditModal">
+      </v-card-text>
+      <v-card-actions>
+        <div>
+          <v-btn variant="flat" class="mr-1"
+            @click="openAddNewPrecursorModal(clusterPopoutModalData['selectedSmiles'], clusterPopoutModalData['clusterId'], clusterPopoutModalData['clusterName'])"
+            title="Add precursor" icon="mdi-plus" color="success">
+          </v-btn>
+          <v-btn variant="flat" @click="
+            showClusterPopoutModal = false;
+          openClusterEditModal(clusterPopoutModalData['selected'], clusterPopoutModalData['clusterId'], clusterPopoutModalData['clusterName']);
+          closeClusterPopoutModal();
+          " title="Edit clusters" color="orange" icon="mdi-pencil" class="mr-1">
+          </v-btn>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input" id="cpShowScore" type="checkbox"
+            v-model="clusterPopoutModalData.optionsDisplay.showScore" />
+          <label class="form-check-label mr-2" for="cpShowScore">Score</label>
+          <input class="form-check-input" id="cpShowSCScore" type="checkbox"
+            v-model="clusterPopoutModalData.optionsDisplay.showSCScore" />
+          <label class="form-check-label mr-2" for="cpShowSCScore">Synthetic complexity</label>
+          <input class="form-check-input" id="cpShowNumEx" type="checkbox"
+            v-model="clusterPopoutModalData.optionsDisplay.showNumExample" />
+          <label class="form-check-label mr-2" for="cpShowNumEx"># Examples</label>
+          <input class="form-check-input" id="cpShowTemp" type="checkbox"
+            v-model="clusterPopoutModalData.optionsDisplay.showTemplateScore" />
+          <label class="form-check-label mr-2" for="cpShowTemp">Template score</label>
+          <input class="form-check-input" id="cpShowPlaus" type="checkbox"
+            v-model="clusterPopoutModalData.optionsDisplay.showPlausibility" />
+          <label class="form-check-label mr-2" for="cpShowPlaus">Plausibility</label>
+        </div>
+        <v-btn variant="flat" @click="showClusterPopoutModal = false" color="primary">Close</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- <b-modal v-if="selected" id="cluster-edit-modal" title="Edit Cluster" size="xl" footer-class="justify-content-between" v-model="showClusterEditModal" @close="closeClusterEditModal">
         <div class="btn-toolbar justify-content-center mb-3">
           <b-input-group>
             <b-input-group-prepend>
@@ -765,7 +773,7 @@ export default {
             })
             // Update the selected data object
             let newData = this.dataGraph.nodes.get(this.selected.smiles)
-            this.$set(this.selected, 'data', newData)
+            tthis.selected['data'] = newData
           } else {
             alert('Could not predict selectivity for this reaction.')
           }
@@ -989,7 +997,7 @@ export default {
     addNewPrecursorModalName(clusterId) {
       let allIds = this.resultsStore.clusteredResultsIndex[this.addNewPrecursorModal["selectedSmiles"]];
       let idx = allIds.indexOf(parseInt(clusterId));
-      if(idx === -1){
+      if (idx === -1) {
         return ""
       }
       return this.resultsStore.clusteredResults[this.addNewPrecursorModal["selectedSmiles"]][idx]["clusterName"];
@@ -1056,9 +1064,9 @@ export default {
     clusterPopoutModalSetGroupID() {
       let allIds = this.resultsStore.clusteredResultsIndex[this.clusterPopoutModalData["selectedSmiles"]];
       let idx = allIds.indexOf(this.selectedClusterId);
-      this.$set(this.clusterPopoutModalData, "clusterId", this.selectedClusterId);
+      this.clusterPopoutModalData["clusterId"] = this.selectedClusterId;
       let allResults = this.resultsStore.clusteredResults[this.clusterPopoutModalData["selectedSmiles"]];
-      this.$set(this.clusterPopoutModalData, "clusterName", allResults[idx]["clusterName"]);
+      this.clusterPopoutModalData["clusterName"] = allResults[idx]["clusterName"];
     },
     openClusterPopoutModal(selected, res) {
       if (selected === undefined) {
@@ -1097,11 +1105,11 @@ export default {
             // An error occurred
           });
       } else {
-        this.$set(this.clusterPopoutModalData, "selected", selected);
-        this.$set(this.clusterPopoutModalData, "selectedSmiles", selected.smiles);
-        this.$set(this.clusterPopoutModalData, "res", res);
-        this.$set(this.clusterPopoutModalData, "clusterId", res.clusterId);
-        this.$set(this.clusterPopoutModalData, "clusterName", res.clusterName);
+        this.clusterPopoutModalData["selected"] = selected;
+        this.clusterPopoutModalData["selectedSmiles"] = selected.smiles;
+        this.clusterPopoutModalData["res"] = res;
+        this.clusterPopoutModalData["clusterId"] = res.clusterId;
+        this.clusterPopoutModalData["clusterName"] = res.clusterName;
         this.selectedClusterId = res.clusterId;
         this.showClusterPopoutModal = true;
       }
@@ -1130,10 +1138,10 @@ export default {
       if (clusterId === undefined) {
         clusterId = 0;
       }
-      this.$set(this.clusterEditModalData, "selected", selected);
-      this.$set(this.clusterEditModalData, "selectedSmiles", selected.smiles);
-      this.$set(this.clusterEditModalData, "clusterId", clusterId);
-      this.$set(this.clusterEditModalData, "clusterName", clusterName);
+      this.clusterEditModalData["selected"] = selected;
+      this.clusterEditModalData["selectedSmiles"] = selected.smiles;
+      this.clusterEditModalData["clusterId"] = clusterId;
+      this.clusterEditModalData["clusterName"] = clusterName;
       this.selectedClusterId = clusterId;
       this.showClusterEditModal = true;
     },
@@ -1149,8 +1157,8 @@ export default {
       let allResults = this.resultsStore.clusteredResults[this.clusterPopoutModalData["selectedSmiles"]];
       let idx = allIds.indexOf(this.clusterPopoutModalData["clusterId"]);
       let idxToModify = Math.min(allIds.length - 1, idx + 1);
-      this.$set(this.clusterPopoutModalData, "clusterId", allIds[idxToModify]);
-      this.$set(this.clusterPopoutModalData, "clusterName", allResults[idxToModify]["clusterName"]);
+      this.clusterPopoutModalData["clusterId"] = allIds[idxToModify];
+      this.clusterPopoutModalData["clusterName"] = allResults[idxToModify]["clusterName"];
       this.selectedClusterId = allIds[idxToModify];
     },
     clusterPopoutModalDecGroupID() {
@@ -1158,8 +1166,8 @@ export default {
       let allResults = this.resultsStore.clusteredResults[this.clusterPopoutModalData["selectedSmiles"]];
       let idx = allIds.indexOf(this.clusterPopoutModalData["clusterId"]);
       let idxToModify = Math.max(0, idx - 1);
-      this.$set(this.clusterPopoutModalData, "clusterId", allIds[idxToModify]);
-      this.$set(this.clusterPopoutModalData, "clusterName", allResults[idxToModify]["clusterName"]);
+      this.clusterPopoutModalData["clusterId"] = allIds[idxToModify];
+      this.clusterPopoutModalData["clusterName"] = allResults[idxToModify]["clusterName"];
       this.selectedClusterId = allIds[idxToModify];
     },
     clusterEditOnDragover(event) {
@@ -1243,8 +1251,8 @@ export default {
       let allResults = this.resultsStore.clusteredResults[this.clusterEditModalData["selectedSmiles"]];
       let idx = allIds.indexOf(this.clusterEditModalData["clusterId"]);
       let idxToModify = Math.min(allIds.length - 1, idx + 1);
-      this.$set(this.clusterEditModalData, "clusterId", allIds[idxToModify]);
-      this.$set(this.clusterEditModalData, "clusterName", allResults[idxToModify]["clusterName"]);
+      this.clusterEditModalData["clusterId"] = allIds[idxToModify];
+      this.clusterEditModalData["clusterName"] = allResults[idxToModify]["clusterName"];
       this.selectedClusterId = allIds[idxToModify];
     },
     clusterEditModalDecGroupID() {
@@ -1252,16 +1260,16 @@ export default {
       let allResults = this.resultsStore.clusteredResults[this.clusterEditModalData["selectedSmiles"]];
       let idx = allIds.indexOf(this.clusterEditModalData["clusterId"]);
       let idxToModify = Math.max(0, idx - 1);
-      this.$set(this.clusterEditModalData, "clusterId", allIds[idxToModify]);
-      this.$set(this.clusterEditModalData, "clusterName", allResults[idxToModify]["clusterName"]);
+      this.clusterEditModalData["clusterId"] = allIds[idxToModify];
+      this.clusterEditModalData["clusterName"] = allResults[idxToModify]["clusterName"];
       this.selectedClusterId = allIds[idxToModify];
     },
     clusterEditModalSetGroupID() {
       let allIds = this.resultsStore.clusteredResultsIndex[this.clusterEditModalData["selectedSmiles"]];
       let idx = allIds.indexOf(this.selectedClusterId);
-      this.$set(this.clusterEditModalData, "clusterId", this.selectedClusterId);
+      this.clusterEditModalData["clusterId"] = this.selectedClusterId;
       let allResults = this.resultsStore.clusteredResults[this.clusterEditModalData["selectedSmiles"]];
-      this.$set(this.clusterEditModalData, "clusterName", allResults[idx]["clusterName"]);
+      this.clusterEditModalData["clusterName"] = allResults[idx]["clusterName"];
     },
     clusterEditModalAddPrecursor(selectedSmiles, smiles, clusterId) {
       // clusterId == -1 is to add a new cluster
@@ -1352,7 +1360,7 @@ export default {
       let items = [{ title: "Create new cluster", value: -1 }];
       for (let idx in this.resultsStore.clusteredResultsIndex[this.addNewPrecursorModal['selectedSmiles']]) {
         let clusterName = this.addNewPrecursorModalName(idx)
-        if(clusterName === ""){
+        if (clusterName === "") {
           continue;
         }
         items.push({ title: clusterName, value: idx });
