@@ -772,6 +772,7 @@ export default {
           return
       }
       this.isCanvasEmpty = false;
+      this.nodeDetailVisible = false;
       this.visible = false;
       this.pendingTasks += 1;
       this.saveAllSettings();
