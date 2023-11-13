@@ -1128,11 +1128,10 @@ export default {
           return
       }
       // this.resultsStore.target = ""; // as requested in #41
+      let savedTarget = this.resultsStore.target;
       this.selected = null;
-      this.resultsStore.clearDataGraph();
-      this.resultsStore.clearDispGraph();
-      this.resultsStore.clearRemovedReactions();
-      this.resultsStore.setSavedResultInfo({});
+      this.resultsStore.$reset()
+      this.resultsStore.target = savedTarget;
       this.trees = [];
       this.isCanvasEmpty = true;
       this.visible = true;
