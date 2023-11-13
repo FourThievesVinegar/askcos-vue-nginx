@@ -79,7 +79,7 @@
               <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
                 <template v-slot:activator="{ props }">
                   <v-btn color="orange-accent-4" append-icon="mdi mdi-menu-down" variant="flat" v-bind="props"
-                    :disabled="username = null || !adminName">
+                    :disabled="!adminName">
                     Add Compound
                   </v-btn>
                 </template>
@@ -243,12 +243,17 @@ const buyablesSources = ref([]);
 const showKetcher = ref(false);
 const ketcherRef = ref(null);
 const selectedSource = ref(null);
-const username = localStorage.getItem("username")
-const adminName = username.startsWith('admin_')
 const selectedSources = ref([]);
 const createConfirm = useConfirm();
 const createSnackbar = useSnackbar()
 
+const adminName = computed(() => {
+  let user = localStorage.getItem("username");
+  if(user){
+    return user.startsWith('admin_')
+  }
+  return false;
+})
 const headers = computed(() => {
   let headers = [
     { key: 'smiles', title: 'SMILES', align: 'center', width: '500px' },
