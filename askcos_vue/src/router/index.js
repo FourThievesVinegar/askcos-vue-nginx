@@ -38,7 +38,7 @@ const routes = [
     component: () => import("@/layouts/default/Default.vue"),
     beforeEnter: (to, from, next) => {
       if (!isAuthenticated()) {
-        next({ name: "Login" });
+        next({ name: "Login", query: { redirect: encodeURIComponent(to.fullPath) } });
       } else {
         next();
       }
@@ -383,6 +383,13 @@ router.afterEach(async (to) => {
   NProgress.done();
   await nextTick();
   document.title = `${to.meta.title} - ASKCOS` || DEFAULT_TITLE;
+});
+
+router.beforeEach((to, from, next) => {
+  if (from.fullPath) {
+    localStorage.setItem("lastRoute", from.fullPath);
+  }
+  next();
 });
 
 export default router;

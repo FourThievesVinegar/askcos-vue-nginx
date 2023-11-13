@@ -118,6 +118,7 @@ const isLoggedIn = computed(() => {
 
 function logout() {
   localStorage.removeItem("accessToken");
+  localStorage.removeItem("username");
   router.push({ path: '/login' })
 }
 </script>

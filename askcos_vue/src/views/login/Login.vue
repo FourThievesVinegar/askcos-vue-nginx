@@ -77,7 +77,7 @@ import * as THREE from "three";
 import HALO from 'vanta/dist/vanta.halo.min'
 import { ref, onMounted } from 'vue';
 import { API } from "@/common/api";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const vantaRef = ref(null);
 const username = ref(null);
@@ -86,6 +86,7 @@ const showSignupDialog = ref(false);
 const createdAccount = ref(false);
 const creationFailure = ref(false);
 const loginFailure = ref(false);
+const route = useRoute();
 const router = useRouter();
 
 const usernameRules = ref([
@@ -130,19 +131,20 @@ const login = () => {
         localStorage.setItem('accessToken', json.access_token);
         localStorage.setItem('username', username.value);
         // object with path
-        const lastRoute = localStorage.getItem('lastRoute') || '/';
-        router.push(lastRoute);
+        const urlParams = route.query;
+        const redirect = urlParams.redirect;
+
+        if (redirect) {
+            router.push(decodeURIComponent(redirect))
+        }
+        else {
+            const lastRoute = localStorage.getItem('lastRoute') || '/';
+            router.push(lastRoute);
+        }
     }).catch(() => {
         loginFailure.value = true;
     })
 }
-
-router.beforeEach((to, from, next) => {
-    if (from.fullPath) {
-        localStorage.setItem('lastRoute', from.fullPath);
-    }
-    next();
-});
 
 const signup = () => {
     if (!username.value || !password.value) {
