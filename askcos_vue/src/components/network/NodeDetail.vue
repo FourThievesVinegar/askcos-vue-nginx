@@ -752,6 +752,37 @@ export default {
     };
   },
   methods: {
+    predictSelectivity() {
+      this.$emit("updatePendingTasks", "add");
+      let data = this.selected.data
+      let url = '/api/general-selectivity/controller/call-async';
+      let body = {
+        smiles: this.selected.smiles,
+        mapped: true,
+        all_outcomes: true,
+        mode: this.selectivityModel,
+      }
+      API.runCeleryTask(url, body)
+        .then(output => {
+          if (Array.isArray(output)) {
+            this.updateDataNodes({
+              id: data.id,
+              selectivity: output,
+            })
+            // Update the selected data object
+            let newData = this.dataGraph.nodes.get(this.selected.smiles)
+            this.$set(this.selected, 'data', newData)
+          } else {
+            alert('Could not predict selectivity for this reaction.')
+          }
+        })
+        .catch(error => {
+          alert('There was an error predicting selectivity for this reaction: ' + error)
+        })
+        .finally(() => {
+          this.$emit("updatePendingTasks", "sub");
+        })
+    },
     toggleResolver() {
       if (this.allowResolve) {
         this.allowResolve = false;
