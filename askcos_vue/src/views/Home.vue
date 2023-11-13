@@ -5,8 +5,9 @@
         <v-expand-transition>
           <v-sheet elevation="2" rounded="lg" width="100%" class="mb-6 pa-6" v-show="show">
             <v-row class="justify-center align-center pa-0 ma-0">
-              <v-col cols="12" class="d-flex justify-center align-center">
-                <h2 class="text-h2 text-blue-darken-3 header font-weight-medium"><strong>Explore ASKCOS</strong></h2>
+              <v-col cols="12" class="d-flex justify-center align-center text-center">
+                <v-icon icon="mdi-compass-rose" class="text-h2 text-blue-darken-3 mr-2"></v-icon>
+                <h2 class="text-h2 text-blue-darken-3 header font-weight-medium text-center"><strong>Explore ASKCOS</strong></h2>
               </v-col>
             </v-row>
             <v-row class="justify-center align-center pa-0 ma-0">
