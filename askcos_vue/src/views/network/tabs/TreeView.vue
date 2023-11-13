@@ -118,18 +118,65 @@
                             </v-btn>
                             of the selected components.
                         </p>
-                        <a href="#" role="button">
-                            <p>Select starting materials by
-                                image</p>
+                        <a href="#" role="button" v-on:click.stop="() => { this.startDialog = true }">
+                            <p>Select starting materials by image</p>
                         </a>
+
+                        <v-dialog v-model="startDialog" persistent max-width="1200px" max-height="700px" scrollable>
+                            <v-card>
+                                <v-card-title class="headline">Filter by starting materials</v-card-title>
+                                <v-card-text>
+                                    <v-form-group label="Starting materials">
+                                        <v-row>
+                                            <v-col cols="2" v-for="material in startingMaterialOptions" :key="material">
+                                                <v-card class="pa-3">
+                                                    <v-checkbox v-model="selectedStartingMaterials" :value="material"
+                                                        class="my-0 py-0" hide-details></v-checkbox>
+                                                    <smiles-image class="my-3" :smiles="material"></smiles-image>
+                                                </v-card>
+                                            </v-col>
+                                        </v-row>
+                                    </v-form-group>
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="primary" variant="tonal" @click="startDialog = false">OK</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
                         <v-select label="Starting materials" :items="startingMaterialOptions"
                             v-model="selectedStartingMaterials" multiple variant="outlined" density="compact"
                             class="mt-1"></v-select>
-                        <a href="#" role="button">
+
+                        <a href="#" role="button" v-on:click.stop="() => { this.intermediateDialog = true }">
                             <p>Select intermediates by image</p>
                         </a>
+                        <v-dialog v-model="intermediateDialog" persistent max-width="1200px" max-height="700px" scrollable>
+                            <v-card>
+                                <v-card-title class="headline">Filter by intermediates</v-card-title>
+                                <v-card-text>
+                                    <v-form-group label="Intermediates">
+                                        <v-row>
+                                            <v-col cols="2" v-for="intermediate in intermediateOptions" :key="intermediate">
+                                                <v-card class="pa-3">
+                                                    <v-checkbox v-model="selectedIntermediates" :value="intermediate"
+                                                        class="my-0 py-0" hide-details></v-checkbox>
+                                                    <smiles-image class="my-3" :smiles="intermediate"></smiles-image>
+                                                </v-card>
+                                            </v-col>
+                                        </v-row>
+                                    </v-form-group>
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="primary" variant="tonal" @click="intermediateDialog = false">OK</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+
                         <v-select label="Intermediates" :items="intermediateOptions" v-model="selectedIntermediates"
                             multiple variant="outlined" density="compact" class="mt-1"></v-select>
+
                         <v-select v-if="reactionClassOptions.length" label="Reaction classes" :items="reactionClassOptions"
                             v-model="selectedReactionClasses" multiple variant="outlined" density="compact"
                             class="mt-1"></v-select>
@@ -282,32 +329,35 @@
     </js-panel>
 
     <js-panel :visible="tabActive && showListView === true" :options="listPanelOptions" @close="showListView = false">
-            <div class="m-3">
-                <v-pagination v-model="treeListCurrentPage" :length="Math.ceil(trees.length / treeListItemsPerPage)"
-                    class="mb-3"></v-pagination>
-                    <v-expansion-panels v-for="(tree, index) in treeListItems" :key="index" class="mb-3" v-model="panel" >
-                        <v-expansion-panel>
-                            <v-expansion-panel-title>
-                                    <span class="text-body-1 ml-2"><b>Tree {{ (treeListCurrentPage - 1) * treeListItemsPerPage + index + 1 }} </b></span>
-                                </v-expansion-panel-title>
-                                <v-expansion-panel-text>
-                                <div>
-                                    <div :id="`treeList-${index}`" class="list-view-tree"></div>
-                                    <div class="d-flex justify-space-between">
-                                        <v-spacer></v-spacer>
-                                        <v-btn-group class="float-right"  divided :border="true">
-                                            <v-btn variant="flat" color="primary" @click="addTreeToIpp(trees[(treeListCurrentPage - 1) * treeListItemsPerPage + index])"> Add to IPP </v-btn>
-                                            <v-btn variant="outlined" @click="showListView = false; currentTreeId = (treeListCurrentPage - 1) * treeListItemsPerPage + index;">
-                                                View in main window
-                                            </v-btn>
-                                        </v-btn-group>
-                                    </div>
-                                </div>
-                                </v-expansion-panel-text>
-                        </v-expansion-panel>
-                    </v-expansion-panels>
-                </div>
-        </js-panel>
+        <div class="m-3">
+            <v-pagination v-model="treeListCurrentPage" :length="Math.ceil(trees.length / treeListItemsPerPage)"
+                class="mb-3"></v-pagination>
+            <v-card v-for="(tree, index) in treeListItems" :key="index" class="mb-3 pa-10 ma-10" :model-value="panel" multiple>
+                <v-card-title>
+                    <span class="text-body-1 ml-2"><b>Tree {{ (treeListCurrentPage - 1) * treeListItemsPerPage + index +
+                        1 }} </b></span>
+                </v-card-title>
+                <v-card-text>
+                    <div>
+                        <div :id="`treeList-${index}`" class="list-view-tree"></div>
+                        <div class="d-flex justify-space-between">
+                        </div>
+                    </div>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn-group class="float-right" divided :border="true">
+                        <v-btn variant="flat" color="primary"
+                            @click="addTreeToIpp(trees[(treeListCurrentPage - 1) * treeListItemsPerPage + index])">
+                            Add to IPP </v-btn>
+                        <v-btn variant="outlined"
+                            @click="showListView = false; currentTreeId = (treeListCurrentPage - 1) * treeListItemsPerPage + index;">
+                            View in main window
+                        </v-btn>
+                    </v-btn-group>
+                </v-card-actions>
+            </v-card>
+        </div>
+    </js-panel>
     <result-info-modal :visible="resultInfo" @close="$event => resultInfo = $event"></result-info-modal>
 </template>
   
@@ -326,9 +376,11 @@ import { visjsOptionsTreeDefault, visjsOptionsTreeCondensed } from "@/store/init
 import { makeChemicalDisplayNode, makeReactionDisplayNode, makeDisplayEdge } from "@/views/network/visualization";
 import { Network } from "vis-network";
 import { mapStores } from "pinia";
+import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
 import { useResultsStore } from "@/store/results";
 import { useSettingsStore } from "@/store/settings";
 import emptyTrees from '@/assets/emptyTrees.svg'
+
 
 function initializeNetwork(data, container, showDetail = true) {
     const options = showDetail ? visjsOptionsTreeDefault : visjsOptionsTreeCondensed;
@@ -352,9 +404,19 @@ export default {
             default: false,
         },
     },
+    setup() {
+        const createConfirm = useConfirm()
+        const createSnackbar = useSnackbar()
+        return {
+            createConfirm,
+            createSnackbar
+        }
+    },
     data() {
         return {
-            panel: [0, 1],
+            startDialog: false,
+            intermediateDialog: false,
+            panel: [0],
             disabled: false,
             showListView: false,
             selected: null,
@@ -839,29 +901,19 @@ export default {
             };
             API.post(url, body)
                 .then((json) => {
-                    // this.$bvToast.toast("Pathway ranking job submitted!", {
-                    //     title: "Pathway ranking",
-                    // });
+                     this.createSnackbar({ text: "Pathway ranking job submitted!", snackbarProps: { timeout: -1, vertical: true } });
                     return API.pollCeleryResult(json);
                 })
                 .then((output) => {
                     if (output.success) {
-                        this.$bvToast.toast("Pathway ranking job complete! Refresh the page to view updated results.", {
-                            title: "Pathway ranking",
-                            noAutoHide: true,
-                        });
+                    this.createSnackbar({ text: "Pathway ranking job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
                     } else {
-                        this.$bvToast.toast(`Pathway ranking job failed: ${output.error}`, {
-                            title: "Pathway ranking",
-                            noAutoHide: true,
-                        });
+
+                     this.createSnackbar({ text: `Pathway ranking job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
                     }
                 })
                 .catch(() => {
-                    this.$bvToast.toast("Pathway ranking job failed! Please try again or try submitting a new tree builder job.", {
-                        title: "Pathway ranking",
-                        noAutoHide: true,
-                    });
+                     this.createSnackbar({ text: "Pathway ranking job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 })
                 .finally(() => {
                     this.analysisTaskRunning = false;
@@ -889,29 +941,18 @@ export default {
             };
             API.post(url, body)
                 .then((json) => {
-                    // this.$bvToast.toast("Analog counting job submitted!", {
-                    //     title: "Analog counting",
-                    // });
+                     this.createSnackbar({ text: "Analog counting job submitted!", snackbarProps: { timeout: -1, vertical: true } });
                     return API.pollCeleryResult(json);
                 })
                 .then((output) => {
                     if (output.success) {
-                        this.$bvToast.toast("Analog counting job complete! Refresh the page to view updated results.", {
-                            title: "Analog counting",
-                            noAutoHide: true,
-                        });
+                        this.createSnackbar({ text: "Analog counting job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
                     } else {
-                        this.$bvToast.toast(`Analog counting job failed: ${output.error}`, {
-                            title: "Analog counting",
-                            noAutoHide: true,
-                        });
+                        this.createSnackbar({ text: `Analog counting job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
                     }
                 })
                 .catch(() => {
-                    this.$bvToast.toast("Analog counting job failed! Please try again or try submitting a new tree builder job.", {
-                        title: "Analog counting",
-                        noAutoHide: true,
-                    });
+                    this.createSnackbar({ text: "Analog counting job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 })
                 .finally(() => {
                     this.analysisTaskRunning = false;
@@ -931,29 +972,18 @@ export default {
             };
             API.post(url, body)
                 .then((json) => {
-                    this.$bvToast.toast("Reaction classification job submitted!", {
-                        title: "Reaction classification",
-                    });
+                     this.createSnackbar({ text: "Reaction classification job submitted!", snackbarProps: { timeout: -1, vertical: true } });
                     return API.pollCeleryResult(json.task_id);
                 })
                 .then((output) => {
                     if (output.success) {
-                        this.$bvToast.toast("Reaction classification job complete! Refresh the page to view updated results.", {
-                            title: "Reaction classification",
-                            noAutoHide: true,
-                        });
+                        this.createSnackbar({ text: "Reaction classification job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
                     } else {
-                        this.$bvToast.toast(`Reaction classification job failed: ${output.error}`, {
-                            title: "Reaction classification",
-                            noAutoHide: true,
-                        });
+                        this.createSnackbar({ text: `Reaction classification job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
                     }
                 })
                 .catch(() => {
-                    this.$bvToast.toast("Reaction classification job failed! Please try again or try submitting a new tree builder job.", {
-                        title: "Reaction classification",
-                        noAutoHide: true,
-                    });
+                    this.createSnackbar({ text: "Reaction classification job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 });
         },
         runGraphOptimization() {
@@ -972,24 +1002,24 @@ export default {
             let resultId = "";
             API.post(url, body)
                 .then((json) => {
-                    this.$bvToast.toast("Network optimization job submitted!", {
-                        title: "Network optimization",
-                    });
+                    this.createSnackbar({ text: "Network optimization job submitted!", snackbarProps: { timeout: -1, vertical: true } });
                     resultId = json.task_id;
                     return API.pollCeleryResult(json.task_id);
                 })
                 .then(() => {
-                    this.$bvToast.toast("Network optimization job complete! Click here to view results.", {
-                        title: "Network optimization",
-                        href: `/retro/network/?tab=2&id=${resultId}`,
-                        noAutoHide: true,
-                    });
+                    // this.$bvToast.toast("Network optimization job complete! Click here to view results.", {
+                    //     title: "Network optimization",
+                    //     href: `/retro/network/?tab=2&id=${resultId}`,
+                    //     noAutoHide: true,
+                    // });
+                     this.createSnackbar({ text: "Network optimization job complete! Click here to view results.", snackbarProps: { timeout: -1, vertical: true } });
                 })
                 .catch(() => {
-                    this.$bvToast.toast("Network optimization job failed! Please try again or try submitting a new tree builder job.", {
-                        title: "Network optimization",
-                        noAutoHide: true,
-                    });
+                    // this.$bvToast.toast("Network optimization job failed! Please try again or try submitting a new tree builder job.", {
+                    //     title: "Network optimization",
+                    //     noAutoHide: true,
+                    // });
+                    this.createSnackbar({ text: "Network optimization job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 });
         },
         runPmiCalculation(selectedTree = false) {
@@ -1020,19 +1050,22 @@ export default {
                     // this.$bvToast.toast("PMI job submitted!", {
                     //     title: "pmi_calculation",
                     // });
+                     this.createSnackbar({ text: "PMI job submitted!", snackbarProps: { timeout: -1, vertical: true } });
                     return API.pollCeleryResult(json);
                 })
                 .then(() => {
-                    this.$bvToast.toast("PMI calculation job is complete! Refresh the page to view updated results.", {
-                        title: "pmi calculation",
-                        noAutoHide: true,
-                    });
+                    // this.$bvToast.toast("PMI calculation job is complete! Refresh the page to view updated results.", {
+                    //     title: "pmi calculation",
+                    //     noAutoHide: true,
+                    // });
+                    this.createSnackbar({ text: "PMI calculation job is complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
                 })
                 .catch(() => {
-                    this.$bvToast.toast("PMI calculation job failed! Please try again or try submitting a new tree builder job.", {
-                        title: "PMI calculation",
-                        noAutoHide: true,
-                    });
+                    // this.$bvToast.toast("PMI calculation job failed! Please try again or try submitting a new tree builder job.", {
+                    //     title: "PMI calculation",
+                    //     noAutoHide: true,
+                    // });
+                    this.createSnackbar({ text: "PMI calculation job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 });
         },
         num2str,
