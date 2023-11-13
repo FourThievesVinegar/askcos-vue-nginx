@@ -6,14 +6,14 @@
       <v-col cols="12" md="10">
         <v-text-field v-model="smiles" class="centered-input" variant="outlined"
           label="Target" prepend-inner-icon="mdi mdi-flask"
-          placeholder="SMILES" hide-details clearable>
+          placeholder="SMILES" hide-details clearable rounded="pill">
           <template v-slot:append-inner>
             <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
-              @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }">Draw</v-btn>
+              @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }" rounded="pill">Draw</v-btn>
           </template>
           <template v-slot:append>
             <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large"
-              @click="canonicalize()">Canonicalize</v-btn>
+              @click="canonicalize()" rounded="pill">Canonicalize</v-btn>
           </template>
         </v-text-field>
       </v-col>
