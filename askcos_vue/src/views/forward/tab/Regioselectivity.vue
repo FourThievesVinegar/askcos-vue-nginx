@@ -78,7 +78,7 @@ const disabled = ref(false)
 const dialog = ref(false)
 const filename = ref('selectivity.csv')
 
-const { results, models, progress } = defineProps({
+const { results, pending } = defineProps({
     results: {
         type: Array,
         default: [],

@@ -118,18 +118,65 @@
                             </v-btn>
                             of the selected components.
                         </p>
-                        <a href="#" role="button">
-                            <p>Select starting materials by
-                                image</p>
+                        <a href="#" role="button" v-on:click.stop="() => { this.startDialog = true }">
+                            <p>Select starting materials by image</p>
                         </a>
+
+                        <v-dialog v-model="startDialog" persistent max-width="1200px" max-height="700px" scrollable>
+                            <v-card>
+                                <v-card-title class="headline">Filter by starting materials</v-card-title>
+                                <v-card-text>
+                                    <v-form-group label="Starting materials">
+                                        <v-row>
+                                            <v-col cols="2" v-for="material in startingMaterialOptions" :key="material">
+                                                <v-card class="pa-3">
+                                                    <v-checkbox v-model="selectedStartingMaterials" :value="material"
+                                                        class="my-0 py-0" hide-details></v-checkbox>
+                                                    <smiles-image class="my-3" :smiles="material"></smiles-image>
+                                                </v-card>
+                                            </v-col>
+                                        </v-row>
+                                    </v-form-group>
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="primary" variant="tonal" @click="startDialog = false">OK</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
                         <v-select label="Starting materials" :items="startingMaterialOptions"
                             v-model="selectedStartingMaterials" multiple variant="outlined" density="compact"
                             class="mt-1"></v-select>
-                        <a href="#" role="button">
+
+                        <a href="#" role="button" v-on:click.stop="() => { this.intermediateDialog = true }">
                             <p>Select intermediates by image</p>
                         </a>
+                        <v-dialog v-model="intermediateDialog" persistent max-width="1200px" max-height="700px" scrollable>
+                            <v-card>
+                                <v-card-title class="headline">Filter by intermediates</v-card-title>
+                                <v-card-text>
+                                    <v-form-group label="Intermediates">
+                                        <v-row>
+                                            <v-col cols="2" v-for="intermediate in intermediateOptions" :key="intermediate">
+                                                <v-card class="pa-3">
+                                                    <v-checkbox v-model="selectedIntermediates" :value="intermediate"
+                                                        class="my-0 py-0" hide-details></v-checkbox>
+                                                    <smiles-image class="my-3" :smiles="intermediate"></smiles-image>
+                                                </v-card>
+                                            </v-col>
+                                        </v-row>
+                                    </v-form-group>
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="primary" variant="tonal" @click="intermediateDialog = false">OK</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+
                         <v-select label="Intermediates" :items="intermediateOptions" v-model="selectedIntermediates"
                             multiple variant="outlined" density="compact" class="mt-1"></v-select>
+
                         <v-select v-if="reactionClassOptions.length" label="Reaction classes" :items="reactionClassOptions"
                             v-model="selectedReactionClasses" multiple variant="outlined" density="compact"
                             class="mt-1"></v-select>
@@ -282,32 +329,35 @@
     </js-panel>
 
     <js-panel :visible="tabActive && showListView === true" :options="listPanelOptions" @close="showListView = false">
-            <div class="m-3">
-                <v-pagination v-model="treeListCurrentPage" :length="Math.ceil(trees.length / treeListItemsPerPage)"
-                    class="mb-3"></v-pagination>
-                    <v-expansion-panels v-for="(tree, index) in treeListItems" :key="index" class="mb-3" v-model="panel" >
-                        <v-expansion-panel>
-                            <v-expansion-panel-title>
-                                    <span class="text-body-1 ml-2"><b>Tree {{ (treeListCurrentPage - 1) * treeListItemsPerPage + index + 1 }} </b></span>
-                                </v-expansion-panel-title>
-                                <v-expansion-panel-text>
-                                <div>
-                                    <div :id="`treeList-${index}`" class="list-view-tree"></div>
-                                    <div class="d-flex justify-space-between">
-                                        <v-spacer></v-spacer>
-                                        <v-btn-group class="float-right"  divided :border="true">
-                                            <v-btn variant="flat" color="primary" @click="addTreeToIpp(trees[(treeListCurrentPage - 1) * treeListItemsPerPage + index])"> Add to IPP </v-btn>
-                                            <v-btn variant="outlined" @click="showListView = false; currentTreeId = (treeListCurrentPage - 1) * treeListItemsPerPage + index;">
-                                                View in main window
-                                            </v-btn>
-                                        </v-btn-group>
-                                    </div>
-                                </div>
-                                </v-expansion-panel-text>
-                        </v-expansion-panel>
-                    </v-expansion-panels>
-                </div>
-        </js-panel>
+        <div class="m-3">
+            <v-pagination v-model="treeListCurrentPage" :length="Math.ceil(trees.length / treeListItemsPerPage)"
+                class="mb-3"></v-pagination>
+            <v-card v-for="(tree, index) in treeListItems" :key="index" class="mb-3 pa-10 ma-10" :model-value="panel" multiple>
+                <v-card-title>
+                    <span class="text-body-1 ml-2"><b>Tree {{ (treeListCurrentPage - 1) * treeListItemsPerPage + index +
+                        1 }} </b></span>
+                </v-card-title>
+                <v-card-text>
+                    <div>
+                        <div :id="`treeList-${index}`" class="list-view-tree"></div>
+                        <div class="d-flex justify-space-between">
+                        </div>
+                    </div>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn-group class="float-right" divided :border="true">
+                        <v-btn variant="flat" color="primary"
+                            @click="addTreeToIpp(trees[(treeListCurrentPage - 1) * treeListItemsPerPage + index])">
+                            Add to IPP </v-btn>
+                        <v-btn variant="outlined"
+                            @click="showListView = false; currentTreeId = (treeListCurrentPage - 1) * treeListItemsPerPage + index;">
+                            View in main window
+                        </v-btn>
+                    </v-btn-group>
+                </v-card-actions>
+            </v-card>
+        </div>
+    </js-panel>
     <result-info-modal :visible="resultInfo" @close="$event => resultInfo = $event"></result-info-modal>
 </template>
   
@@ -354,7 +404,9 @@ export default {
     },
     data() {
         return {
-            panel: [0, 1],
+            startDialog: false,
+            intermediateDialog: false,
+            panel: [0],
             disabled: false,
             showListView: false,
             selected: null,
