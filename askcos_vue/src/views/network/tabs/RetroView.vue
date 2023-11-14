@@ -84,11 +84,14 @@
                             </div>
                         </v-carousel-item>
                     </v-carousel>
-                    <div class="d-flex justify-end pa-3">
+                    <div class="d-flex justify-end pa-3 ">
+                        <v-btn variant="flat" color="primary" class="justify-end mr-2"
+                            @click="allPredictionsDialog = true">See All Prediction</v-btn>
                         <v-btn variant="tonal" class="justify-end" @click="clear()">Clear All</v-btn>
                     </div>
                 </v-sheet>
-                <v-sheet v-else  elevation="2" class="d-flex justify-center align-center flex-column text-center pa-5" rounded="lg">
+                <v-sheet v-else elevation="2" class="d-flex justify-center align-center flex-column text-center pa-5"
+                    rounded="lg">
                     <v-img :width="400" cover :src="emptyVoid" class="mb-3"></v-img>
                     <h2>No Predictions</h2>
                     <p class="text-body-1">Begin by running a new prediction on the left!</p>
@@ -165,6 +168,69 @@
             </v-col>
         </v-row>
     </v-container>
+
+    <v-dialog v-model="allPredictionsDialog" persistent max-width="450px" max-height="700px" scrollable>
+        <v-card>
+            <v-card-title class="headline">All Predictions</v-card-title>
+            <v-card-text>
+                <v-row>
+                    <v-col cols="12" v-for="(item, index) in predictions" :key="index">
+                        <div class="justify-center align-center" style="height:100%">
+                            <v-card width="400" prepend-icon="mdi-cog" variant="outlined">
+                                <template v-slot:title>
+                                    <div class="d-flex justify-space-between align-center">
+                                        <div v-if="item.edit" style="width:100%" class="mr-2 mt-2 mb-2">
+                                            <v-text-field label="Label" v-model="labels[index]" variant="outlined"
+                                                @blur="item.edit = false" @keyup.enter="item.edit = false"
+                                                hide-details></v-text-field>
+                                        </div>
+                                        <div v-else class="d-flex align-items-baseline">
+                                            <h4>{{ labels[index] }}</h4>
+                                            <v-icon size="small" icon="mdi mdi-pencil" @click="item.edit = true"
+                                                class="ml-2"></v-icon>
+                                        </div>
+                                        <v-progress-circular v-if="item.loading" color="primary" indeterminate
+                                            :width="5"></v-progress-circular>
+                                    </div>
+                                </template>
+                                <v-card-text>
+                                    <v-table>
+                                        <thead>
+                                            <tr>
+                                                <th class="text-left">
+                                                    Model
+                                                </th>
+                                                <th class="text-left">
+                                                    Training Set
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>{{ item.model }}</td>
+                                                <td>{{ item.trainingSet }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </v-table>
+                                    <div class="d-flex justify-space-between align-center">
+                                        <v-checkbox-btn v-model="item.show" label="Show in Table"></v-checkbox-btn>
+                                        <v-btn v-if="item.model === 'template_relevance'" variant="plain"
+                                            @click="viewSettings(item)">View all settings</v-btn>
+                                        <v-btn variant="tonal" density="compact" color="error" @click="deleteResult(index)"
+                                            icon="mdi-delete"></v-btn>
+                                    </div>
+                                </v-card-text>
+                            </v-card>
+                        </div>
+                    </v-col>
+                </v-row>
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" variant="tonal" @click="allPredictionsDialog = false">OK</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
     <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="target" @input="showKetcher = false"
         @update:smiles="(ketcherSmiles) => target = ketcherSmiles" />
     <v-dialog v-model="showAdvSettings" width="500px">
@@ -242,10 +308,63 @@ Normally, only the top 'Max. num. templates' will be applied - with these filter
             </v-card-actions>
         </v-card>
     </v-dialog>
+
+      <v-dialog v-model="showSettingsViewModal" persistent max-width="600px">
+        <v-card>
+          <v-card-title class="headline">Prediction Settings</v-card-title>
+          <v-card-text>
+            <v-table>
+              <tbody>
+                <tr>
+                  <th class="text-left">Model</th>
+                  <td>{{ selectedSettings.model }}</td>
+                </tr>
+                <tr>
+                  <th>Training Set</th>
+                  <td>{{ selectedSettings.trainingSet }}</td>
+                </tr>
+                <!-- <tr>
+                  <th>Model Version</th>
+                  <td>{{ selectedSettings.modelVersion }}</td>
+                </tr> -->
+                <tr>
+                  <th>Precursor Scoring</th>
+                  <td>{{ selectedSettings.precursorScoring }}</td>
+                </tr>
+                <tr>
+                  <th>Max. num. templates</th>
+                  <td>{{ selectedSettings.numTemplates }}</td>
+                </tr>
+                <tr>
+                  <th>Max. cum. probability</th>
+                  <td>{{ selectedSettings.maxCumProb }}</td>
+                </tr>
+                <tr>
+                  <th>Min. plausibility</th>
+                  <td>{{ selectedSettings.minPlausibility }}</td>
+                </tr>
+                <tr>
+                  <th>Template attribute filters</th>
+                  <td>
+                    <div v-if="selectedSettings.attributeFilter.length">
+                      <p v-for="(filter, index) in selectedSettings.attributeFilter" :key="index">{{ filter.name }} {{ filter.logic }} {{ filter.value }}</p>
+                    </div>
+                    <span v-else>None</span>
+                  </td>
+                </tr>
+              </tbody>
+            </v-table>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary darken-1" text @click="showSettingsViewModal = false">Close</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
     <!--
              <b-modal id="retro-advanced-modal" title="Advanced Settings" centered scrollable ok-title="Submit" ok-variant="success" @ok="runRetro()">
       
-     
       <div class="form-inline mb-2 ml-3" v-for="(filter, idx) in settings.attributeFilter" :key="idx">
         <b-button variant="outline-danger" pill class="mr-2" @click="deleteAttributeFilter(idx)">
           <i class="fas fa-times"></i>
@@ -260,46 +379,6 @@ Normally, only the top 'Max. num. templates' will be applied - with these filter
         </b-form-select>
         <b-form-input class="mr-2" type="number" :value="filter.value" @input="updateAttributeFilter(idx, 'value', $event)"></b-form-input>
       </div>
-    </b-modal>
-
-    <b-modal v-if="selectedSettings" v-model="showSettingsViewModal" title="Prediction Settings" centered ok-only>
-      <b-table-simple small class="mb-0">
-        <b-tr>
-          <b-th>Model</b-th>
-          <b-td>{{ selectedSettings.model }}</b-td>
-        </b-tr>
-        <b-tr>
-          <b-th>Training Set</b-th>
-          <b-td>{{ selectedSettings.trainingSet }}</b-td>
-        </b-tr>
-        <b-tr>
-          <b-th>Model Version</b-th>
-          <b-td>{{ selectedSettings.modelVersion }}</b-td>
-        </b-tr>
-        <b-tr>
-          <b-th>Precursor Scoring</b-th>
-          <b-td>{{ selectedSettings.precursorScoring }}</b-td>
-        </b-tr>
-        <b-tr>
-          <b-th>Max. num. templates</b-th>
-          <b-td>{{ selectedSettings.numTemplates }}</b-td>
-        </b-tr>
-        <b-tr>
-          <b-th>Max. cum. probability</b-th>
-          <b-td>{{ selectedSettings.maxCumProb }}</b-td>
-        </b-tr>
-        <b-tr>
-          <b-th>Min. plausibility</b-th>
-          <b-td>{{ selectedSettings.minPlausibility }}</b-td>
-        </b-tr>
-        <b-tr>
-          <b-th>Template attribute filters</b-th>
-          <b-td v-if="selectedSettings.attributeFilter.length">
-            <p v-for="(filter, index) in selectedSettings.attributeFilter" :key="index" class="mb-0">{{ filter.name }} {{ filter.logic }} {{ filter.value }}</p>
-          </b-td>
-          <b-td v-else>None</b-td>
-        </b-tr>
-      </b-table-simple>
     </b-modal>
 
     <b-modal v-if="selectedTemplate" v-model="showTemplateInfoModal" title="Template Info" centered size="lg" ok-only>
@@ -323,7 +402,6 @@ Normally, only the top 'Max. num. templates' will be applied - with these filter
         </div>
       </div>
     </b-modal>
-
         -->
 </template>
 
@@ -368,6 +446,7 @@ export default {
         }
     },
     setup() {
+
         const target = ref("");
         const validSmiles = ref(true);
         const modelStatus = ref([]);
@@ -385,6 +464,7 @@ export default {
         const retroResultTable = ref(null);
         const ketcherRef = ref(null)
         const showKetcher = ref(false)
+        const allPredictionsDialog = ref(false)
 
         function hide(key) {
             predictions.value[key].show = false;
@@ -718,7 +798,8 @@ export default {
             updateAttributeFilter,
             num2str,
             showKetcher,
-            ketcherRef
+            ketcherRef,
+            allPredictionsDialog
         };
     },
 };

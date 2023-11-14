@@ -269,6 +269,10 @@
     :template-attributes="templateAttributes" :template-sets="templateSets" @changeNetopt="updateNetworkOptions" />
   <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="resultsStore.target" @input="showKetcher = false"
     @update:smiles="(ketcherSmiles) => resultsStore.target = ketcherSmiles" />
+
+  <v-snackbar v-model="snackbar" vertical>
+     Snackbar is showing!
+  </v-snackbar>
 </template>
 
 <script>
@@ -320,6 +324,7 @@ export default {
   },
   data() {
     return {
+      snackbar: false,
       visible: true,
       treeBuilderModalShow: false,
       networkInitialized: false,
@@ -719,7 +724,8 @@ export default {
           return API.pollCeleryResult(json);
         })
         .then(() => {
-          this.createSnackbar({ text: "Tree builder job complete! Visit results page for more details", snackbarProps: { timeout: -1, vertical: true } })
+          // this.createSnackbar({ text: "Tree builder job complete! Visit results page for more details", snackbarProps: { timeout: -1, vertical: true } })
+          this.snackbar === true;
         })
         .catch((error) => {
           console.error(error);

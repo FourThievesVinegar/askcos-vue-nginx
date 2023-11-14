@@ -31,7 +31,7 @@
           <template #item.results="{ item }">
             <template v-if="item.raw.results !== undefined">
               <template v-if="item.raw.results[0]">
-                <smiles-image :smiles="item.raw.results[0]" transparent lazy></smiles-image>
+                <smiles-image :smiles="item.raw.results[0]" transparent></smiles-image>
               </template>
               <template v-else> No Precursors </template>
             </template>
