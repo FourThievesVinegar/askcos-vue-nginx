@@ -1574,10 +1574,12 @@ export default {
         this.enumerateTrees();
       }
       this.updateTreeOpacity();
+      this.$emit("update:treeViewVisible", true);
     },
     disableTreeView() {
       this.treeViewEnabled = false;
       this.resetOpacity();
+      this.$emit("update:treeViewVisible", false);
     },
     updateTreeOpacity() {
       this.resetOpacity();
