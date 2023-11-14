@@ -36,6 +36,14 @@
                     <v-col>
                         <v-sheet rounded="lg" elevation="2" class="pa-5">
                             <v-data-table :headers="headers" :items="users" multi-sort :search="''" show-select>
+                                <template v-slot:top>
+                                    <v-toolbar flat>
+                                        <v-toolbar-title>ASKCOS Users</v-toolbar-title>
+                                        <v-divider class="mx-4" inset vertical></v-divider>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="primary" variant="flat" prepend-icon="mdi-plus" >New User</v-btn>
+                                    </v-toolbar>
+                                </template>
                                 <template v-slot:item.isAdmin="{ item }">
                                     <v-switch v-model="item.isAdmin" class="pa-2" color="primary"></v-switch>
                                 </template>
