@@ -5,7 +5,7 @@
     <v-row class="my-6 justify-center">
       <v-col cols="12" md="10">
         <v-text-field v-model="smiles" class="centered-input" variant="outlined"
-          label="Target" prepend-inner-icon="mdi mdi-flask"
+          label="Type here or draw structure..." prepend-inner-icon="mdi mdi-flask"
           placeholder="SMILES" hide-details clearable rounded="pill">
           <template v-slot:append-inner>
             <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"

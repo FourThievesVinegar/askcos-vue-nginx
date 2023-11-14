@@ -5,10 +5,11 @@
         <v-expand-transition>
           <v-sheet elevation="2" rounded="lg" width="100%" class="mb-6 pa-6" v-show="show">
             <v-row>
-              <v-col>
+              <v-col class="d-flex flew-row justify-center align-center">
                 <v-menu location="end">
                   <template v-slot:activator="{ props }">
-                    <v-btn color="primary" dark v-bind="props" variant="tonal" prepend-icon="mdi-star" append-icon="mdi-chevron-down">
+                    <v-btn color="primary" dark v-bind="props" variant="tonal" prepend-icon="mdi-star"
+                      append-icon="mdi-chevron-down">
                       Favorites
                     </v-btn>
                   </template>
@@ -18,6 +19,12 @@
                     </v-list-item>
                   </v-list>
                 </v-menu>
+                <v-spacer></v-spacer>
+                <div v-if="username">
+                  <span class="text-body-1 mr-1">Logged in as,</span>
+                  <v-chip color="primary"><v-icon start icon="mdi-account-circle"></v-icon><span
+                      class="text-body-1"><strong>{{ username }}</strong></span></v-chip>
+                </div>
               </v-col>
             </v-row>
             <v-row class="justify-center align-center pa-0 ma-0">
@@ -111,9 +118,11 @@ import LaunchPad from "@/components/home/Launchpad.vue";
 
 const show = ref(false);
 
+const username = ref(localStorage.getItem("username"))
+
 const favorites = ref([
-  {title: "Interactive Path Planner/Tree Builder", link: '/network?tab=IPP'},
-  {title: "Retrosynthesis Prediction", link: '/network?tab=RP'}
+  { title: "Interactive Path Planner/Tree Builder", link: '/network?tab=IPP' },
+  { title: "Retrosynthesis Prediction", link: '/network?tab=RP' }
 ])
 
 const contributorList = ref([
