@@ -38,7 +38,10 @@ const routes = [
     component: () => import("@/layouts/default/Default.vue"),
     beforeEnter: (to, from, next) => {
       if (!isAuthenticated()) {
-        next({ name: "Login", query: { redirect: encodeURIComponent(to.fullPath) } });
+        next({
+          name: "Login",
+          query: { redirect: encodeURIComponent(to.fullPath) },
+        });
       } else {
         next();
       }
@@ -354,6 +357,20 @@ const routes = [
           ),
       },
     ],
+  },
+  {
+    name: "Admin Login",
+    path: "/admin-login",
+    meta: { title: "Admin Login" },
+    component: () =>
+      import(/* webpackChunkName: "login" */ "@/views/adminLogin/AdminLogin.vue"),
+  },
+  {
+    name: "Admin",
+    path: "/admin",
+    meta: { title: "Admin" },
+    component: () =>
+      import(/* webpackChunkName: "login" */ "@/views/admin/Admin.vue"),
   },
 ];
 
