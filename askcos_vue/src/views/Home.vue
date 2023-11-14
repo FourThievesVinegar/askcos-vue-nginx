@@ -4,10 +4,27 @@
       <v-col cols="12" md="12" xl="10" class="d-flex justify-center align-center flex-column">
         <v-expand-transition>
           <v-sheet elevation="2" rounded="lg" width="100%" class="mb-6 pa-6" v-show="show">
+            <v-row>
+              <v-col>
+                <v-menu location="end">
+                  <template v-slot:activator="{ props }">
+                    <v-btn color="primary" dark v-bind="props" variant="tonal" prepend-icon="mdi-star" append-icon="mdi-chevron-down">
+                      Favorites
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item v-for="(item, index) in favorites" :key="index" :to="item.link">
+                      <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </v-col>
+            </v-row>
             <v-row class="justify-center align-center pa-0 ma-0">
               <v-col cols="12" class="d-flex justify-center align-center text-center">
                 <v-icon icon="mdi-compass-rose" class="text-h2 text-blue-darken-3 mr-2"></v-icon>
-                <h2 class="text-h2 text-blue-darken-3 header font-weight-medium text-center"><strong>Explore ASKCOS</strong></h2>
+                <h2 class="text-h2 text-blue-darken-3 header font-weight-medium text-center"><strong>Explore
+                    ASKCOS</strong></h2>
               </v-col>
             </v-row>
             <v-row class="justify-center align-center pa-0 ma-0">
@@ -93,6 +110,11 @@ import { ref, onMounted } from "vue";
 import LaunchPad from "@/components/home/Launchpad.vue";
 
 const show = ref(false);
+
+const favorites = ref([
+  {title: "Interactive Path Planner/Tree Builder", link: '/network?tab=IPP'},
+  {title: "Retrosynthesis Prediction", link: '/network?tab=RP'}
+])
 
 const contributorList = ref([
   "Zhenkgai Tu (Maintainer)",
