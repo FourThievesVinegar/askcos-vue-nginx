@@ -18,6 +18,8 @@
                       <v-list-item-title>{{ item.title }}</v-list-item-title>
                     </v-list-item>
                   </v-list>
+                  <v-divider></v-divider>
+                  <v-btn prepend-icon="mdi-pencil" @click="showEditFav = true">Edit Faviorites</v-btn>
                 </v-menu>
                 <v-spacer></v-spacer>
                 <div v-if="username">
@@ -110,6 +112,28 @@
       </v-col>
     </v-row>
   </v-container>
+
+  <v-dialog v-model=showEditFav width="auto">
+    <v-card>
+      <v-card-title>
+        <span class="text-h5">Edit Favorites</span>
+      </v-card-title>
+      <v-divider></v-divider>
+      <v-card-text>
+        <!-- Add list of pages -->
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn  @click="showEditFav = false" color="red">
+          Close
+        </v-btn>
+        <v-btn   @click="showEditFav = false" color="success">
+          Save
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup>
@@ -117,6 +141,7 @@ import { ref, onMounted } from "vue";
 import LaunchPad from "@/components/home/Launchpad.vue";
 
 const show = ref(false);
+const showEditFav = ref(false);
 
 const username = ref(localStorage.getItem("username"))
 
