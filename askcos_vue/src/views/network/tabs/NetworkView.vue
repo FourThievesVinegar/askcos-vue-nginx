@@ -311,7 +311,8 @@ import { interpolateHexColor } from "@/common/color";
 import { saveAs } from "file-saver";
 import KetcherModal from "@/components/KetcherModal";
 import NetworkLegend from "@/components/network/NetworkLegend";
-// import { tbSettingsJsToApi } from "@/common/tb-settings";
+import { resolveChemName } from "@/common/resolver";
+import { tbSettingsJsToApi } from "@/common/tb-settings";
 
 const BG_OPACITY = 0.2; // Background opacity
 export default {
@@ -619,9 +620,10 @@ export default {
         this.network.fit();
       }
     },
-    saveTarget() {
+    saveTarget(smiles) {
       if (!storageAvailable("localStorage")) return;
-      localStorage.setItem("target", this.resultsStore.target);
+      localStorage.setItem("target", smiles);
+      console.log(smiles)
     },
     loadTarget() {
       if (!storageAvailable("localStorage")) return;
@@ -818,13 +820,14 @@ export default {
           }
         })
         .then((smiles) => this.canonicalize(smiles, "target"))
-        .then(() => {
-          this.saveTarget();
+        .then(async() => {
+          const target = await this.resolveChemName(this.resultsStore.target)
+          this.saveTarget(target);
           if (this.resultsStore.target !== undefined) {
             this.resultsStore.clearDataGraph();
             this.resultsStore.clearDispGraph();
             this.resultsStore.clearRemovedReactions();
-            let savedTarget = this.resultsStore.target;
+            let savedTarget = target;
             this.resultsStore.$reset();
             this.resultsStore.target = savedTarget;
             return this.initTargetDataNode()
