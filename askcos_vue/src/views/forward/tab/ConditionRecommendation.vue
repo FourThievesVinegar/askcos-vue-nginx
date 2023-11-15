@@ -152,11 +152,6 @@
                             model. Select in <a>settings menu.</a>
                         </p>
                     </v-alert>
-                    <div class="text-center d-flex justify-center align-center flex-column mt-2" v-if="!results.length">
-                        <img src="@/assets/emptyForward.svg" :width="400" cover class="mb-3" />
-                        <h2>No Data</h2>
-                        <p class="text-body-1">Nothing to see here yet</p>
-                    </div>
                 </v-col>
             </v-row>
         </v-sheet>
