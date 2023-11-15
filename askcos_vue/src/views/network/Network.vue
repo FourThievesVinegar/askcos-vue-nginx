@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { ref, onMounted, watch, nextTick} from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import NetworkView from "@/views/network/tabs/NetworkView";
 import RetroView from "@/views/network/tabs/RetroView";
@@ -75,6 +75,7 @@ export default {
       if (resultId) {
         loadResultFromURL({ resultId: resultId, numTrees: numTrees }).then(
           () => {
+
             init(tab.value);
           }
         );

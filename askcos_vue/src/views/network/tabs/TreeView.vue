@@ -721,9 +721,9 @@ export default {
             return graph;
         },
         buildTree() {
-            // if (!this.tabActive || !this.currentTree) {
-            //     return;
-            // }
+            if (!this.tabActive || !this.currentTree) {
+                return;
+            }
             this.clearSelection();
             const elem = document.getElementById("graph");
             this.networkData = this.loadNodeLinkGraph(this.currentTree, true);
