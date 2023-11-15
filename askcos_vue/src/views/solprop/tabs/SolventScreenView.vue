@@ -103,7 +103,7 @@
           </v-skeleton-loader>
           <div v-else class="text-center d-flex justify-center align-center flex-column">
             <v-img :width="400" cover :src="emptyChartSrc" class="mb-3"></v-img>
-            <h2 class="mt-5">No Results</h2>
+            <h2>No Results</h2>
             <p class="text-body-1">Begin by running a new prediction!</p>
           </div>
         </v-sheet>

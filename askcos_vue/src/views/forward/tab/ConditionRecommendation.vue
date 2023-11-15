@@ -1,18 +1,13 @@
 <template>
     <v-container fluid class="pa-0">
         <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6">
-            <v-row align="center" justify="space-between" class="mx-auto my-auto">
+            <v-row align="center" justify="space-between" class="ma-auto" v-show="!!results.length">
                 <v-col>
-                    <span><b>Condition Recommendation</b> </span>
                     <p v-if="!!score">Reaction score: {{ score.toFixed(3) }}</p>
-                </v-col>
-                <v-col>
-
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn variant="flat" v-show="!!results.length" @click="handleClick" :disabled="evaluating"
-                        height="30px" color="primary mx-2">
+                    <v-btn variant="flat" @click="handleClick" :disabled="evaluating" height="30px" color="primary mx-2">
                         Get Reaction Score
                     </v-btn>
                 </v-col>
@@ -71,9 +66,9 @@
                 <template #item.catalyst="{ item }">
                     <div class="text-center">
                         <template v-if="!!item.columns.catalyst || !!item.columns.catalyst_name_only">
-                             <copy-tooltip :data="item.columns.catalyst" :title="'Click to copy: ' + item.columns.catalyst">
-                            <smiles-image v-if="!!item.columns.catalyst" :smiles="item.columns.catalyst"></smiles-image>
-                                </copy-tooltip>
+                            <copy-tooltip :data="item.columns.catalyst" :title="'Click to copy: ' + item.columns.catalyst">
+                                <smiles-image v-if="!!item.columns.catalyst" :smiles="item.columns.catalyst"></smiles-image>
+                            </copy-tooltip>
                         </template>
                         <template v-else>
                             None
@@ -141,32 +136,28 @@
             </v-skeleton-loader>
 
             <v-row align="center" justify="space-between" class="mx-auto my-3">
-                <v-expansion-panels multiple density="compact" v-model="panel" :disabled="disabled">
-                    <v-expansion-panel density="compact">
-                        <template v-slot:title>
-                            <span class="text-body-1 ml-2"><b>Reference</b></span>
-                        </template>
-                        <template v-slot:text>
-                            <v-row>
-                                <v-col>
-                                    <p class="my-4">
-                                        Predict reagents, catalysts, solvents and temperature for a desired transformation
-                                        using a
-                                        neural
-                                        network model.
-                                        <a href="https://doi.org/10.1021/acscentsci.8b00357">(ACS Cent. Sci., 2018, 4,
-                                            1465-1476)</a>
-                                    </p>
-                                    <p class="my-4">
-                                        <b>New in 2021.01:</b> Quantitative condition predictions now available using neural
-                                        network v2
-                                        model. Select in <a>settings menu.</a>
-                                    </p>
-                                </v-col>
-                            </v-row>
-                        </template>
-                    </v-expansion-panel>
-                </v-expansion-panels>
+                <v-col cols="12" class="pa-0">
+                    <v-alert border="start" elevation="2" type="info" variant="tonal" density="compact" title="Reference">
+                        <p class="mb-4">
+                            Predict reagents, catalysts, solvents and temperature for a desired transformation
+                            using a
+                            neural
+                            network model.
+                            <a href="https://doi.org/10.1021/acscentsci.8b00357">(ACS Cent. Sci., 2018, 4,
+                                1465-1476)</a>
+                        </p>
+                        <p>
+                            <b>New in 2021.01:</b> Quantitative condition predictions now available using neural
+                            network v2
+                            model. Select in <a>settings menu.</a>
+                        </p>
+                    </v-alert>
+                    <div class="text-center d-flex justify-center align-center flex-column mt-2" v-if="!results.length">
+                        <img src="@/assets/emptyForward.svg" :width="400" cover class="mb-3" />
+                        <h2>No Data</h2>
+                        <p class="text-body-1">Nothing to see here yet</p>
+                    </div>
+                </v-col>
             </v-row>
         </v-sheet>
     </v-container>

@@ -108,8 +108,8 @@
             </template>
           </v-data-table>
           <div v-else class="text-center">
-            <v-img :width="400" cover :src="emptyCart"></v-img>
-            <h6 class="text-h6 mt-2">No Results</h6>
+            <v-img :width="400" cover :src="emptyCart" class="mb-3"></v-img>
+            <h2>No Results</h2>
             <p class="text-body-1">Search SMILES/SMARTS to explore</p>
           </div>
         </v-sheet>

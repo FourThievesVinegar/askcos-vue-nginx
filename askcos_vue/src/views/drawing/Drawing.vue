@@ -40,9 +40,9 @@
             <p class="text-body-1 text-center">SMILES: {{ smiles }}</p>
           </div>
           <div v-else class="text-center">
-            <v-img class="justify-center mx-auto" :width="400" cover :src="results"></v-img>
-            <h6 class="text-h6 mt-2">Empty Board</h6>
-            <p class="mt-2 text-body-1">Utility for drawing images from molecule SMILES, reaction SMILES, and template SMARTS.</p>
+            <v-img class="justify-center mx-auto mb-3" :width="400" cover :src="results"></v-img>
+            <h2>Empty Board</h2>
+            <p class="text-body-1">Utility for drawing images from molecule SMILES, reaction SMILES, and template SMARTS.</p>
           </div>
         </v-sheet>
       </v-col>
