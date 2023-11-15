@@ -620,10 +620,9 @@ export default {
         this.network.fit();
       }
     },
-    saveTarget(smiles) {
+    saveTarget() {
       if (!storageAvailable("localStorage")) return;
-      localStorage.setItem("target", smiles);
-      console.log(smiles)
+      localStorage.setItem("target", this.resultsStore.target);
     },
     loadTarget() {
       if (!storageAvailable("localStorage")) return;
@@ -812,24 +811,27 @@ export default {
       this.pendingTasks += 1;
       this.saveAllSettings();
       this.validatesmiles(this.resultsStore.target, !this.allowResolve)
-        .then((isvalidsmiles) => {
+        .then(async(isvalidsmiles) => {
+          let targetSmiles;
           if (isvalidsmiles) {
-            return this.resultsStore.target;
+            targetSmiles = this.resultsStore.target;
           } else {
-            return this.resolveChemName(this.resultsStore.target);
+            targetSmiles = await this.resolveChemName(this.resultsStore.target);
           }
+           this.resultsStore.target = targetSmiles;
+           return this.resultsStore.target
         })
         .then((smiles) => this.canonicalize(smiles, "target"))
-        .then(async() => {
-          const target = await this.resolveChemName(this.resultsStore.target)
-          this.saveTarget(target);
+        .then(() => {
+          this.saveTarget(this.resultsStore.target);
           if (this.resultsStore.target !== undefined) {
+            console.log()
             this.resultsStore.clearDataGraph();
             this.resultsStore.clearDispGraph();
             this.resultsStore.clearRemovedReactions();
-            let savedTarget = target;
-            this.resultsStore.$reset();
-            this.resultsStore.target = savedTarget;
+            // let savedTarget = this.resultsStore.target;
+            // this.resultsStore.$reset();
+            // this.resultsStore.target = savedTarget;
             return this.initTargetDataNode()
               .then(this.initTargetDispNode)
               .then(this.resultsStore.expand);
