@@ -147,7 +147,7 @@
               Solvent Screen
             </v-card-title>
             <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
-               :href="`/solprop?tab=solpred&solute=${encodeURIComponent(smiles)}`" target="_blank">Run
+               :href="`/solprop?tab=solscreen&solute=${encodeURIComponent(smiles)}`" target="_blank">Run
                 Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
