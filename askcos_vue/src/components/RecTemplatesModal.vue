@@ -45,7 +45,6 @@
       <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" :loading="loading" @click="predict(selected.smiles)" variant="tonal">Re-evaluate</v-btn>
         <v-btn @click="close()" variant="tonal" color="red">Close</v-btn>
       </v-card-actions>
     </v-card>
