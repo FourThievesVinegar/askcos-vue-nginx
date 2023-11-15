@@ -829,9 +829,9 @@ export default {
             this.resultsStore.clearDataGraph();
             this.resultsStore.clearDispGraph();
             this.resultsStore.clearRemovedReactions();
-            // let savedTarget = this.resultsStore.target;
-            // this.resultsStore.$reset();
-            // this.resultsStore.target = savedTarget;
+            let savedTarget = this.resultsStore.target;
+            this.resultsStore.$reset();
+            this.resultsStore.target = savedTarget;
             return this.initTargetDataNode()
               .then(this.initTargetDispNode)
               .then(this.resultsStore.expand);
