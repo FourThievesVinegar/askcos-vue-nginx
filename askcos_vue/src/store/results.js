@@ -895,6 +895,7 @@ export const useResultsStore = defineStore("results", {
         this.requestRetro({ smiles: smiles }).then((response) => {
           if (response.length === 0) {
             reject(new Error("No precursors found!"));
+            alert("No precursors found!")
           } else {
             resolve(response);
           }
