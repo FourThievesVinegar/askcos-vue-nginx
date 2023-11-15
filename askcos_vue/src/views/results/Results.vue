@@ -37,7 +37,7 @@
     <v-row class="justify-center">
       <v-col cols="12" md="12" xl="10">
         <v-sheet elevation="2" rounded="lg" class="d-flex justify-center pa-5">
-          <v-data-table v-if="allResults.length" :headers="headers" item-value="result_id" :items="sortedAllResults"
+          <v-data-table v-if="allResults.length" :headers="headers" item-value="result_id" :items="filteredResults"
             show-select v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10"
             :search="searchQuery" @click:row="clickRow">
             <template v-slot:item.delete="{ item }">
@@ -59,7 +59,15 @@
                   <div class="d-flex justify-space-evenly my-3">
                     <span class="text-center" v-if="item.columns.num_trees !== undefined">Found {{
                       item.columns.description }} Tree</span>
-                    <span class="text-center" v-if="item.columns.result_type == 'ipp'">Tags:</span>
+                    <!-- <pre>{{ item }}</pre> -->
+                    <span class="align-center">
+                      <v-col>
+                        <v-row>
+                          <p class="text-center mr-3">Tags:</p>
+                          <v-chip class="text-center mr-1" v-for="tag in item.raw.tags" :key="tag" small>{{ tag }}</v-chip>
+                        </v-row>
+                      </v-col>
+                    </span>
                     <v-btn color="primary" variant="tonal"
                       v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'"
                       :href="`network?tab=TE&id=${item.raw.result_id}`">
@@ -161,12 +169,12 @@
             <v-col cols="12" sm="3"><strong>Type</strong></v-col>
             <v-col cols="12" sm="9">{{ sharedResult.type }}</v-col>
           </v-row>
-          <v-row>
-            <!-- <v-col cols="12" sm="3"><strong>Tags</strong></v-col> -->
-            <!-- <v-col cols="12" sm="9">
+          <!-- <v-row>
+            <v-col cols="12" sm="3"><strong>Tags</strong></v-col>
+            <v-col cols="12" sm="9">
               <v-chip v-for="tag in sharedResult.tags" :key="tag" class="mr-1">{{ tag }}</v-chip>
-            </v-col> -->
-          </v-row>
+            </v-col>
+          </v-row> -->
           <v-row>
             <v-col cols="12" sm="3"><strong>Actions</strong></v-col>
             <v-col cols="12" sm="9">
@@ -221,8 +229,8 @@ const sortDescending = ref(true);
 const treeDialog = ref(false);
 const viewSettings = ref(null);
 const targetSmiles = ref("")
-const clickRow = (_event, {item}) => {
-  const index = expanded.value.findIndex(i => i === item.key); 
+const clickRow = (_event, { item }) => {
+  const index = expanded.value.findIndex(i => i === item.key);
   if (index !== -1) {
     expanded.value.splice(index, 1)
   } else {
@@ -240,6 +248,16 @@ const sortedAllResults = computed(() => {
     return 0;
   });
 })
+
+const filteredResults = computed(() => {
+  console.log(sortedAllResults.value)
+  if (!searchQuery.value) return sortedAllResults.value;
+
+  return sortedAllResults.value.filter(item => {
+    const descriptionMatch = item.description.toLowerCase().includes(searchQuery.value.toLowerCase());
+    return descriptionMatch;
+  });
+});
 
 const getCurrentBaseUrl = () => {
   const url = window.location.href;
