@@ -35,7 +35,7 @@
                                 </v-container>
                                 <v-divider class="my-4">
                                 </v-divider>
-                                <v-btn color="primary" size="x-large" block variant="tonal" to="/">
+                                <v-btn color="primary" size="x-large" block variant="tonal" @click="guestAccountSignup">
                                     Continue as Guest
                                 </v-btn>
                             </div>
@@ -171,6 +171,24 @@ const signup = () => {
     API.post('/api/user/register', formData, true).then(json => {
         createdAccount.value = true;
         login()
+    }).catch(() => {
+        creationFailure.value = true;
+    })
+}
+
+const guestAccountSignup = () => {
+    const randomId = Math.random().toString(36).substring(2, 8);
+    const guestUsername = 'guest_' + randomId;
+    const guestPassword = randomId;
+
+    const formData = new FormData();
+    formData.append('username', guestUsername);
+    formData.append('password', guestPassword);
+
+    API.post('/api/user/register', formData, true).then(() => {
+        username.value = guestUsername;
+        password.value = guestPassword;
+        login();
     }).catch(() => {
         creationFailure.value = true;
     })
