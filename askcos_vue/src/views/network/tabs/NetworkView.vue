@@ -393,6 +393,11 @@ export default {
     };
   },
   created() {
+    this.$router.beforeEach((_to, _from, next) => {
+      this.nodeDetailVisible = false;
+      this.selected = null;
+      next();
+    })
     // Prompt user before going back to previous page
     window.addEventListener("beforeunload", (e) => {
       if (this.resultsStore.dataGraph.nodes.length) {
@@ -426,10 +431,11 @@ export default {
     if (run && JSON.parse(run)) {
       this.changeTarget();
     }
+
   },
   computed: {
     enableResolver() {
-      return import.meta.env.VITE_ENABLE_SMILES_RESOLVER;
+      return import.meta.env.VITE_ENABLE_SMILES_RESOLVER === 'True';
     },
     showLoader() {
       return this.pendingTasks > 0;
@@ -1697,6 +1703,10 @@ export default {
     handler(newValue, oldValue) {
       console.log('savedResultInfo changed:', oldValue, '->', newValue);
     }
+  },
+  beforeRouteUpdate() {
+    console.log("called")
+    this.nodeDetailVisible = false;
   }
 };
 </script>
