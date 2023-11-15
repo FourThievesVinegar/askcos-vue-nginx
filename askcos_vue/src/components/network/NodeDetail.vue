@@ -897,7 +897,7 @@ export default {
               modified: json["modified"],
               modifiedDisp: dayjs(json["modified"]).format("MMMM D, YYYY h:mm A"),
             });
-            this.createSnackbar({ text: 'Result saved successfully!', snackbarProps: { timeout: -1, vertical: true } })
+            this.createSnackbar({ text: 'The note was updated!', snackbarProps: { timeout: 2000, vertical: true } })
           } else {
             this.createSnackbar({ text: "Tree builder job complete! Visit results page for more details", snackbarProps: { timeout: -1, vertical: true } })
 
