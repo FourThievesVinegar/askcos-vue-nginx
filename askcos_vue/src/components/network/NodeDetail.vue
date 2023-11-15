@@ -702,7 +702,6 @@ export default {
   },
   data() {
     return {
-     
       editIdx: -1,
       oldNote: "",
       noteUrsName: "",
