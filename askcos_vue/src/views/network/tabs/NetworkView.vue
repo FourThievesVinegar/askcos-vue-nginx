@@ -401,10 +401,11 @@ export default {
     // Prompt user before going back to previous page
     window.addEventListener("beforeunload", (e) => {
       if (this.resultsStore.dataGraph.nodes.length) {
+        e.stopImmediatePropagation();
         // Cancel the event
-        e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+        // e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
         // Chrome requires returnValue to be set
-        e.returnValue = "";
+        // e.returnValue = "";
       }
     });
 
