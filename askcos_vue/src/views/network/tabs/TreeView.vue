@@ -90,11 +90,11 @@
                                 <template v-slot:prepend class="justify-content-center" style="width: 2.5rem">
                                     {{ index + 1 }}
                                 </template>
-                                <v-select id="sortingCategory" :model-value="sortInput.key" :items="treeSortOptions"
-                                    hide-details variant="outlined"
-                                    @update:modelValue="setDefaultSortOrder(sortInput)"></v-select>
+                                <v-select id="sortingCategory" v-model="sortInput.key" :items="treeSortOptions" hide-details
+                                    variant="outlined" @update:modelValue="setDefaultSortOrder(sortInput)"></v-select>
                                 <template v-slot:append>
-                                    <v-btn icon="mdi-sort-ascending" rounded variant="tonal" density="comfortable"></v-btn>
+                                    <v-btn :icon="sortInput.ascending ? 'mdi-sort-ascending' : 'mdi-sort-descending'" rounded variant="tonal" density="comfortable"
+                                        @click="sortInput.ascending = !sortInput.ascending"></v-btn>
                                     <v-btn icon="mdi-close" size="small" density="compact" @click="deleteSortField(index)"
                                         variant="tonal" color="red" class="ml-2"></v-btn>
                                 </template>
@@ -126,15 +126,15 @@
                             <v-card>
                                 <v-card-title class="headline">Filter by starting materials</v-card-title>
                                 <v-card-text>
-                                        <v-row>
-                                            <v-col cols="2" v-for="material in startingMaterialOptions" :key="material">
-                                                <v-card class="pa-3">
-                                                    <v-checkbox v-model="selectedStartingMaterials" :value="material"
-                                                        class="my-0 py-0" hide-details></v-checkbox>
-                                                    <smiles-image class="my-3" :smiles="material"></smiles-image>
-                                                </v-card>
-                                            </v-col>
-                                        </v-row>
+                                    <v-row>
+                                        <v-col cols="2" v-for="material in startingMaterialOptions" :key="material">
+                                            <v-card class="pa-3">
+                                                <v-checkbox v-model="selectedStartingMaterials" :value="material"
+                                                    class="my-0 py-0" hide-details></v-checkbox>
+                                                <smiles-image class="my-3" :smiles="material"></smiles-image>
+                                            </v-card>
+                                        </v-col>
+                                    </v-row>
                                 </v-card-text>
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
@@ -153,15 +153,15 @@
                             <v-card>
                                 <v-card-title class="headline">Filter by intermediates</v-card-title>
                                 <v-card-text>
-                                        <v-row>
-                                            <v-col cols="2" v-for="intermediate in intermediateOptions" :key="intermediate">
-                                                <v-card class="pa-3">
-                                                    <v-checkbox v-model="selectedIntermediates" :value="intermediate"
-                                                        class="my-0 py-0" hide-details></v-checkbox>
-                                                    <smiles-image class="my-3" :smiles="intermediate"></smiles-image>
-                                                </v-card>
-                                            </v-col>
-                                        </v-row>
+                                    <v-row>
+                                        <v-col cols="2" v-for="intermediate in intermediateOptions" :key="intermediate">
+                                            <v-card class="pa-3">
+                                                <v-checkbox v-model="selectedIntermediates" :value="intermediate"
+                                                    class="my-0 py-0" hide-details></v-checkbox>
+                                                <smiles-image class="my-3" :smiles="intermediate"></smiles-image>
+                                            </v-card>
+                                        </v-col>
+                                    </v-row>
                                 </v-card-text>
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
@@ -328,7 +328,8 @@
         <div class="m-3">
             <v-pagination v-model="treeListCurrentPage" :length="Math.ceil(trees.length / treeListItemsPerPage)"
                 class="mb-3"></v-pagination>
-            <v-card v-for="(tree, index) in treeListItems" :key="index" class="mb-3 pa-10 ma-10" :model-value="panel" multiple>
+            <v-card v-for="(tree, index) in treeListItems" :key="index" class="mb-3 pa-10 ma-10" :model-value="panel"
+                multiple>
                 <v-card-title>
                     <span class="text-body-1 ml-2"><b>Tree {{ (treeListCurrentPage - 1) * treeListItemsPerPage + index +
                         1 }} </b></span>
@@ -897,19 +898,19 @@ export default {
             };
             API.post(url, body)
                 .then((json) => {
-                     this.createSnackbar({ text: "Pathway ranking job submitted!", snackbarProps: { timeout: -1, vertical: true } });
+                    this.createSnackbar({ text: "Pathway ranking job submitted!", snackbarProps: { timeout: -1, vertical: true } });
                     return API.pollCeleryResult(json);
                 })
                 .then((output) => {
                     if (output.success) {
-                    this.createSnackbar({ text: "Pathway ranking job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
+                        this.createSnackbar({ text: "Pathway ranking job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
                     } else {
 
-                     this.createSnackbar({ text: `Pathway ranking job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
+                        this.createSnackbar({ text: `Pathway ranking job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
                     }
                 })
                 .catch(() => {
-                     this.createSnackbar({ text: "Pathway ranking job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+                    this.createSnackbar({ text: "Pathway ranking job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 })
                 .finally(() => {
                     this.analysisTaskRunning = false;
@@ -937,7 +938,7 @@ export default {
             };
             API.post(url, body)
                 .then((json) => {
-                     this.createSnackbar({ text: "Analog counting job submitted!", snackbarProps: { timeout: -1, vertical: true } });
+                    this.createSnackbar({ text: "Analog counting job submitted!", snackbarProps: { timeout: -1, vertical: true } });
                     return API.pollCeleryResult(json);
                 })
                 .then((output) => {
@@ -968,7 +969,7 @@ export default {
             };
             API.post(url, body)
                 .then((json) => {
-                     this.createSnackbar({ text: "Reaction classification job submitted!", snackbarProps: { timeout: -1, vertical: true } });
+                    this.createSnackbar({ text: "Reaction classification job submitted!", snackbarProps: { timeout: -1, vertical: true } });
                     return API.pollCeleryResult(json.task_id);
                 })
                 .then((output) => {
@@ -1008,7 +1009,7 @@ export default {
                     //     href: `/retro/network/?tab=2&id=${resultId}`,
                     //     noAutoHide: true,
                     // });
-                     this.createSnackbar({ text: "Network optimization job complete! Click here to view results.", snackbarProps: { timeout: -1, vertical: true } });
+                    this.createSnackbar({ text: "Network optimization job complete! Click here to view results.", snackbarProps: { timeout: -1, vertical: true } });
                 })
                 .catch(() => {
                     // this.$bvToast.toast("Network optimization job failed! Please try again or try submitting a new tree builder job.", {
@@ -1046,7 +1047,7 @@ export default {
                     // this.$bvToast.toast("PMI job submitted!", {
                     //     title: "pmi_calculation",
                     // });
-                     this.createSnackbar({ text: "PMI job submitted!", snackbarProps: { timeout: -1, vertical: true } });
+                    this.createSnackbar({ text: "PMI job submitted!", snackbarProps: { timeout: -1, vertical: true } });
                     return API.pollCeleryResult(json);
                 })
                 .then(() => {
