@@ -1,10 +1,10 @@
 <template>
-      <v-container fluid>
+    <v-container fluid>
         <v-row class="justify-center">
-          <v-col cols="12" md="12" xl="10">
-            <div class="mt-8 mb-5">
-              <v-breadcrumbs class="pa-0" :items="['Home', 'Template']"></v-breadcrumbs>
-              <h1>
+            <v-col cols="12" md="12" xl="10">
+                <div class="mt-8 mb-5">
+                    <v-breadcrumbs class="pa-0" :items="['Home', 'Template']"></v-breadcrumbs>
+                    <h1>
                         Template Info
                     </h1>
                 </div>
@@ -50,54 +50,54 @@
                                     Note: This template should be used for symmetric (dimerization) reactions <b>only</b>
                                 </em></p>
                         </v-col>
-                        
+
                         <v-col cols="12" sm="8" md="10" class="mb-3">
                             <v-row class="d-flex flex-row align-center justify-space-between">
-                            <div >
-                                <copy-tooltip class="btn btn-outline-secondary" :data="allReactionReferences"
-                                    no-highlight>
-                                    <v-btn variant="outlined"  class="flex-1-0">Copy all reaction IDs</v-btn>
-                                </copy-tooltip>
-                            </div>
-                            <div>
-                                <v-btn v-if="templateInfo.template_set === 'reaxys'" variant="outlined"
-                                    @click="downloadReactionQuery">
-                                     Export all reaction IDs as Reaxys query
-                                </v-btn>
-                            </div>
-                            <div>
-                                <v-btn v-if="templateInfo.template_set === 'reaxys'" variant="outlined"
-                                    :href="rexaysURL" target="_blank">
-                                    Find current page of reactions in Reaxys
-                                </v-btn>
-                            </div>
+                                <div>
+                                    <copy-tooltip class="btn btn-outline-secondary" :data="allReactionReferences"
+                                        no-highlight>
+                                        <v-btn variant="outlined" class="flex-1-0">Copy all reaction IDs</v-btn>
+                                    </copy-tooltip>
+                                </div>
+                                <div>
+                                    <v-btn v-if="templateInfo.template_set === 'reaxys'" variant="outlined"
+                                        @click="downloadReactionQuery">
+                                        Export all reaction IDs as Reaxys query
+                                    </v-btn>
+                                </div>
+                                <div>
+                                    <v-btn v-if="templateInfo.template_set === 'reaxys'" variant="outlined"
+                                        :href="rexaysURL" target="_blank">
+                                        Find current page of reactions in Reaxys
+                                    </v-btn>
+                                </div>
 
-                            <template v-if="templateInfo.template_set === 'cas' && rxnListItems && rxnListItems.length">
-                                <sci-findern-button class="ml-2" @click="casSearch"></sci-findern-button>
-                                <v-menu location="bottom" :close-on-content-click="false" id="proxy-settings">
-                                    <template v-slot:activator="{ props }">
-                                        <v-btn color="primary" dark v-bind="props">
-                                            Proxy Settings
-                                        </v-btn>
-                                    </template>
-                                    <v-card style="width: 18rem;">
-                                        <v-card-text>
-                                            <span> If your institution requires a proxy connection to access
-                                                SciFinder<sup>n</sup>,
-                                                enter
-                                                the URL below:</span>
-                                            <v-text-field label="Proxy URL" variant="outlined" v-model="proxyUrl"
-                                                hide-details></v-text-field>
-                                        </v-card-text>
-                                        <v-card-actions>
-                                            <v-btn class="ml-2" variant="primary" type="submit"
-                                                @click="saveProxyUrl">Save</v-btn>
-                                        </v-card-actions>
-                                    </v-card>
+                                <template v-if="templateInfo.template_set === 'cas' && rxnListItems && rxnListItems.length">
+                                    <sci-findern-button class="ml-2" @click="casSearch"></sci-findern-button>
+                                    <v-menu location="bottom" :close-on-content-click="false" id="proxy-settings">
+                                        <template v-slot:activator="{ props }">
+                                            <v-btn color="primary" dark v-bind="props">
+                                                Proxy Settings
+                                            </v-btn>
+                                        </template>
+                                        <v-card style="width: 18rem;">
+                                            <v-card-text>
+                                                <span> If your institution requires a proxy connection to access
+                                                    SciFinder<sup>n</sup>,
+                                                    enter
+                                                    the URL below:</span>
+                                                <v-text-field label="Proxy URL" variant="outlined" v-model="proxyUrl"
+                                                    hide-details></v-text-field>
+                                            </v-card-text>
+                                            <v-card-actions>
+                                                <v-btn class="ml-2" variant="primary" type="submit"
+                                                    @click="saveProxyUrl">Save</v-btn>
+                                            </v-card-actions>
+                                        </v-card>
 
-                                </v-menu>
-                            </template>
-                        </v-row>
+                                    </v-menu>
+                                </template>
+                            </v-row>
                         </v-col>
                     </v-row>
                 </v-sheet>
@@ -114,7 +114,7 @@
                                 <template #item.reaction_id="{ item }">
                                     {{ item.raw.reaction_id }}
                                     <smiles-image v-if="item.raw.reaction_smiles" :smiles="item.raw.reaction_smiles"
-                                        input-type="reaction" lazy />
+                                        input-type="reaction" />
                                 </template>
                                 <template #item.spectators="{ item }">
                                     {{ item.raw.spectators }}

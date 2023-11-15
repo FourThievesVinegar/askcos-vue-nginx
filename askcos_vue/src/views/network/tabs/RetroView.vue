@@ -6,6 +6,11 @@
                     <v-text-field id="retro-target" @blur="resolve" @keyup.enter="resolve" v-model="target"
                         density="compact" variant="outlined" label="Target" placeholder="SMILES" type="text" clearable
                         hide-details class="target-input">
+                        <template v-slot:prepend-inner v-if="enableResolver">
+                            <v-btn icon="mdi mdi-server" :class="allowResolve ? 'text-green' : 'text-grey'"
+                                @click="toggleResolver" variant="flat">
+                            </v-btn>
+                        </template>
                         <template v-slot:append-inner>
                             <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil" @click="() => {
                                 showKetcher = true;
@@ -104,6 +109,7 @@
                     <v-data-table :headers="headers" :items="tableItems" item-value="smiles" class="elevation-2"
                         ref="retroResultTable" :fixed-header="true">
                         <template v-for="header in headers" v-slot:[`item.${header.key}`]="{ item }">
+                            <!-- <pre>{{ item }}</pre> -->
                             <div v-if="header.key === 'smiles'">
                                 <smiles-image :smiles="item.raw.smiles" width="100px"></smiles-image>
                                 <table>
@@ -134,23 +140,24 @@
                                         </tr>
                                         <tr v-if="predictions[header.key]['model'] === 'template_relevance'">
                                             <th>Template Rank</th>
-                                            <td>{{ item.columns[header.key].template_rank }}</td>
+                                            <td>{{ item.columns[header.key].template.template_rank }}</td>
                                         </tr>
                                         <tr v-if="predictions[header.key]['model'] === 'template_relevance'">
                                             <th>Template Score</th>
-                                            <td>{{ num2str(item.columns[header.key].template_score) }}</td>
+                                            <td>{{ num2str(item.columns[header.key].template.template_score) }}</td>
                                         </tr>
-                                        <tr v-if="item.columns[header.key].templates">
+                                        <tr v-if="item.columns[header.key].template">
                                             <th>Templates</th>
                                             <td>
                                                 <template v-if="predictions[header.key]['model'] === 'template_relevance'">
-                                                    <p v-for="id in item.columns[header.key].templates" :key="id"
+                                                    <p v-for="id in item.columns[header.key].template.tforms" :key="id"
                                                         class="mb-0">
-                                                        <a :href="`/template/?id=${id}`" target="_blank">{{ id }}</a>
+                                                        <a :href="`/template?id=${id}`" target="_blank">{{ id }}</a>
                                                     </p>
                                                 </template>
                                                 <template v-else>
-                                                    <v-btn v-for="(template, index) in item.columns[header.key].templates"
+                                                    <v-btn
+                                                        v-for="(template, index) in item.columns[header.key].template.tforms"
                                                         :key="template" size="small" :class="{ 'ml-1': index > 0 }"
                                                         @click="viewTemplate(template)">
                                                         {{ index + 1 }}
@@ -309,58 +316,59 @@ Normally, only the top 'Max. num. templates' will be applied - with these filter
         </v-card>
     </v-dialog>
 
-      <v-dialog v-model="showSettingsViewModal" persistent max-width="600px">
+    <v-dialog v-model="showSettingsViewModal" persistent max-width="600px">
         <v-card>
-          <v-card-title class="headline">Prediction Settings</v-card-title>
-          <v-card-text>
-            <v-table>
-              <tbody>
-                <tr>
-                  <th class="text-left">Model</th>
-                  <td>{{ selectedSettings.model }}</td>
-                </tr>
-                <tr>
-                  <th>Training Set</th>
-                  <td>{{ selectedSettings.trainingSet }}</td>
-                </tr>
-                <!-- <tr>
+            <v-card-title class="headline">Prediction Settings</v-card-title>
+            <v-card-text>
+                <v-table>
+                    <tbody>
+                        <tr>
+                            <th class="text-left">Model</th>
+                            <td>{{ selectedSettings.model }}</td>
+                        </tr>
+                        <tr>
+                            <th>Training Set</th>
+                            <td>{{ selectedSettings.trainingSet }}</td>
+                        </tr>
+                        <!-- <tr>
                   <th>Model Version</th>
                   <td>{{ selectedSettings.modelVersion }}</td>
                 </tr> -->
-                <tr>
-                  <th>Precursor Scoring</th>
-                  <td>{{ selectedSettings.precursorScoring }}</td>
-                </tr>
-                <tr>
-                  <th>Max. num. templates</th>
-                  <td>{{ selectedSettings.numTemplates }}</td>
-                </tr>
-                <tr>
-                  <th>Max. cum. probability</th>
-                  <td>{{ selectedSettings.maxCumProb }}</td>
-                </tr>
-                <tr>
-                  <th>Min. plausibility</th>
-                  <td>{{ selectedSettings.minPlausibility }}</td>
-                </tr>
-                <tr>
-                  <th>Template attribute filters</th>
-                  <td>
-                    <div v-if="selectedSettings.attributeFilter.length">
-                      <p v-for="(filter, index) in selectedSettings.attributeFilter" :key="index">{{ filter.name }} {{ filter.logic }} {{ filter.value }}</p>
-                    </div>
-                    <span v-else>None</span>
-                  </td>
-                </tr>
-              </tbody>
-            </v-table>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="primary darken-1" text @click="showSettingsViewModal = false">Close</v-btn>
-          </v-card-actions>
+                        <tr>
+                            <th>Precursor Scoring</th>
+                            <td>{{ selectedSettings.precursorScoring }}</td>
+                        </tr>
+                        <tr>
+                            <th>Max. num. templates</th>
+                            <td>{{ selectedSettings.numTemplates }}</td>
+                        </tr>
+                        <tr>
+                            <th>Max. cum. probability</th>
+                            <td>{{ selectedSettings.maxCumProb }}</td>
+                        </tr>
+                        <tr>
+                            <th>Min. plausibility</th>
+                            <td>{{ selectedSettings.minPlausibility }}</td>
+                        </tr>
+                        <tr>
+                            <th>Template attribute filters</th>
+                            <td>
+                                <div v-if="selectedSettings.attributeFilter.length">
+                                    <p v-for="(filter, index) in selectedSettings.attributeFilter" :key="index">{{
+                                        filter.name }} {{ filter.logic }} {{ filter.value }}</p>
+                                </div>
+                                <span v-else>None</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </v-table>
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary darken-1" text @click="showSettingsViewModal = false">Close</v-btn>
+            </v-card-actions>
         </v-card>
-      </v-dialog>
+    </v-dialog>
 
     <!--
              <b-modal id="retro-advanced-modal" title="Advanced Settings" centered scrollable ok-title="Submit" ok-variant="success" @ok="runRetro()">
@@ -472,7 +480,7 @@ export default {
 
         const context = computed(() => JSON.parse(document.getElementById("django-context").textContent));
 
-        const enableResolver = ref(true);
+        const enableResolver = ref(import.meta.env.VITE_ENABLE_SMILES_RESOLVER === 'True');
 
         const maxIndex = computed(() => {
             const indices = Object.keys(predictions.value).map((val) => Number(val));
@@ -524,7 +532,7 @@ export default {
             const fields = [{ key: "smiles", title: "Precursor", width: '200px' }];
             Object.entries(predictions.value).forEach(([index, item]) => {
                 if (item.show && !item.loading) {
-                    fields.push({ key: index, title: labels.value[index], sortable: true, removable: true })
+                    fields.push({ key: index, title: labels.value[index], sortable: false, removable: true })
                 }
             })
             return fields;
@@ -535,7 +543,7 @@ export default {
             const fields = [{ key: "smiles", label: "Precursor", stickyColumn: true, tdClass: classes, thClass: classes }];
             Object.entries(predictions.value).forEach(([index, item]) => {
                 if (item.show && !item.loading) {
-                    fields.push({ key: index, label: labels.value[index], sortable: true, tdClass: classes, thClass: classes });
+                    fields.push({ key: index, label: labels.value[index], sortable: false, tdClass: classes, thClass: classes });
                 }
             });
             return fields;
@@ -556,7 +564,7 @@ export default {
             },
             set(value) {
                 const settingsStore = useSettingsStore();
-                settingsStore.setOption({ key: "allowResolve", value: value });
+                settingsStore["allowResolve"] = value;
             },
         });
 
@@ -799,7 +807,7 @@ export default {
             num2str,
             showKetcher,
             ketcherRef,
-            allPredictionsDialog
+            allPredictionsDialog,
         };
     },
 };
