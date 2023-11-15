@@ -28,11 +28,14 @@
                       <p class="text-subtitle-2 pl-3">Quick Settings</p>
                       <v-list density="compact">
                         <v-list-item v-for="(value, name) in tb.modes" :key="name" @click="applyTbPreset(name)">
+                        <v-row align="center">
+                        <v-col cols="auto">
                           <v-list-item-title>
                             {{ value.label }}
-                            <v-icon v-if="isTbQuickSettingsMode(name)">mdi-check</v-icon>
-                            <i class="fas fa-question-circle" :title="value.info"></i>
+                            <v-icon class="ml-1 mb-2" icon="mdi-check" v-show="selectedMode === value.label"></v-icon>
                           </v-list-item-title>
+                        </v-col>
+                      </v-row>
                         </v-list-item>
                       </v-list>
                       <v-divider class="ma-2" :thickness="2"></v-divider>
@@ -336,6 +339,7 @@ export default {
   },
   data() {
     return {
+      selectedMode: null,
       treeID: null,
       snackbar: false,
       visible: true,
@@ -679,13 +683,14 @@ export default {
     applyTbPreset(mode) {
       if (Object.keys(this.tb.modes).includes(mode)) {
         this.settingsStore.setTbSettings(this.tb.modes[mode].settings);
+        this.selectedMode = (this.tb.modes[mode].label)
+        console.log(this.settingsStore)
       }
     },
     isTbQuickSettingsMode(mode) {
       // Check if current settings matches the specified preset
       // Note: does not properly compare values which are arrays (currently not applicable)
       for (const [key, val] of Object.entries(this.tb.modes[mode].settings)) {
-        console.log("called for mode:", mode, "returning:", this.settingsStore.tbSettings[key] !== val);
         if (this.settingsStore.tbSettings[key] !== val) {
           return false;
         }
