@@ -17,7 +17,7 @@
           <v-window-item value="RP">
             <RetroView />
           </v-window-item>
-          <v-window-item value="TE">
+          <v-window-item value="TE" eager>
             <TreeView ref="treeDetail" :tab-active="tab === 'TE'" @switch-tab="$event => tab = $event" />
           </v-window-item>
         </v-window>
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, nextTick} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import NetworkView from "@/views/network/tabs/NetworkView";
 import RetroView from "@/views/network/tabs/RetroView";
@@ -94,6 +94,7 @@ export default {
         tab.value = newRoute.query.tab
       }
     })
+
 
     return {
       replaceRoute,
