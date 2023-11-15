@@ -126,7 +126,6 @@
                             <v-card>
                                 <v-card-title class="headline">Filter by starting materials</v-card-title>
                                 <v-card-text>
-                                    <v-form-group label="Starting materials">
                                         <v-row>
                                             <v-col cols="2" v-for="material in startingMaterialOptions" :key="material">
                                                 <v-card class="pa-3">
@@ -136,7 +135,6 @@
                                                 </v-card>
                                             </v-col>
                                         </v-row>
-                                    </v-form-group>
                                 </v-card-text>
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
@@ -155,7 +153,6 @@
                             <v-card>
                                 <v-card-title class="headline">Filter by intermediates</v-card-title>
                                 <v-card-text>
-                                    <v-form-group label="Intermediates">
                                         <v-row>
                                             <v-col cols="2" v-for="intermediate in intermediateOptions" :key="intermediate">
                                                 <v-card class="pa-3">
@@ -165,7 +162,6 @@
                                                 </v-card>
                                             </v-col>
                                         </v-row>
-                                    </v-form-group>
                                 </v-card-text>
                                 <v-card-actions>
                                     <v-spacer></v-spacer>

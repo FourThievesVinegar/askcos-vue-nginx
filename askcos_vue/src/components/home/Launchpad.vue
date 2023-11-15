@@ -157,7 +157,7 @@
               Buyables
             </v-card-title>
             <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
-                :href="`/buyables/?q=${encodeURIComponent(smiles)}`" target="_blank">Run
+                :href="`/buyables?q=${encodeURIComponent(smiles)}`" target="_blank">Run
                 Task</v-btn></v-card-actions>
           </v-card>
         </v-col>

@@ -996,13 +996,16 @@ export const useResultsStore = defineStore("results", {
         template_set: template.template_set,
       };
       try {
-        const output = await API.runCeleryTask(url, body);
-        this.setRecTemplatesResults({
-          smiles: smiles,
-          results: {
-            [template._id]: output.map((item) => item.precursors.join(".")),
-          },
-        });
+          API.post(url, body, true)
+          .then(async (json) => {
+            const output = await API.pollCeleryResult(json.task_id);
+            this.setRecTemplatesResults({
+              smiles: smiles,
+              results: {
+                [template._id]: output.map((item) => item.precursors.join(".")),
+              },
+            });
+          })
       } catch (error) {
         console.error("Could not apply template:", error);
       }
@@ -1049,7 +1052,7 @@ export const useResultsStore = defineStore("results", {
       } catch (error) {
         alert(
           "There was an error fetching cluster results for this target with the supplied settings: " +
-            error
+          error
         );
       }
     },

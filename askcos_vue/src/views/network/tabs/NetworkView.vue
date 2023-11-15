@@ -28,15 +28,18 @@
                       <p class="text-subtitle-2 pl-3">Quick Settings</p>
                       <v-list density="compact">
                         <v-list-item v-for="(value, name) in tb.modes" :key="name" @click="applyTbPreset(name)">
+                        <v-row align="center">
+                        <v-col cols="auto">
                           <v-list-item-title>
-                            <v-icon v-if="isTbQuickSettingsMode(name)" icon="mdi-check"></v-icon>
                             {{ value.label }}
-                            <i class="fas fa-question-circle" :title="value.info"></i>
+                            <v-icon class="ml-1 mb-2" icon="mdi-check" v-show="selectedMode === value.label"></v-icon>
                           </v-list-item-title>
+                        </v-col>
+                      </v-row>
                         </v-list-item>
                       </v-list>
                       <v-divider class="ma-2" :thickness="2"></v-divider>
-                      <v-btn variant="plain">Advanced...</v-btn>
+                      <v-btn variant="plain" @click="settingsVisible = true">Advanced...</v-btn>
                     </v-card>
                   </v-menu>
                 </v-btn-group>
@@ -269,6 +272,22 @@
     :template-attributes="templateAttributes" :template-sets="templateSets" @changeNetopt="updateNetworkOptions" />
   <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="resultsStore.target" @input="showKetcher = false"
     @update:smiles="(ketcherSmiles) => resultsStore.target = ketcherSmiles" />
+
+  <v-snackbar v-model="snackbar" vertical>
+    <p>Tree builder job complete! Visit results page for more details</p>
+        <a :href="`/network?tab=TE&id=${this.treeID}`" role="button">
+             <p>Visit results</p>
+            </a>
+             <template v-slot:actions>
+          <v-btn
+            color="indigo"
+            variant="text"
+            @click="snackbar = false"
+          >
+            Close
+          </v-btn>
+        </template>
+  </v-snackbar>
 </template>
 
 <script>
@@ -320,6 +339,9 @@ export default {
   },
   data() {
     return {
+      selectedMode: null,
+      treeID: null,
+      snackbar: false,
       visible: true,
       treeBuilderModalShow: false,
       networkInitialized: false,
@@ -661,6 +683,8 @@ export default {
     applyTbPreset(mode) {
       if (Object.keys(this.tb.modes).includes(mode)) {
         this.settingsStore.setTbSettings(this.tb.modes[mode].settings);
+        this.selectedMode = (this.tb.modes[mode].label)
+        console.log(this.settingsStore)
       }
     },
     isTbQuickSettingsMode(mode) {
@@ -713,13 +737,18 @@ export default {
       delete body.expand_one_options.fast_filter_threshold;
       // checkTemplatePrioritizers(body["template_prioritizers"]);
       API.post(url, body)
-        .then((json) => {
+        .then(async (json) => {
           this.tb.taskId = json;
           this.createConfirm({ title: 'Success', content: 'Tree Builder job submitted successfully!', dialogProps: { width: "auto" } })
-          return API.pollCeleryResult(json);
+          const output = await API.pollCeleryResult(json);
+          console.log(output.result.result_id);
+          this.treeID = output.result.result_id
+          console.log(this.treeID)
+          return output
         })
         .then(() => {
-          this.createSnackbar({ text: "Tree builder job complete! Visit results page for more details", snackbarProps: { timeout: -1, vertical: true } })
+          console.log("complete");
+          this.snackbar = true;
         })
         .catch((error) => {
           console.error(error);

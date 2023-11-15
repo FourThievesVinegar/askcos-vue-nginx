@@ -900,6 +900,7 @@ export default {
             this.createSnackbar({ text: 'Result saved successfully!', snackbarProps: { timeout: -1, vertical: true } })
           } else {
             this.createSnackbar({ text: "Tree builder job complete! Visit results page for more details", snackbarProps: { timeout: -1, vertical: true } })
+
           }
         })
         .catch((error) => {
