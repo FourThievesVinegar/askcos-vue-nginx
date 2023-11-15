@@ -34,15 +34,15 @@
               </v-col>
             </v-row>
 
-            <v-row v-if="!!reactants" class="d-flex justify-center">
+            <v-row class="d-flex justify-center">
               <v-col cols="3">
-                <smiles-image :smiles="reactants"></smiles-image>
+                <smiles-image :smiles="reactants" v-if="!!reactants"></smiles-image>
               </v-col>
-              <v-col cols="3" align="center" v-if="!!reactants && mode !== 'sites'" class="py-30">
-                <smiles-image :smiles="'>>'" width="200"></smiles-image>
+              <v-col cols="3" align="center" class="py-30">
+                <smiles-image :smiles="'>>'" width="200" v-if="!!reactants && !!product && mode !== 'sites'"></smiles-image>
               </v-col>
-              <v-col cols="3" v-if="mode !== 'sites'">
-                <smiles-image :smiles="product"></smiles-image>
+              <v-col cols="3">
+                <smiles-image :smiles="product" v-if="!!product && mode !== 'sites'"></smiles-image>
               </v-col>
             </v-row>
 
@@ -67,15 +67,12 @@
               </v-col>
             </v-row>
 
-            <v-row
-              v-if="!!reagents && mode === 'forward' || !!reagents && mode === 'impurity' || !!reagents && mode === 'selectivity'"
-              class="d-flex justify-center">
+            <v-row class="d-flex align-center justify-center" style="width: 100%">
               <v-col cols="6" class="d-flex justify-center">
-                <smiles-image :smiles="reagents" width="300"></smiles-image>
+                <smiles-image :smiles="reagents" width="300" v-if="!!reagents && mode === 'forward' || !!reagents && mode === 'impurity' || !!reagents && mode === 'selectivity'"></smiles-image>
               </v-col>
               <v-col cols="6" class="d-flex justify-center">
-                <smiles-image :smiles="solvent" width="300"></smiles-image>
-
+                <smiles-image :smiles="solvent" width="300" v-if="!!solvent && mode === 'forward' || !!solvent && mode === 'impurity' || !!solvent && mode === 'selectivity'"></smiles-image>
               </v-col>
             </v-row>
 
