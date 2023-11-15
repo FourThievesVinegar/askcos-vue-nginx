@@ -950,8 +950,8 @@ export default {
                 .then((output) => {
                     if (output.success) {
                         this.createSnackbar({ text: "Analog counting job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
-                    } else {
-                        this.createSnackbar({ text: `Analog counting job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
+                    } else if (output.error) {
+                        this.createSnackbar({ text: `Analog counting job failed`, snackbarProps: { timeout: -1, vertical: true } });
                     }
                 })
                 .catch(() => {
