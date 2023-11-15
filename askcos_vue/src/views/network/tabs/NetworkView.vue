@@ -8,6 +8,10 @@
           <v-col cols="12" md="10" sm="12"><v-text-field v-model="resultsStore.target" density="compact"
               variant="outlined" label="Target" placeholder="SMILES" type="text" clearable class="target-input"
               hide-details prepend-inner-icon="mdi mdi-flask" min-width="100px">
+              <template v-slot:prepend v-if="enableResolver">
+                <v-btn icon="mdi mdi-server" :class="allowResolve ? 'text-green' : 'text-grey'" @click="toggleResolver">
+                </v-btn>
+              </template>
               <template v-slot:append-inner>
                 <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil" @click="showKetcherModal()">Draw</v-btn>
               </template>
@@ -28,14 +32,14 @@
                       <p class="text-subtitle-2 pl-3">Quick Settings</p>
                       <v-list density="compact">
                         <v-list-item v-for="(value, name) in tb.modes" :key="name" @click="applyTbPreset(name)">
-                        <v-row align="center">
-                        <v-col cols="auto">
-                          <v-list-item-title>
-                            {{ value.label }}
-                            <v-icon class="ml-1 mb-2" icon="mdi-check" v-show="selectedMode === value.label"></v-icon>
-                          </v-list-item-title>
-                        </v-col>
-                      </v-row>
+                          <v-row align="center">
+                            <v-col cols="auto">
+                              <v-list-item-title>
+                                {{ value.label }}
+                                <v-icon class="ml-1 mb-2" icon="mdi-check" v-show="selectedMode === value.label"></v-icon>
+                              </v-list-item-title>
+                            </v-col>
+                          </v-row>
                         </v-list-item>
                       </v-list>
                       <v-divider class="ma-2" :thickness="2"></v-divider>
@@ -275,18 +279,14 @@
 
   <v-snackbar v-model="snackbar" vertical>
     <p>Tree builder job complete! Visit results page for more details</p>
-        <a :href="`/network?tab=TE&id=${this.treeID}`" role="button">
-             <p>Visit results</p>
-            </a>
-             <template v-slot:actions>
-          <v-btn
-            color="indigo"
-            variant="text"
-            @click="snackbar = false"
-          >
-            Close
-          </v-btn>
-        </template>
+    <a :href="`/network?tab=TE&id=${this.treeID}`" role="button">
+      <p>Visit results</p>
+    </a>
+    <template v-slot:actions>
+      <v-btn color="indigo" variant="text" @click="snackbar = false">
+        Close
+      </v-btn>
+    </template>
   </v-snackbar>
 </template>
 
@@ -428,11 +428,8 @@ export default {
     }
   },
   computed: {
-    context() {
-      return JSON.parse(document.getElementById("django-context").textContent);
-    },
     enableResolver() {
-      return false;
+      return import.meta.env.VITE_ENABLE_SMILES_RESOLVER;
     },
     showLoader() {
       return this.pendingTasks > 0;

@@ -2,8 +2,8 @@
   <v-navigation-drawer expand-on-hover rail elevation="2" width="1000px" class="sidebar"
     @update:rail="($event) => rail = $event">
     <v-list>
-      <v-list-item prepend-icon="mdi-tools" title="ASKCOS" subtitle="Demo" to="/" value="home"
-        :active="false"></v-list-item>
+      <v-list-item prepend-icon="mdi-tools" title="ASKCOS" :subtitle="org" to="/"
+        value="home" :active="false"></v-list-item>
     </v-list>
 
     <v-divider></v-divider>
@@ -89,6 +89,8 @@ const _openedGroups = ref(['modules', 'profile']);
 const route = useRoute();
 const router = useRouter();
 const rail = ref(true)
+
+const org = ref(import.meta.env.VITE_ORGANIZATION)
 
 const openedGroups = computed({
   get: () => rail.value ? [] : _openedGroups.value,
