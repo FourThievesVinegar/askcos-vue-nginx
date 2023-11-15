@@ -10,20 +10,24 @@ describe("Buyable Compounds Page", () => {
   });
 
   it("can change similarity threshold", () => {
-    cy.get('[data-cy="similarity-input-element"] input').clear().type("0.5");
+    cy.get('[data-cy="similarity-input-element"] input').clear();
+    cy.get('[data-cy="similarity-input-element"] input').type("0.5");
   });
 
   it("can input similarity threshold", () => {
-    cy.get('[id^="input-34"]').clear({ force: true }).type("0.5");
+    cy.get('[id^="input-34"]').clear({ force: true });
+    cy.get('[id^="input-34"]').type("0.5");
   });
 
   it("can limit number of results", () => {
-    cy.get('[id^="input-37"]').clear({ force: true }).type("4");
+    cy.get('[id^="input-37"]').clear({ force: true });
+    cy.get('[id^="input-37"]').type("4");
   });
 
   it("can search compounds with limit 2", () => {
     cy.get('[placeholder="SMILES/SMARTS"]').type("c1ccccc1");
-    cy.get('[id^="input-37"]').clear({ force: true }).type("2");
+    cy.get('[id^="input-37"]').clear({ force: true });
+    cy.get('[id^="input-37"]').type("2");
     cy.get("button").contains("Search").click();
     cy.get("img").should("have.length", 2);
   });
