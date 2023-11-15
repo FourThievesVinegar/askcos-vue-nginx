@@ -68,7 +68,7 @@
                     <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn color="red darken-1" text @click="dialog = false">Cancel</v-btn>
-                        <v-btn color="green darken-1" text @click="emitDownloadImpurity">Save</v-btn>
+                        <v-btn color="green darken-1" text @click="() => {emitDownloadImpurity; dialog = false} ">Save</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>

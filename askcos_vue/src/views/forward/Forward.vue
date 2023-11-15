@@ -1075,11 +1075,13 @@ const downloadImpurityResults = () => {
   let solventData = solvent.value;
 
   impurityResults.value.forEach((res) => {
-    downloadData += `${res.no},${reactantData},${productData},${reagentData},${solventData},${res.prd_smiles},${res.modes_name},${res.avg_insp_score},${res.similarity_to_major},${res.prd_mw}\n`;
+    let modesName = `"${res.modes_name}"`;
+    downloadData += `${res.no},${reactantData},${productData},${reagentData},${solventData},${res.prd_smiles},${modesName},${res.avg_insp_score},${res.similarity_to_major},${res.prd_mw}\n`;
   });
   const blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' });
   saveAs(blob, impurityFileName.value);
 };
+
 
 const downloadSelectivityResults = () => {
   if (!selectivityResults.value) {

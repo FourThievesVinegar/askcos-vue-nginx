@@ -311,7 +311,8 @@ import { interpolateHexColor } from "@/common/color";
 import { saveAs } from "file-saver";
 import KetcherModal from "@/components/KetcherModal";
 import NetworkLegend from "@/components/network/NetworkLegend";
-// import { tbSettingsJsToApi } from "@/common/tb-settings";
+import { resolveChemName } from "@/common/resolver";
+import { tbSettingsJsToApi } from "@/common/tb-settings";
 
 const BG_OPACITY = 0.2; // Background opacity
 export default {
@@ -810,17 +811,21 @@ export default {
       this.pendingTasks += 1;
       this.saveAllSettings();
       this.validatesmiles(this.resultsStore.target, !this.allowResolve)
-        .then((isvalidsmiles) => {
+        .then(async(isvalidsmiles) => {
+          let targetSmiles;
           if (isvalidsmiles) {
-            return this.resultsStore.target;
+            targetSmiles = this.resultsStore.target;
           } else {
-            return this.resolveChemName(this.resultsStore.target);
+            targetSmiles = await this.resolveChemName(this.resultsStore.target);
           }
+           this.resultsStore.target = targetSmiles;
+           return this.resultsStore.target
         })
         .then((smiles) => this.canonicalize(smiles, "target"))
         .then(() => {
-          this.saveTarget();
+          this.saveTarget(this.resultsStore.target);
           if (this.resultsStore.target !== undefined) {
+            console.log()
             this.resultsStore.clearDataGraph();
             this.resultsStore.clearDispGraph();
             this.resultsStore.clearRemovedReactions();
