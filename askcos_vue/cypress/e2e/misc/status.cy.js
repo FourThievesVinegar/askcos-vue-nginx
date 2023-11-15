@@ -1,4 +1,3 @@
-/* global cy */
 describe('Status Page', () => {
   beforeEach(() => {
     cy.visit('/status')

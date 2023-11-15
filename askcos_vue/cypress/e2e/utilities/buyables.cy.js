@@ -1,4 +1,3 @@
-/* global cy */
 describe('Buyable Compounds Page', () => {
   beforeEach(() => {
     cy.visit('/buyables');
