@@ -53,7 +53,7 @@
               </template>
             </v-text-field></v-col>
         </v-row>
-        <v-row class="justify-center align-center"><span class="text-overline">Using model(s):</span>
+        <v-row class="justify-center align-center" ><span class="text-overline">Using model(s):</span>
           <div v-if="strategies.length !== 0" class="pa-0 test">
             <v-chip v-for="(strategy, idx) in strategies" :key="idx" class="text-overline">
               {{ strategy.retro_backend }} {{ strategy.retro_model_name }}
@@ -811,15 +811,15 @@ export default {
       this.pendingTasks += 1;
       this.saveAllSettings();
       this.validatesmiles(this.resultsStore.target, !this.allowResolve)
-        .then(async(isvalidsmiles) => {
+        .then(async (isvalidsmiles) => {
           let targetSmiles;
           if (isvalidsmiles) {
             targetSmiles = this.resultsStore.target;
           } else {
             targetSmiles = await this.resolveChemName(this.resultsStore.target);
           }
-           this.resultsStore.target = targetSmiles;
-           return this.resultsStore.target
+          this.resultsStore.target = targetSmiles;
+          return this.resultsStore.target
         })
         .then((smiles) => this.canonicalize(smiles, "target"))
         .then(() => {

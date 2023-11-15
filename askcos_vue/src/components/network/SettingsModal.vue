@@ -50,8 +50,8 @@
                                 <setting-input label="Min. plausibility" label-for="minPlausibility"
                                     help-text="This is the minimum plausibility that a predictor transformation must receive from the Fast Filter model in order to be kept and returned as a result.
         The plausibility score can help filter out bad suggestions, but in some cases can be over conservative and filter out false negatives.">
-                                    <v-text-field variant="outlined" type="number" v-model="minPlausibility" min="0"
-                                        max="1" step="0.000001" hide-details density="compact" class="mb-2"></v-text-field>
+                                    <v-text-field variant="outlined" type="number" v-model="minPlausibility" min="0" max="1"
+                                        step="0.000001" hide-details density="compact" class="mb-2"></v-text-field>
                                 </setting-input>
                                 <setting-input label="Apply regio-selectivity checking"
                                     help-text="When enabled, will automatically identify reactions which have potential regio-selectivity considerations.">
@@ -458,12 +458,19 @@
                             </v-container>
                         </v-window-item>
                         <v-window-item value="IPPC">
-                            <v-card flat>
-                                <v-card-text>
-                                    <setting-input label="Cluster similar precursors"
+                            <v-container fluid>
+
+                                <setting-input label="Cluster similar precursors"
+                                    help-text="This setting lets you turn on or off the precursor clustering.">
+                                    <v-switch id="allowClusterSetting" hide-details v-model="precursorClusterEnabled"
+                                        color="primary">
+                                    </v-switch>
+                                </setting-input>
+                                <div v-if="precursorClusterEnabled">
+                                    <setting-input label="Group Cluster"
                                         help-text="This setting lets you turn on or off the precursor clustering.">
-                                        <v-switch id="allowClusterSetting" hide-details v-model="precursorClusterEnabled"
-                                            color="primary">
+                                        <v-switch id="allowCluster" v-model="allowCluster" name="allow-cluster-switch"
+                                            hide-details color="primary">
                                         </v-switch>
                                     </setting-input>
                                     <setting-input label="Clustering method" label-for="clusterMethod"
@@ -502,56 +509,52 @@
                                                 class="mt-2"></v-text-field>
                                         </setting-input>
                                     </div>
-                                </v-card-text>
-                            </v-card>
+                                </div>
+                            </v-container>
                         </v-window-item>
                         <v-window-item value="graphVis">
-                            <v-card flat>
-                                <v-card-text>
-                                    <setting-input :label="`Edge spring constant: ${graphSpringConstant}`"
-                                        label-for="graphSpringConst">
-                                        <v-slider label="" id="graphSpringConst" v-model="graphSpringConstant"
-                                            @update:modelValue="$emit('changeNetopt')" min="0" max="0.3" step="0.005"
-                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
-                                    </setting-input>
-                                    <setting-input :label="`Chemical node size: ${graphNodeSize}`"
-                                        label-for="graphNodeSize">
-                                        <v-slider label="" id="graphNodeSize" v-model="graphNodeSize"
-                                            @update:modelValue="$emit('changeNetopt')" min="1" max="60" step="1"
-                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
-                                    </setting-input>
-                                    <setting-input :label="`Reaction node size: ${graphNodeFontSize}`"
-                                        label-for="graphFontSize">
-                                        <v-slider label="" id="graphFontSize" v-model="graphNodeFontSize"
-                                            @update:modelValue="$emit('changeNetopt')" min="1" max="20" step="1"
-                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
-                                    </setting-input>
-                                    <setting-input :label="`Node effective mass: ${graphNodeMass}`"
-                                        label-for="graphNodeMass">
-                                        <v-slider label="" id="graphNodeMass" v-model="graphNodeMass"
-                                            @update:modelValue="$emit('changeNetopt')" min="0.1" max="5" step="0.1"
-                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
-                                    </setting-input>
-                                    <setting-input label="Hierarchical layout">
-                                        <v-switch id="checkHier" hide-details v-model="graphHierarchicalEnabled"
-                                            @update:modelValue="$emit('change-netopt')" color="primary">
-                                        </v-switch>
-                                    </setting-input>
-                                    <setting-input v-if="graphHierarchicalEnabled" label="Hierarchical direction"
-                                        label-for="graphHierDir">
-                                        <v-select id="graphHierDir" v-model="graphHierarchicalDirection" :items="HDItems"
-                                            @update:modelValue="$emit('change-netopt')" variant="outlined" density="compact"
-                                            hide-details></v-select>
-                                    </setting-input>
-                                    <setting-input v-if="graphHierarchicalEnabled"
-                                        :label="`Hierarchical level separation: ${graphHierarchicalLevelSeparation}`"
-                                        label-for="graphLevelSep">
-                                        <v-slider label="" id="graphLevelSep" v-model="graphHierarchicalLevelSeparation"
-                                            @update:modelValue="$emit('changeNetopt')" min="1" max="500" step="1"
-                                            density="compact" hide-details class="mt-2" color="primary"></v-slider>
-                                    </setting-input>
-                                </v-card-text>
-                            </v-card>
+                            <v-container fluid>
+                                <setting-input :label="`Edge spring constant: ${graphSpringConstant}`"
+                                    label-for="graphSpringConst">
+                                    <v-slider label="" id="graphSpringConst" v-model="graphSpringConstant"
+                                        @update:modelValue="$emit('changeNetopt')" min="0" max="0.3" step="0.005"
+                                        density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                </setting-input>
+                                <setting-input :label="`Chemical node size: ${graphNodeSize}`" label-for="graphNodeSize">
+                                    <v-slider label="" id="graphNodeSize" v-model="graphNodeSize"
+                                        @update:modelValue="$emit('changeNetopt')" min="1" max="60" step="1"
+                                        density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                </setting-input>
+                                <setting-input :label="`Reaction node size: ${graphNodeFontSize}`"
+                                    label-for="graphFontSize">
+                                    <v-slider label="" id="graphFontSize" v-model="graphNodeFontSize"
+                                        @update:modelValue="$emit('changeNetopt')" min="1" max="20" step="1"
+                                        density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                </setting-input>
+                                <setting-input :label="`Node effective mass: ${graphNodeMass}`" label-for="graphNodeMass">
+                                    <v-slider label="" id="graphNodeMass" v-model="graphNodeMass"
+                                        @update:modelValue="$emit('changeNetopt')" min="0.1" max="5" step="0.1"
+                                        density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                </setting-input>
+                                <setting-input label="Hierarchical layout">
+                                    <v-switch id="checkHier" hide-details v-model="graphHierarchicalEnabled"
+                                        @update:modelValue="$emit('change-netopt')" color="primary">
+                                    </v-switch>
+                                </setting-input>
+                                <setting-input v-if="graphHierarchicalEnabled" label="Hierarchical direction"
+                                    label-for="graphHierDir">
+                                    <v-select id="graphHierDir" v-model="graphHierarchicalDirection" :items="HDItems"
+                                        @update:modelValue="$emit('change-netopt')" variant="outlined" density="compact"
+                                        hide-details></v-select>
+                                </setting-input>
+                                <setting-input v-if="graphHierarchicalEnabled"
+                                    :label="`Hierarchical level separation: ${graphHierarchicalLevelSeparation}`"
+                                    label-for="graphLevelSep">
+                                    <v-slider label="" id="graphLevelSep" v-model="graphHierarchicalLevelSeparation"
+                                        @update:modelValue="$emit('changeNetopt')" min="1" max="500" step="1"
+                                        density="compact" hide-details class="mt-2" color="primary"></v-slider>
+                                </setting-input>
+                            </v-container>
                         </v-window-item>
                     </v-window>
                 </div>
@@ -722,6 +725,14 @@ export default {
             },
             set(value) {
                 this.settingsStore.interactive_path_planner_settings.cluster_precursors = value;
+            },
+        },
+        allowCluster: {
+            get() {
+                return this.settingsStore.allowCluster;
+            },
+            set(value) {
+                this.settingsStore.allowCluster = value;
             },
         },
         precursorClusterMethod: {
