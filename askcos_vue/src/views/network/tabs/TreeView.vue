@@ -597,9 +597,8 @@ export default {
             return !!this.allTrees.length && this.allTrees.some((tree) => tree["graph"]["pmi"] === undefined || tree["graph"]["pmi"] === null);
         },
         treeSortOptions() {
-            return [
+            const options = [
                 { value: "num_reactions", title: "Total number of reactions" },
-                { value: "depth", title: "Length of longest linear path", disabled: this.depthDisabled },
                 { value: "first_step_score", title: "First step score" },
                 { value: "first_step_plausibility", title: "First step plausibility" },
                 { value: "avg_score", title: "Average score" },
@@ -607,11 +606,23 @@ export default {
                 { value: "avg_plausibility", title: "Average plausibility" },
                 { value: "min_plausibility", title: "Minimum plausibility" },
                 { value: "precursor_cost", title: "Total precursor cost" },
-                { value: "atom_economy", title: "Overall atom economy", disabled: this.atomEconomyDisabled },
-                { value: "score", title: "Strategic quotient", disabled: this.scoreDisabled },
-                { value: "num_analogs", title: "Number of possible analogs", disabled: this.analogCountDisabled },
-                { value: "pmi", title: "Average PMI", disabled: this.pmiDisabled },
             ];
+            if (!this.depthDisabled) {
+                options.push( { value: "depth", title: "Length of longest linear path" });
+            }
+            if(!this.analogCountDisabled) {
+                options.push( { value: "num_analogs", title: "Number of possible analogs" });
+            }
+            if (!this.atomEconomyDisabled) {
+                options.push( { value: "atom_economy", title: "Overall atom economy" });
+            }
+            if (!this.scoreDisabled) {
+                options.push( { value: "score", title: "Strategic quotient" });
+            }
+            if (!this.pmiDisabled) {
+                options.push( { value: "pmi", title: "Average PMI" });
+            }
+            return options;
         },
         target: {
             get() {
@@ -640,7 +651,6 @@ export default {
             this.$emit("switch-tab", "IPP");
         },
         addTreeToIpp(tree) {
-            // console.log(tree)
             this.resultsStore.addTreeToDispGraph(tree);
             this.$emit("switch-tab", "IPP");
         },
@@ -657,10 +667,6 @@ export default {
                 /* For detail view, add extra visual attributes */
                 graph.nodes.update(
                     data.nodes.map((node) => {
-                        // this.resultsStore.dataGraph.nodes.map((node) => {
-                        //     console.log(node)
-                        // })
-                        // console.log(this.resultsStore.dataGraph.nodes)
                         let dataNode = this.resultsStore.dataGraph.nodes.get(node["smiles"]);
                         if (node["type"] === "chemical") {
                             return makeChemicalDisplayNode({
@@ -1085,7 +1091,6 @@ export default {
             }
         },
         tabActive(newVal) {
-            console.log("watching ", newVal)
             if (newVal) {
                 this.init();
             }
