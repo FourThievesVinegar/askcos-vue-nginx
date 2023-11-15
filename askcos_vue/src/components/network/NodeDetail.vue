@@ -68,7 +68,7 @@
             <h3>Precursors</h3>
             <v-spacer></v-spacer>
             <v-switch id="allowCluster" v-model="allowCluster" name="allow-cluster-switch" @change="resetSortingCategory"
-              label="Group Similar" density="compact" hide-details>
+              label="Group Cluster" density="compact" hide-details>
             </v-switch>
             <v-spacer></v-spacer>
             <v-switch id="invertAtomFilter" v-model="invertAtomFilter" name="invert-atom-filter-switch"
