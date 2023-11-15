@@ -1,4 +1,3 @@
-/* global cy */
 describe('Product Prediction Page', () => {
     beforeEach(() => {
       cy.visit('/forward?tab=forward');
