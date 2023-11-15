@@ -740,6 +740,7 @@ export default {
       Object.assign(body.expand_one_options, this.settingsStore.interactive_path_planner_settings)
       delete body.expand_one_options.group_by_strategy;
       delete body.expand_one_options.fast_filter_threshold;
+      body.expand_one_options.filter_threshold = this.settingsStore.interactive_path_planner_settings.fast_filter_threshold;
       // checkTemplatePrioritizers(body["template_prioritizers"]);
       API.post(url, body)
         .then(async (json) => {
