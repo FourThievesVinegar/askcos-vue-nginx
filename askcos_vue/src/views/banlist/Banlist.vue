@@ -93,8 +93,15 @@
           </v-col>
           <v-col cols="12">
             <v-text-field v-model="newSmiles" label="SMILES" maxlength="150" autocomplete="off" density="comfortable"
-              variant="outlined" hide-details clearable></v-text-field>
+              variant="outlined" hide-details clearable>
+              <template v-slot:append-inner>
+                      <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher(newSmiles)">Draw</v-btn>
+                    </template>
+            </v-text-field>
           </v-col>
+           <v-col cols="12" v-if="!!newSmiles"  >
+              <smiles-image :smiles="newSmiles" height="100px"></smiles-image>
+            </v-col>
           <v-col cols="12">
             <v-text-field v-model="newDesc" label="Description" maxlength="150" autocomplete="off" density="comfortable"
               variant="outlined" hide-details clearable></v-text-field>
@@ -108,16 +115,21 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+    <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="newSmiles" @input="showKetcher = false"
+      @update:smiles="updateSmiles" />
 </template>
 
 <script setup>
 import banlist from "@/assets/banlist.svg";
 import { ref, computed, onMounted, nextTick } from 'vue';
+import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage.vue";
 import CopyTooltip from "@/components/CopyTooltip";
 import { API } from "@/common/api";
 import dayjs from 'dayjs';
 
+const ketcherRef = ref(null);
+const showKetcher = ref(false);
 const activeTab = ref(0);
 const chemicals = ref([]);
 const reactions = ref([]);
@@ -266,6 +278,15 @@ const toggleActivation = async (item, category) => {
   loadCollection(category);
 };
 
+const openKetcher = (source) => {
+  newSmiles.value = source;
+  showKetcher.value = true;
+  ketcherRef.value.smilesToKetcher();
+};
+
+const updateSmiles = (source) => {
+  newSmiles.value = source;
+}
 </script>
 
 <style scoped>
