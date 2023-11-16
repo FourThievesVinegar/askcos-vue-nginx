@@ -770,8 +770,8 @@ export default {
       this.showKetcher = true;
       this.$refs['ketcherRef'].smilesToKetcher()
     },
-    updateSmiles (newSmiles){
-      this.smiles = newSmiles;
+    updateSmiles (source){
+      this.addNewPrecursorModal['newPrecursorSmiles'] = source;
     },
     predictSelectivity() {
       this.$emit("updatePendingTasks", "add");
