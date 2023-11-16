@@ -1038,13 +1038,22 @@ export default {
       console.log(this.uploadFile)
       reader.readAsText(this.uploadFile[0]);
       reader.onload = (e) => {
-        let data = JSON.parse(e.target.result);
-        if (data.version === 1.0) {
-          this.importDataV1(data);
-        } else {
-          this.importDataV0(data);
+        try {
+          let data = JSON.parse(e.target.result);
+
+          if (data.version === 1.0) {
+            this.importDataV1(data);
+          } else {
+            this.importDataV0(data);
+          }
+
         }
-        this.pendingTasks -= 1;
+        catch {
+          alert("Can't parse the input file")
+        }
+        finally {
+          this.pendingTasks -= 1;
+        }
       };
     },
     importDataV0(data) {

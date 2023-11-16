@@ -18,6 +18,7 @@
     "file-saver": "^2.0.5",
     "js-cookie": "^3.0.5",
     "jspanel4": "^4.16.1",
+    "keycloak-js": "^22.0.5",
     "oidc-client": "^1.11.5",
     "papaparse": "^5.3.1",
     "pinia": "^2.0.0",
