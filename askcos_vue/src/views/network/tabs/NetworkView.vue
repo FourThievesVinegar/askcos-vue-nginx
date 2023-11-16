@@ -5,17 +5,24 @@
         color="green-darken-1"></v-progress-linear>
       <v-container fluid>
         <v-row class="justify-center align-center">
-          <v-col cols="12" md="10" sm="12"><v-text-field v-model="resultsStore.target" density="compact"
-              variant="outlined" label="Target" placeholder="SMILES" type="text" clearable class="target-input"
-              hide-details prepend-inner-icon="mdi mdi-flask" min-width="100px">
-              <v-tooltip max-width="200px" location="bottom">
-              <template v-slot:activator="{ props }" v-if="enableResolver">
-                <v-btn v-bind="props"  icon="mdi mdi-server" :class="allowResolve ? 'text-green' : 'text-grey'" @click="toggleResolver">
-                </v-btn>
+          <v-col cols="12" md="10" sm="12">
+            <v-text-field v-model="resultsStore.target" density="compact" variant="outlined" label="Target"
+              placeholder="SMILES" type="text" clearable class="target-input" hide-details
+              prepend-inner-icon="mdi mdi-flask" min-width="100px">
+              <template v-slot:prepend>
+                <v-tooltip max-width="200px" location="bottom">
+                  <template v-slot:activator="{ props }" v-if="enableResolver">
+                    <v-btn v-bind="props" icon="mdi mdi-server" :class="allowResolve ? 'text-green' : 'text-grey'"
+                      @click="toggleResolver">
+                    </v-btn>
+                  </template>
+                  <p v-if="!!allowResolve">Connection to NIH name resolver is ON, structures may be sent to an external
+                    service. This can be turned off in the settings menu, or by clicking this icon.</p>
+                  <span v-else>Connection to NIH name resolver is OFF, structures will NOT be sent to an external service.
+                    Target query must be a SMILES string. This can be turned on in the settings menu, or by clicking this
+                    icon.</span>
+                </v-tooltip>
               </template>
-              <p v-if="!!allowResolve">Connection to NIH name resolver is ON, structures may be sent to an external service. This can be turned off in the settings menu, or by clicking this icon.</p>
-              <span v-else>Connection to NIH name resolver is OFF, structures will NOT be sent to an external service. Target query must be a SMILES string. This can be turned on in the settings menu, or by clicking this icon.</span>
-            </v-tooltip>
               <template v-slot:append-inner>
                 <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil" @click="showKetcherModal()">Draw</v-btn>
               </template>
@@ -57,7 +64,7 @@
               </template>
             </v-text-field></v-col>
         </v-row>
-        <v-row class="justify-center align-center" ><span class="text-overline">Using model(s):</span>
+        <v-row class="justify-center align-center"><span class="text-overline">Using model(s):</span>
           <div v-if="strategies.length !== 0" class="pa-0 test">
             <v-chip v-for="(strategy, idx) in strategies" :key="idx" class="text-overline">
               {{ strategy.retro_backend }} {{ strategy.retro_model_name }}
@@ -217,18 +224,8 @@
       <v-card-title class="headline">Save IPP network</v-card-title>
       <v-card-text>
         <v-text-field v-model="savedResultDescription" label="Description" outlined></v-text-field>
-  <v-combobox 
-      v-model="savedResultTags" 
-      label="Tags" 
-      outlined 
-      chips 
-      multiple 
-      small-chips
-      :deletable-chips="true"
-      :clearable="true"
-      hint="Type and press enter to add a tag"
-      persistent-hint
-  ></v-combobox>
+        <v-combobox v-model="savedResultTags" label="Tags" outlined chips multiple small-chips :deletable-chips="true"
+          :clearable="true" hint="Type and press enter to add a tag" persistent-hint></v-combobox>
         <template v-if="!!resultsStore.savedResultInfo.id">
           <template v-if="resultsStore.savedResultInfo.type === 'ipp'">
             <v-checkbox v-model="savedResultOverwrite" label="Overwrite" class="my-3"></v-checkbox>
