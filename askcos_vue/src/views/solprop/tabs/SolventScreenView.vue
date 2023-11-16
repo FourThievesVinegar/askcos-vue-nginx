@@ -19,8 +19,9 @@
               </v-col>
               <v-col cols="12" md="4">
                 <v-row class="mb-2">
-                  <v-select label="Solvent Set" variant="outlined" :items="Object.keys(solventSets)" hide-details
-                    v-model="solventSet"></v-select>
+                  <v-select label="Solvent Set" variant="outlined" :items="[...Object.keys(solventSets), 'custom']"  hide-details
+                    v-model="solventSet">
+                  </v-select>
                 </v-row>
                 <v-row>
                   <v-textarea label="Solvents" hide-details variant="outlined" v-model="solvents"></v-textarea>
@@ -38,6 +39,12 @@
                   class="mr-5">
                   More Options
                 </v-btn>
+                  <v-btn variant="tonal" class="mr-5" @click="customDialog = !customDialog " v-if="solventSet === 'custom'">
+                    Save custom solvent set
+                  </v-btn>
+                  <v-btn variant="tonal" class="mr-5" color="red"  v-if="Object.keys(customSolventSets).includes(solventSet)" @click="deleteSolventSet">
+                    Delete custom solvent set
+                  </v-btn>
                 <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0" @click="clear(false)">
                   Clear Results
                 </v-btn>
@@ -109,6 +116,33 @@
         </v-sheet>
       </v-col>
     </v-row>
+
+    <v-dialog v-model="customDialog" persistent max-width="600px">
+    <v-card>
+      <v-card-title>
+        Save Solvent Set
+      </v-card-title>
+
+      <v-card-text>
+        <v-form>
+          <v-text-field
+            label="Please enter a name for the solvent set"
+            v-model="newSolventSetName"
+            :rules="[v => !!v || 'Name is required']"
+            required
+          ></v-text-field>
+        </v-form>
+        <p>Custom solvent sets are stored locally in your browser.</p>
+      </v-card-text>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="blue darken-1" text @click="customDialog = false">Close</v-btn>
+        <v-btn color="blue darken-1" text @click="() => { this.saveSolventSet() ; customDialog = false }" :disabled="!newSolventSetNameValid">Save</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
   </v-container>
   <solubility-modal :visible="showInfo" width="auto" @close-dialog="$event => showInfo = $event"></solubility-modal>
 </template>
@@ -141,6 +175,7 @@ export default {
   },
   data() {
     return {
+      customDialog: false,
       solute: '',
       solvents: '',
       solventSet: 'Set 1',
@@ -399,13 +434,14 @@ export default {
       saveAs(blob, 'askcos_solubility_export.json')
     },
     deleteSolventSet() {
-      this.$delete(this.customSolventSets, this.solventSet)
+      delete this.customSolventSets[this.solventSet] 
       this.solventSet = 'custom'
       saveCustomSolventSets(this.customSolventSets)
     },
     saveSolventSet() {
-      this.$set(this.customSolventSets, this.newSolventSetName, this.solventList)
+      this.customSolventSets[this.newSolventSetName] = this.solventList
       this.solventSet = this.newSolventSetName
+      console.log(this.customSolventSets)
       saveCustomSolventSets(this.customSolventSets)
     },
   },

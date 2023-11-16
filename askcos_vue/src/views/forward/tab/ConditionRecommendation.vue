@@ -146,11 +146,6 @@
                             <a href="https://doi.org/10.1021/acscentsci.8b00357">(ACS Cent. Sci., 2018, 4,
                                 1465-1476)</a>
                         </p>
-                        <p>
-                            <b>New in 2021.01:</b> Quantitative condition predictions now available using neural
-                            network v2
-                            model. Select in <a>settings menu.</a>
-                        </p>
                     </v-alert>
                 </v-col>
             </v-row>

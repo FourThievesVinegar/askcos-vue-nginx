@@ -213,7 +213,18 @@
       <v-card-title class="headline">Save IPP network</v-card-title>
       <v-card-text>
         <v-text-field v-model="savedResultDescription" label="Description" outlined></v-text-field>
-        <v-text-field v-model="savedResultTags" label="Tags" outlined delimiter=",;"></v-text-field>
+  <v-combobox 
+      v-model="savedResultTags" 
+      label="Tags" 
+      outlined 
+      chips 
+      multiple 
+      small-chips
+      :deletable-chips="true"
+      :clearable="true"
+      hint="Type and press enter to add a tag"
+      persistent-hint
+  ></v-combobox>
         <template v-if="!!resultsStore.savedResultInfo.id">
           <template v-if="resultsStore.savedResultInfo.type === 'ipp'">
             <v-checkbox v-model="savedResultOverwrite" label="Overwrite" class="my-3"></v-checkbox>
@@ -340,6 +351,7 @@ export default {
   },
   data() {
     return {
+      newTag: '', // For inputting new tags
       selectedMode: null,
       treeID: null,
       snackbar: false,
@@ -542,6 +554,15 @@ export default {
     ...mapStores(useResultsStore, useSettingsStore),
   },
   methods: {
+    addTag() {
+      if (this.newTag.trim()) {
+        this.savedResultTags.push(this.newTag.trim());
+        this.newTag = '';
+      }
+    },
+    removeTag(index) {
+      this.savedResultTags.splice(index, 1);
+    },
     createNetwork({ id, options, callback }) {
       const elem = document.getElementById(id);
       const network = new Network(elem, this.resultsStore.dispGraph, options);
@@ -1411,7 +1432,7 @@ export default {
         },
         settings: this.getAllSettings(),
         description: this.resultsStore.savedResultInfo.description,
-        tags: "",
+        tags: this.resultsStore.savedResultInfo.tags,
         type: "ipp",
       };
       if (!this.resultsStore.savedResultInfo) {
