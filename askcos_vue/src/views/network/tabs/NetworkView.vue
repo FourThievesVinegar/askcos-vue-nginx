@@ -8,10 +8,14 @@
           <v-col cols="12" md="10" sm="12"><v-text-field v-model="resultsStore.target" density="compact"
               variant="outlined" label="Target" placeholder="SMILES" type="text" clearable class="target-input"
               hide-details prepend-inner-icon="mdi mdi-flask" min-width="100px">
-              <template v-slot:prepend v-if="enableResolver">
-                <v-btn icon="mdi mdi-server" :class="allowResolve ? 'text-green' : 'text-grey'" @click="toggleResolver">
+              <v-tooltip max-width="200px" location="bottom">
+              <template v-slot:activator="{ props }" v-if="enableResolver">
+                <v-btn v-bind="props"  icon="mdi mdi-server" :class="allowResolve ? 'text-green' : 'text-grey'" @click="toggleResolver">
                 </v-btn>
               </template>
+              <p v-if="!!allowResolve">Connection to NIH name resolver is ON, structures may be sent to an external service. This can be turned off in the settings menu, or by clicking this icon.</p>
+              <span v-else>Connection to NIH name resolver is OFF, structures will NOT be sent to an external service. Target query must be a SMILES string. This can be turned on in the settings menu, or by clicking this icon.</span>
+            </v-tooltip>
               <template v-slot:append-inner>
                 <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil" @click="showKetcherModal()">Draw</v-btn>
               </template>

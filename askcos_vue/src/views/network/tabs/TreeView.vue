@@ -50,8 +50,7 @@
                         style="width:100%">
                         <h6 class="text-h6">Analyze trees</h6>
                         <v-btn width="100%" @click="runPathwayRanking()" class="my-1" :disabled="trees.length === 0"
-                            variant="flat" color="green">Run pathway
-                            ranking</v-btn>
+                            variant="flat" color="green">SCORE AND CLUSTER PATHWAY(S)</v-btn>
                         <v-btn width="100%" @click="runReactionClassification()" class="my-1" :disabled="trees.length === 0"
                             variant="flat" color="green">Run reaction
                             classification</v-btn>
@@ -976,7 +975,7 @@ export default {
             API.post(url, body)
                 .then((json) => {
                     this.createSnackbar({ text: "Reaction classification job submitted!", snackbarProps: { timeout: -1, vertical: true } });
-                    return API.pollCeleryResult(json.task_id);
+                    return API.pollCeleryResult(json);
                 })
                 .then((output) => {
                     if (output.success) {
