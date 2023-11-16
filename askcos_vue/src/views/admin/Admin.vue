@@ -41,11 +41,12 @@
                                         <v-toolbar-title>ASKCOS Users</v-toolbar-title>
                                         <v-divider class="mx-4" inset vertical></v-divider>
                                         <v-spacer></v-spacer>
-                                        <v-btn color="primary" variant="flat" prepend-icon="mdi-plus" >New User</v-btn>
+                                        <v-btn color="primary" variant="flat" prepend-icon="mdi-plus" @click="dialog = true">New User</v-btn>
                                     </v-toolbar>
                                 </template>
-                                <template v-slot:item.isAdmin="{ item }">
-                                    <v-switch v-model="item.isAdmin" class="pa-2" color="primary"></v-switch>
+                                <template v-slot:item.is_superuser ="{ item }">
+                                      <span v-if="item.raw.is_superuser === true">Admin</span>
+                                      <span v-if="item.raw.is_superuser === false">Not Admin</span>
                                 </template>
                                 <template v-slot:item.actions="{ item }">
                                     <v-menu location="end">
@@ -67,20 +68,38 @@
                     </v-col>
                 </v-row>
             </v-container>
+
+      <v-dialog v-model="dialog" max-width="600px">
+        <v-card>
+          <v-card-title class="mt-2">
+            <v-col cols="12">Add new user</v-col></v-card-title>
+
+          <v-card-text class="text-justify">
+                    Ok
+          </v-card-text>
+          <v-card-actions class="mb-2">
+            <v-spacer></v-spacer>
+            <v-btn text @click="dialog = false">Ok</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
         </v-main>
     </v-layout>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from "vue-router";
+import { API } from "@/common/api";
 const router = useRouter();
 const username = ref(localStorage.getItem('username'))
+const users = ref([])
+const dialog = ref(false)
 
 const headers = ref([
     { title: 'Username', key: 'username' },
     { title: 'Email', key: 'email' },
-    { title: 'isAdmin', key: 'isAdmin' },
+    { title: 'Admin Status', key: 'is_superuser' },
     { title: 'Last Login', key: 'lastLogin' },
     { title: 'Actions', key: 'actions', align: 'center' },
 ])
@@ -93,11 +112,19 @@ const items = ref([
     { title: 'Lock' },
 ])
 
-const users = ref([
-    { id: 1, username: 'user1', email: 'user1@example.com', isAdmin: false, lastLogin: '2023-01-01 12:00:00' },
-    { id: 2, username: 'user2', email: 'user2@example.com', isAdmin: true, lastLogin: '2023-01-01 12:00:00' },
-    // Add more users as needed
-])
+onMounted (async () => {
+    try {
+        const response = await API.get("/api/user/get-all-users");
+        if (Array.isArray(response)) {
+            users.value = response.filter(user => !user.username.startsWith('guest_'));
+            console.log(response)
+        } else {
+            console.error("API did not return an array as expected:", response);
+        }
+    } catch (error) {
+        console.error("Error fetching users:", error);
+    } 
+})
 
 // logout function
 const logout = () => {
