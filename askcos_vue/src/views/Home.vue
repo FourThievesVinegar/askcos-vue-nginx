@@ -70,9 +70,12 @@
               and the National Institutes of Health (1U18TR004149-01).
             </p>
             <v-expansion-panels class="mt-6 text-body-1" variant="popout">
-              <v-expansion-panel text="If you have any questions or if any of the links/images appear
-            broken, please email askcos_support@mit.edu." class="text-blue-darken-3">
+              <v-expansion-panel text="" class="text-blue-darken-3">
                 <template v-slot:title><v-icon class="mr-1">mdi mdi-lifebuoy</v-icon><strong>Support</strong></template>
+                <template v-slot:text>
+                  If you have any questions or if any of the links/images appear
+                  broken, please email <a href="mailto:askcos_support@mit.edu">askcos_support@mit.edu</a>
+                </template>
               </v-expansion-panel>
               <v-expansion-panel text='THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESSED OR IMPLIED
             WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -114,10 +117,10 @@
       <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn  @click="showEditFav = false" color="red">
+        <v-btn @click="showEditFav = false" color="red">
           Close
         </v-btn>
-        <v-btn   @click="showEditFav = false" color="success">
+        <v-btn @click="showEditFav = false" color="success">
           Save
         </v-btn>
       </v-card-actions>
