@@ -2,8 +2,8 @@
   <v-navigation-drawer expand-on-hover rail elevation="2" width="1000px" class="sidebar"
     @update:rail="($event) => rail = $event">
     <v-list>
-      <v-list-item prepend-icon="mdi-tools" title="ASKCOS" :subtitle="org" to="/"
-        value="home" :active="false"></v-list-item>
+      <v-list-item prepend-icon="mdi-tools" title="ASKCOS" :subtitle="org" to="/" value="home"
+        :active="false"></v-list-item>
     </v-list>
 
     <v-divider></v-divider>
@@ -67,14 +67,9 @@
       <v-list-item prepend-icon="mdi-code-json" title="Logs" value="logs" to="/logs"></v-list-item>
       <v-divider></v-divider>
       <v-list-item v-if=!isLoggedIn to="/login" prepend-icon="mdi-login" title="Login" :active="false"></v-list-item>
-      <v-list-group v-if=isLoggedIn value="profile" no-action>
-        <template v-slot:activator="{ props }">
-          <v-list-item v-bind="props" prepend-icon="mdi-account-circle" title="Profile" :active="activeProfile"
-            :variant="activeProfile ? 'tonal' : 'text'"></v-list-item>
-        </template>
-        <v-list-item prepend-icon="mdi-table" title="My Results" value="result" to="/results"></v-list-item>
-        <v-list-item prepend-icon="mdi-cancel" title="My Banlist" value="banlist" to="/banlist"></v-list-item>
-      </v-list-group>
+      <v-list-item v-if=isLoggedIn prepend-icon="mdi-table" title="My Results" value="result" to="/results"></v-list-item>
+      <v-list-item v-if=isLoggedIn prepend-icon="mdi-cancel" title="My Banlist" value="banlist"
+        to="/banlist"></v-list-item>
       <v-list-item v-if=isLoggedIn @click="logout" prepend-icon="mdi-logout" title="Logout" :active="false"></v-list-item>
     </v-list>
   </v-navigation-drawer>
@@ -82,11 +77,11 @@
 
 <script setup>
 import { useRoute, useRouter } from "vue-router";
-import { ref, computed, inject} from "vue";
+import { ref, computed, inject } from "vue";
 import TheSupportModal from "@/components/TheSupportModal.vue"
 const keycloak = inject('$keycloak')
 
-const _openedGroups = ref(['modules', 'profile']);
+const _openedGroups = ref(['modules']);
 const route = useRoute();
 const router = useRouter();
 const rail = ref(true)
@@ -97,7 +92,7 @@ const openedGroups = computed({
   get: () => rail.value ? [] : _openedGroups.value,
   set: val => {
     if (val.length === 0) {
-      _openedGroups.value = ['modules', 'profile']
+      _openedGroups.value = ['modules']
     } else {
       _openedGroups.value = val
     }
@@ -109,10 +104,6 @@ const activeModules = computed(() => {
   return shouldBeActiveModules.some(el => route.path.includes(el));
 })
 
-const activeProfile = computed(() => {
-  const shouldBeActiveProfile = ['/results', '/banlist']
-  return shouldBeActiveProfile.some(el => route.path.includes(el));
-})
 
 const isLoggedIn = computed(() => {
   const accessToken = localStorage.getItem('accessToken');
