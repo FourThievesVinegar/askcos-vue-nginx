@@ -10,7 +10,8 @@
                     <v-sheet elevation="10" rounded="lg">
                         <v-form ref="form" class="pa-5" @submit.prevent>
                             <div class="d-flex flex-column">
-                                <v-btn color="black" size="x-large" block variant="flat" prepend-icon="mdi-github" @click="githubLogin">
+                                <v-btn color="black" size="x-large" block variant="flat" prepend-icon="mdi-github"
+                                    @click="githubLogin">
                                     GitHub Login
                                 </v-btn>
                                 <v-container>
@@ -53,7 +54,8 @@
                                 </v-container>
                                 <v-divider class="my-4">
                                 </v-divider>
-                                <v-btn color="primary" size="x-large" block variant="tonal" @click="guestAccountSignup">
+                                <v-btn color="primary" size="x-large" block variant="tonal" @click="guestAccountSignup"
+                                    :disabled="waitGuest">
                                     Continue as Guest
                                 </v-btn>
                             </div>
@@ -107,6 +109,7 @@ const loginFailure = ref(false);
 const route = useRoute();
 const router = useRouter();
 const keycloak = inject('$keycloak')
+const waitGuest = ref(false);
 
 const usernameRules = ref([
     value => {
@@ -166,7 +169,7 @@ const login = () => {
 }
 
 const githubLogin = () => {
-    keycloak.login({idpHint:'github'});
+    keycloak.login({ idpHint: 'github' });
 }
 
 const signup = () => {
@@ -200,6 +203,10 @@ const signup = () => {
 }
 
 const guestAccountSignup = () => {
+    waitGuest.value = true;
+    setTimeout(function() {
+        waitGuest.value = false;
+    }, 2000);
     const randomId = Math.random().toString(36).substring(2, 8);
     const guestUsername = 'guest_' + randomId;
     const guestPassword = randomId;
