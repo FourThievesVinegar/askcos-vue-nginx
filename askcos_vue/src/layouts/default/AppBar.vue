@@ -82,8 +82,9 @@
 
 <script setup>
 import { useRoute, useRouter } from "vue-router";
-import { ref, computed } from "vue";
+import { ref, computed, inject} from "vue";
 import TheSupportModal from "@/components/TheSupportModal.vue"
+const keycloak = inject('$keycloak')
 
 const _openedGroups = ref(['modules', 'profile']);
 const route = useRoute();
@@ -119,8 +120,10 @@ const isLoggedIn = computed(() => {
 })
 
 function logout() {
+  // const keycloak = inject('$keycloak')
   localStorage.removeItem("accessToken");
   localStorage.removeItem("username");
+  keycloak.logout()
   router.push({ path: '/login' })
 }
 </script>

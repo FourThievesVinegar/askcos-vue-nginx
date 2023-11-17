@@ -36,7 +36,7 @@ const routes = [
   {
     path: "/network",
     component: () => import("@/layouts/default/Default.vue"),
-    beforeEnter: (to, from, next) => {
+    beforeEnter: (to, _from, next) => {
       if (!isAuthenticated()) {
         next({
           name: "Login",
@@ -130,7 +130,7 @@ const routes = [
     path: "/results",
     component: () => import("@/layouts/default/Default.vue"),
     meta: { title: "Results" },
-    beforeEnter: (to, from, next) => {
+    beforeEnter: (_to, _from, next) => {
       if (!isAuthenticated()) {
         next({ name: "Login" });
       } else {
@@ -155,7 +155,7 @@ const routes = [
     path: "/banlist",
     component: () => import("@/layouts/default/Default.vue"),
     meta: { title: "Banlist" },
-    beforeEnter: (to, from, next) => {
+    beforeEnter: (_to, _from, next) => {
       if (!isAuthenticated()) {
         next({ name: "Login" });
       } else {
@@ -402,7 +402,7 @@ router.afterEach(async (to) => {
   document.title = `${to.meta.title} - ASKCOS` || DEFAULT_TITLE;
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((_to, from, next) => {
   if (from.fullPath) {
     localStorage.setItem("lastRoute", from.fullPath);
   }

@@ -9,6 +9,24 @@
                 <v-col cols="12" md="6" lg="4" xl="3" class="d-flex justify-center align-center">
                     <v-sheet elevation="10" rounded="lg">
                         <v-form ref="form" class="pa-5" @submit.prevent>
+                            <div class="d-flex flex-column">
+                                <v-btn color="black" size="x-large" block variant="flat" prepend-icon="mdi-github" @click="githubLogin">
+                                    GitHub Login
+                                </v-btn>
+                                <v-container>
+                                    <v-row wrap no-gutters>
+                                        <v-col cols="5" class="text-center">
+                                            <v-divider class="mt-3" />
+                                        </v-col>
+                                        <v-col cols="2" class="text-center text-h6">
+                                            OR
+                                        </v-col>
+                                        <v-col cols="5" class="text-center">
+                                            <v-divider class="mt-3" />
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
+                            </div>
                             <v-text-field label="Username" variant="outlined" v-model="username" :rules="usernameRules"
                                 clearable></v-text-field>
                             <v-text-field label="Password" variant="outlined" required type="password" v-model="password"
@@ -75,7 +93,7 @@
 <script setup>
 import * as THREE from "three";
 import HALO from 'vanta/dist/vanta.halo.min'
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, inject } from 'vue';
 import { API } from "@/common/api";
 import { useRoute, useRouter } from "vue-router";
 
@@ -88,6 +106,7 @@ const creationFailure = ref(false);
 const loginFailure = ref(false);
 const route = useRoute();
 const router = useRouter();
+const keycloak = inject('$keycloak')
 
 const usernameRules = ref([
     value => {
@@ -144,6 +163,10 @@ const login = () => {
     }).catch(() => {
         loginFailure.value = true;
     })
+}
+
+const githubLogin = () => {
+    keycloak.login({idpHint:'github'});
 }
 
 const signup = () => {
