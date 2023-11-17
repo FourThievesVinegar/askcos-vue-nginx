@@ -35,7 +35,8 @@
                 <v-row dense>
                     <v-col cols="12">
                         <v-sheet rounded="lg" elevation="2" class="pa-5">
-                            <v-data-table :headers="headers" :items="users" multi-sort :search="''" show-select v-if="isAdmin">
+                            <v-data-table :headers="headers" :items="users" multi-sort :search="''" show-select
+                                v-if="isAdmin">
                                 <template v-slot:top>
                                     <v-toolbar flat>
                                         <v-toolbar-title>ASKCOS Users</v-toolbar-title>
@@ -58,8 +59,12 @@
                                         </template>
 
                                         <v-list>
-                                            <v-list-item v-for="(item, index) in items" :key="index">
-                                                <v-list-item-title>{{ item.title }}</v-list-item-title>
+                                            <v-list-item v-for="(action, index) in items" :key="index">
+                                                <v-btn
+                                                    :disabled="item.raw.accountType === 'Guest' && action.title === 'Change Account Type'"
+                                                    variant="tonal" color="primary"
+                                                    @click="mutate(item.raw.username, action.func)">{{ action.title
+                                                    }}</v-btn>
                                             </v-list-item>
                                         </v-list>
                                     </v-menu>
@@ -110,15 +115,16 @@ const dialog = ref(false)
 const headers = ref([
     { title: 'Username', key: 'username' },
     { title: 'Email', key: 'email' },
-    { title: 'Admin Status', key: 'is_superuser' },
+    { title: 'Account Type', key: 'accountType' },
     { title: 'Last Login', key: 'lastLogin' },
     { title: 'Actions', key: 'actions', align: 'center' },
 ])
 
 const items = ref([
-    { title: 'Change Password' },
-    { title: 'Remove' },
-    { title: 'Lock' },
+    { title: 'Change Password', func: "pwd" },
+    { title: 'Change Account Type', func: "modifyAcc" },
+    { title: 'Delete Account', func: "delete" },
+    { title: 'Lock Acount', func: "disable" },
 ])
 
 onMounted(async () => {
@@ -129,7 +135,18 @@ onMounted(async () => {
         if (isAdmin.value) {
             const response = await API.get("/api/user/get-all-users");
             if (Array.isArray(response)) {
-                users.value = response.filter(user => !user.username.startsWith('guest_'));
+                response.forEach((user) => {
+                    if (user.username.startsWith('guest_')) {
+                        user.accountType = "Guest"
+                        return;
+                    }
+                    if (user.is_superuser) {
+                        user.accountType = "Admin"
+                        return;
+                    }
+                    user.accountType = "Normal";
+                })
+                users.value = response;
             } else {
                 console.error("API did not return an array as expected:", response);
             }
@@ -145,6 +162,10 @@ const logout = () => {
     localStorage.removeItem('username')
     // logout to home page
     router.push('/admin-login');
+}
+
+const mutate = (username, method) => {
+    console.log(username, method);
 }
 
 </script>
