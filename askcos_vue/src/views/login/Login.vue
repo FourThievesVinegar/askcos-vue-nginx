@@ -11,7 +11,7 @@
                         <v-form ref="form" class="pa-5" @submit.prevent>
                             <div class="d-flex flex-column">
                                 <v-btn color="black" size="x-large" block variant="flat" prepend-icon="mdi-github"
-                                    @click="githubLogin">
+                                    @click="githubLogin" data-cy="githubLogin">
                                     GitHub Login
                                 </v-btn>
                                 <v-container>
@@ -29,9 +29,9 @@
                                 </v-container>
                             </div>
                             <v-text-field label="Username" variant="outlined" v-model="username" :rules="usernameRules"
-                                clearable></v-text-field>
+                                clearable data-cy="username"></v-text-field>
                             <v-text-field label="Password" variant="outlined" required type="password" v-model="password"
-                                :rules="passwordRules" clearable></v-text-field>
+                                :rules="passwordRules" clearable data-cy="password"></v-text-field>
                             <div v-if="loginFailure" class="text-red text-center text-subtitle-1">
                                 <p>Either username or password is incorrect</p>
                             </div>
@@ -40,13 +40,13 @@
                                     <v-row wrap no-gutters>
                                         <v-col cols="6" class="text-center">
                                             <v-btn color="primary" size="x-large" @click="login" type="submit"
-                                                variant="flat">
+                                                variant="flat" data-cy="login">
                                                 Log In
                                             </v-btn>
                                         </v-col>
                                         <v-col cols="6" class="text-center">
                                             <v-btn color="primary" size="x-large" @click="signup" type="submit"
-                                                variant="flat">
+                                                variant="flat" data-cy="signup">
                                                 Sign Up
                                             </v-btn>
                                         </v-col>
@@ -55,7 +55,7 @@
                                 <v-divider class="my-4">
                                 </v-divider>
                                 <v-btn color="primary" size="x-large" block variant="tonal" @click="guestAccountSignup"
-                                    :disabled="waitGuest">
+                                    :disabled="waitGuest" data-cy="guestSignup">
                                     Continue as Guest
                                 </v-btn>
                             </div>

@@ -16,15 +16,15 @@
           <v-row class="justify-center">
             <v-col cols="12" md="12">
               <v-text-field v-model="searchQuery" prepend-inner-icon="mdi mdi-flask" density="compact" variant="outlined"
-                label="Search Result Descriptions" hide-details clearable>
+                label="Search Result Descriptions" hide-details clearable id="results-text">
                 <template v-slot:append>
-                  <v-btn color="primary" variant="flat" class="mr-5">
+                  <v-btn color="primary" variant="flat" class="mr-5" id="results-search">
                     Search
                   </v-btn>
                   <v-btn v-if="allResults.length" icon="mdi-delete" class="bg-red mr-5" :disabled="selection.length === 0"
-                    variant="flat" @click="deleteSelection">
+                    variant="flat" @click="deleteSelection" id="results-delete">
                   </v-btn>
-                  <v-btn icon="mdi-refresh" variant="tonal" @click="update">
+                  <v-btn icon="mdi-refresh" variant="tonal" @click="update" id="results-update">
                   </v-btn>
                 </template>
               </v-text-field>
@@ -39,7 +39,7 @@
         <v-sheet elevation="2" rounded="lg" class="d-flex justify-center pa-5">
           <v-data-table v-if="allResults.length" :headers="headers" item-value="result_id" :items="filteredResults"
             show-select v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10"
-            :search="searchQuery" @click:row="clickRow">
+            :search="searchQuery" @click:row="clickRow" data-cy="results-table">
             <template v-slot:item.delete="{ item }">
               <v-icon @click="deleteResult(item.raw.result_id)" class="text-center">mdi-delete</v-icon>
             </template>
