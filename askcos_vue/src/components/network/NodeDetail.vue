@@ -321,8 +321,9 @@
               <ban-button :smiles="selected.smiles" :type="selected.type"></ban-button>
             </div>
           </div>
-          <div class="alert alert-warning ma-2" v-if="selected.data.selecError">Could not check regio-selectivity for
-            this reaction, possibly due to stereochemistry in the product.</div>
+          <div class="ma-2" v-if="selected.data.selecError">
+            <v-alert type="warning">Could not check regio-selectivity for
+            this reaction, possibly due to stereochemistry in the product.</v-alert></div>
           <template v-if="'outcome' in selected.data">
             <div class="ma-2">
               <h6 class="ma-0 text-h6">Regio-selective Products</h6>

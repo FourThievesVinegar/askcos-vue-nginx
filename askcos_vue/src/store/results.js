@@ -865,6 +865,10 @@ export const useResultsStore = defineStore("results", {
         alert("Strategies must be unique");
         return [];
       }
+      body.banned_chemicals = loadCollection("chemicals");
+      body.banned_reactions = loadCollection("reactions");
+
+      console.log(body)
       try {
         const response = await API.runCeleryTask(url, body);
         return response;
@@ -1216,6 +1220,17 @@ export const useResultsStore = defineStore("results", {
     },
   },
 });
+
+function loadCollection(category){
+  let smiles = [];
+  API.get(`/api/banlist/${category}/get`)
+    .then(json => {
+      json.forEach(function (val) {
+        smiles.push(val.smiles)
+      });
+    })
+    return smiles
+}
 
 function checkUniqueStrategy(strategies) {
   const strategyDict = new Set();

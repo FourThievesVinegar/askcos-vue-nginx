@@ -42,7 +42,7 @@
             hide-details clearable></v-select>
           <v-row v-if="tabItems.length">
             <v-col cols="12">
-              <v-data-table :headers="headers" :items="tabItems" :items-per-page="10" height="400px">
+              <v-data-table :headers="headers" :items="tabItems" :items-per-page="10">
                 <template v-slot:item.active="{ item }">
                   <v-btn @click="toggleActivation(item, activeTab === 0 ? 'chemicals' : 'reactions')" small>
                     <v-icon v-if="item.columns.active">mdi-check-circle</v-icon>
