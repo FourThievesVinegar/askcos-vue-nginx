@@ -124,7 +124,8 @@ function logout() {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("username");
   keycloak.logout()
-  router.push({ path: '/login' })
+  // Using keycloak logout
+  // router.push({ path: '/login' }) 
 }
 </script>
 
