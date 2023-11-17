@@ -117,8 +117,6 @@ const headers = ref([
 
 const items = ref([
     { title: 'Change Password' },
-    { title: 'Export' },
-    { title: 'Import' },
     { title: 'Remove' },
     { title: 'Lock' },
 ])
