@@ -3,7 +3,7 @@
         <v-row class="justify-center align-center">
             <v-col cols="12" md="6" data-cy="retro-left-panel">
                 <v-sheet elevation="2" class="pa-5" rounded="lg">
-                    <v-text-field id="retro-target" @blur="resolve" @keyup.enter="resolve" v-model="target"
+                    <v-text-field id="retro-target" v-model="target"
                         density="compact" variant="outlined" label="Target" placeholder="SMILES" type="text" clearable
                         hide-details class="target-input">
                         <template v-slot:prepend-inner v-if="enableResolver">
@@ -297,13 +297,13 @@ Normally, only the top 'Max. num. templates' will be applied - with these filter
                     </v-btn>
                     <v-select class="mr-2" :items="templateAttributes[settings.trainingSet]" :value="filter.name"
                         @input="updateAttributeFilter(idx, 'name', $event)"> </v-select>
-                    <v-select class="mr-2" :value="filter.logic" @input="updateAttributeFilter(idx, 'logic', $event)">
+                    <!-- <v-select class="mr-2" :value="filter.logic" @input="updateAttributeFilter(idx, 'logic', $event)">
                         <b-form-select-option value=">">&gt;</b-form-select-option>
                         <b-form-select-option value=">=">&ge;</b-form-select-option>
                         <b-form-select-option value="<">&lt;</b-form-select-option>
                         <b-form-select-option value="<=">&le;</b-form-select-option>
                         <b-form-select-option value="==">=</b-form-select-option>
-                    </v-select>
+                    </v-select> -->
                     <v-text-field class="mr-2" type="number" :value="filter.value"
                         @input="updateAttributeFilter(idx, 'value', $event)"></v-text-field>
                 </div>
@@ -589,7 +589,7 @@ export default {
         };
 
         const resolve = () => {
-            if (enableResolver.value && allowResolve.value && target.value && !validSmiles.value) {
+            if (enableResolver.value && allowResolve.value && target.value && validSmiles.value) {
                 resolveChemName(target.value)
                     .then((smiles) => canonicalize(smiles))
                     .then((smiles) => {
@@ -616,6 +616,7 @@ export default {
             // }
             const newIndex = maxIndex.value + 1;
             carouselSlide.value = Object.keys(predictions.value).length;
+            resolve();
 
             const url = "/api/tree-search/expand-one/call-async";
             const body = {
