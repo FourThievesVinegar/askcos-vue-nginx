@@ -35,12 +35,31 @@
                 <v-row dense>
                     <v-col cols="12">
                         <v-sheet rounded="lg" elevation="2" class="pa-5">
-                            <v-data-table :headers="headers" :items="users" multi-sort :search="''" show-select
-                                v-if="isAdmin">
+                            <v-data-table :headers="headers" :items="tableItems" multi-sort :search="''" show-select
+                                v-if="isAdmin" v-model="selection" item-value="username">
                                 <template v-slot:top>
                                     <v-toolbar flat>
                                         <v-toolbar-title>ASKCOS Users</v-toolbar-title>
-                                        <v-divider class="mx-4" inset vertical></v-divider>
+                                        <v-select label="Filter by account type" density="comfortable" variant="outlined"
+                                            hide-details clearable :items="filterOptions" item-text="title" item-value="key"
+                                            v-model="filterSelected" class="mr-3"></v-select>
+                                        <v-menu location="end">
+                                            <template v-slot:activator="{ props }">
+                                                <v-btn color="primary" dark v-bind="props" append-icon="mdi-chevron-down"
+                                                    v-if="selection.length" variant="flat">
+                                                    Bulk Operation
+                                                </v-btn>
+                                            </template>
+
+                                            <v-list>
+                                                <v-list-item v-for="(action, index) in bulkActionItems" :key="index">
+                                                    <v-btn variant="tonal" color="primary"
+                                                        @click="mutateAll(action.func)">{{ action.title
+                                                        }}</v-btn>
+                                                </v-list-item>
+                                            </v-list>
+                                        </v-menu>
+                                        <!-- <v-divider class="mx-4" inset vertical></v-divider> -->
                                         <v-spacer></v-spacer>
                                         <v-btn color="primary" variant="flat" prepend-icon="mdi-plus"
                                             @click="dialog = true">New User</v-btn>
@@ -59,7 +78,7 @@
                                         </template>
 
                                         <v-list>
-                                            <v-list-item v-for="(action, index) in items" :key="index">
+                                            <v-list-item v-for="(action, index) in rowActionItems" :key="index">
                                                 <v-btn
                                                     :disabled="item.raw.accountType === 'Guest' && action.title === 'Change Account Type'"
                                                     variant="tonal" color="primary"
@@ -103,7 +122,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from "vue-router";
 import { API } from "@/common/api";
 const router = useRouter();
@@ -111,7 +130,12 @@ const username = ref(localStorage.getItem('username'))
 const isAdmin = ref(false)
 const users = ref([])
 const dialog = ref(false)
-
+const selection = ref([]);
+const filterOptions = ref([
+    { key: 'Guest', title: 'Guest' },
+    { key: 'Normal', title: 'Normal' },
+    { key: 'Admin', title: 'Admin' },
+]);
 const headers = ref([
     { title: 'Username', key: 'username' },
     { title: 'Email', key: 'email' },
@@ -120,12 +144,29 @@ const headers = ref([
     { title: 'Actions', key: 'actions', align: 'center' },
 ])
 
-const items = ref([
+const rowActionItems = ref([
     { title: 'Change Password', func: "pwd" },
     { title: 'Change Account Type', func: "modifyAcc" },
     { title: 'Delete Account', func: "delete" },
     { title: 'Lock Acount', func: "disable" },
 ])
+
+const bulkActionItems = ref([
+    { title: 'Change Account Type', func: "modifyAcc" },
+    { title: 'Delete Account', func: "delete" },
+    { title: 'Lock Acount', func: "disable" },
+])
+
+const filterSelected = ref(null)
+
+const tableItems = computed(() => {
+    let items = users.value;
+    console.log(filterSelected.value)
+    if (filterSelected.value === 'all' || filterSelected.value === null) {
+        return items
+    }
+    return items.filter(item => item.accountType === filterSelected.value);
+})
 
 onMounted(async () => {
     try {
@@ -166,6 +207,12 @@ const logout = () => {
 
 const mutate = (username, method) => {
     console.log(username, method);
+}
+
+const mutateAll = (method) => {
+    for(const username of selection.value){
+        mutate(username, method)
+    }
 }
 
 </script>
