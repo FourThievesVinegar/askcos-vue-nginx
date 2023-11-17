@@ -36,7 +36,7 @@ const routes = [
   {
     path: "/network",
     component: () => import("@/layouts/default/Default.vue"),
-    beforeEnter: (to, from, next) => {
+    beforeEnter: (to, _from, next) => {
       if (!isAuthenticated()) {
         next({
           name: "Login",
@@ -130,7 +130,7 @@ const routes = [
     path: "/results",
     component: () => import("@/layouts/default/Default.vue"),
     meta: { title: "Results" },
-    beforeEnter: (to, from, next) => {
+    beforeEnter: (_to, _from, next) => {
       if (!isAuthenticated()) {
         next({ name: "Login" });
       } else {
@@ -155,7 +155,7 @@ const routes = [
     path: "/banlist",
     component: () => import("@/layouts/default/Default.vue"),
     meta: { title: "Banlist" },
-    beforeEnter: (to, from, next) => {
+    beforeEnter: (_to, _from, next) => {
       if (!isAuthenticated()) {
         next({ name: "Login" });
       } else {
@@ -384,15 +384,6 @@ const router = createRouter({
   routes,
 });
 
-const removeKeycloakStateQuery = (to, from) => {
-  const cleanPath = to.fullPath
-    .replace(/[&\?]code=[^&\$]*/, "")
-    .replace(/[&\?]state=[^&\$]*/, "")
-    .replace(/[&\?]session_state=[^&\$]*/, "");
-
-  return { path: cleanPath, query: {}, hash: to.hash };
-};
-
 router.beforeResolve((to, _from, next) => {
   // If this isn't an initial page load.
   if (to.name) {
@@ -411,8 +402,7 @@ router.afterEach(async (to) => {
   document.title = `${to.meta.title} - ASKCOS` || DEFAULT_TITLE;
 });
 
-router.beforeEach((to, from, next) => {
-  removeKeycloakStateQuery(to, from)
+router.beforeEach((_to, from, next) => {
   if (from.fullPath) {
     localStorage.setItem("lastRoute", from.fullPath);
   }
