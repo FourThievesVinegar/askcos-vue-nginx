@@ -861,6 +861,7 @@ export const useResultsStore = defineStore("results", {
       // }
       // throw error if the strategies are not unique
       if (!checkUniqueStrategy(body.retro_backend_options)) {
+        console.log(body.retro_backend_options)
         alert("Strategies must be unique");
         return [];
       }
@@ -1218,9 +1219,9 @@ export const useResultsStore = defineStore("results", {
 
 function checkUniqueStrategy(strategies) {
   const strategyDict = new Set();
-  for (const strategy in strategies) {
+  for (const strategy of strategies) {
     const strategyKey =
-      strategy.retro_backend + "-" + strategy.retro_model_name;
+      strategy.retro_backend + "-" + strategy.retro_model_name + "-" + strategy.max_num_templates + "-" + strategy.max_cum_prob;
     if (strategyDict.has(strategyKey)) {
       return false;
     }
