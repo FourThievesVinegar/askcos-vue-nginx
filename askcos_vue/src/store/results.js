@@ -859,6 +859,11 @@ export const useResultsStore = defineStore("results", {
       // if (strategy.model === "template_relevance") {
       //   checkTemplatePrioritizers(body["template_prioritizers"]);
       // }
+      // throw error if the strategies are not unique
+      if (!checkUniqueStrategy(body.retro_backend_options)) {
+        alert("Strategies must be unique");
+        return [];
+      }
       try {
         const response = await API.runCeleryTask(url, body);
         return response;
@@ -895,7 +900,7 @@ export const useResultsStore = defineStore("results", {
         this.requestRetro({ smiles: smiles }).then((response) => {
           if (response.length === 0) {
             reject(new Error("No precursors found!"));
-            alert("No precursors found!")
+            alert("No precursors found!");
           } else {
             resolve(response);
           }
@@ -997,16 +1002,15 @@ export const useResultsStore = defineStore("results", {
         template_set: template.template_set,
       };
       try {
-          API.post(url, body, true)
-          .then(async (json) => {
-            const output = await API.pollCeleryResult(json.task_id);
-            this.setRecTemplatesResults({
-              smiles: smiles,
-              results: {
-                [template._id]: output.map((item) => item.precursors.join(".")),
-              },
-            });
-          })
+        API.post(url, body, true).then(async (json) => {
+          const output = await API.pollCeleryResult(json.task_id);
+          this.setRecTemplatesResults({
+            smiles: smiles,
+            results: {
+              [template._id]: output.map((item) => item.precursors.join(".")),
+            },
+          });
+        });
       } catch (error) {
         console.error("Could not apply template:", error);
       }
@@ -1053,7 +1057,7 @@ export const useResultsStore = defineStore("results", {
       } catch (error) {
         alert(
           "There was an error fetching cluster results for this target with the supplied settings: " +
-          error
+            error
         );
       }
     },
@@ -1211,6 +1215,19 @@ export const useResultsStore = defineStore("results", {
     },
   },
 });
+
+function checkUniqueStrategy(strategies) {
+  const strategyDict = new Set();
+  for (const strategy in strategies) {
+    const strategyKey =
+      strategy.retro_backend + "-" + strategy.retro_model_name;
+    if (strategyDict.has(strategyKey)) {
+      return false;
+    }
+    strategyDict.add(strategyKey);
+  }
+  return true;
+}
 
 function generateTreeNodeMap(trees) {
   // Generates object to track node IDs which exist in a tree
