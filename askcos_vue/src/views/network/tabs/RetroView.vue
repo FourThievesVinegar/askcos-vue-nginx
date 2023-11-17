@@ -3,7 +3,7 @@
         <v-row class="justify-center align-center">
             <v-col cols="12" md="6" data-cy="retro-left-panel">
                 <v-sheet elevation="2" class="pa-5" rounded="lg">
-                    <v-text-field id="retro-target" @blur="resolve" @keyup.enter="resolve" v-model="target"
+                    <v-text-field data-cy="retro-target" @blur="resolve" @keyup.enter="resolve" v-model="target"
                         density="compact" variant="outlined" label="Target" placeholder="SMILES" type="text" clearable
                         hide-details class="target-input">
                         <template v-slot:prepend-inner v-if="enableResolver">
@@ -23,14 +23,14 @@
                     </div>
                     <div class="my-3">
                         <v-select id="retro-model-0" label="Model" :items="models" v-model="settings.model"
-                            variant="outlined" density="compact" hide-details class="my-3"></v-select>
+                            variant="outlined" density="compact" hide-details class="my-3" data-cy="retro-model"></v-select>
                         <v-select id="retro-training-set-0" label="Training Set" :items="trainingSets"
-                            v-model="settings.trainingSet" variant="outlined" density="compact" hide-details
-                            class="my-3"></v-select>
+                            v-model="settings.trainingSet" variant="outlined" density="compact" hide-details class="my-3"
+                            data-cy="retro-training-set"></v-select>
                     </div>
                     <div class="text-center">
-                        <v-btn variant="flat" color="success" @click="runRetro()"
-                            :disabled="!target || !validSmiles" data-cy="retro-submit">Submit</v-btn>
+                        <v-btn variant="flat" color="success" @click="runRetro()" :disabled="!target || !validSmiles"
+                            data-cy="retro-submit">Submit</v-btn>
                         <v-btn variant="outlined" class="ml-2" :disabled="!target || !validSmiles"
                             @click="showAdvSettings = true" data-cy="retro-advanced">Advanced</v-btn>
                     </div>
@@ -105,7 +105,7 @@
         </v-row>
         <v-row v-if="Object.keys(results).length" data-cy="retro-results">
             <v-col cols="12">
-                <v-sheet elevation="2" rounded="lg" >
+                <v-sheet elevation="2" rounded="lg">
                     <v-data-table :headers="headers" :items="tableItems" item-value="smiles" class="elevation-2"
                         ref="retroResultTable" :fixed-header="true">
                         <template v-for="header in headers" v-slot:[`item.${header.key}`]="{ item }">
