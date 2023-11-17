@@ -384,6 +384,15 @@ const router = createRouter({
   routes,
 });
 
+const removeKeycloakStateQuery = (to, from) => {
+  const cleanPath = to.fullPath
+    .replace(/[&\?]code=[^&\$]*/, "")
+    .replace(/[&\?]state=[^&\$]*/, "")
+    .replace(/[&\?]session_state=[^&\$]*/, "");
+
+  return { path: cleanPath, query: {}, hash: to.hash };
+};
+
 router.beforeResolve((to, _from, next) => {
   // If this isn't an initial page load.
   if (to.name) {
@@ -403,6 +412,7 @@ router.afterEach(async (to) => {
 });
 
 router.beforeEach((to, from, next) => {
+  removeKeycloakStateQuery(to, from)
   if (from.fullPath) {
     localStorage.setItem("lastRoute", from.fullPath);
   }

@@ -3,7 +3,7 @@
         <v-row class="justify-center align-center">
             <v-col cols="12" md="6" data-cy="retro-left-panel">
                 <v-sheet elevation="2" class="pa-5" rounded="lg">
-                    <v-text-field data-cy="retro-target" @blur="resolve" @keyup.enter="resolve" v-model="target"
+                    <v-text-field id="retro-target" @blur="resolve" @keyup.enter="resolve" v-model="target"
                         density="compact" variant="outlined" label="Target" placeholder="SMILES" type="text" clearable
                         hide-details class="target-input">
                         <template v-slot:prepend-inner v-if="enableResolver">
