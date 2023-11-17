@@ -120,7 +120,6 @@ const isLoggedIn = computed(() => {
 })
 
 function logout() {
-  // const keycloak = inject('$keycloak')
   localStorage.removeItem("accessToken");
   localStorage.removeItem("username");
   keycloak.logout()
