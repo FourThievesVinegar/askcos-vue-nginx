@@ -18,7 +18,7 @@
                         <div class="mt-8 mb-5">
 
                             <h5 class="text-h4 text-blue">Hello, {{ username }}!</h5>
-                            <v-alert density="compact" type="warning" title="Warning" class="mt-3">
+                            <v-alert density="compact" type="warning" title="Warning" class="mt-3" v-if="isAdmin">
                                 <template v-slot:text>
                                     <p class="text-body-1">
                                         We trust you have received the usual lecture from the local System
@@ -33,20 +33,21 @@
                     </v-col>
                 </v-row>
                 <v-row dense>
-                    <v-col>
+                    <v-col cols="12">
                         <v-sheet rounded="lg" elevation="2" class="pa-5">
-                            <v-data-table :headers="headers" :items="users" multi-sort :search="''" show-select>
+                            <v-data-table :headers="headers" :items="users" multi-sort :search="''" show-select v-if="isAdmin">
                                 <template v-slot:top>
                                     <v-toolbar flat>
                                         <v-toolbar-title>ASKCOS Users</v-toolbar-title>
                                         <v-divider class="mx-4" inset vertical></v-divider>
                                         <v-spacer></v-spacer>
-                                        <v-btn color="primary" variant="flat" prepend-icon="mdi-plus" @click="dialog = true">New User</v-btn>
+                                        <v-btn color="primary" variant="flat" prepend-icon="mdi-plus"
+                                            @click="dialog = true">New User</v-btn>
                                     </v-toolbar>
                                 </template>
-                                <template v-slot:item.is_superuser ="{ item }">
-                                      <span v-if="item.raw.is_superuser === true">Admin</span>
-                                      <span v-if="item.raw.is_superuser === false">Not Admin</span>
+                                <template v-slot:item.is_superuser="{ item }">
+                                    <span v-if="item.raw.is_superuser === true">Admin</span>
+                                    <span v-if="item.raw.is_superuser === false">Not Admin</span>
                                 </template>
                                 <template v-slot:item.actions="{ item }">
                                     <v-menu location="end">
@@ -64,25 +65,34 @@
                                     </v-menu>
                                 </template>
                             </v-data-table>
+                            <div v-if="!isAdmin">
+                                <v-row>
+                                    <v-col cols="12" class="d-flex flex-row justify-center align-center">
+                                        <v-btn color="warning" class="mr-2">Change Password</v-btn>
+                                        <v-btn color="warning" class="mr-2">Update Email</v-btn>
+                                        <v-btn color="error">Delete Account</v-btn>
+                                    </v-col>
+                                </v-row>
+                            </div>
                         </v-sheet>
                     </v-col>
                 </v-row>
             </v-container>
 
-      <v-dialog v-model="dialog" max-width="600px">
-        <v-card>
-          <v-card-title class="mt-2">
-            <v-col cols="12">Add new user</v-col></v-card-title>
+            <v-dialog v-model="dialog" max-width="600px">
+                <v-card>
+                    <v-card-title class="mt-2">
+                        <v-col cols="12">Add new user</v-col></v-card-title>
 
-          <v-card-text class="text-justify">
-                    Ok
-          </v-card-text>
-          <v-card-actions class="mb-2">
-            <v-spacer></v-spacer>
-            <v-btn text @click="dialog = false">Ok</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+                    <v-card-text class="text-justify">
+                        Ok
+                    </v-card-text>
+                    <v-card-actions class="mb-2">
+                        <v-spacer></v-spacer>
+                        <v-btn text @click="dialog = false">Ok</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-main>
     </v-layout>
 </template>
@@ -93,6 +103,7 @@ import { useRouter } from "vue-router";
 import { API } from "@/common/api";
 const router = useRouter();
 const username = ref(localStorage.getItem('username'))
+const isAdmin = ref(false)
 const users = ref([])
 const dialog = ref(false)
 
@@ -112,17 +123,22 @@ const items = ref([
     { title: 'Lock' },
 ])
 
-onMounted (async () => {
+onMounted(async () => {
     try {
-        const response = await API.get("/api/user/get-all-users");
-        if (Array.isArray(response)) {
-            users.value = response.filter(user => !user.username.startsWith('guest_'));
-        } else {
-            console.error("API did not return an array as expected:", response);
+        // check if the username is admin
+        isAdmin.value = await API.get("/api/user/am-i-superuser");
+
+        if (isAdmin.value) {
+            const response = await API.get("/api/user/get-all-users");
+            if (Array.isArray(response)) {
+                users.value = response.filter(user => !user.username.startsWith('guest_'));
+            } else {
+                console.error("API did not return an array as expected:", response);
+            }
         }
     } catch (error) {
         console.error("Error fetching users:", error);
-    } 
+    }
 })
 
 // logout function
