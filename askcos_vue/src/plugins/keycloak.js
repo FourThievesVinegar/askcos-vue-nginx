@@ -6,7 +6,7 @@ const keycloakPlugin = {
     const keycloak = new Keycloak(options);
 
     await keycloak
-      .init({ onLoad: "check-sso" })
+      .init({ checkLoginIframe: false })
       .then(async (authenticated) => {
         app.config.globalProperties.$keycloak = keycloak;
         app.provide("$keycloak", keycloak);
