@@ -121,7 +121,6 @@ const emitDownloadImpurity = () => {
 
 const updateFilename = (newFilename) => {
     emits('update:filename', newFilename);
-    console.log(filename)
 };
 
 </script>

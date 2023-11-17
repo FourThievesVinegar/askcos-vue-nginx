@@ -117,7 +117,6 @@ onMounted (async () => {
         const response = await API.get("/api/user/get-all-users");
         if (Array.isArray(response)) {
             users.value = response.filter(user => !user.username.startsWith('guest_'));
-            console.log(response)
         } else {
             console.error("API did not return an array as expected:", response);
         }

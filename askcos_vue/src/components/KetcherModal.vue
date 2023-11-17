@@ -83,7 +83,7 @@ export default {
           // spinner.style.display = 'none';
         })
         .catch(error => {
-          console.log('Could not convert SMILES to molfile for Ketcher use: ' + error);
+          console.error('Could not convert SMILES to molfile for Ketcher use: ' + error);
           ketcher.setMolecule(molfileOld);
           // spinner.style.display = 'none';
         });
@@ -99,16 +99,11 @@ export default {
       }
     };
 
-    function dialogChange(dialogState) {
-      console.log(dialogState)
-    }
-
     return {
       propShow,
       ketcherIframe,
       smilesToKetcher,
       smilesFromKetcher,
-      dialogChange,
     };
   }
 };

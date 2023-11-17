@@ -146,7 +146,6 @@ const goToSelectivity = (index) => {
 
 const updateFilename = (newFilename) => {
     emits('update:filename', newFilename);
-    console.log(filename)
 };
 
 

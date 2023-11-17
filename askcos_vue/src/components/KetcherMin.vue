@@ -33,7 +33,7 @@ export default {
                     setMolfile(json.molfile, callback);
                 })
                 .catch(error => {
-                    console.log('Could not convert SMILES to molfile for Ketcher use: ' + error);
+                    console.error('Could not convert SMILES to molfile for Ketcher use: ' + error);
                 })
                 .finally(() => {
                     isLoading.value = false;

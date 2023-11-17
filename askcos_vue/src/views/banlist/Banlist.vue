@@ -214,7 +214,7 @@ const addEntry = () => {
         reactions.value.push(json);
       }
     })
-    .catch(error => console.log(error))
+    .catch(error => console.error(error))
     .finally(() => {
       loadCollection(newType.value === 'chemicals' ? 'chemicals' : 'reactions');
       showModal.value = false;

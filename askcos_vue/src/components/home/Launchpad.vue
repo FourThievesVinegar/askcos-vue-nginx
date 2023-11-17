@@ -411,7 +411,7 @@ const canonicalize = () => {
       smiles.value = json.smiles;
     })
     .catch((error) => {
-      console.log("Could not canonicalize: " + error);
+      console.error("Could not canonicalize: " + error);
     });
 };
 

@@ -250,7 +250,6 @@ const sortedAllResults = computed(() => {
 })
 
 const filteredResults = computed(() => {
-  console.log(sortedAllResults.value)
   if (!searchQuery.value) return sortedAllResults.value;
 
   return sortedAllResults.value.filter(item => {
@@ -306,7 +305,6 @@ const shareResult = async (id) => {
     const params = new URLSearchParams();
     params.append('result_id', id);
     const json = await API.get(`/api/results/share?${params.toString()}`);
-    console.log(json.url)
     shareLink.value = baseUrl + json.url;
     await nextTick();
     showShareModal.value = true;
@@ -334,7 +332,6 @@ const openSetting = async (id) => {
       treeDialog.value = true
       targetSmiles.value = json.target_smiles
       viewSettings.value = json.settings
-      console.log(targetSmiles.value)
     }
   } finally {
     pendingTasks.value -= 1;
@@ -345,11 +342,9 @@ async function addSharedResult(id) {
   pendingTasks.value += 1;
   try {
     const json = await API.post(`/api/results/add?result_id=${id}`);
-    console.log(json.result)
     json.result.created = json.result.created.toString()
     json.result.modified = json.result.modified.toString()
     sharedResult.value = json.result;
-    console.log(sharedResult.value);
   } catch (error) {
     alert("Could not add shared result: " + error);
   } finally {

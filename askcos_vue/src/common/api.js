@@ -125,7 +125,7 @@ const API = {
         })
         .catch((error) => {
           if (error instanceof TypeError && error.message === 'Failed to fetch') {
-            console.log('Unable to fetch celery results due to connection error. Will keep trying.');
+            console.error('Unable to fetch celery results due to connection error. Will keep trying.');
             setTimeout(check, API.pollIntervalLong, resolve, reject);
           } else {
             return reject(error);

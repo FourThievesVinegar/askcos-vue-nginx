@@ -344,7 +344,6 @@ const handleUploadSubmit = () => {
   formData.append('format', uploadFileFormat.value);
   formData.append('allowOverwrite', allowOverwrite.value);
   formData.append('returnLimit', 200);
-  console.log('Form Data', Object.fromEntries(formData.entries()));
   API.post('/api/buyables/upload', formData)
     .then(json => {
       if (json.error) {
@@ -443,7 +442,6 @@ const deleteBuyable = (_id) => {
       if (json['success'] === true) {
         const indexToDelete = buyables.value.findIndex(b => b._id === _id);
         if (indexToDelete !== -1) {
-          console.log(buyables.value[indexToDelete]['_id']);
           buyables.value.splice(indexToDelete, 1);
           createSnackbar({ text: "Complete!", snackbarProps: { timeout: -1, vertical: true } })
         }

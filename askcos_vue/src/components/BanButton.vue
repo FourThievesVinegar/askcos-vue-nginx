@@ -28,7 +28,6 @@ export default{
       };
       try {
         const json = await API.post(url, body, true);
-        console.log(json)
         const datetime = dayjs(json.created).format('MMMM D, YYYY h:mm A');
         alert(`Banned ${this.type} ${this.smiles} at ${datetime}`)
       } catch (error) {

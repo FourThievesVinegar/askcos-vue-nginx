@@ -332,7 +332,6 @@ const selectivityFileName = ref('selectivity.csv');
 const ssref = ref(null)
 
 const filteredResults = computed(() => {
-  console.log(siteResults.value)
   return sortSiteResults(siteResults.value.filter((result) => {
     return result.task.includes(siteResultsQuery.value) && checkFilter(result)
   }))
@@ -362,7 +361,6 @@ const sortSiteResults = (results) => {
 }
 
 const downloadSitesRefs = (result) => {
-  console.log(result.references)
   let blob = new Blob([createReaxysQuery(result.references)], { type: 'data:text/json;charset=utf-8' });
   saveAs(blob, 'reaxys_query.json');
 }
@@ -371,7 +369,6 @@ const getSitesRefs = async (index) => {
   try {
     const response = await API.get(`/api/selectivity/refs/${index}`);
     siteResults.value[index].references = response.references;
-    console.log(siteResults.value[index].references)
   } catch (error) {
     console.error(error);
   }
@@ -379,16 +376,13 @@ const getSitesRefs = async (index) => {
 
 const forwardUpdateFilename = (newFilename) => {
   forwardFileName.value = newFilename;
-  console.log(forwardFileName.value)
 };
 
 const impurityUpdateFilename = (newFilename) => {
   impurityFileName.value = newFilename;
-  console.log(impurityFileName.value)
 };
 const selectivityUpdateFileName = (newFilename) => {
   selectivityFileName.value = newFilename;
-  console.log(selectivityFileName.value)
 };
 
 watch(tab, () => {
@@ -422,7 +416,6 @@ const constructFastFilterPostData = () => {
 const updateContextModel = (newModel) => {
   contextResults.value = []
   contextModel.value = newModel
-  console.log('Updated context model to:', newModel)
 }
 
 const evaluate = async () => {
@@ -435,14 +428,12 @@ const evaluate = async () => {
   const postData = constructFastFilterPostData();
 
   contextResults.value.forEach((index) => {
-    console.log(index);
     evaluateIndex(index)
   })
 
   try {
     const output = await API.runCeleryTask('/api/fast-filter/call-async', postData);
     reactionScore.value = output.result.score;
-    console.log(reactionScore.value)
   } catch (error) {
     console.error("An error occurred during evaluation:", error);
   } finally {
@@ -596,7 +587,6 @@ const goToForward = (index) => {
         }
       })
       forwardPredict();
-      console.log(contextResults.value)
     });
 };
 
@@ -1005,7 +995,6 @@ const contextV1Predict = async () => {
   API.runCeleryTask('/api/legacy/context/', postData)
     .then(output => {
       contextResults.value = output
-      console.log(contextResults.value)
     })
     .finally(() => {
       pendingTasks.value--;

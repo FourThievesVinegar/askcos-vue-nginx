@@ -1125,7 +1125,6 @@ export default {
                         item.available_model_names.forEach((trainingSet) => sets.add(trainingSet))
                     }
                 });
-            console.log(Array.from(sets).sort())
             return Array.from(sets).sort();
         },
         updateTemplateSet(strategyIndex, value) {
@@ -1133,8 +1132,6 @@ export default {
             this.updateStrategy(strategyIndex, 'attribute_filter', [])
         },
         addAttributeFilter(strategyIndex) {
-            console.log("Attr: ", this.templateAttributes);
-            console.log("Prior: ", this.templateSets);
             this.settingsStore.addAttributeFilter({
                 strategyIndex: strategyIndex,
                 item: {
@@ -1178,7 +1175,6 @@ export default {
             if (key === "max_num_templates") {
                 value = parseInt(value, 10);
             }
-            console.log(typeof value);
             this.settingsStore.updateStrategy({
                 strategyIndex: strategyIndex,
                 key: key,

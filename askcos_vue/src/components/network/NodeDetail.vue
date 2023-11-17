@@ -323,7 +323,8 @@
           </div>
           <div class="ma-2" v-if="selected.data.selecError">
             <v-alert type="warning">Could not check regio-selectivity for
-            this reaction, possibly due to stereochemistry in the product.</v-alert></div>
+              this reaction, possibly due to stereochemistry in the product.</v-alert>
+          </div>
           <template v-if="'outcome' in selected.data">
             <div class="ma-2">
               <h6 class="ma-0 text-h6">Regio-selective Products</h6>
@@ -634,10 +635,12 @@
         <v-text-field label="Precursor" variant="outlined" hide-details density="compact"
           v-model="addNewPrecursorModal['newPrecursorSmiles']" class="mb-2">
           <template v-slot:append-inner>
-                        <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher(addNewPrecursorModal['newPrecursorSmiles'])">Draw</v-btn>
-                      </template>
+            <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
+              @click="openKetcher(addNewPrecursorModal['newPrecursorSmiles'])">Draw</v-btn>
+          </template>
         </v-text-field>
-        <smiles-image v-if="!!addNewPrecursorModal['newPrecursorSmiles']" :smiles="addNewPrecursorModal['newPrecursorSmiles']" height="100px"></smiles-image>
+        <smiles-image v-if="!!addNewPrecursorModal['newPrecursorSmiles']"
+          :smiles="addNewPrecursorModal['newPrecursorSmiles']" height="100px"></smiles-image>
         <v-select label="Cluster Number" :items="clusterItems" v-model="addNewPrecursorModal['clusterId']"
           variant="outlined" hide-details density="compact">
         </v-select>
@@ -655,8 +658,8 @@
   </v-dialog>
   <rec-templates-modal :selected="selected" :visible="showRecTemplate"
     @close-dialog="$event => showRecTemplate = $event"></rec-templates-modal>
-     <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="smiles" @input="showKetcher = false"
-      @update:smiles="updateSmiles" />
+  <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="smiles" @input="showKetcher = false"
+    @update:smiles="updateSmiles" />
 </template>
   
 <script>
@@ -712,7 +715,7 @@ export default {
   },
   data() {
     return {
-      smiles:'',
+      smiles: '',
       showKetcher: false,
       editIdx: -1,
       oldNote: "",
@@ -771,18 +774,20 @@ export default {
       this.showKetcher = true;
       this.$refs['ketcherRef'].smilesToKetcher()
     },
-    updateSmiles (source){
+    updateSmiles(source) {
       this.addNewPrecursorModal['newPrecursorSmiles'] = source;
     },
     predictSelectivity() {
       this.$emit("updatePendingTasks", "add");
       let data = this.selected.data
-      let url = '/api/general-selectivity/controller/call-async';
+      let url = '/api/legacy/general-selectivity';
+      console.log(data)
       let body = {
-        smiles: this.selected.smiles,
+        reactants: data.mappedPrecursors,
+        product: data.mappedOutcomes,
         mapped: true,
         all_outcomes: true,
-        mode: this.selectivityModel,
+        verbose: false,
       }
       API.runCeleryTask(url, body)
         .then(output => {
@@ -827,11 +832,6 @@ export default {
     clearNote() {
       this.noteUrsName = "";
       this.noteComment = "";
-      if (this.selected.notes) {
-        console.log(this.selected.notes);
-      } else {
-        console.log("nope");
-      }
       this.addNote = false;
     },
     saveNote() {

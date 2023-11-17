@@ -115,7 +115,6 @@ export default {
 
     const apply = (smiles, template) => {
       applyingTemplate.value = template._id;
-      console.log(applyingTemplate.value)
       resultsStore.applyTemplate({ smiles: smiles, template: template }).finally(() => {
         if (rtmTable.value) {
           rtmTable.value.refresh();

@@ -861,14 +861,11 @@ export const useResultsStore = defineStore("results", {
       // }
       // throw error if the strategies are not unique
       if (!checkUniqueStrategy(body.retro_backend_options)) {
-        console.log(body.retro_backend_options)
         alert("Strategies must be unique");
         return [];
       }
       body.banned_chemicals = loadCollection("chemicals");
       body.banned_reactions = loadCollection("reactions");
-
-      console.log(body)
       try {
         const response = await API.runCeleryTask(url, body);
         return response;

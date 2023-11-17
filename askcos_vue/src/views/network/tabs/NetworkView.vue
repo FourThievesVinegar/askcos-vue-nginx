@@ -525,7 +525,6 @@ export default {
       },
       set(value) {
         this.resultsStore.updateSavedResultInfo({ description: value });
-        console.log(this.resultsStore.savedResultInfo)
       },
     },
     savedResultTags: {
@@ -711,7 +710,6 @@ export default {
       if (Object.keys(this.tb.modes).includes(mode)) {
         this.settingsStore.setTbSettings(this.tb.modes[mode].settings);
         this.selectedMode = (this.tb.modes[mode].label)
-        console.log(this.settingsStore)
       }
     },
     isTbQuickSettingsMode(mode) {
@@ -769,13 +767,10 @@ export default {
           this.tb.taskId = json;
           this.createConfirm({ title: 'Success', content: 'Tree Builder job submitted successfully!', dialogProps: { width: "auto" } })
           const output = await API.pollCeleryResult(json);
-          console.log(output.result.result_id);
           this.treeID = output.result.result_id
-          console.log(this.treeID)
           return output
         })
         .then(() => {
-          console.log("complete");
           this.snackbar = true;
         })
         .catch((error) => {
@@ -848,7 +843,6 @@ export default {
         .then(() => {
           this.saveTarget(this.resultsStore.target);
           if (this.resultsStore.target !== undefined) {
-            console.log()
             this.resultsStore.clearDataGraph();
             this.resultsStore.clearDispGraph();
             this.resultsStore.clearRemovedReactions();
@@ -1035,7 +1029,6 @@ export default {
       this.isCanvasEmpty = false;
       this.visible = false;
       let reader = new FileReader();
-      console.log(this.uploadFile)
       reader.readAsText(this.uploadFile[0]);
       reader.onload = (e) => {
         try {
@@ -1395,44 +1388,6 @@ export default {
         this.pendingTasks -= 1;
       });
     },
-    predictSelectivity() {
-      this.pendingTasks += 1;
-      let data = this.selected.data;
-      let url = "/api/v2/general-selectivity/";
-      let body = {
-        reactants: data.mappedPrecursors,
-        product: data.mappedOutcomes,
-        mapped: true,
-        all_outcomes: true,
-        verbose: false,
-        mode: this.selectivityModel,
-      };
-      API.runCeleryTask(url, body)
-        .then((output) => {
-          if (Array.isArray(output)) {
-            this.updateDataNodes({
-              id: data.id,
-              selectivity: output,
-            });
-            // Update the selected data object
-            let newData = this.resultsStore.dataGraph.nodes.get(
-              this.selected.smiles
-            );
-            this.$set(this.selected, "data", newData);
-          } else {
-            this.createConfirm({ title: 'Alert', content: 'Could not predict selectivity for this reaction.', dialogProps: { width: "auto" } })
-          }
-        })
-        .catch((error) => {
-          this.createConfirm({
-            title: 'Alert', content: "There was an error predicting selectivity for this reaction: " +
-              error, dialogProps: { width: "auto" }
-          })
-        })
-        .finally(() => {
-          this.pendingTasks -= 1;
-        });
-    },
     saveResult() {
       this.pendingTasks += 1;
       const body = {
@@ -1449,8 +1404,6 @@ export default {
         console.error('savedResultInfo is not initialized.');
         return;
       }
-      console.log("saveResult started");
-      console.log('savedResultInfo:', this.resultsStore.savedResultInfo);
       let url = `/api/results/create`;
       let method = "post";
       if (
@@ -1512,7 +1465,6 @@ export default {
         })
         .finally(() => {
           this.pendingTasks -= 1;
-          console.log("saveResult finished");
         });
     },
     init() {
@@ -1654,7 +1606,6 @@ export default {
     updateTreeOpacity() {
       this.resetOpacity();
       let tree = this.currentTree;
-      console.log(tree)
       let treeNodes = tree.nodes.map((node) => node.id);
       let treeEdges = tree.edges.map((edge) => edge.id);
       let nodes = this.resultsStore.dispGraph.nodes.getIds().map((node) => ({
@@ -1743,7 +1694,6 @@ export default {
     }
   },
   beforeRouteUpdate() {
-    console.log("called")
     this.nodeDetailVisible = false;
   }
 };

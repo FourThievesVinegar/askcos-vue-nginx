@@ -67,11 +67,10 @@ const ketcherRef = ref(null);
 const canonicalize = () => {
   API.post("/api/rdkit/canonicalize/", { smiles: smiles.value })
     .then((json) => {
-      console.log(json);
       smiles.value = json.smiles;
     })
     .catch((error) => {
-      console.log("Could not canonicalize: " + error);
+      console.error("Could not canonicalize: " + error);
     });
 };
 
