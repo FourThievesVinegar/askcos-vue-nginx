@@ -81,7 +81,7 @@ Template score: ${num2str(data.templateScore)}`;
     node.label = `#${data.rank}`;
   }
 
-  if ('outcome' in data) {
+  if ('outcomes' in data) {
     node.borderWidth = 2;
     node.color = { border: '#DC050C' };
     node.title = 'Selectivity warning! Select this node to see more details';
