@@ -108,12 +108,36 @@
                     <v-card-title class="mt-2">
                         <v-col cols="12">Add new user</v-col></v-card-title>
 
-                    <v-card-text class="text-justify">
-                        Ok
+                    <v-card-text>
+                        <v-row>
+                            <v-col cols="12">
+                                <v-text-field v-model="newUsername" variant="outlined" label="Username" hide-details
+                                    clearable></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="12">
+                                <v-text-field v-model="newPassword" variant="outlined" label="Email" hide-details
+                                    clearable></v-text-field>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols="12">
+                                <v-text-field v-model="newEmail" variant="outlined" label="Password" type="password"
+                                    hide-details clearable></v-text-field>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols="12">
+                                <v-checkbox label="This is a Admin Account" v-model="newSuperuser"></v-checkbox>
+                            </v-col>
+                        </v-row>
                     </v-card-text>
                     <v-card-actions class="mb-2">
                         <v-spacer></v-spacer>
-                        <v-btn text @click="dialog = false">Ok</v-btn>
+                        <v-btn text @click="addUser()">Submit</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -125,8 +149,16 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from "vue-router";
 import { API } from "@/common/api";
+import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
+
+const createConfirm = useConfirm();
+const createSnackbar = useSnackbar()
 const router = useRouter();
 const username = ref(localStorage.getItem('username'))
+const newUsername = ref('')
+const newPassword = ref('')
+const newEmail = ref('')
+const newSuperuser = ref(false)
 const isAdmin = ref(false)
 const users = ref([])
 const dialog = ref(false)
@@ -197,6 +229,46 @@ onMounted(async () => {
     }
 })
 
+const addUser = () => {
+    if (!newUsername.value || !newPassword.value || !newEmail.value) {
+        createSnackbar({ text: "Please fill in all fields", snackbarProps: { timeout: 3000 } });
+        return;
+    }
+
+    let body = {
+        username: newUsername.value,
+        password: newPassword.value,
+        email: newEmail.value,
+        is_superuser: newSuperuser.value,
+    };
+
+    API.post('/api/user/register', body, true)
+        .then(response => {
+            console.log(response.Error)
+            if (response === "OK") {
+                createSnackbar({ text: "User added successfully!", snackbarProps: { timeout: 3000 } });
+                users.value.push({ ...body, accountType: newSuperuser.value ? "Admin" : "Normal" });
+                clearUserFields();
+            }
+        })
+        .catch((err) => {
+            const match = err.toString().match(/\"detail\":\"([^\"]+)\"/);
+            const detail = match[1];
+            createSnackbar({ text: `Failed to add user: ${detail}`, snackbarProps: { timeout: 3000 } });
+            clearUserFields();
+        })
+        .finally(() => {
+            dialog.value = false;
+        });
+};
+
+const clearUserFields = () => {
+    newUsername.value = '';
+    newPassword.value = '';
+    newEmail.value = '';
+    newSuperuser.value = false;
+};
+
 // logout function
 const logout = () => {
     localStorage.removeItem('accessToken')
@@ -210,7 +282,7 @@ const mutate = (username, method) => {
 }
 
 const mutateAll = (method) => {
-    for(const username of selection.value){
+    for (const username of selection.value) {
         mutate(username, method)
     }
 }
