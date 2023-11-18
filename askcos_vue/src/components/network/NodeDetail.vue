@@ -792,13 +792,12 @@ export default {
       API.runCeleryTask(url, body)
         .then(output => {
           if (Array.isArray(output)) {
-            this.updateDataNodes({
+            this.resultsStore.updateDataNodes({
               id: data.id,
-              selectivity: output,
+              selectivity: output.map(({ prob }) => prob),
             })
             // Update the selected data object
-            let newData = this.dataGraph.nodes.get(this.selected.smiles)
-            tthis.selected['data'] = newData
+            this.selected['data'] = this.resultsStore.dataGraph.nodes.get(this.selected.smiles)
           } else {
             alert('Could not predict selectivity for this reaction.')
           }
