@@ -52,10 +52,29 @@
                                             </template>
 
                                             <v-list>
-                                                <v-list-item v-for="(action, index) in bulkActionItems" :key="index">
+                                                <v-list-item v-if="!(guestSelected)">
+                                                    <v-btn variant="tonal" color="warning" @click="mutateAll('admin')">Make
+                                                        selected admins</v-btn>
+                                                </v-list-item>
+                                                <v-list-item v-if="!(guestSelected)">
+                                                    <v-btn variant="tonal" color="primary" @click="mutateAll('normal')">Make
+                                                        selected normal
+                                                        users</v-btn>
+                                                </v-list-item>
+                                                <v-list-item>
                                                     <v-btn variant="tonal" color="primary"
-                                                        @click="mutateAll(action.func)">{{ action.title
-                                                        }}</v-btn>
+                                                        @click="mutateAll('enable')">Unlock selected
+                                                        accounts</v-btn>
+                                                </v-list-item>
+                                                <v-list-item>
+                                                    <v-btn variant="tonal" color="primary"
+                                                        @click="mutateAll('disable')">Lock selected
+                                                        accounts</v-btn>
+                                                </v-list-item>
+                                                <v-list-item>
+                                                    <v-btn variant="tonal" color="error" @click="mutateAll('delete')">Delete
+                                                        selected
+                                                        accounts</v-btn>
                                                 </v-list-item>
                                             </v-list>
                                         </v-menu>
@@ -67,7 +86,11 @@
                                 </template>
                                 <template v-slot:item.is_superuser="{ item }">
                                     <span v-if="item.raw.is_superuser === true">Admin</span>
-                                    <span v-if="item.raw.is_superuser === false">Not Admin</span>
+                                    <span v-else>Not Admin</span>
+                                </template>
+                                <template v-slot:item.disabled="{ item }">
+                                    <span v-if="item.raw.disabled === true">Yes</span>
+                                    <span v-else>No</span>
                                 </template>
                                 <template v-slot:item.actions="{ item }">
                                     <v-menu location="end">
@@ -161,6 +184,23 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
+
+            <v-dialog width="auto" v-model="changePwd">
+                <v-card>
+                    <v-card-title>
+                        Change password
+                    </v-card-title>
+                    <v-card-text>
+                        <v-text-field v-model="newPassword" variant="outlined" label="Password" type="password" hide-details
+                            clearable></v-text-field>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn text @click="changePwd = false">Cancel</v-btn>
+                        <v-btn text @click="changePassword()">Submit</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-main>
     </v-layout>
 </template>
@@ -179,6 +219,7 @@ const newUsername = ref('')
 const newPassword = ref('')
 const newEmail = ref('')
 const newSuperuser = ref(false)
+const changePwdUser = ref('')
 const isAdmin = ref(false)
 const users = ref([])
 const dialog = ref(false)
@@ -192,17 +233,11 @@ const headers = ref([
     { title: 'Username', key: 'username' },
     { title: 'Email', key: 'email' },
     { title: 'Account Type', key: 'accountType' },
+    { title: 'Disabled', key: 'disabled' },
     { title: 'Last Login', key: 'lastLogin' },
     { title: 'Actions', key: 'actions', align: 'center' },
 ])
-
-const bulkActionItems = ref([
-    { title: 'Make all admin', func: "admin" },
-    { title: 'Make all normal user', func: "normal" },
-    { title: 'Lock all acount', func: "disable" },
-    { title: 'Unlock all acount', func: "enable" },
-    { title: 'Delete all account', func: "delete" },
-])
+const changePwd = ref(false)
 
 const filterSelected = ref(null)
 
@@ -213,6 +248,31 @@ const tableItems = computed(() => {
     }
     return items.filter(item => item.accountType === filterSelected.value);
 })
+
+const guestSelected = computed(() => {
+    return selection.value.some(el => el.startsWith("guest_"))
+})
+
+const changePassword = async () => {
+    console.log(changePwdUser.value, newPassword.value)
+    await API.post('/api/user/reset-password', { username: changePwdUser.value, password: newPassword.value }, true)
+        .then(async response => {
+            console.log(response.Error)
+            if (response === "OK") {
+                await fetchData()
+                createSnackbar({ text: "Successfully changed password!", snackbarProps: { timeout: 3000 } });
+            }
+        })
+        .catch((err) => {
+            const match = err.toString().match(/\"detail\":\"([^\"]+)\"/);
+            const detail = match[1];
+            createSnackbar({ text: `Failed to change account type: ${detail}`, snackbarProps: { timeout: 3000 } });
+        })
+    changePwdUser.value = "";
+    newPassword.value = "";
+    changePwd.value = false;
+}
+
 
 onMounted(async () => {
     await fetchData()
@@ -298,18 +358,8 @@ const logout = () => {
 const mutate = async (username, method) => {
     switch (method) {
         case 'pwd':
-            await API.post('/api/user/update', { username: username }, true)
-                .then(response => {
-                    console.log(response.Error)
-                    if (response === "OK") {
-                        createSnackbar({ text: "Password changed successfully!", snackbarProps: { timeout: 3000 } });
-                    }
-                })
-                .catch((err) => {
-                    const match = err.toString().match(/\"detail\":\"([^\"]+)\"/);
-                    const detail = match[1];
-                    createSnackbar({ text: `Failed to change password: ${detail}`, snackbarProps: { timeout: 3000 } });
-                })
+            changePwd.value = true;
+            changePwdUser.value = username;
             break;
         case 'admin':
             await API.get('/api/user/promote', { username: username }, true)
@@ -384,7 +434,6 @@ const mutate = async (username, method) => {
                     }
                 })
                 .catch((err) => {
-                    console.log(err)
                     const match = err.toString().match(/\"detail\":\"([^\"]+)\"/);
                     const detail = match[1];
                     createSnackbar({ text: `Failed to delete account: ${detail}`, snackbarProps: { timeout: 3000 } });
@@ -396,6 +445,9 @@ const mutate = async (username, method) => {
 const mutateAll = (method) => {
     for (const username of selection.value) {
         mutate(username, method)
+    }
+    if (method === 'delete') {
+        selection.value = [];
     }
 }
 
