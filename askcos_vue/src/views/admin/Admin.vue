@@ -345,7 +345,6 @@ const fetchData = async () => {
             if (Array.isArray(response)) {
                 response.forEach((user) => {
                     usersDict.value[user.username] = user;
-
                     if (user.username.startsWith('guest_')) {
                         user.accountType = "Guest"
                     } else if (user.is_superuser) {
@@ -515,17 +514,17 @@ const mutateAll = (method) => {
 
 const showMakeAdminButton = computed(() => {
     return selection.value.some(username =>
-        usersDict.value[username]?.accountType === 'Normal'
+        usersDict.value[username].accountType === 'Normal'
     ) && !selection.value.some(username =>
-        usersDict.value[username]?.accountType === 'Admin'
+        usersDict.value[username].accountType === 'Admin'
     );
 });
 
 const showMakeNormalButton = computed(() => {
     return selection.value.some(username =>
-        usersDict.value[username]?.accountType === 'Admin'
+        usersDict.value[username].accountType === 'Admin'
     ) && !selection.value.some(username =>
-        usersDict.value[username]?.accountType === 'Normal'
+        usersDict.value[username].accountType === 'Normal'
     );
 });
 
