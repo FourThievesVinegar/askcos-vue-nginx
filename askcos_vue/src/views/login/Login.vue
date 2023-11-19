@@ -163,15 +163,7 @@ const signup = () => {
     formData.append("username", username.value);
     formData.append("password", password.value);
 
-    // For creating a superuser
-    let is_superuser = false;
-    if (username.value.startsWith("admin_")) {
-        is_superuser = true;
-    }
-
-    formData.append("is_superuser", is_superuser);
-
-    API.post('/api/user/register', formData, true).then(json => {
+    API.post('/api/user/register', formData, true).then(_json => {
         createdAccount.value = true;
         login()
     }).catch(() => {

@@ -1,9 +1,6 @@
 <template>
     <v-layout style="height:100vh">
         <v-app-bar color="primary" density="compact">
-            <template v-slot:prepend>
-                <v-app-bar-nav-icon></v-app-bar-nav-icon>
-            </template>
             <v-app-bar-title>Admin Panel</v-app-bar-title>
             <template v-slot:append>
                 <v-btn prepend-icon="mdi-logout" variant="flat" color="orange-darken-1 text-white"
@@ -124,6 +121,10 @@
                                                 <v-btn variant="tonal" color="primary"
                                                     @click="mutate(item.raw.username, 'pwd')">Change Password</v-btn>
                                             </v-list-item>
+                                            <v-list-item v-if="!(item.raw.accountType === 'Guest')">
+                                                <v-btn variant="tonal" color="primary"
+                                                    @click="mutate(item.raw.username, 'email')">Change Email</v-btn>
+                                            </v-list-item>
                                             <v-list-item>
                                                 <v-btn variant="tonal" color="error"
                                                     @click="mutate(item.raw.username, 'delete')">Delete Account</v-btn>
@@ -135,9 +136,11 @@
                             <div v-if="!isAdmin">
                                 <v-row>
                                     <v-col cols="12" class="d-flex flex-row justify-center align-center">
-                                        <v-btn color="warning" class="mr-2">Change Password</v-btn>
-                                        <v-btn color="warning" class="mr-2">Update Email</v-btn>
-                                        <v-btn color="error">Delete Account</v-btn>
+                                        <v-btn color="warning" class="mr-2" @click="mutate(username, 'pwd')">Change
+                                            Password</v-btn>
+                                        <v-btn color="warning" class="mr-2" @click="mutate(username, 'email')">Update
+                                            Email</v-btn>
+                                        <v-btn color="error" @click="mutate(username, 'delete')">Delete Account</v-btn>
                                     </v-col>
                                 </v-row>
                             </div>
@@ -185,10 +188,10 @@
                 </v-card>
             </v-dialog>
 
-            <v-dialog width="auto" v-model="changePwd">
+            <v-dialog width="500px" v-model="changePwd">
                 <v-card>
                     <v-card-title>
-                        Change password
+                        Change Password
                     </v-card-title>
                     <v-card-text>
                         <v-text-field v-model="newPassword" variant="outlined" label="Password" type="password" hide-details
@@ -196,8 +199,25 @@
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn text @click="changePwd = false">Cancel</v-btn>
+                        <v-btn text @click="changePwd = false; newPassword = ''">Cancel</v-btn>
                         <v-btn text @click="changePassword()">Submit</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+
+            <v-dialog width="500px" v-model="updateEmail">
+                <v-card>
+                    <v-card-title>
+                        Change Email
+                    </v-card-title>
+                    <v-card-text>
+                        <v-text-field v-model="newEmail" variant="outlined" label="Email" hide-details
+                            clearable></v-text-field>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn text @click="updateEmail = false; newEmail = ''">Cancel</v-btn>
+                        <v-btn text @click="changeEmail()">Submit</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -209,7 +229,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from "vue-router";
 import { API } from "@/common/api";
-import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
+import { useSnackbar } from 'vuetify-use-dialog';
 
 // const createConfirm = useConfirm();
 const createSnackbar = useSnackbar()
@@ -219,7 +239,7 @@ const newUsername = ref('')
 const newPassword = ref('')
 const newEmail = ref('')
 const newSuperuser = ref(false)
-const changePwdUser = ref('')
+const selectedUser = ref('')
 const isAdmin = ref(false)
 const users = ref([])
 const dialog = ref(false)
@@ -238,6 +258,7 @@ const headers = ref([
     { title: 'Actions', key: 'actions', align: 'center' },
 ])
 const changePwd = ref(false)
+const updateEmail = ref(false)
 
 const filterSelected = ref(null)
 
@@ -254,8 +275,7 @@ const guestSelected = computed(() => {
 })
 
 const changePassword = async () => {
-    console.log(changePwdUser.value, newPassword.value)
-    await API.post('/api/user/reset-password', { username: changePwdUser.value, password: newPassword.value }, true)
+    await API.post('/api/user/reset-password', { username: selectedUser.value, password: newPassword.value }, true)
         .then(async response => {
             console.log(response.Error)
             if (response === "OK") {
@@ -266,11 +286,30 @@ const changePassword = async () => {
         .catch((err) => {
             const match = err.toString().match(/\"detail\":\"([^\"]+)\"/);
             const detail = match[1];
-            createSnackbar({ text: `Failed to change account type: ${detail}`, snackbarProps: { timeout: 3000 } });
+            createSnackbar({ text: `Failed to change password: ${detail}`, snackbarProps: { timeout: 3000 } });
         })
-    changePwdUser.value = "";
+    selectedUser.value = "";
     newPassword.value = "";
     changePwd.value = false;
+}
+
+const changeEmail = async () => {
+    await API.post('/api/user/update', { username: selectedUser.value, email: newEmail.value }, true)
+        .then(async response => {
+            console.log(response.Error)
+            if (response === "OK") {
+                await fetchData()
+                createSnackbar({ text: "Successfully changed email!", snackbarProps: { timeout: 3000 } });
+            }
+        })
+        .catch((err) => {
+            const match = err.toString().match(/\"detail\":\"([^\"]+)\"/);
+            const detail = match[1];
+            createSnackbar({ text: `Failed to change email: ${detail}`, snackbarProps: { timeout: 3000 } });
+        })
+    selectedUser.value = "";
+    newEmail.value = "";
+    updateEmail.value = false;
 }
 
 
@@ -357,9 +396,13 @@ const logout = () => {
 
 const mutate = async (username, method) => {
     switch (method) {
+        case 'email':
+            updateEmail.value = true;
+            selectedUser.value = username;
+            break;
         case 'pwd':
             changePwd.value = true;
-            changePwdUser.value = username;
+            selectedUser.value = username;
             break;
         case 'admin':
             await API.get('/api/user/promote', { username: username }, true)
