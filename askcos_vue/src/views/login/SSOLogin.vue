@@ -9,6 +9,25 @@
                 <v-col cols="12" md="6" lg="4" xl="3" class="d-flex justify-center align-center">
                     <v-sheet elevation="10" rounded="lg">
                         <v-form ref="form" class="pa-5" @submit.prevent>
+                            <div class="d-flex flex-column">
+                                <v-btn color="black" size="x-large" block variant="flat" prepend-icon="mdi-github"
+                                    @click="githubLogin" data-cy="githubLogin">
+                                    GitHub Login
+                                </v-btn>
+                                <v-container>
+                                    <v-row wrap no-gutters>
+                                        <v-col cols="5" class="text-center">
+                                            <v-divider class="mt-3" />
+                                        </v-col>
+                                        <v-col cols="2" class="text-center text-h6">
+                                            OR
+                                        </v-col>
+                                        <v-col cols="5" class="text-center">
+                                            <v-divider class="mt-3" />
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
+                            </div>
                             <v-text-field label="Username" variant="outlined" v-model="username" :rules="usernameRules"
                                 clearable data-cy="username"></v-text-field>
                             <v-text-field label="Password" variant="outlined" required type="password" v-model="password"
@@ -147,6 +166,10 @@ const login = () => {
     }).catch(() => {
         loginFailure.value = true;
     })
+}
+
+const githubLogin = () => {
+    keycloak.login({ idpHint: 'github' });
 }
 
 const signup = () => {

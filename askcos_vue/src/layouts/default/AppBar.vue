@@ -113,9 +113,11 @@ const isLoggedIn = computed(() => {
 function logout() {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("username");
-  keycloak.logout()
-  // Using keycloak logout
-  // router.push({ path: '/login' }) 
+  if (keycloak.authenticated) {
+    keycloak.logout()
+  } else {
+    router.push({ path: '/login' })
+  }
 }
 </script>
 

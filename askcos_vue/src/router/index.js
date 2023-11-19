@@ -363,7 +363,7 @@ const routes = [
     path: "/admin-login",
     meta: { title: "Admin Login" },
     component: () =>
-      import(/* webpackChunkName: "login" */ "@/views/adminLogin/AdminLogin.vue"),
+      import(/* webpackChunkName: "login" */ "@/views/login/AdminLogin.vue"),
   },
   {
     name: "Admin",
@@ -371,6 +371,13 @@ const routes = [
     meta: { title: "Admin" },
     component: () =>
       import(/* webpackChunkName: "login" */ "@/views/admin/Admin.vue"),
+  },
+  {
+    name: "SSO Login",
+    path: "/sso-login",
+    meta: { title: "SSO Login" },
+    component: () =>
+      import(/* webpackChunkName: "login" */ "@/views/login/SSOLogin.vue"),
   },
 ];
 
