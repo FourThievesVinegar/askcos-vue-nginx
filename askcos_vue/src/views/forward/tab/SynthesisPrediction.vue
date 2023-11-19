@@ -59,14 +59,15 @@
                                         <br />
                                         1) a template-free WLN model for predicting likely bond changes
                                         <a href="https://doi.org/10.1039/C8SC04228D">
-                                            (Chem. Sci., 2019, 10, 370-377)
-                                        </a>
-                                        , or
+                                            (Chem. Sci., 2019, 10, 370-377)</a>, or
                                         <br />
-                                        2) a template-free Graph2SMILES model for end-to-end prediction.
+                                        2) a template-free augmented Transformer model for end-to-end prediction.
+                                        <a href="https://www.nature.com/articles/s41467-020-19266-y">
+                                            (Nat. Commun., 2020, 11, 5575)</a>, or
+                                        <br />
+                                        3) a template-free Graph2SMILES model for end-to-end prediction.
                                         <a href="https://doi.org/10.1021/acs.jcim.2c00321">
-                                            (J. Chem. Inf. Model. 2022, 62, 15, 3503–3513)
-                                        </a>
+                                          (J. Chem. Inf. Model., 2022, 62, 15, 3503–3513)</a>
                                     </p>
                                 </v-col>
                             </v-row>

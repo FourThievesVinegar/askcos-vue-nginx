@@ -210,7 +210,6 @@
                                         <template v-slot:text>
                                             <ul>
                                                 <li>- Template-based: template_relevance</li>
-                                                <li>- Template-free (graph-edit based): graph2smiles</li>
                                                 <li>- Template-free (translation based): augmented_transformer</li>
                                             </ul>
                                         </template>
@@ -568,7 +567,7 @@
         </v-card>
     </v-dialog>
 </template>
-  
+
 <script>
 import { NO_SOURCE, NO_SOURCE_TEXT, sourceArgsToDisplay } from "@/common/buyables";
 import { API } from "@/common/api";
@@ -1188,10 +1187,9 @@ export default {
     },
 };
 </script>
-  
+
 <style>
 .modal-right {
     margin: 1.75rem 1.75rem 1.75rem auto !important;
 }
 </style>
-  
