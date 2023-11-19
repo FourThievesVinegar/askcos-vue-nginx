@@ -72,18 +72,38 @@
                                 <template v-slot:item.actions="{ item }">
                                     <v-menu location="end">
                                         <template v-slot:activator="{ props }">
-                                            <v-btn color="primary" dark v-bind="props" append-icon="mdi-chevron-down">
+                                            <v-btn color="primary" dark v-bind="props" append-icon="mdi-chevron-down"
+                                                :disabled="selection.length !== 0">
                                                 More
                                             </v-btn>
                                         </template>
 
                                         <v-list>
-                                            <v-list-item v-for="(action, index) in rowActionItems" :key="index">
-                                                <v-btn
-                                                    :disabled="item.raw.accountType === 'Guest' && action.title === 'Change Account Type'"
-                                                    variant="tonal" color="primary"
-                                                    @click="mutate(item.raw.username, action.func)">{{ action.title
-                                                    }}</v-btn>
+                                            <v-list-item
+                                                v-if="!(item.raw.accountType === 'Guest' || item.raw.accountType === 'Admin')">
+                                                <v-btn variant="tonal" color="warning"
+                                                    @click="mutate(item.raw.username, 'admin')">Make admin</v-btn>
+                                            </v-list-item>
+                                            <v-list-item
+                                                v-if="!(item.raw.accountType === 'Guest' || item.raw.accountType === 'Normal')">
+                                                <v-btn variant="tonal" color="primary"
+                                                    @click="mutate(item.raw.username, 'normal')">Make normal user</v-btn>
+                                            </v-list-item>
+                                            <v-list-item v-if="!(item.raw.disabled === false)">
+                                                <v-btn variant="tonal" color="primary"
+                                                    @click="mutate(item.raw.username, 'enable')">Unlock Account</v-btn>
+                                            </v-list-item>
+                                            <v-list-item v-if="!(item.raw.disabled === true)">
+                                                <v-btn variant="tonal" color="primary"
+                                                    @click="mutate(item.raw.username, 'disable')">Lock Account</v-btn>
+                                            </v-list-item>
+                                            <v-list-item v-if="!(item.raw.accountType === 'Guest')">
+                                                <v-btn variant="tonal" color="primary"
+                                                    @click="mutate(item.raw.username, 'pwd')">Change Password</v-btn>
+                                            </v-list-item>
+                                            <v-list-item>
+                                                <v-btn variant="tonal" color="error"
+                                                    @click="mutate(item.raw.username, 'delete')">Delete Account</v-btn>
                                             </v-list-item>
                                         </v-list>
                                     </v-menu>
@@ -117,21 +137,21 @@
                         </v-row>
                         <v-row>
                             <v-col cols="12">
-                                <v-text-field v-model="newPassword" variant="outlined" label="Email" hide-details
+                                <v-text-field v-model="newEmail" variant="outlined" label="Email" hide-details
                                     clearable></v-text-field>
                             </v-col>
                         </v-row>
 
                         <v-row>
                             <v-col cols="12">
-                                <v-text-field v-model="newEmail" variant="outlined" label="Password" type="password"
+                                <v-text-field v-model="newPassword" variant="outlined" label="Password" type="password"
                                     hide-details clearable></v-text-field>
                             </v-col>
                         </v-row>
 
                         <v-row>
                             <v-col cols="12">
-                                <v-checkbox label="This is a Admin Account" v-model="newSuperuser"></v-checkbox>
+                                <v-checkbox label="Make admin" v-model="newSuperuser"></v-checkbox>
                             </v-col>
                         </v-row>
                     </v-card-text>
@@ -151,7 +171,7 @@ import { useRouter } from "vue-router";
 import { API } from "@/common/api";
 import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
 
-const createConfirm = useConfirm();
+// const createConfirm = useConfirm();
 const createSnackbar = useSnackbar()
 const router = useRouter();
 const username = ref(localStorage.getItem('username'))
@@ -176,24 +196,18 @@ const headers = ref([
     { title: 'Actions', key: 'actions', align: 'center' },
 ])
 
-const rowActionItems = ref([
-    { title: 'Change Password', func: "pwd" },
-    { title: 'Change Account Type', func: "modifyAcc" },
-    { title: 'Delete Account', func: "delete" },
-    { title: 'Lock Acount', func: "disable" },
-])
-
 const bulkActionItems = ref([
-    { title: 'Change Account Type', func: "modifyAcc" },
-    { title: 'Delete Account', func: "delete" },
-    { title: 'Lock Acount', func: "disable" },
+    { title: 'Make all admin', func: "admin" },
+    { title: 'Make all normal user', func: "normal" },
+    { title: 'Lock all acount', func: "disable" },
+    { title: 'Unlock all acount', func: "enable" },
+    { title: 'Delete all account', func: "delete" },
 ])
 
 const filterSelected = ref(null)
 
 const tableItems = computed(() => {
     let items = users.value;
-    console.log(filterSelected.value)
     if (filterSelected.value === 'all' || filterSelected.value === null) {
         return items
     }
@@ -201,6 +215,10 @@ const tableItems = computed(() => {
 })
 
 onMounted(async () => {
+    await fetchData()
+})
+
+const fetchData = async () => {
     try {
         // check if the username is admin
         isAdmin.value = await API.get("/api/user/am-i-superuser");
@@ -227,7 +245,7 @@ onMounted(async () => {
     } catch (error) {
         console.error("Error fetching users:", error);
     }
-})
+}
 
 const addUser = () => {
     if (!newUsername.value || !newPassword.value || !newEmail.value) {
@@ -277,8 +295,102 @@ const logout = () => {
     router.push('/admin-login');
 }
 
-const mutate = (username, method) => {
-    console.log(username, method);
+const mutate = async (username, method) => {
+    switch (method) {
+        case 'pwd':
+            await API.post('/api/user/update', { username: username }, true)
+                .then(response => {
+                    console.log(response.Error)
+                    if (response === "OK") {
+                        createSnackbar({ text: "Password changed successfully!", snackbarProps: { timeout: 3000 } });
+                    }
+                })
+                .catch((err) => {
+                    const match = err.toString().match(/\"detail\":\"([^\"]+)\"/);
+                    const detail = match[1];
+                    createSnackbar({ text: `Failed to change password: ${detail}`, snackbarProps: { timeout: 3000 } });
+                })
+            break;
+        case 'admin':
+            await API.get('/api/user/promote', { username: username }, true)
+                .then(async response => {
+                    console.log(response.Error)
+                    if (response === "OK") {
+                        await fetchData()
+                        createSnackbar({ text: "Successfully made admin!", snackbarProps: { timeout: 3000 } });
+                    }
+                })
+                .catch((err) => {
+                    const match = err.toString().match(/\"detail\":\"([^\"]+)\"/);
+                    const detail = match[1];
+                    createSnackbar({ text: `Failed to change account type: ${detail}`, snackbarProps: { timeout: 3000 } });
+                })
+            break;
+        case 'normal':
+            await API.get('/api/user/demote', { username: username }, true)
+                .then(async response => {
+                    console.log(response.Error)
+                    if (response === "OK") {
+                        await fetchData()
+                        createSnackbar({ text: "Successfully made normal user!", snackbarProps: { timeout: 3000 } });
+                    }
+                })
+                .catch((err) => {
+                    const match = err.toString().match(/\"detail\":\"([^\"]+)\"/);
+                    const detail = match[1];
+                    createSnackbar({ text: `Failed to delete account: ${detail}`, snackbarProps: { timeout: 3000 } });
+                })
+            break;
+        case 'disable':
+            await API.post('/api/user/update', { username: username, disabled: true }, true)
+                .then(async response => {
+                    console.log(response.Error)
+                    if (response === "OK") {
+                        await fetchData()
+                        createSnackbar
+                            ({ text: "Account disabled successfully!", snackbarProps: { timeout: 3000 } });
+                    }
+                })
+                .catch((err) => {
+                    const match = err.toString().match(/\"detail\":\"([^\"]+)\"/);
+                    const detail = match[1];
+                    createSnackbar({ text: `Failed to disable account: ${detail}`, snackbarProps: { timeout: 3000 } });
+                })
+            break;
+        case 'enable':
+            await API.post('/api/user/update', { username: username, disabled: false }, true)
+                .then(async response => {
+                    console.log(response.Error)
+                    if (response === "OK") {
+                        await fetchData()
+                        createSnackbar
+                            ({ text: "Account enabled successfully!", snackbarProps: { timeout: 3000 } });
+                    }
+                })
+                .catch((err) => {
+                    const match = err.toString().match(/\"detail\":\"([^\"]+)\"/);
+                    const detail = match[1];
+                    createSnackbar({ text: `Failed to enable account: ${detail}`, snackbarProps: { timeout: 3000 } });
+                })
+            break;
+        case 'delete':
+            await API.delete('/api/user/delete', { username: username }, true)
+                .then(async response => {
+                    console.log(response.Error)
+                    if (response === "OK") {
+                        await fetchData()
+                        createSnackbar
+                            ({ text: "Account deleted successfully!", snackbarProps: { timeout: 3000 } });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                    const match = err.toString().match(/\"detail\":\"([^\"]+)\"/);
+                    const detail = match[1];
+                    createSnackbar({ text: `Failed to delete account: ${detail}`, snackbarProps: { timeout: 3000 } });
+                })
+            break;
+    }
 }
 
 const mutateAll = (method) => {
