@@ -6,7 +6,7 @@
           <v-sheet elevation="2" rounded="lg" width="100%" class="mb-6 pa-6" v-show="show">
             <v-row>
               <v-col class="d-flex flew-row justify-center align-center">
-                <v-menu location="end">
+                <v-menu location="end" v-if="username">
                   <template v-slot:activator="{ props }">
                     <v-btn color="primary" dark v-bind="props" variant="tonal" prepend-icon="mdi-star"
                       append-icon="mdi-chevron-down">
@@ -14,9 +14,12 @@
                     </v-btn>
                   </template>
                   <v-list>
-                    <v-list-item v-for="(item, index) in favorites" :key="index" :to="item.link">
-                      <v-list-item-title>{{ item.title }}</v-list-item-title>
-                    </v-list-item>
+                    <template v-for="(item, index) in favoritesMenu">
+                      <v-list-item :to="item.link" v-if="item.selected" :key="index">
+                        <v-list-item-title>{{ item.title }}</v-list-item-title>
+                      </v-list-item>
+                    </template>
+
                   </v-list>
                   <v-divider></v-divider>
                   <v-btn prepend-icon="mdi-pencil" @click="showEditFav = true">Edit Faviorites</v-btn>
@@ -112,7 +115,15 @@
       </v-card-title>
       <v-divider></v-divider>
       <v-card-text>
-        <!-- Add list of pages -->
+        <v-list>
+          <v-list-item v-for="item in favoritesMenu" :key="item.link" @click="item.selected = !item.selected;">
+            <v-list-item-title>
+              {{ item.title }}
+              <v-icon class="ml-1 mb-2" v-show="item.selected" icon="mdi-check">
+              </v-icon>
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
@@ -120,7 +131,7 @@
         <v-btn @click="showEditFav = false" color="red">
           Close
         </v-btn>
-        <v-btn @click="showEditFav = false" color="success">
+        <v-btn @click="showEditFav = false; saveFav()" color="success">
           Save
         </v-btn>
       </v-card-actions>
@@ -137,9 +148,22 @@ const showEditFav = ref(false);
 
 const username = ref(localStorage.getItem("username"))
 
-const favorites = ref([
-  { title: "Interactive Path Planner/Tree Builder", link: '/network?tab=IPP' },
-  { title: "Retrosynthesis Prediction", link: '/network?tab=RP' }
+const favoritesMenu = ref([
+  { title: "Interactive Path Planner/Tree Builder", link: '/network?tab=IPP', selected: true },
+  { title: "Retrosynthesis Prediction", link: '/network?tab=RP', selected: true },
+  { title: "Condition Recommendation", link: '/forward?tab=context', selected: false },
+  { title: "Product Prediction", link: "/forward?tab=forward", selected: false },
+  { title: "Impurity Prediction", link: "/forward?tab=impurity", selected: false },
+  { title: "Regioselectivity Prediction", link: "/forward?tab=selectivity", selected: false },
+  { title: "Aromatic C-H Functionalization", link: "/forward?tab=sites", selected: false },
+  { title: "Solubility Prediction", link: "/forward?tab=sites", selected: false },
+  { title: "Solvent Screening", link: "/solprop?tab=solscreen", selected: false },
+  { title: "Buyables", link: "/buyables", selected: false },
+  { title: "Drawing", link: "/drawing", selected: false },
+  { title: "Server Status", link: "/status", selected: false },
+  { title: "Logs", link: "/logs", selected: false },
+  { title: "My Results", link: "/results", selected: false },
+  { title: "My Banlist", link: "/banlist", selected: false }
 ])
 
 const contributorList = ref([
@@ -171,7 +195,16 @@ const contributorList = ref([
 
 onMounted(() => {
   show.value = true; // <div>
+  const favData = localStorage.getItem(`${username.value}_fav`);
+  if (JSON.parse(favData)) {
+    favoritesMenu.value = JSON.parse(favData);
+  }
 });
+
+const saveFav = () => {
+  const favData = JSON.stringify(favoritesMenu.value);
+  localStorage.setItem(`${username.value}_fav`, favData);
+}
 </script>
 
 <style scoped>

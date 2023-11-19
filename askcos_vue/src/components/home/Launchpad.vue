@@ -4,16 +4,15 @@
       @update:smiles="(ketcherSmiles) => smiles = ketcherSmiles" />
     <v-row class="my-6 justify-center">
       <v-col cols="12" md="10">
-        <v-text-field v-model="smiles" class="centered-input" variant="outlined"
-          label="Type here or draw structure..." prepend-inner-icon="mdi mdi-flask"
-          placeholder="SMILES" hide-details clearable rounded="pill">
+        <v-text-field v-model="smiles" class="centered-input" variant="outlined" label="Type here or draw structure..."
+          prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable rounded="pill">
           <template v-slot:append-inner>
             <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
               @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }" rounded="pill">Draw</v-btn>
           </template>
           <template v-slot:append>
-            <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large"
-              @click="canonicalize()" rounded="pill">Canonicalize</v-btn>
+            <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large" @click="canonicalize()"
+              rounded="pill">Canonicalize</v-btn>
           </template>
         </v-text-field>
       </v-col>
@@ -147,7 +146,7 @@
               Solvent Screen
             </v-card-title>
             <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
-               :href="`/solprop?tab=solscreen&solute=${encodeURIComponent(smiles)}`" target="_blank">Run
+                :href="`/solprop?tab=solscreen&solute=${encodeURIComponent(smiles)}`" target="_blank">Run
                 Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
@@ -193,12 +192,13 @@
               Generate Atom Mapping
             </v-card-title>
             <v-card-actions class="justify-center">
-              <template v-if="mappedSmiles === undefined || !!mappedSmiles.length >0 || mappedSmiles === 'error'">
+              <template v-if="mappedSmiles === undefined || !!mappedSmiles.length > 0 || mappedSmiles === 'error'">
                 <v-btn-group density="compact" color="primary">
-                  <v-btn v-if="mappedSmiles === undefined" prepend-icon="mdi mdi-play" variant="tonal" color="primary" @click="getMappedSmiles(smiles)">Evaluate</v-btn>
-                  <v-btn v-if="!!mappedSmiles" prepend-icon="mdi mdi-play" variant="tonal" 
-                  @click="showMappedSmiles = !showMappedSmiles"> {{ showMappedSmiles ? 'Hide' :
-                    'Show' }}</v-btn>
+                  <v-btn v-if="mappedSmiles === undefined" prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                    @click="getMappedSmiles(smiles)">Evaluate</v-btn>
+                  <v-btn v-if="!!mappedSmiles" prepend-icon="mdi mdi-play" variant="tonal"
+                    @click="showMappedSmiles = !showMappedSmiles"> {{ showMappedSmiles ? 'Hide' :
+                      'Show' }}</v-btn>
                   <v-menu location="bottom" id="mapper-settings" :close-on-content-click="false">
                     <template v-slot:activator="{ props }">
                       <v-btn v-bind="props" icon="mdi mdi-menu-down" variant="tonal" color="primary" />
@@ -245,11 +245,11 @@
       </v-row>
 
       <v-row v-if="!!mappedSmiles" v-show="!!showMappedSmiles" class="my-4 pa-4">
-          <v-col cols="12" class="justify-center">
-            <smiles-image :smiles="mappedSmiles" draw-map highlight allow-copy></smiles-image>
-                <p class="text-body-1 text-center">SMILES: {{ mappedSmiles }}</p>
-          </v-col>
-        </v-row>
+        <v-col cols="12" class="justify-center">
+          <smiles-image :smiles="mappedSmiles" draw-map highlight allow-copy></smiles-image>
+          <p class="text-body-1 text-center">SMILES: {{ mappedSmiles }}</p>
+        </v-col>
+      </v-row>
 
       <v-row>
         <v-col cols="12" sm="4" md="4">
