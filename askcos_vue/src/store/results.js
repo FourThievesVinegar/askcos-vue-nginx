@@ -458,12 +458,12 @@ export const useResultsStore = defineStore("results", {
             templateIds.push(...node.templateIds);
           }
 
-          if ("outcome" in reaction) {
-            node["outcome"] = reaction["outcome"].split(".");
-            node["selectivity"] = new Array(node.outcome.length);
+          if ("outcomes" in reaction && reaction["outcomes"] !== null) {
+            node["outcomes"] = reaction["outcomes"].split(".");
+            node["selectivity"] = new Array(node.outcomes.length);
             node["mappedPrecursors"] = reaction["mapped_precursors"];
             node["mappedOutcomes"] = reaction["mapped_outcomes"];
-          } else if ("selec_error" in reaction) {
+          } else if ("selec_error" in reaction && reaction["selec_error"] !== null) {
             node["selecError"] = reaction["selec_error"];
           }
 

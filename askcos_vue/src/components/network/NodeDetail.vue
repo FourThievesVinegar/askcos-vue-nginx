@@ -325,7 +325,7 @@
             <v-alert type="warning">Could not check regio-selectivity for
               this reaction, possibly due to stereochemistry in the product.</v-alert>
           </div>
-          <template v-if="'outcome' in selected.data">
+          <template v-if="'outcomes' in selected.data">
             <div class="ma-2">
               <h6 class="ma-0 text-h6">Regio-selective Products</h6>
             </div>
@@ -335,7 +335,7 @@
             </div>
             <div class="scroll-list">
               <div class="grid-wrapper">
-                <v-card v-for="(res, index) in selected.data.outcome" class="custom-shadow ma-2 pa-2" :key="index">
+                <v-card v-for="(res, index) in selected.data.outcomes" class="custom-shadow ma-2 pa-2" :key="index">
                   <div class="container-fluid d-flex flex-column h-100 justify-content-between">
                     <v-row>
                       <v-col>
@@ -502,7 +502,7 @@
             </b-input-group-append>
           </b-input-group>
         </div>
-  
+
         <div class="scroll-list-x mb-3">
           <div class="grid-wrapper-onerow">
             <b-card
@@ -555,7 +555,7 @@
             </b-card>
           </div>
         </div>
-  
+
         <div class="scroll-list-x">
           <div class="grid-wrapper-onerow">
             <b-card
@@ -594,7 +594,7 @@
             </b-card>
           </div>
         </div>
-  
+
         <template #modal-footer="{ close }">
           <div>
             <v-btn
@@ -661,7 +661,7 @@
   <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="smiles" @input="showKetcher = false"
     @update:smiles="updateSmiles" />
 </template>
-  
+
 <script>
 import JsPanel from "@/components/JsPanel";
 import BanButton from "@/components/BanButton";
@@ -792,13 +792,12 @@ export default {
       API.runCeleryTask(url, body)
         .then(output => {
           if (Array.isArray(output)) {
-            this.updateDataNodes({
+            this.resultsStore.updateDataNodes({
               id: data.id,
-              selectivity: output,
+              selectivity: output.map(({ prob }) => prob),
             })
             // Update the selected data object
-            let newData = this.dataGraph.nodes.get(this.selected.smiles)
-            tthis.selected['data'] = newData
+            this.selected['data'] = this.resultsStore.dataGraph.nodes.get(this.selected.smiles)
           } else {
             alert('Could not predict selectivity for this reaction.')
           }
@@ -1502,7 +1501,7 @@ export default {
   },
 };
 </script>
-  
+
 <style scoped>
 .scroll-list {
   max-height: 50vh;
@@ -1564,4 +1563,3 @@ export default {
   gap: 0.5rem;
 }
 </style>
-  
