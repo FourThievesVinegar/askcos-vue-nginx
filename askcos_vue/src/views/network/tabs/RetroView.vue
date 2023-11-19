@@ -91,7 +91,7 @@
                     </v-carousel>
                     <div class="d-flex justify-end pa-3 ">
                         <v-btn variant="flat" color="primary" class="justify-end mr-2"
-                            @click="allPredictionsDialog = true">See All Prediction</v-btn>
+                            @click="allPredictionsDialog = true">See All Predictions</v-btn>
                         <v-btn variant="tonal" class="justify-end" @click="clear()">Clear All</v-btn>
                     </div>
                 </v-sheet>
@@ -372,7 +372,7 @@ Normally, only the top 'Max. num. templates' will be applied - with these filter
 
     <!--
              <b-modal id="retro-advanced-modal" title="Advanced Settings" centered scrollable ok-title="Submit" ok-variant="success" @ok="runRetro()">
-      
+
       <div class="form-inline mb-2 ml-3" v-for="(filter, idx) in settings.attributeFilter" :key="idx">
         <b-button variant="outline-danger" pill class="mr-2" @click="deleteAttributeFilter(idx)">
           <i class="fas fa-times"></i>

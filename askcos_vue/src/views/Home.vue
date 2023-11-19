@@ -163,6 +163,7 @@ const contributorList = ref([
   "Thijs Stuyver",
   "Yanfei Guan",
   "Travis Nevins",
+  "Joonyoung Joung",
   "Huiqian Lin",
   "Mark Murnin",
   "Connor Coley"
