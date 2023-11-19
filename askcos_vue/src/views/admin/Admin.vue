@@ -49,14 +49,13 @@
                                             </template>
 
                                             <v-list>
-                                                <v-list-item v-if="!(guestSelected)">
+                                                <v-list-item v-if="showMakeAdminButton">
                                                     <v-btn variant="tonal" color="warning" @click="mutateAll('admin')">Make
                                                         selected admins</v-btn>
                                                 </v-list-item>
-                                                <v-list-item v-if="!(guestSelected)">
+                                                <v-list-item v-if="showMakeNormalButton">
                                                     <v-btn variant="tonal" color="primary" @click="mutateAll('normal')">Make
-                                                        selected normal
-                                                        users</v-btn>
+                                                        selected normal users</v-btn>
                                                 </v-list-item>
                                                 <v-list-item>
                                                     <v-btn variant="tonal" color="primary"
@@ -88,6 +87,11 @@
                                 <template v-slot:item.disabled="{ item }">
                                     <span v-if="item.raw.disabled === true">Yes</span>
                                     <span v-else>No</span>
+                                </template>
+                                <template v-slot:item.accountType="{ item }">
+                                    <v-chip :color="getColor(item.raw.accountType)">
+                                        {{ item.raw.accountType }}
+                                    </v-chip>
                                 </template>
                                 <template v-slot:item.actions="{ item }">
                                     <v-menu location="end">
@@ -494,4 +498,21 @@ const mutateAll = (method) => {
     }
 }
 
+const showMakeAdminButton = computed(() => {
+    const hasNormalUsers = selection.value.some(username => users.value.find(user => user.username === username && user.accountType === 'Normal'));
+    const hasAdminUsers = selection.value.some(username => users.value.find(user => user.username === username && user.accountType === 'Admin'));
+    return hasNormalUsers && !hasAdminUsers;
+});
+
+const showMakeNormalButton = computed(() => {
+    const hasNormalUsers = selection.value.some(username => users.value.find(user => user.username === username && user.accountType === 'Normal'));
+    const hasAdminUsers = selection.value.some(username => users.value.find(user => user.username === username && user.accountType === 'Admin'));
+    return hasAdminUsers && !hasNormalUsers;
+});
+
+const getColor = (type) => {
+    if (type === "Admin") return 'green'
+    if (type === "Normal") return 'blue'
+    else return 'orange'
+}
 </script>
