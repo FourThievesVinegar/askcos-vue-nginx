@@ -38,11 +38,11 @@
               <v-col cols="3">
                 <smiles-image :smiles="reactants" v-if="!!reactants"></smiles-image>
               </v-col>
-              <v-col cols="3" align="center" class="py-30">
-                <smiles-image :smiles="'>>'" width="200" v-if="!!reactants && !!product && mode !== 'sites'"></smiles-image>
+              <v-col cols="3" align="center" class="py-30" v-if="!!reactants && !!product && mode !== 'sites' && mode !== 'forward'">
+                <smiles-image :smiles="'>>'" width="200" ></smiles-image>
               </v-col>
-              <v-col cols="3">
-                <smiles-image :smiles="product" v-if="!!product && mode !== 'sites'"></smiles-image>
+              <v-col cols="3" v-if="!!product && mode !== 'forward' && mode !== 'sites'">
+                <smiles-image :smiles="product" ></smiles-image>
               </v-col>
             </v-row>
 

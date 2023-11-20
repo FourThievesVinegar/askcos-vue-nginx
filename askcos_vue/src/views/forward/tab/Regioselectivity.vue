@@ -59,7 +59,7 @@
                     <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn color="red darken-1" text @click="dialog = false">Cancel</v-btn>
-                        <v-btn color="green darken-1" text @click="() => { emitDownloadSelectivity; dialog = false }">Save</v-btn>
+                        <v-btn color="green darken-1" text @click="emitDownloadSelectivity()">Save</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -98,7 +98,8 @@ const headers = ref([
 const emits = defineEmits()
 
 const emitDownloadSelectivity = () => {
-    emits('download-selectivity')
+    emits('download-selectivity');
+    dialog.value = false;
 }
 
 const updateFilename = (newFilename) => {
