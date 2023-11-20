@@ -518,13 +518,13 @@ const tbPresetToArgs = () => {
 
 const sendTreeBuilderJob = (smiles) => {
   tbStatus.value = "pending";
-  const url = "/api/tree-search/mcts/call-sync";
+  const url = "/api/tree-search/mcts/call-async";
   const body = {
     description: tbDesc.value ? tbDesc.value : smiles,
     smiles: smiles,
   };
   // Object.assign(body, tbPresetToArgs());
-  API.post(url, body)
+  API.runCeleryTask(url, body)
     .then((json) => {
       tbStatus.value = json.result
     })
