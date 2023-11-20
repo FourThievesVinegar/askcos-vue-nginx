@@ -128,9 +128,6 @@
       <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn @click="showEditFav = false" color="red">
-          Close
-        </v-btn>
         <v-btn @click="showEditFav = false; saveFav()" color="success">
           Save
         </v-btn>
