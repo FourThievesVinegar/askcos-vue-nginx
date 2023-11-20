@@ -12,6 +12,7 @@ export const useSettingsStore = defineStore("settings", {
     alignNodeImagesToTarget: ippSettingsDefault.alignNodeImagesToTarget,
     alignPrecursorsToProduct: ippSettingsDefault.alignPrecursorsToProduct,
     reactionLimit: ippSettingsDefault.reactionLimit,
+    modelRank: ippSettingsDefault.modelRank,
     interactive_path_planner_settings: JSON.parse(JSON.stringify(interactive_path_planner_settings_default)),
     tree_builder_settings: JSON.parse(JSON.stringify(tree_builder_settings_default)),
     tbSettings: JSON.parse(JSON.stringify(tbSettingsDefault)),

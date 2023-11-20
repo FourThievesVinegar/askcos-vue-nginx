@@ -92,6 +92,7 @@ const ippSettingsDefault = {
   alignNodeImagesToTarget: false,
   alignPrecursorsToProduct: true,
   reactionLimit: 5,
+  modelRank: true,
   sortingCategory: "retroScore",
   sortOrderAscending: false,
   selectivityModel: "qm_GNN",

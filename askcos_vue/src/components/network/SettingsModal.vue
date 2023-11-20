@@ -58,6 +58,11 @@
                                     <v-switch label="" v-model="allowSelec" id="checkSelec" hide-details
                                         color="primary"></v-switch>
                                 </setting-input>
+                                <setting-input label="Add Top-N results based on total precursors or per model selected"
+                                    help-text="Switches between Top-N results per model or total results">
+                                    <v-switch label="" v-model="modelRank" id="modelRank" hide-details
+                                        color="primary"></v-switch>
+                                </setting-input>
                                 <setting-input label="Top-N result to add to graph" label-for="reactionLimit"
                                     help-text="This number of results from each one-step prediction will automatically be added to the graph visualization.
         In some circumstances, it may be advantageous to add 0 results automatically, and manually choose which to add from the list on the right.">
@@ -780,6 +785,14 @@ export default {
             },
             set(value) {
                 this.settingsStore.interactive_path_planner_settings.selectivity_check = value;
+            },
+        },
+        modelRank: {
+            get() {
+                return this.settingsStore.modelRank;
+            },
+            set(value) {
+                this.settingsStore.modelRank = value;
             },
         },
         buyablesSourceAll: {

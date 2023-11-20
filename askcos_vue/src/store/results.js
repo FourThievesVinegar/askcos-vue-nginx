@@ -463,7 +463,10 @@ export const useResultsStore = defineStore("results", {
             node["selectivity"] = new Array(node.outcomes.length);
             node["mappedPrecursors"] = reaction["mapped_precursors"];
             node["mappedOutcomes"] = reaction["mapped_outcomes"];
-          } else if ("selec_error" in reaction && reaction["selec_error"] !== null) {
+          } else if (
+            "selec_error" in reaction &&
+            reaction["selec_error"] !== null
+          ) {
             node["selecError"] = reaction["selec_error"];
           }
 
@@ -856,6 +859,7 @@ export const useResultsStore = defineStore("results", {
         smiles: smiles,
       };
       Object.assign(body, settings.interactive_path_planner_settings);
+      body.group_by_strategy = settings.modelRank;
       // if (strategy.model === "template_relevance") {
       //   checkTemplatePrioritizers(body["template_prioritizers"]);
       // }
@@ -868,6 +872,7 @@ export const useResultsStore = defineStore("results", {
       body.banned_reactions = loadCollection("reactions");
       try {
         const response = await API.runCeleryTask(url, body);
+        console.log(response);
         return response;
       } catch (error) {
         return [];
@@ -911,29 +916,45 @@ export const useResultsStore = defineStore("results", {
 
       await strategyPromise.then(
         async (response) => {
-          for (const [idx, precursor] of Object.entries(response.result)) {
+          if (settings.modelRank) {
+            for (const [idx, precursor] of Object.entries(response.result)) {
+              const addedReactions = await this.addRetroResultToDataGraph({
+                data: precursor,
+                parentSmiles: smiles,
+              });
+
+              let reactionsToAdd = [];
+              if (
+                settings.interactive_path_planner_settings
+                  .retro_backend_options[idx].retro_backend ===
+                "template_relevance"
+              ) {
+                reactionsToAdd = addedReactions
+                  .filter((reactionSmiles) => {
+                    return (
+                      !settings.allowCluster ||
+                      this.dataGraph.nodes.get(reactionSmiles).clusterRep
+                    );
+                  })
+                  .slice(0, settings.reactionLimit);
+              } else {
+                reactionsToAdd = addedReactions.slice(
+                  0,
+                  settings.reactionLimit
+                );
+              }
+              this.addRetroResultToDispGraph({
+                data: reactionsToAdd,
+                parentId: nodeId,
+              });
+            }
+          } else {
             const addedReactions = await this.addRetroResultToDataGraph({
-              data: precursor,
+              data: response.result,
               parentSmiles: smiles,
             });
-
             let reactionsToAdd = [];
-            if (
-              settings.interactive_path_planner_settings.retro_backend_options[
-                idx
-              ].retro_backend === "template_relevance"
-            ) {
-              reactionsToAdd = addedReactions
-                .filter((reactionSmiles) => {
-                  return (
-                    !settings.allowCluster ||
-                    this.dataGraph.nodes.get(reactionSmiles).clusterRep
-                  );
-                })
-                .slice(0, settings.reactionLimit);
-            } else {
-              reactionsToAdd = addedReactions.slice(0, settings.reactionLimit);
-            }
+            reactionsToAdd = addedReactions.slice(0, settings.reactionLimit);
             this.addRetroResultToDispGraph({
               data: reactionsToAdd,
               parentId: nodeId,
@@ -1218,22 +1239,27 @@ export const useResultsStore = defineStore("results", {
   },
 });
 
-function loadCollection(category){
+function loadCollection(category) {
   let smiles = [];
-  API.get(`/api/banlist/${category}/get`)
-    .then(json => {
-      json.forEach(function (val) {
-        smiles.push(val.smiles)
-      });
-    })
-    return smiles
+  API.get(`/api/banlist/${category}/get`).then((json) => {
+    json.forEach(function (val) {
+      smiles.push(val.smiles);
+    });
+  });
+  return smiles;
 }
 
 function checkUniqueStrategy(strategies) {
   const strategyDict = new Set();
   for (const strategy of strategies) {
     const strategyKey =
-      strategy.retro_backend + "-" + strategy.retro_model_name + "-" + strategy.max_num_templates + "-" + strategy.max_cum_prob;
+      strategy.retro_backend +
+      "-" +
+      strategy.retro_model_name +
+      "-" +
+      strategy.max_num_templates +
+      "-" +
+      strategy.max_cum_prob;
     if (strategyDict.has(strategyKey)) {
       return false;
     }
