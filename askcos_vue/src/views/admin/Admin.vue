@@ -49,14 +49,13 @@
                                             </template>
 
                                             <v-list>
-                                                <v-list-item v-if="!(guestSelected)">
+                                                <v-list-item v-if="showMakeAdminButton">
                                                     <v-btn variant="tonal" color="warning" @click="mutateAll('admin')">Make
                                                         selected admins</v-btn>
                                                 </v-list-item>
-                                                <v-list-item v-if="!(guestSelected)">
+                                                <v-list-item v-if="showMakeNormalButton">
                                                     <v-btn variant="tonal" color="primary" @click="mutateAll('normal')">Make
-                                                        selected normal
-                                                        users</v-btn>
+                                                        selected normal users</v-btn>
                                                 </v-list-item>
                                                 <v-list-item>
                                                     <v-btn variant="tonal" color="primary"
@@ -70,8 +69,7 @@
                                                 </v-list-item>
                                                 <v-list-item>
                                                     <v-btn variant="tonal" color="error" @click="mutateAll('delete')">Delete
-                                                        selected
-                                                        accounts</v-btn>
+                                                        selected accounts</v-btn>
                                                 </v-list-item>
                                             </v-list>
                                         </v-menu>
@@ -89,6 +87,14 @@
                                     <span v-if="item.raw.disabled === true">Yes</span>
                                     <span v-else>No</span>
                                 </template>
+                                <template v-slot:item.accountType="{ item }">
+                                    <v-chip :color="getColor(item.raw.accountType)">
+                                        {{ item.raw.accountType }}
+                                    </v-chip>
+                                </template>
+                                 <template v-slot:item.last_login="{ item }">
+                                    <span>{{ formatDateWithoutTimezone(item.raw.last_login) }}</span>
+                                    </template>
                                 <template v-slot:item.actions="{ item }">
                                     <v-menu location="end">
                                         <template v-slot:activator="{ props }">
@@ -254,12 +260,12 @@ const headers = ref([
     { title: 'Email', key: 'email' },
     { title: 'Account Type', key: 'accountType' },
     { title: 'Disabled', key: 'disabled' },
-    { title: 'Last Login', key: 'lastLogin' },
+    { title: 'Last Login', key: 'last_login' },
     { title: 'Actions', key: 'actions', align: 'center' },
 ])
 const changePwd = ref(false)
 const updateEmail = ref(false)
-
+const usersDict = ref({});
 const filterSelected = ref(null)
 
 const tableItems = computed(() => {
@@ -273,6 +279,13 @@ const tableItems = computed(() => {
 const guestSelected = computed(() => {
     return selection.value.some(el => el.startsWith("guest_"))
 })
+
+const formatDateWithoutTimezone = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    return date.toLocaleString('en-US', options); // Adjust the locale as needed
+};
 
 const changePassword = async () => {
     await API.post('/api/user/reset-password', { username: selectedUser.value, password: newPassword.value }, true)
@@ -322,21 +335,26 @@ const fetchData = async () => {
         // check if the username is admin
         isAdmin.value = await API.get("/api/user/am-i-superuser");
 
+        usersDict.value = {};
+        users.value.forEach(user => {
+            usersDict.value[user.username] = user;
+        });
+
         if (isAdmin.value) {
             const response = await API.get("/api/user/get-all-users");
             if (Array.isArray(response)) {
                 response.forEach((user) => {
+                    usersDict.value[user.username] = user;
                     if (user.username.startsWith('guest_')) {
                         user.accountType = "Guest"
-                        return;
-                    }
-                    if (user.is_superuser) {
+                    } else if (user.is_superuser) {
                         user.accountType = "Admin"
-                        return;
+                    } else {
+                        user.accountType = "Normal"
                     }
-                    user.accountType = "Normal";
                 })
                 users.value = response;
+                console.log(users.value)
             } else {
                 console.error("API did not return an array as expected:", response);
             }
@@ -494,4 +512,25 @@ const mutateAll = (method) => {
     }
 }
 
+const showMakeAdminButton = computed(() => {
+    return selection.value.some(username =>
+        usersDict.value[username].accountType === 'Normal'
+    ) && !selection.value.some(username =>
+        usersDict.value[username].accountType === 'Admin'
+    );
+});
+
+const showMakeNormalButton = computed(() => {
+    return selection.value.some(username =>
+        usersDict.value[username].accountType === 'Admin'
+    ) && !selection.value.some(username =>
+        usersDict.value[username].accountType === 'Normal'
+    );
+});
+
+const getColor = (type) => {
+    if (type === "Admin") return 'green'
+    if (type === "Normal") return 'blue'
+    else return 'orange'
+}
 </script>
