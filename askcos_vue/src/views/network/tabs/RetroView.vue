@@ -588,9 +588,9 @@ export default {
             return json.smiles;
         };
 
-        const resolve = () => {
+        const resolve = async () => {
             if (enableResolver.value && allowResolve.value && target.value && validSmiles.value) {
-                resolveChemName(target.value)
+                await resolveChemName(target.value)
                     .then((smiles) => canonicalize(smiles))
                     .then((smiles) => {
                         target.value = smiles;
@@ -609,14 +609,14 @@ export default {
             return trainingSets.has("cas") && trainingSets.size > 1;
         };
 
-        const runRetro = () => {
+        const runRetro = async () => {
             // if (!context.value["casKeyOk"] && checkTrainingSets(settings.trainingSet)) {
             //     alert("The CAS training set cannot be used for predictions alongside other models.");
             //     return;
             // }
             const newIndex = maxIndex.value + 1;
             carouselSlide.value = Object.keys(predictions.value).length;
-            resolve();
+            await resolve();
 
             const url = "/api/tree-search/expand-one/call-async";
             const body = {
@@ -644,6 +644,10 @@ export default {
             labels.value[newIndex] = `Prediction #${newIndex}`;
             API.runCeleryTask(url, body)
                 .then((output) => {
+                    if(output["status_code"] === 500){
+                        alert("There was an error predicting precursors for this target: " + output["message"]);
+                        return;
+                    }
                     results.value[newIndex] = output["result"];
                     /* eslint-disable */
                     nextTick(() => {
@@ -651,7 +655,6 @@ export default {
                             retroResultTable.value.refresh();
                         }
                     });
-
                 })
                 .catch((error) => {
                     alert("There was an error predicting precursors for this target: " + error);

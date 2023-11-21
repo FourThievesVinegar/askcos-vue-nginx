@@ -369,6 +369,13 @@ const routes = [
     name: "Admin",
     path: "/admin",
     meta: { title: "Admin" },
+    beforeEnter: (_to, _from, next) => {
+      if (!isAuthenticated()) {
+        next({ name: "Admin Login" });
+      } else {
+        next();
+      }
+    },
     component: () =>
       import(/* webpackChunkName: "login" */ "@/views/admin/Admin.vue"),
   },
