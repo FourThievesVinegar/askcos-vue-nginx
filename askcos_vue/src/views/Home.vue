@@ -60,18 +60,28 @@
               <a href="https://mlpds.mit.edu/papers/">here</a>.
               References for the models are included in their respective pages
               where appropriate.
-              Please keep in mind that this service is supported by a fixed amount
+
+            </p>
+            <v-alert border="start" type="info" density="compact" text="Please keep in mind that this service is supported by a fixed amount
               of computational resources. Your requests may take significantly
               longer than expected if there are several other users on the site
-              also performing computationally-expensive requests.
-            </p>
-            <p class="mb-2 px-3 text-body-1">
+              also performing computationally-expensive requests." variant="tonal" class="mb-2"></v-alert>
+            <v-alert border="start" density="compact" variant="tonal" icon="mdi mdi-handshake">
+              <template v-slot:text class="text-body-1">
+                This work began under the DARPA Make-It program
+                (ARO W911NF-16-2-0023) and continues to be supported by the
+                <a href="https://mlpds.mit.edu">
+                  Machine Learning for Pharmaceutical Discovery and Synthesis Consortium</a>,
+                and the National Institutes of Health (1U18TR004149-01).
+              </template>
+            </v-alert>
+            <!-- <p class="mb-2 px-3 text-body-1">
               This work began under the DARPA Make-It program
               (ARO W911NF-16-2-0023) and continues to be supported by the
               <a href="https://mlpds.mit.edu">
                 Machine Learning for Pharmaceutical Discovery and Synthesis Consortium</a>,
-              and the National Institutes of Health (1U18TR004149-01).
-            </p>
+              and the National Institutes of Health (1U18TR004149-01). 
+            </p>-->
             <v-expansion-panels class="mt-6 text-body-1" variant="popout">
               <v-expansion-panel text="" class="text-blue-darken-3">
                 <template v-slot:title><v-icon class="mr-1">mdi mdi-lifebuoy</v-icon><strong>Support</strong></template>
