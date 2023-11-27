@@ -23,3 +23,6 @@ pnpm-debug.log*
 
 # Exclude Screenshots
 cypress/screenshots/*
+
+# Exclude Downloads
+cypress/downloads/*
