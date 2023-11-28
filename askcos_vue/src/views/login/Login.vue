@@ -76,7 +76,7 @@
 <script setup>
 import * as THREE from "three";
 import HALO from 'vanta/dist/vanta.halo.min'
-import { ref, onMounted, inject } from 'vue';
+import { ref, onMounted } from 'vue';
 import { API } from "@/common/api";
 import { useRoute, useRouter } from "vue-router";
 
@@ -89,7 +89,6 @@ const creationFailure = ref(false);
 const loginFailure = ref(false);
 const route = useRoute();
 const router = useRouter();
-const keycloak = inject('$keycloak')
 const waitGuest = ref(false);
 
 const usernameRules = ref([
@@ -98,6 +97,14 @@ const usernameRules = ref([
 
         return 'Username is required'
     },
+    value => {
+        if (value.length >= 3 && value.length <= 25) return true
+        return 'Username must be at least 3 characters and at most 25 characters'
+    },
+    value => {
+        if(/^[a-z][a-z\d]*_?[a-z\d]+$/i.test(value)) return true
+        return 'Username must start with a letter. It can only contain letters, numbers, and one underscore'
+    }
 ])
 
 const passwordRules = ref([
