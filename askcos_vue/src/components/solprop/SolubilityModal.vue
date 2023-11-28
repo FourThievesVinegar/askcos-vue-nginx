@@ -210,7 +210,7 @@
                 <p>
                     Vermeire, F. H.; Chung, Y.; Green, W. H.
                     Predicting Solubility Limits of Organic Solutes for a Wide Range of Solvents and Temperatures.
-                    <a href="https://doi.org/10.26434/chemrxiv-2022-92hl1" target="_blank">ChemRxiv 2022</a>
+                    <a href="https://pubs.acs.org/doi/10.1021/jacs.2c01768" target="_blank">ACS Publications</a>
                 </p>
             </v-card-text>
             <v-card-actions>
