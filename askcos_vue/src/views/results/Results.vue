@@ -37,7 +37,7 @@
     <v-row class="justify-center">
       <v-col cols="12" md="12" xl="10">
         <v-sheet elevation="2" rounded="lg" class="d-flex justify-center pa-5">
-          <v-data-table v-if="allResults.length" :headers="headers" item-value="result_id" :items="filteredResults"
+          <v-data-table :loading="pendingTasks>0" v-if="allResults.length" :headers="headers" item-value="result_id" :items="filteredResults"
             show-select v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10"
             :search="searchQuery" @click:row="clickRow" data-cy="results-table">
             <template v-slot:item.delete="{ item }">
@@ -113,7 +113,7 @@
       </v-card-title>
       <v-divider></v-divider>
       <v-card-text class="pt-0">
-        <tb-settings-table v-if="viewSettings" :settings="viewSettings" :targetSmiles="targetSmiles"></tb-settings-table>
+        <tb-settings-table  v-if="viewSettings" :settings="viewSettings" :targetSmiles="targetSmiles"></tb-settings-table>
         <v-alert v-else type="warning" class="mb-0" dense text>Settings not available.</v-alert>
       </v-card-text>
       <v-divider></v-divider>
@@ -320,8 +320,6 @@ const shareResult = async (id) => {
     pendingTasks.value -= 1;
   }
 }
-
-
 
 
 const openSetting = async (id) => {

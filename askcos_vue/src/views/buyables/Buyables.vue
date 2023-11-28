@@ -78,16 +78,23 @@
               </v-menu>
               <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
                 <template v-slot:activator="{ props }">
-                  <v-btn color="orange-accent-4" append-icon="mdi mdi-menu-down" variant="flat" v-bind="props"
-                    :disabled="!adminName">
-                    Add Compound
-                  </v-btn>
+                  <v-tooltip bottom text="Test"> 
+                    <!-- notes -->
+                    <template v-slot:activator="{ tooltipprop }">
+                  <div v-bind="tooltipprop">
+                    <v-btn color="orange-accent-4" v-bind="props" append-icon="mdi mdi-menu-down" variant="flat" 
+                      :disabled="!adminName">
+                      Add Compound
+                    </v-btn>
+                    </div>
+                  </template>
+                  </v-tooltip>
                 </template>
-                <v-list>
-                  <v-list-item @click="showAddModal = !showAddModal">Add One</v-list-item>
-                  <v-list-item @click="showUploadModal = !showUploadModal">Add Buyable(s)</v-list-item>
-                </v-list>
-              </v-menu>
+                  <v-list>
+                    <v-list-item @click="showAddModal = !showAddModal">Add One</v-list-item>
+                    <v-list-item @click="showUploadModal = !showUploadModal">Add Buyable(s)</v-list-item>
+                  </v-list>
+                </v-menu>
             </v-col>
           </v-row>
         </v-sheet>
@@ -249,7 +256,7 @@ const createSnackbar = useSnackbar()
 
 const adminName = computed(() => {
   let user = localStorage.getItem("username");
-  if(user){
+  if (user) {
     return user.startsWith('admin_')
   }
   return false;

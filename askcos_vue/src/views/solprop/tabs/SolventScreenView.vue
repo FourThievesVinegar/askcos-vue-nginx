@@ -3,6 +3,8 @@
     <v-row class="justify-center align-center">
       <v-col cols="12" md="12" class="pa-0">
         <v-sheet elevation="2" class="pa-10" rounded="lg">
+          <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="currentSmiles" @input="showKetcher = false"
+            @update:smiles="(ketcherSmiles) => updateSmiles(ketcherSmiles)" />
           <v-form @submit.prevent>
             <v-row class="justify-center align-center">
               <v-col cols="12" md="4">
@@ -19,8 +21,8 @@
               </v-col>
               <v-col cols="12" md="4">
                 <v-row class="mb-2">
-                  <v-select label="Solvent Set" variant="outlined" :items="[...Object.keys(solventSets), 'custom']"  hide-details
-                    v-model="solventSet">
+                  <v-select label="Solvent Set" variant="outlined" :items="[...Object.keys(solventSets), 'custom']"
+                    hide-details v-model="solventSet">
                   </v-select>
                 </v-row>
                 <v-row>
@@ -35,16 +37,17 @@
               <v-col cols="12">
                 <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict"
                   :loading="loading">Submit</v-btn>
-                <v-btn prepend-icon="mdi-dots-horizontal" @click="dialog = !dialog" variant="flat" color="primary"
-                  class="mr-5">
-                  More Options
+                  <v-btn @click="dialog = true" variant="flat" class="mr-5" prepend-icon="mdi-dots-horizontal"
+                    color="primary">
+                    More Options
+                  </v-btn>
+                <v-btn variant="tonal" class="mr-5" @click="customDialog = !customDialog" v-if="solventSet === 'custom'">
+                  Save custom solvent set
                 </v-btn>
-                  <v-btn variant="tonal" class="mr-5" @click="customDialog = !customDialog " v-if="solventSet === 'custom'">
-                    Save custom solvent set
-                  </v-btn>
-                  <v-btn variant="tonal" class="mr-5" color="red"  v-if="Object.keys(customSolventSets).includes(solventSet)" @click="deleteSolventSet">
-                    Delete custom solvent set
-                  </v-btn>
+                <v-btn variant="tonal" class="mr-5" color="red" v-if="Object.keys(customSolventSets).includes(solventSet)"
+                  @click="deleteSolventSet">
+                  Delete custom solvent set
+                </v-btn>
                 <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0" @click="clear(false)">
                   Clear Results
                 </v-btn>
@@ -118,30 +121,103 @@
     </v-row>
 
     <v-dialog v-model="customDialog" persistent max-width="600px">
-    <v-card>
-      <v-card-title>
-        Save Solvent Set
-      </v-card-title>
+      <v-card>
+        <v-card-title>
+          Save Solvent Set
+        </v-card-title>
 
-      <v-card-text>
-        <v-form>
-          <v-text-field
-            label="Please enter a name for the solvent set"
-            v-model="newSolventSetName"
-            :rules="[v => !!v || 'Name is required']"
-            required
-          ></v-text-field>
-        </v-form>
-        <p>Custom solvent sets are stored locally in your browser.</p>
-      </v-card-text>
+        <v-card-text>
+          <v-form>
+            <v-text-field label="Please enter a name for the solvent set" v-model="newSolventSetName"
+              :rules="[v => !!v || 'Name is required']" required></v-text-field>
+          </v-form>
+          <p>Custom solvent sets are stored locally in your browser.</p>
+        </v-card-text>
 
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="customDialog = false">Close</v-btn>
-        <v-btn color="blue darken-1" text @click="() => { this.saveSolventSet() ; customDialog = false }" :disabled="!newSolventSetNameValid">Save</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="customDialog = false">Close</v-btn>
+          <v-btn color="blue darken-1" text @click="() => { this.saveSolventSet(); customDialog = false }"
+            :disabled="!newSolventSetNameValid">Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+       <v-dialog v-model="showUploadModal" max-width="600px">
+        <v-card>
+          <v-card-title class="mt-2">
+            <v-col cols="12">Upload file</v-col>
+          </v-card-title>
+          <v-card-text>
+            <v-row>
+              <v-col cols="12" class="mb-2">
+                <span>
+                  See Model Input/Output Details for notes on file format.
+                </span>
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col cols="12">
+                <v-file-input label="File" v-model="uploadFile" :rules="[v => !!v || 'File is required']"
+                  density="comfortable" variant="outlined" clearable></v-file-input>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="showUploadModal = false">Close</v-btn>
+            <v-btn color="green darken-1" text
+              @click="() => { showUploadModal = false; handleUploadSubmit() }">Upload</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialog" width="auto" class="justify-center align-center">
+        <v-card>
+          <v-card-title class="headline">
+            Additional Information
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-card-text class="pa-3">
+            <v-expand-transition>
+              <v-expansion-panels v-model="panel" multiple>
+                <v-expansion-panel title="Reference Information (Optional)" class="text-primary">
+                  <v-expansion-panel-text class="text-black">
+                    <v-text-field variant="outlined" label="Ref. Solvent" v-model="refSolvent">
+                      <template v-slot:append-inner>
+                        <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('refSolvent')">Draw</v-btn>
+                      </template>
+                    </v-text-field>
+                    <div v-if="!!refSolvent" class="my-3">
+                      <smiles-image :smiles="refSolvent" height="100px"></smiles-image>
+                    </div>
+                    <v-text-field variant="outlined" label="Ref. Solubility (log10(mol/L))"
+                      v-model="refSolubility"></v-text-field>
+                    <v-text-field variant="outlined" label="Ref. Temperature (K)" v-model="refTemperature"></v-text-field>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
+                <v-expansion-panel title="Solute Information (Optional)" class="text-primary">
+                  <v-expansion-panel-text class="text-black">
+                    <v-text-field variant="outlined" label="ΔHsub298 (kcal/mol)" v-model="soluteHsub"></v-text-field>
+                    <v-text-field variant="outlined" label="Cpg298 (cal/mol/K)" v-model="soluteCpg"></v-text-field>
+                    <v-text-field variant="outlined" label="Cps298 (cal/mol/K)" v-model="soluteCps"></v-text-field>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </v-expand-transition>
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-actions class="d-flex justify-end pa-3">
+            <v-btn class="mr-2" variant="tonal" color="success" @click="dialog = false">
+              Save
+            </v-btn>
+            <v-btn variant="tonal" color="primary" @click="() => { dialog = false; predict() }">
+              Run
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
   </v-container>
   <solubility-modal :visible="showInfo" width="auto" @close-dialog="$event => showInfo = $event"></solubility-modal>
@@ -151,6 +227,7 @@
 import SmilesImage from "@/components/SmilesImage";
 import SmilesInput from "@/components/SmilesInput";
 import SolubilityModal from '@/components/solprop/SolubilityModal'
+import KetcherModal from "@/components/KetcherModal";
 import { API } from "@/common/api";
 import { colorMap } from "@/common/color";
 import { loadCustomSolventSets, saveCustomSolventSets, solventSets } from "@/views/solprop/solvents";
@@ -170,11 +247,14 @@ export default {
     SmilesImage,
     SmilesInput,
     SolubilityModal,
+    KetcherModal,
     'bar-chart': Bar,
     'line-chart': Line,
   },
   data() {
     return {
+      dialog: false,
+      panel: [0],
       customDialog: false,
       solute: '',
       solvents: '',
@@ -199,7 +279,9 @@ export default {
       unitOptions: ['log10(mol/L)', 'mg/mL'],
       loading: false,
       emptyChartSrc: emptyChart,
-      showInfo: false
+      showInfo: false,
+      currentInputSource: '',
+      showKetcher: false,
     }
   },
   setup() {
@@ -345,6 +427,16 @@ export default {
         return 'Please enter a name'
       }
     },
+    currentSmiles() {
+      switch (this.currentInputSource) {
+        case 'solute':
+          return this.solute;
+        case 'refSolvent':
+          return this.refSolvent;
+        default:
+          return '';
+      }
+    }
   },
   created() {
     // Prompt user before going back to previous page
@@ -434,7 +526,7 @@ export default {
       saveAs(blob, 'askcos_solubility_export.json')
     },
     deleteSolventSet() {
-      delete this.customSolventSets[this.solventSet] 
+      delete this.customSolventSets[this.solventSet]
       this.solventSet = 'custom'
       saveCustomSolventSets(this.customSolventSets)
     },
@@ -443,6 +535,21 @@ export default {
       this.solventSet = this.newSolventSetName
       console.log(this.customSolventSets)
       saveCustomSolventSets(this.customSolventSets)
+    },
+    openKetcher(source) {
+      this.currentInputSource = source;
+      this.showKetcher = true;
+      this.$refs['ketcherRef'].smilesToKetcher()
+    },
+    updateSmiles(ketcherSmiles) {
+      switch (this.currentInputSource) {
+        case 'solute':
+          this.solute = ketcherSmiles;
+          break;
+        case 'refSolvent':
+          this.refSolvent = ketcherSmiles;
+          break;
+      }
     },
   },
   watch: {
