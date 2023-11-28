@@ -47,4 +47,8 @@ export default defineConfig({
       '/api/': fastapiGatewayPtr,
     },
   },
+  optimizeDeps: {
+    exclude: ['vuetify'],
+    // or include: ['vuetify'], ?
+  },
 });
