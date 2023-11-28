@@ -8,7 +8,7 @@
               <v-col class="d-flex flew-row justify-center align-center">
                 <v-menu location="end" v-if="username">
                   <template v-slot:activator="{ props }">
-                    <v-btn color="primary" dark v-bind="props" variant="flat" prepend-icon="mdi-star"
+                    <v-btn color="primary" dark v-bind="props" variant="tonal" prepend-icon="mdi-star"
                       append-icon="mdi-chevron-down">
                       Favorites
                     </v-btn>
@@ -49,15 +49,15 @@
         </v-expand-transition>
         <v-expand-transition>
           <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6" v-show="show">
-            <p class="mb-2 px-3 text-body-1">
+            <p class="mb-2 text-body-1">
               Here, we have hosted a number of computational tools to assist in
               synthetic planning and other aspects of organic chemistry. These are
               listed under the Modules tab in the navigation bar on the left, with
               more detailed description in
-              <a href="https://gitlab.com/mlpds_mit/askcosv2/askcos-docs/-/wikis/home">
-                ASKCOS wiki</a>.
+              <a target="_blank" href="https://gitlab.com/mlpds_mit/askcosv2/askcos-docs/-/wikis/home" color="primary">
+                ASKCOS wiki <v-icon size="small">mdi mdi-open-in-new</v-icon></a>.
               Several of the deployed models are described in publications listed
-              <a href="https://mlpds.mit.edu/papers/">here</a>.
+              <a target="_blank" href="https://mlpds.mit.edu/papers/">here<v-icon size="small">mdi mdi-open-in-new</v-icon></a>.
               References for the models are included in their respective pages
               where appropriate.
 
@@ -65,25 +65,18 @@
             <v-alert border="start" type="info" density="compact" text="Please keep in mind that this service is supported by a fixed amount
               of computational resources. Your requests may take significantly
               longer than expected if there are several other users on the site
-              also performing computationally-expensive requests." variant="tonal" class="mb-2"></v-alert>
-            <v-alert border="start" density="compact" variant="tonal" icon="mdi mdi-handshake">
+              also performing computationally-expensive requests." variant="tonal" class="mb-2 py-2"></v-alert>
+            <v-alert border="start" density="compact" variant="tonal" icon="mdi mdi-handshake" class="mb-2">
               <template v-slot:text class="text-body-1">
                 This work began under the DARPA Make-It program
                 (ARO W911NF-16-2-0023) and continues to be supported by the
-                <a href="https://mlpds.mit.edu">
-                  Machine Learning for Pharmaceutical Discovery and Synthesis Consortium</a>,
+                <a target="_blank" href="https://mlpds.mit.edu">
+                  Machine Learning for Pharmaceutical Discovery and Synthesis Consortium <v-icon size="small">mdi mdi-open-in-new</v-icon></a>,
                 and the National Institutes of Health (1U18TR004149-01).
               </template>
             </v-alert>
-            <!-- <p class="mb-2 px-3 text-body-1">
-              This work began under the DARPA Make-It program
-              (ARO W911NF-16-2-0023) and continues to be supported by the
-              <a href="https://mlpds.mit.edu">
-                Machine Learning for Pharmaceutical Discovery and Synthesis Consortium</a>,
-              and the National Institutes of Health (1U18TR004149-01). 
-            </p>-->
-            <v-expansion-panels class="mt-6 text-body-1" variant="popout">
-              <v-expansion-panel text="" class="text-blue-darken-3">
+            <v-expansion-panels class="text-body-1" variant="">
+              <v-expansion-panel class="text-blue-darken-3">
                 <template v-slot:title><v-icon class="mr-1">mdi mdi-lifebuoy</v-icon><strong>Support</strong></template>
                 <template v-slot:text>
                   If you have any questions or if any of the links/images appear
