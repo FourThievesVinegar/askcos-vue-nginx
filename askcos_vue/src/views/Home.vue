@@ -8,7 +8,7 @@
               <v-col class="d-flex flew-row justify-center align-center">
                 <v-menu location="end" v-if="username">
                   <template v-slot:activator="{ props }">
-                    <v-btn color="primary" dark v-bind="props" variant="tonal" prepend-icon="mdi-star"
+                    <v-btn color="orange-darken-1" dark v-bind="props" variant="tonal" prepend-icon="mdi-star"
                       append-icon="mdi-chevron-down">
                       Favorites
                     </v-btn>
