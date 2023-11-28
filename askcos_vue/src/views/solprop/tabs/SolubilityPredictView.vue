@@ -82,6 +82,14 @@
               <v-select :model-value="selectedColumnCategories" :items="allfields" label="Select Columns"
                 density="comfortable" variant="outlined" hide-details clearable @update:modelValue="onSelectedCategory"
                 multiple>
+                <template v-slot:prepend-item>
+                  <v-list-item ripple @click="toggleAllCategories">
+                    <v-list-item-content>
+                      <v-list-item-title>Select All</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-divider></v-divider>
+                </template>
                 <template v-slot:selection="{ item, index }">
                   <v-chip>
                     <span>{{ item.title }}</span>
@@ -91,7 +99,8 @@
             </v-col>
             <v-row class="mt-3" style="overflow-x:scroll">
               <v-col cols="12">
-                <v-data-table :page="lastPage" :items-per-page="itemsPerPage" @update:itemsPerPage="$event => itemsPerPage = $event" :headers="fields" :items="results">
+                <v-data-table :page="lastPage" :items-per-page="itemsPerPage"
+                  @update:itemsPerPage="$event => itemsPerPage = $event" :headers="fields" :items="results">
                   <template v-slot:item.st_1="{ item }">
                     {{ Number(item.columns.st_1) }}
                   </template>
@@ -100,6 +109,19 @@
                   </template>
                   <template v-slot:item.s_298="{ item }">
                     {{ Number(item.columns.s_298) }}
+                  </template>
+                  <template v-slot:headers="{ columns, isSorted, getSortIcon, toggleSort }">
+                    <tr>
+                      <template v-for="column in columns" :key="column.key">
+                        <td>
+                          <span class="mr-2 cursor-pointer" @click="() => toggleSort(column)">{{ column.title }}</span>
+                          <template v-if="isSorted(column)">
+                            <v-icon :icon="getSortIcon(column)"></v-icon>
+                          </template>
+                          <v-icon v-if="column.removable" icon="$close" @click="() => remove(column.key)"></v-icon>
+                        </td>
+                      </template>
+                    </tr>
                   </template>
                 </v-data-table></v-col>
             </v-row>
@@ -305,181 +327,199 @@ export default {
     allfields() {
       return Object.keys(this.columnCategories).map((key) => ({ key: key, title: key }))
     },
-    lastPage() { 
-      return Math.ceil(this.results.length / this.itemsPerPage); 
+    lastPage() {
+      return Math.ceil(this.results.length / this.itemsPerPage);
     },
-  exportFileName() {
-    let baseName = 'askcos'
-    if (this.uploadFile) {
-      const inputName = this.uploadFile[0].name
-      baseName = inputName.substring(0, inputName.lastIndexOf('.'))
-    }
-    return baseName + '_solubility_export'
-  },
-  currentSmiles() {
-    switch (this.currentInputSource) {
-      case 'solute':
-        return this.solute;
-      case 'solvent':
-        return this.solvent;
-      case 'refSolvent':
-        return this.refSolvent;
-      default:
-        return '';
-    }
-  }
-},
-created() {
-  // Prompt user before going back to previous page
-  window.addEventListener('beforeunload', (e) => {
-    if (this.results.length) {
-      // Cancel the event
-      e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
-      // Chrome requires returnValue to be set
-      e.returnValue = '';
-    }
-  });
-
-  let urlParams = new URLSearchParams(window.location.search);
-  let solute = urlParams.get('solute')
-  if (solute) {
-    this.solute = solute
-  }
-  let solvent = urlParams.get('solvent')
-  if (solvent) {
-    this.solvent = solvent
-  }
-
-  this.onSelectedCategory();
-},
-methods: {
-  clear() {
-    this.results = []
-  },
-  onSelectedCategory(value) {
-    if (value) {
-      this.selectedColumnCategories = value
-    }
-    const _fields = ['Solute', 'Solvent', 'Temp']
-    this.selectedColumnCategories.forEach((category) => {
-      _fields.push(...this.columnCategories[category])
-    })
-    this.fields = _fields.map((key) => ({ key: key, title: this.apiKeyToField[key], sortable: true }))
-  },
-  predict() {
-    this.pendingTasks += 1
-    this.loading = true
-    this.batch = false
-    const url = '/api/legacy/solubility/batch/call-async'
-    const body = {
-      "task_list": [{
-        solvent: this.solvent,
-        solute: this.solute,
-        temp: this.temperature,
-        ref_solvent: this.refSolvent || null,
-        ref_solubility: this.refSolubility || null,
-        ref_temp: this.refTemperature || null,
-        hsub298: this.soluteHsub || null,
-        cp_gas_298: this.soluteCpg || null,
-        cp_solid_298: this.soluteCps || null,
+    exportFileName() {
+      let baseName = 'askcos'
+      if (this.uploadFile) {
+        const inputName = this.uploadFile[0].name
+        baseName = inputName.substring(0, inputName.lastIndexOf('.'))
       }
-      ]
+      return baseName + '_solubility_export'
+    },
+    currentSmiles() {
+      switch (this.currentInputSource) {
+        case 'solute':
+          return this.solute;
+        case 'solvent':
+          return this.solvent;
+        case 'refSolvent':
+          return this.refSolvent;
+        default:
+          return '';
+      }
     }
-    API.runCeleryTask(url, body)
-      .then(output => {
-        this.results.push(...output)
-      })
-      .catch(error => {
-        alert('There was an error predicting solubility: ' + error)
-      })
-      .finally(() => {
-        this.loading = false;
-        this.pendingTasks -= 1;
-      })
   },
-  predictBatch(data) {
-    this.pendingTasks += 1
-    this.loading = true
-    this.batch = true
-    const url = '/api/legacy/solubility/batch/call-async'
-    const body = {
-      task_list: data,
+  created() {
+    // Prompt user before going back to previous page
+    window.addEventListener('beforeunload', (e) => {
+      if (this.results.length) {
+        // Cancel the event
+        e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+        // Chrome requires returnValue to be set
+        e.returnValue = '';
+      }
+    });
+
+    let urlParams = new URLSearchParams(window.location.search);
+    let solute = urlParams.get('solute')
+    if (solute) {
+      this.solute = solute
     }
-    API.runCeleryTask(url, body)
-      .then(output => {
-        this.results.push(...output)
-      })
-      .catch(error => {
-        alert('There was an error predicting solubility: ' + error)
-      })
-      .finally(() => this.loading = false, this.pendingTasks -= 1)
+    let solvent = urlParams.get('solvent')
+    if (solvent) {
+      this.solvent = solvent
+    }
+
+    this.onSelectedCategory();
   },
-  handleUploadSubmit() {
-    let fileFormat
-    if (this.uploadFile[0]) {
-      if (this.uploadFile[0].name.endsWith('.json')) {
-        fileFormat = 'json'
-      } else if (this.uploadFile[0].name.endsWith('.csv')) {
-        fileFormat = 'csv'
+  methods: {
+    toggleAllCategories() {
+      if (this.selectedColumnCategories.length < this.allfields.length) {
+        this.selectedColumnCategories = this.allfields.map(category => category.key);
       } else {
-        alert('No file selected or file has no name!')
-        return
+        this.selectedColumnCategories = [];
       }
-    }
-    let reader = new FileReader();
-    reader.onload = (e) => {
-      let rawData = e.target.result
-      let data
-      if (fileFormat === 'csv') {
-        let result = Papa.parse(rawData, { header: true, skipEmptyLines: true, transform: (value) => value === '' ? null : value })
-        if (result.errors.length) {
-          alert(result.errors[0].message)
+      this.onSelectedCategory();
+    },
+    remove(key) {
+      this.fields = this.fields.filter(header => header.key !== key)
+    },
+    clear() {
+      this.results = []
+    },
+    onSelectedCategory(value) {
+      if (value) {
+        this.selectedColumnCategories = value
+      }
+      const baseFields = [
+        { key: 'Solute', title: this.apiKeyToField['Solute'], sortable: true, removable: false },
+        { key: 'Solvent', title: this.apiKeyToField['Solvent'], sortable: true, removable: false },
+        { key: 'Temp', title: this.apiKeyToField['Temp'], sortable: true, removable: false },
+      ];
+      this.selectedColumnCategories.forEach((category) => {
+        this.columnCategories[category].forEach((key) => {
+          baseFields.push({ key: key, title: this.apiKeyToField[key], sortable: true, removable: true });
+        });
+      });
+
+      this.fields = baseFields;
+    },
+    predict() {
+      this.pendingTasks += 1
+      this.loading = true
+      this.batch = false
+      const url = '/api/legacy/solubility/batch/call-async'
+      const body = {
+        "task_list": [{
+          solvent: this.solvent,
+          solute: this.solute,
+          temp: this.temperature,
+          ref_solvent: this.refSolvent || null,
+          ref_solubility: this.refSolubility || null,
+          ref_temp: this.refTemperature || null,
+          hsub298: this.soluteHsub || null,
+          cp_gas_298: this.soluteCpg || null,
+          cp_solid_298: this.soluteCps || null,
+        }
+        ]
+      }
+      API.runCeleryTask(url, body)
+        .then(output => {
+          this.results.push(...output)
+        })
+        .catch(error => {
+          alert('There was an error predicting solubility: ' + error)
+        })
+        .finally(() => {
+          this.loading = false;
+          this.pendingTasks -= 1;
+        })
+    },
+    predictBatch(data) {
+      this.pendingTasks += 1
+      this.loading = true
+      this.batch = true
+      const url = '/api/legacy/solubility/batch/call-async'
+      const body = {
+        task_list: data,
+      }
+      API.runCeleryTask(url, body)
+        .then(output => {
+          this.results.push(...output)
+        })
+        .catch(error => {
+          alert('There was an error predicting solubility: ' + error)
+        })
+        .finally(() => this.loading = false, this.pendingTasks -= 1)
+    },
+    handleUploadSubmit() {
+      let fileFormat
+      if (this.uploadFile[0]) {
+        if (this.uploadFile[0].name.endsWith('.json')) {
+          fileFormat = 'json'
+        } else if (this.uploadFile[0].name.endsWith('.csv')) {
+          fileFormat = 'csv'
+        } else {
+          alert('No file selected or file has no name!')
           return
         }
-        data = result.data
-      } else if (fileFormat === 'json') {
-        data = JSON.parse(rawData)
       }
-      this.predictBatch(data)
-    }
-    reader.readAsText(this.uploadFile[0])
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        let rawData = e.target.result
+        let data
+        if (fileFormat === 'csv') {
+          let result = Papa.parse(rawData, { header: true, skipEmptyLines: true, transform: (value) => value === '' ? null : value })
+          if (result.errors.length) {
+            alert(result.errors[0].message)
+            return
+          }
+          data = result.data
+        } else if (fileFormat === 'json') {
+          data = JSON.parse(rawData)
+        }
+        this.predictBatch(data)
+      }
+      reader.readAsText(this.uploadFile[0])
+    },
+    openKetcher(source) {
+      this.currentInputSource = source;
+      this.showKetcher = true;
+      this.$refs['ketcherRef'].smilesToKetcher()
+    },
+    updateSmiles(ketcherSmiles) {
+      switch (this.currentInputSource) {
+        case 'solute':
+          this.solute = ketcherSmiles;
+          break;
+        case 'solvent':
+          this.solvent = ketcherSmiles;
+          break;
+        case 'refSolvent':
+          this.refSolvent = ketcherSmiles;
+          break;
+      }
+    },
+    downloadCSV() {
+      if (!this.results.length) {
+        alert('There are no results to download!')
+        return
+      }
+      let downloadData = Papa.unparse(this.results)
+      let blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' })
+      saveAs(blob, this.exportFileName + '.csv')
+    },
+    downloadJSON() {
+      if (!this.results.length) {
+        alert('There are no results to download!')
+        return
+      }
+      let downloadData = JSON.stringify(this.results)
+      let blob = new Blob([downloadData], { type: 'data:text/json;charset=utf-8' })
+      saveAs(blob, this.exportFileName + '.json')
+    },
   },
-  openKetcher(source) {
-    this.currentInputSource = source;
-    this.showKetcher = true;
-    this.$refs['ketcherRef'].smilesToKetcher()
-  },
-  updateSmiles(ketcherSmiles) {
-    switch (this.currentInputSource) {
-      case 'solute':
-        this.solute = ketcherSmiles;
-        break;
-      case 'solvent':
-        this.solvent = ketcherSmiles;
-        break;
-      case 'refSolvent':
-        this.refSolvent = ketcherSmiles;
-        break;
-    }
-  },
-  downloadCSV() {
-    if (!this.results.length) {
-      alert('There are no results to download!')
-      return
-    }
-    let downloadData = Papa.unparse(this.results)
-    let blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' })
-    saveAs(blob, this.exportFileName + '.csv')
-  },
-  downloadJSON() {
-    if (!this.results.length) {
-      alert('There are no results to download!')
-      return
-    }
-    let downloadData = JSON.stringify(this.results)
-    let blob = new Blob([downloadData], { type: 'data:text/json;charset=utf-8' })
-    saveAs(blob, this.exportFileName + '.json')
-  },
-},
 }
 </script>
