@@ -1,14 +1,10 @@
 <template>
     <v-container fluid class="pa-0">
         <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6">
-            <v-row align="center" justify="space-between" class="mx-auto my-auto">
-                <v-col>
-                    <span class="text-body-1 ml-2"><b>Regioselectivity Prediction</b> </span>
-                </v-col>
+            <v-row align="center" justify="space-between" class="mx-auto my-auto" v-show="!!results.length">
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn variant="flat" v-show="!!results.length" @click="dialog = true" height="30px"
-                        color="primary mx-2">
+                    <v-btn variant="flat" @click="dialog = true" height="30px" color="primary mx-2">
                         Export
                     </v-btn>
                 </v-col>
@@ -29,25 +25,14 @@
             </v-skeleton-loader>
 
             <v-row align="center" justify="space-between" class="mx-auto my-3">
-                <v-expansion-panels multiple density="compact" v-model="panel" :disabled="disabled">
-                    <v-expansion-panel density="compact">
-                        <template v-slot:title>
-                            <span class="text-body-1 ml-2"><b>Reference</b></span>
-                        </template>
-                        <template v-slot:text>
-                            <v-row>
-                                <v-col>
-                                    <p class="my-4">
-                                        Predict selectivity of regio-selective reactions. The QM-GNN model combines a WLN
-                                        graph encoding
-                                        with predicted quantum descriptors as input to a multitask neural network.
-                                        <a href="https://doi.org/10.1039/D0SC04823B">(Chem. Sci., 2021, 12, 2198-2208)</a>
-                                    </p>
-                                </v-col>
-                            </v-row>
-                        </template>
-                    </v-expansion-panel>
-                </v-expansion-panels>
+                <v-alert border="start" elevation="2" type="info" variant="tonal" density="compact" title="Reference">
+                    <p>
+                        Predict selectivity of regio-selective reactions. The QM-GNN model combines a WLN
+                        graph encoding
+                        with predicted quantum descriptors as input to a multitask neural network.
+                        <a href="https://doi.org/10.1039/D0SC04823B">(Chem. Sci., 2021, 12, 2198-2208)</a>
+                    </p>
+                </v-alert>
             </v-row>
             <v-dialog v-model="dialog" max-width="600px" persistent>
                 <v-card>
@@ -73,8 +58,6 @@ import { ref } from "vue";
 import SmilesImage from "@/components/SmilesImage.vue";
 import CopyTooltip from "@/components/CopyTooltip";
 
-const panel = ref([0])
-const disabled = ref(false)
 const dialog = ref(false)
 const filename = ref('selectivity.csv')
 

@@ -1,15 +1,14 @@
 <template>
     <v-container fluid class="pa-0">
         <v-sheet elevation="5" rounded="lg" width="100%" class="pa-6">
-            <v-row align="center" justify="space-between" class="mx-auto my-auto">
-                <v-col>
-                    <span class="text-body-1 ml-2"><b>Impurity Prediction</b> </span>
-                    <p><span class="text-body-3 ml-2" v-if="!!pending">Progress: {{ progress.message }}</span></p>
+            <v-row align="center" justify="space-between" class="mx-auto my-auto" v-show="!!results.length">
+                <v-col v-if="!!pending">
+                    <p><span class="text-body-3 ml-2">Progress: {{ progress.message }}</span></p>
                 </v-col>
 
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn variant="flat" v-show="!!results.length" @click="dialog = true" height="30px"
+                    <v-btn variant="flat" @click="dialog = true" height="30px"
                         color="primary mx-2">
                         Export
                     </v-btn>
@@ -39,24 +38,13 @@
             </v-skeleton-loader>
 
             <v-row align="center" justify="space-between" class="mx-auto my-3">
-                <v-expansion-panels multiple density="compact" v-model="panel" :disabled="disabled">
-                    <v-expansion-panel density="compact">
-                        <template v-slot:title>
-                            <span class="text-body-1 ml-2"><b>Reference</b></span>
-                        </template>
-                        <template v-slot:text>
-                            <v-row>
-                                <v-col>
-                                    <p class="my-4">
-                                        Predict likely impurities for a chemical reaction. Considers minor products,
-                                        over-reaction,
-                                        dimerization, solvent adducts, and subsets of reactants.
-                                    </p>
-                                </v-col>
-                            </v-row>
-                        </template>
-                    </v-expansion-panel>
-                </v-expansion-panels>
+                <v-alert border="start" elevation="2" type="info" variant="tonal" density="compact" title="Reference">
+                    <p>
+                        Predict likely impurities for a chemical reaction. Considers minor products,
+                        over-reaction,
+                        dimerization, solvent adducts, and subsets of reactants.
+                    </p>
+                </v-alert>
             </v-row>
             <v-dialog v-model="dialog" max-width="600px" persistent>
                 <v-card>
@@ -82,9 +70,6 @@ import SmilesImage from "@/components/SmilesImage.vue";
 import { ref } from 'vue';
 import CopyTooltip from "@/components/CopyTooltip";
 
-
-const panel = ref([0])
-const disabled = ref(false)
 const dialog = ref(false)
 const filename = ref('impurity.csv')
 

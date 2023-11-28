@@ -1086,7 +1086,7 @@ export default {
             if (newVal) {
                 this.buildTree();
             } else {
-                this.network.destroy();
+                // this.network.destroy();
             }
         },
         tabActive(newVal) {

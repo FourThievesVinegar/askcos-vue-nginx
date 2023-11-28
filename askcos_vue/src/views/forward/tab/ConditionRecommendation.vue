@@ -138,7 +138,7 @@
             <v-row align="center" justify="space-between" class="mx-auto my-3">
                 <v-col cols="12" class="pa-0">
                     <v-alert border="start" elevation="2" type="info" variant="tonal" density="compact" title="Reference">
-                        <p class="mb-4">
+                        <p>
                             Predict reagents, catalysts, solvents and temperature for a desired transformation
                             using a
                             neural
@@ -158,9 +158,6 @@
 import SmilesImage from "@/components/SmilesImage.vue";
 import { ref } from 'vue'
 import CopyTooltip from "@/components/CopyTooltip";
-
-const panel = ref([0])
-const disabled = ref(false)
 
 const { results, models, pending } = defineProps({
     inheritAttrs: false,

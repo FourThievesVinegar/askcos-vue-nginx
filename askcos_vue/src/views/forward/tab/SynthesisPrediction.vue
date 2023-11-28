@@ -1,19 +1,15 @@
 <template>
     <v-container fluid class="pa-0">
         <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6">
-            <v-row align="center" justify="space-between" class="mx-auto my-auto">
-                <v-col>
-                    <span class="text-body-1 ml-2"><b>Product Prediction</b> </span>
-                </v-col>
+            <v-row align="center" justify="space-between" class="mx-auto my-auto" v-show="!!results.length">
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn variant="flat" v-show="!!results.length" @click="dialog = true" height="30px"
+                    <v-btn variant="flat"  @click="dialog = true" height="30px"
                         color="primary mx-2">
                         Export
                     </v-btn>
                 </v-col>
             </v-row>
-
 
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" v-show="results.length > 0"
                 :items-per-page="10">
@@ -46,34 +42,23 @@
             </v-data-table>
             <v-skeleton-loader v-if="!!pending" class="mx-auto" min-height="100px" type="table"></v-skeleton-loader>
             <v-row align="center" justify="space-between" class="mx-auto my-3">
-                <v-expansion-panels multiple density="compact" v-model="panel" :disabled="disabled">
-                    <v-expansion-panel density="compact">
-                        <template v-slot:title>
-                            <span class="text-body-1 ml-2"><b>Reference</b></span>
-                        </template>
-                        <template v-slot:text>
-                            <v-row>
-                                <v-col>
-                                    <p class="my-4">
-                                        Predict most likely outcomes of a chemical reaction using either
-                                        <br />
-                                        1) a template-free WLN model for predicting likely bond changes
-                                        <a href="https://doi.org/10.1039/C8SC04228D">
-                                            (Chem. Sci., 2019, 10, 370-377)</a>, or
-                                        <br />
-                                        2) a template-free augmented Transformer model for end-to-end prediction.
-                                        <a href="https://www.nature.com/articles/s41467-020-19266-y">
-                                            (Nat. Commun., 2020, 11, 5575)</a>, or
-                                        <br />
-                                        3) a template-free Graph2SMILES model for end-to-end prediction.
-                                        <a href="https://doi.org/10.1021/acs.jcim.2c00321">
-                                          (J. Chem. Inf. Model., 2022, 62, 15, 3503–3513)</a>
-                                    </p>
-                                </v-col>
-                            </v-row>
-                        </template>
-                    </v-expansion-panel>
-                </v-expansion-panels>
+                <v-alert border="start" elevation="2" type="info" variant="tonal" density="compact" title="Reference">
+                    <p>
+                        Predict most likely outcomes of a chemical reaction using either
+                        <br />
+                        1) a template-free WLN model for predicting likely bond changes
+                        <a href="https://doi.org/10.1039/C8SC04228D">
+                            (Chem. Sci., 2019, 10, 370-377)</a>, or
+                        <br />
+                        2) a template-free augmented Transformer model for end-to-end prediction.
+                        <a href="https://www.nature.com/articles/s41467-020-19266-y">
+                            (Nat. Commun., 2020, 11, 5575)</a>, or
+                        <br />
+                        3) a template-free Graph2SMILES model for end-to-end prediction.
+                        <a href="https://doi.org/10.1021/acs.jcim.2c00321">
+                            (J. Chem. Inf. Model., 2022, 62, 15, 3503–3513)</a>
+                    </p>
+                </v-alert>
             </v-row>
             <v-dialog v-model="dialog" max-width="600px" persistent>
                 <v-card>
@@ -98,9 +83,6 @@ import SmilesImage from "@/components/SmilesImage.vue";
 import { ref } from 'vue'
 import CopyTooltip from "@/components/CopyTooltip";
 
-
-const panel = ref([0])
-const disabled = ref(false)
 const dialog = ref(false)
 const filename = ref('forward.csv')
 
