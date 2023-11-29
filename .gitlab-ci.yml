@@ -36,7 +36,7 @@ test-js:
     when: always
     reports:
       junit:
-        - junit.xml
+        - $CI_PROJECT_DIR/askcos_vue/junit.xml
       coverage_report:
         coverage_format: cobertura
         path: $CI_PROJECT_DIR/askcos_vue/coverage/cobertura-coverage.xml
