@@ -101,7 +101,7 @@
             <v-row>
               <v-col cols="12" md="12">
                 <v-data-table :headers="fields" :items="tableData" fixed-header style="height: 100%" class="mt-3"
-                  density="compact">
+                  density="compact" :loading="loading">
                   <template v-slot:item.image="{ item }">
                     <smiles-image :smiles="item.raw['solvent']"></smiles-image>
                   </template>
