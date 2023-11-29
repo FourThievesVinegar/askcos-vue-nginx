@@ -44,7 +44,7 @@ test-js:
 pages:
   stage: coverage-deploy
   dependencies:
-    - test
+    - test-js
   script:
     - mkdir .public
     - cp -r coverage/* .public
