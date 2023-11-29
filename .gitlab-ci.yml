@@ -46,12 +46,12 @@ pages:
   dependencies:
     - test-js
   script:
-    - mkdir .public
-    - cp -r coverage/* .public
-    - mv .public public
+    - mkdir  $CI_PROJECT_DIR/.public
+    - cp -r $CI_PROJECT_DIR/askcos_vue/coverage/*  $CI_PROJECT_DIR/.public
+    - mv $CI_PROJECT_DIR/.public $CI_PROJECT_DIR/public
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/askcos_vue/public
+      - $CI_PROJECT_DIR/public
 
 cypress-js:
   stage: test
