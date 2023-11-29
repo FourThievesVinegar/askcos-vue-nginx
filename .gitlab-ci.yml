@@ -52,6 +52,8 @@ pages:
   artifacts:
     paths:
       - $CI_PROJECT_DIR/public
+  only:
+    - main
 
 cypress-js:
   stage: test
