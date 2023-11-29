@@ -51,7 +51,7 @@ pages:
     - mv .public public
   artifacts:
     paths:
-      - public
+      - $CI_PROJECT_DIR/askcos_vue/public
 
 cypress-js:
   stage: test
