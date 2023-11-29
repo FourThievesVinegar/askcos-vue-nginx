@@ -37,9 +37,9 @@
     <v-row class="justify-center">
       <v-col cols="12" md="12" xl="10">
         <v-sheet elevation="2" rounded="lg" class="d-flex justify-center pa-5">
-          <v-data-table :loading="pendingTasks>0" v-if="allResults.length || pendingTasks > 0" :headers="headers" item-value="result_id" :items="filteredResults"
-            show-select v-model:expanded="expanded" show-expand v-model="selection" :items-per-page="10"
-            :search="searchQuery" @click:row="clickRow" data-cy="results-table">
+          <v-data-table :loading="pendingTasks > 0" v-if="allResults.length || pendingTasks > 0" :headers="headers"
+            item-value="result_id" :items="filteredResults" show-select v-model:expanded="expanded" show-expand
+            v-model="selection" :items-per-page="10" :search="searchQuery" @click:row="clickRow" data-cy="results-table">
             <template v-slot:item.delete="{ item }">
               <v-icon @click="deleteResult(item.raw.result_id)" class="text-center">mdi-delete</v-icon>
             </template>
@@ -57,16 +57,8 @@
               <tr>
                 <td :colspan="columns.length">
                   <div class="d-flex justify-space-evenly my-3">
-                    <span class="text-center" v-if="item.columns.num_trees !== undefined">Found {{
-                      item.columns.description }} Tree</span>
-                    <!-- <pre>{{ item }}</pre> -->
-                    <span class="align-center">
-                      <v-col>
-                        <v-row>
-                          <p class="text-center mr-3">Tags:</p>
-                          <v-chip class="text-center mr-1" v-for="tag in item.raw.tags" :key="tag" small>{{ tag }}</v-chip>
-                        </v-row>
-                      </v-col>
+                    <span class="align-center" style="max-width: 400px" v-if="item.raw.tags.length">
+                      <p class="text-center mr-3">Tags: <v-chip class="text-center ma-1" v-for="tag in item.raw.tags" :key="tag" small>{{ tag }}</v-chip></p>
                     </span>
                     <v-btn color="primary" variant="tonal"
                       v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'"
@@ -113,7 +105,7 @@
       </v-card-title>
       <v-divider></v-divider>
       <v-card-text class="pt-0">
-        <tb-settings-table  v-if="viewSettings" :settings="viewSettings" :targetSmiles="targetSmiles"></tb-settings-table>
+        <tb-settings-table v-if="viewSettings" :settings="viewSettings" :targetSmiles="targetSmiles"></tb-settings-table>
         <v-alert v-else type="warning" class="mb-0" dense text>Settings not available.</v-alert>
       </v-card-text>
       <v-divider></v-divider>
