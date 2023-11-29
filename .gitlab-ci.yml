@@ -29,17 +29,17 @@ test-js:
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   cache:
     paths:
-      - coverage/
+      - $CI_PROJECT_DIR/coverage/
   artifacts:
     paths:
-      - coverage/
+      - $CI_PROJECT_DIR/coverage/
     when: always
     reports:
       junit:
         - junit.xml
       coverage_report:
         coverage_format: cobertura
-        path: coverage/cobertura-coverage.xml
+        path: $CI_PROJECT_DIR/coverage/cobertura-coverage.xml
 
 pages:
   stage: coverage-deploy
