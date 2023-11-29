@@ -84,7 +84,7 @@
             </v-data-table>
 
             <v-data-table class="mx-auto my-auto" v-else-if="models === 'neuralnetworkv2' && !pending && results.length"
-                :headers="headersAlt" :items="results" v-show="results.length > 0" :items-per-page="10" height="600px">
+                :headers="headersAlt" :items="results" v-show="results.length > 0" :items-per-page="10">
                 <template v-slot:item.index="{ index }">
                     {{ index + 1 }}
                 </template>

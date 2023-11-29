@@ -40,9 +40,9 @@
           <v-select v-if="tabItems.length || filterActive !== 'all'" v-model="filterActive" :items="filterOptions"
             item-text="title" item-value="key" label="Filter by status" density="comfortable" variant="outlined"
             hide-details clearable></v-select>
-          <v-row v-if="tabItems.length">
+          <v-row v-if="tabItems.length || pendingTasks > 0">
             <v-col cols="12">
-              <v-data-table :headers="headers" :items="tabItems" :items-per-page="10">
+              <v-data-table :headers="headers" :items="tabItems" :items-per-page="10" :loading="pendingTasks > 0" >
                 <template v-slot:item.active="{ item }">
                   <v-btn @click="toggleActivation(item, activeTab === 0 ? 'chemicals' : 'reactions')" small>
                     <v-icon v-if="item.columns.active">mdi-check-circle</v-icon>
