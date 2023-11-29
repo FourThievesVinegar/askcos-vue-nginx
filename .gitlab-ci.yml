@@ -1,5 +1,6 @@
 stages:
 - test
+- coverage-deploy
 
 default:
   image: node:18-alpine
@@ -25,6 +26,30 @@ test-js:
   stage: test
   script:
   - npm run test
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  cache:
+    paths:
+      - coverage/
+  artifacts:
+    paths:
+      - coverage/
+    when: always
+    reports:
+      junit:
+        - junit.xml
+      cobertura: coverage/cobertura-coverage.xml
+
+pages:
+  stage: coverage-deploy
+  dependencies:
+    - test
+  script:
+    - mkdir .public
+    - cp -r coverage/* .public
+    - mv .public public
+  artifacts:
+    paths:
+      - public
 
 cypress-js:
   stage: test
