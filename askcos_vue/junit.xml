@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="3" failures="0" errors="0" time="0.724">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-11-29T10:40:24" time="0.678" tests="3">
+    <testcase classname=" can convert py settings to api" name=" can convert py settings to api" time="0.005">
+    </testcase>
+    <testcase classname=" can convert py settings to js" name=" can convert py settings to js" time="0.001">
+    </testcase>
+    <testcase classname=" can convert js settings to api" name=" can convert js settings to api" time="0.001">
+    </testcase>
+  </testsuite>
+</testsuites>

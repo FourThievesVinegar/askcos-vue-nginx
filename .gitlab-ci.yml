@@ -1,5 +1,6 @@
 stages:
 - test
+- coverage-deploy
 
 default:
   image: node:18-alpine
@@ -25,6 +26,34 @@ test-js:
   stage: test
   script:
   - npm run test
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  cache:
+    paths:
+      - $CI_PROJECT_DIR/askcos_vue/coverage/
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/askcos_vue/coverage/
+    when: always
+    reports:
+      junit:
+        - junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: $CI_PROJECT_DIR/askcos_vue/coverage/cobertura-coverage.xml
+
+pages:
+  stage: coverage-deploy
+  dependencies:
+    - test-js
+  script:
+    - mkdir  $CI_PROJECT_DIR/.public
+    - cp -r $CI_PROJECT_DIR/askcos_vue/coverage/*  $CI_PROJECT_DIR/.public
+    - mv $CI_PROJECT_DIR/.public $CI_PROJECT_DIR/public
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/public
+  only:
+    - main
 
 cypress-js:
   stage: test

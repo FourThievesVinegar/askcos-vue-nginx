@@ -26,3 +26,7 @@ cypress/screenshots/*
 
 # Exclude Downloads
 cypress/downloads/*
+
+# Exclude Coverage
+/coverage.data
+/coverage/
