@@ -71,7 +71,7 @@ const supportSubject = ref("");
 const supportShared = ref(false);
 
 const submitSupport = () => {
-    let mailtoString = `mailto:askcos_support@mit.edu`;
+    let mailtoString = `mailto:${import.meta.env.VITE_SUPPORT_EMAILS}`;
     mailtoString += `?subject=${encodeURIComponent(selectedModule.value.title)} `;
     mailtoString += `| ${encodeURIComponent(selectedCategory.value.title)} `;
     mailtoString += `${supportShared.value ? "| Shared " : ""}`;

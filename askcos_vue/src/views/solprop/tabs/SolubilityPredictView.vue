@@ -84,15 +84,17 @@
                 multiple>
                 <template v-slot:prepend-item>
                   <v-list-item ripple @click="toggleAllCategories">
-                    <v-list-item-content>
                       <v-list-item-title>Select All</v-list-item-title>
-                    </v-list-item-content>
                   </v-list-item>
                   <v-divider></v-divider>
                 </template>
                 <template v-slot:selection="{ item, index }">
+                  <!-- <pre>{{  index }}</pre> -->
                   <v-chip>
                     <span>{{ item.title }}</span>
+                    <v-icon small @click.prevent="deselectColumn(item)">
+                      mdi-close-circle
+                    </v-icon>
                   </v-chip>
                 </template>
               </v-select>
@@ -109,19 +111,6 @@
                   </template>
                   <template v-slot:item.s_298="{ item }">
                     {{ Number(item.columns.s_298) }}
-                  </template>
-                  <template v-slot:headers="{ columns, isSorted, getSortIcon, toggleSort }">
-                    <tr>
-                      <template v-for="column in columns" :key="column.key">
-                        <td>
-                          <span class="mr-2 cursor-pointer" @click="() => toggleSort(column)">{{ column.title }}</span>
-                          <template v-if="isSorted(column)">
-                            <v-icon :icon="getSortIcon(column)"></v-icon>
-                          </template>
-                          <v-icon v-if="column.removable" icon="$close" @click="() => remove(column.key)"></v-icon>
-                        </td>
-                      </template>
-                    </tr>
                   </template>
                 </v-data-table></v-col>
             </v-row>
@@ -375,6 +364,15 @@ export default {
     this.onSelectedCategory();
   },
   methods: {
+    deselectColumn(item) {
+      const index = this.selectedColumnCategories.indexOf(item.title);
+      if (index !== -1) {
+        this.selectedColumnCategories.splice(index, 1);
+      }
+      this.$nextTick(() => {
+        this.onSelectedCategory();
+      });
+    },
     toggleAllCategories() {
       if (this.selectedColumnCategories.length < this.allfields.length) {
         this.selectedColumnCategories = this.allfields.map(category => category.key);
