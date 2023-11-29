@@ -324,7 +324,6 @@ import { saveAs } from "file-saver";
 import KetcherModal from "@/components/KetcherModal";
 import NetworkLegend from "@/components/network/NetworkLegend";
 import { resolveChemName } from "@/common/resolver";
-import { tbSettingsJsToApi } from "@/common/tb-settings";
 
 const BG_OPACITY = 0.2; // Background opacity
 export default {
@@ -842,6 +841,9 @@ export default {
         .then(() => {
           this.saveTarget(this.resultsStore.target);
           if (this.resultsStore.target !== undefined) {
+            if(this.resultsStore.target.indexOf('.') !== -1){
+              this.createSnackbar({ text: "Warning: one-step retrosynthesis models are not intended to process multiple targets simultaneously.", snackbarProps: { timeout: 5000, color:'orange-darken-1'} })
+            }
             this.resultsStore.clearDataGraph();
             this.resultsStore.clearDispGraph();
             this.resultsStore.clearRemovedReactions();
