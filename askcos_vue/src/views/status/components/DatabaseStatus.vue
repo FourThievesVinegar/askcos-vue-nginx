@@ -1,5 +1,5 @@
 <template>
-  <v-sheet elevation="2" rounded="lg" width="100%" class="my-6 pa-6">
+  <v-sheet elevation="2" rounded="lg" width="100%" class="pa-6">
     <v-card-title>
       <v-row align="center" justify="center">
         <v-col cols="auto">

@@ -2,18 +2,18 @@
   <v-container fluid>
     <v-row class="justify-center">
       <v-col cols="12" md="12" xl="10">
-        <div class="mt-8 mb-5">
-          <v-breadcrumbs class="pa-0" :items="['Home', 'Banlist']"></v-breadcrumbs>
-          <h1>
+        <div class="my-4">
+          <v-breadcrumbs class="pa-0 text-body-1" :items="['Home', 'Banlist']"></v-breadcrumbs>
+          <h4 class="text-h4 text-primary">
             My Banlist
-          </h1>
+          </h4>
         </div>
       </v-col>
     </v-row>
     <v-row class="justify-center">
-      <v-col cols="12" md="12" xl="10">
+      <v-col cols="12" md="12" xl="10" class="py-0">
         <v-sheet elevation="2" rounded="lg">
-          <v-row class="mb-3 px-5 pt-2">
+          <v-row class="mb-2 px-5 pt-2">
             <v-col cols="12">
               <p class="text-body-3 left-justify">
                 This page lists chemicals and reactions that you have identified as problematic in some way. Entries
@@ -26,7 +26,7 @@
             </v-col>
           </v-row>
 
-          <v-tabs v-model="activeTab" color="primary" align-tabs="center" grow class="mb-4">
+          <v-tabs v-model="activeTab" color="primary" align-tabs="center" grow class="mb-0" >
             <v-tab>Chemicals</v-tab>
             <v-tab>Reactions</v-tab>
           </v-tabs>

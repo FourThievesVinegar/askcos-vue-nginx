@@ -2,34 +2,30 @@
   <v-container fluid>
     <v-row class="justify-center">
       <v-col cols="12" md="12" xl="10">
-        <div class="mt-8 mb-5">
-          <v-breadcrumbs class="pa-0" :items="['Home', 'Results']"></v-breadcrumbs>
-          <h1>
+        <div class="my-4">
+          <v-breadcrumbs class="pa-0 text-body-1" :items="['Home', 'Results']"></v-breadcrumbs>
+          <h4 class="text-h4 text-primary">
             My Results
-          </h1>
+          </h4>
         </div>
       </v-col>
     </v-row>
     <v-row class="justify-center">
-      <v-col cols="12" md="12" xl="10">
-        <v-sheet elevation="2" rounded="lg" class="pa-10">
-          <v-row class="justify-center">
-            <v-col cols="12" md="12">
-              <v-text-field v-model="searchQuery" prepend-inner-icon="mdi mdi-flask" density="compact" variant="outlined"
-                label="Search Result Descriptions" hide-details clearable id="results-text">
-                <template v-slot:append>
-                  <v-btn color="primary" variant="flat" class="mr-5" id="results-search">
-                    Search
-                  </v-btn>
-                  <v-btn v-if="allResults.length" icon="mdi-delete" class="bg-red mr-5" :disabled="selection.length === 0"
-                    variant="flat" @click="deleteSelection" id="results-delete">
-                  </v-btn>
-                  <v-btn icon="mdi-refresh" variant="tonal" @click="update" id="results-update">
-                  </v-btn>
-                </template>
-              </v-text-field>
-            </v-col>
-          </v-row>
+      <v-col cols="12" md="12" xl="10" class="py-0">
+        <v-sheet elevation="2" rounded="lg" class="ma-0 pa-10">
+          <v-text-field v-model="searchQuery" prepend-inner-icon="mdi mdi-flask" density="compact" variant="outlined"
+            label="Search Result Descriptions" hide-details clearable id="results-text">
+            <template v-slot:append>
+              <v-btn color="primary" variant="flat" class="mr-5" id="results-search">
+                Search
+              </v-btn>
+              <v-btn v-if="allResults.length" icon="mdi-delete" class="bg-red mr-5" :disabled="selection.length === 0"
+                variant="flat" @click="deleteSelection" id="results-delete">
+              </v-btn>
+              <v-btn icon="mdi-refresh" variant="tonal" @click="update" id="results-update">
+              </v-btn>
+            </template>
+          </v-text-field>
         </v-sheet>
       </v-col>
     </v-row>
@@ -58,7 +54,8 @@
                 <td :colspan="columns.length">
                   <div class="d-flex justify-space-evenly my-3">
                     <span class="align-center" style="max-width: 400px" v-if="item.raw.tags.length">
-                      <p class="text-center mr-3">Tags: <v-chip class="text-center ma-1" v-for="tag in item.raw.tags" :key="tag" small>{{ tag }}</v-chip></p>
+                      <p class="text-center mr-3">Tags: <v-chip class="text-center ma-1" v-for="tag in item.raw.tags"
+                          :key="tag" small>{{ tag }}</v-chip></p>
                     </span>
                     <v-btn color="primary" variant="tonal"
                       v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'"

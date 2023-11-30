@@ -1,9 +1,9 @@
 <template>
   <v-container fluid>
-    <v-row style="min-height: 100vh" class="justify-center">
+    <v-row class="justify-center">
       <v-col cols="12" md="12" xl="10">
-        <div class="my-8">
-          <v-breadcrumbs class="pa-0" :items="[{
+        <div class="my-4">
+          <v-breadcrumbs class="pa-0 text-body-1" :items="[{
             title: 'Home',
             disabled: false,
             href: '/',
@@ -12,12 +12,24 @@
             title: 'Status',
             disabled: true,
           }]"></v-breadcrumbs>
-          <h1>
+          <h4 class="text-h4 text-primary">
             Server Status
-          </h1>
+          </h4>
         </div>
+      </v-col>
+    </v-row>
+    <v-row class="my-0">
+      <v-col cols="12" md="12" xl="10">
         <CeleryStatus />
+      </v-col>
+    </v-row>
+    <v-row class="my-0">
+      <v-col cols="12" md="12" xl="10">
         <DatabaseStatus />
+      </v-col>
+    </v-row>
+    <v-row class="my-0">
+      <v-col cols="12" md="12" xl="10">
         <ModelStatus />
       </v-col>
     </v-row>
