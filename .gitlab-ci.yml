@@ -22,10 +22,10 @@ install:
         - package-lock.json
     paths:
       - .npm
-      - cache/Cypress/
   artifacts:
     paths:
       - $CI_PROJECT_DIR/askcos_vue/node_modules
+      - cache/Cypress/
     expire_in: 1 hour
 
 lint-js:
