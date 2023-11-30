@@ -5,6 +5,7 @@ stages:
 
 variables:
   npm_config_cache: "$CI_PROJECT_DIR/.npm"
+  CYPRESS_CACHE_FOLDER: "$CI_PROJECT_DIR/cache/Cypress"
 
 default:
   image: node:18-alpine
@@ -21,6 +22,7 @@ install:
         - package-lock.json
     paths:
       - .npm
+      - cache/Cypress/
   artifacts:
     paths:
       - $CI_PROJECT_DIR/askcos_vue/node_modules
@@ -54,8 +56,6 @@ cypress-js:
   - npm run dev &
   # run Cypress tests
   - npx cypress run
-  only:
-  - main
 
 test-js:
   stage: test
