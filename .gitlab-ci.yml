@@ -23,7 +23,7 @@ install:
       - .npm
   artifacts:
     paths:
-      - node_modules
+      - $CI_PROJECT_DIR/askcos_vue/node_modules
     expire_in: 1 hour
 
 lint-js:
