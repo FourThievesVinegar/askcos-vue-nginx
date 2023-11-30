@@ -1,20 +1,42 @@
 stages:
+- install
 - test
 - coverage-deploy
+
+variables:
+  npm_config_cache: "$CI_PROJECT_DIR/.npm"
 
 default:
   image: node:18-alpine
   before_script:
   - cd askcos_vue
-  - npm ci
+
+install:
+  stage: install
+  script:
+    - npm ci
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .npm
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/askcos_vue/node_modules
+    expire_in: 1 hour
 
 lint-js:
   stage: test
+  dependencies:
+    - install
   script:
   - npm run lint
 
 flow-js:
   stage: test
+  dependencies:
+    - install
   before_script:
   - apk add gcompat
   - cd askcos_vue
@@ -22,8 +44,23 @@ flow-js:
   script:
   - npm run flow
 
+cypress-js:
+  stage: test
+  dependencies:
+    - install
+  image: cypress/browsers:node-20.9.0-chrome-118.0.5993.88-1-ff-118.0.2-edge-118.0.2088.46-1
+  script:
+  # start the server in the background
+  - npm run dev &
+  # run Cypress tests
+  - npx cypress run
+  only:
+  - main
+
 test-js:
   stage: test
+  dependencies:
+    - install
   script:
   - npm run test
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
@@ -54,15 +91,4 @@ pages:
       - $CI_PROJECT_DIR/public
   only:
     - main
-
-cypress-js:
-  stage: test
-  image: cypress/browsers:node-20.9.0-chrome-118.0.5993.88-1-ff-118.0.2-edge-118.0.2088.46-1
-  script:
-  # start the server in the background
-  - npm run dev &
-  # run Cypress tests
-  - npx cypress run
-  only:
-  - main
 
