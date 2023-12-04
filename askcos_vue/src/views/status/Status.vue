@@ -18,17 +18,17 @@
         </div>
       </v-col>
     </v-row>
-    <v-row class="my-0">
+    <v-row class="justify-center my-0">
       <v-col cols="12" md="12" xl="10">
         <CeleryStatus />
       </v-col>
     </v-row>
-    <v-row class="my-0">
+    <v-row class="justify-center my-0">
       <v-col cols="12" md="12" xl="10">
         <DatabaseStatus />
       </v-col>
     </v-row>
-    <v-row class="my-0">
+    <v-row class="justify-center my-0">
       <v-col cols="12" md="12" xl="10">
         <ModelStatus />
       </v-col>
