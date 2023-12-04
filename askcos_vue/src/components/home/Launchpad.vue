@@ -95,7 +95,7 @@
                 <v-progress-circular indeterminate color="primary"></v-progress-circular>
               </template>
               <template v-else-if="tbStatus === 'error'">
-                <v-chip variant="tonal" color="red" class="text-body-1">Submission Error</v-chip>
+                <v-chip variant="tonal" color="red" class="text-body-1">Please login to submit</v-chip>
               </template>
               <template v-else>
                 <v-chip variant="tonal" class="text-body-1"><a href="/results" target="_blank">Go to My
