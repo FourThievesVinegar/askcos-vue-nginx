@@ -40,7 +40,7 @@
                     @click="$emit('deleteChoice')" prepend-icon="mdi mdi-delete-empty">Delete</v-btn>
                 </template>
                 <span>Delete children node(s)</span>
-              </v-tooltip>
+              </v-tooltip>Te
               <v-tooltip location="bottom">
                 <template v-slot:activator="{ props }">
                   <v-btn v-bind="props" id="expand-btn-side" variant="flat" color="blue-darken-1"
@@ -288,7 +288,7 @@
                   </tr>
                   <tr>
                     <th>Template rank</th>
-                    <td>{{ selected.data.templateRank }}</td>
+                    <td>{{ num2str(selected.data.templateRank) }}</td>
                   </tr>
                   <tr>
                     <th>Template score</th>
@@ -300,9 +300,9 @@
                   </tr>
                   <tr>
                     <th># Examples</th>
-                    <td>{{ selected.data.numExamples }}</td>
+                    <td>{{ num2str(selected.data.numExamples) }}</td>
                   </tr>
-                  <tr>
+                  <tr v-if = "selected.data.templateIds">
                     <th>Supporting templates</th>
                     <td>
                       <ul>

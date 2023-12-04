@@ -114,7 +114,7 @@ const emitSiteAtoms = () => {
 }
 
 const headers = ref([
-    { key: 'task', title: 'Reactant', align: 'center', width: "400px" },
+    { key: 'task', title: 'Reactant', align: 'center'},
     { key: 'smiles', title: 'Sites', align: 'center', },
     { key: 'references', title: 'References', align: 'center', width: "500px" },
 
