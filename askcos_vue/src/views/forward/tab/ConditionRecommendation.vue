@@ -191,11 +191,11 @@ const headers = ref([
     { key: 'index', title: '#', align: 'center', },
     // { key: 'evaluation', title: 'Rank', align: 'center', },
     { key: 'solvent', title: 'Solvent', align: 'center' },
-    { key: 'reagent', title: 'Reagents', align: 'center', width: "300px" },
+    { key: 'reagent', title: 'Reagents', align: 'center' },
     { key: 'catalyst', title: 'Catalyst', align: 'center', },
     { key: 'temperature', title: 'Temperature', align: 'center', },
     { key: 'solvent_score', title: 'Solvent Score', align: 'center', },
-    { key: 'predict', title: 'Predict with conditions', align: 'center', width: "50px" }
+    { key: 'predict', title: 'Predict with conditions', align: 'center'}
 ])
 
 
@@ -205,7 +205,7 @@ const headersAlt = ref([
     { key: 'reactants', title: 'Reactants (Amount)', align: 'center' },
     { key: 'reagents', title: 'Reagents (Amount)', align: 'center', },
     { key: 'temperature', title: 'Temperature', align: 'center', },
-    { key: 'predict', title: 'Predict with conditions', align: 'center', }
+    { key: 'predict', title: 'Predict with conditions', align: 'center' }
 ])
 
 

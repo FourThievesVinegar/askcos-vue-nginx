@@ -104,7 +104,7 @@ const { results, models, pending } = defineProps({
 
 const headers = ref([
     { key: 'rank', title: 'Rank', align: 'center', },
-    { key: 'outcome', title: 'Product', align: 'center', width: '300px' },
+    { key: 'outcome', title: 'Product', align: 'center' },
     { key: 'prob', title: 'Probability', align: 'center' },
     { key: 'score', title: 'Max. Score', align: 'center' },
     { key: 'mol_wt', title: 'Molecular Weight', align: 'center' },
