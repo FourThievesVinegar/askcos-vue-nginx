@@ -28,6 +28,7 @@ export const useSettingsStore = defineStore("settings", {
         alignNodeImagesToTarget: state.alignNodeImagesToTarget,
         alignPrecursorsToProduct: state.alignPrecursorsToProduct,
         reactionLimit: state.reactionLimit,
+        modelRank: state.modelRank,
         selectivityModel: state.selectivityModel,
         sortingCategory: state.sortingCategory,
         sortOrderAscending: state.sortOrderAscending,
