@@ -40,7 +40,7 @@
                     @click="$emit('deleteChoice')" prepend-icon="mdi mdi-delete-empty">Delete</v-btn>
                 </template>
                 <span>Delete children node(s)</span>
-              </v-tooltip>Te
+              </v-tooltip>
               <v-tooltip location="bottom">
                 <template v-slot:activator="{ props }">
                   <v-btn v-bind="props" id="expand-btn-side" variant="flat" color="blue-darken-1"
