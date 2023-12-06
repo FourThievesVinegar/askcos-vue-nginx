@@ -108,7 +108,7 @@
         <v-tooltip location="end">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props" :disabled="isCanvasEmpty" @click="saveImage" density="compact" icon="mdi-camera"
-              variant="tonal" color="primary" elevation="3">
+              variant="tonal" elevation="2" color="grey-darken-2">
             </v-btn>
           </template>
           <span>Take Screenshot</span>
@@ -116,7 +116,7 @@
         <v-tooltip location="end">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props" :disabled="isCanvasEmpty" id="hierarchical-button" @click="toggleHierarchical"
-              density="compact" icon="mdi-plus" variant="tonal" color="primary" elevation="3">
+              density="compact" icon="mdi-plus" variant="tonal" elevation="2" color="grey-darken-2">
               {{ settingsStore.visjsOptions.layout.hierarchical.enabled ? "H" : "G" }}
             </v-btn>
           </template>
@@ -125,7 +125,7 @@
         <v-tooltip location="end">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props" :disabled="isCanvasEmpty" id="center-graph-button" @click="centerGraph"
-              density="compact" icon="mdi-fit-to-screen-outline" variant="tonal" color="primary" elevation="3">
+              density="compact" icon="mdi-fit-to-screen-outline" variant="tonal" elevation="2" color="grey-darken-2">
             </v-btn>
           </template>
           <span>Center Canvas</span>
@@ -151,7 +151,7 @@
         <v-tooltip location="end">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props" :disabled="isCanvasEmpty" title="Enumerate paths to starting materials"
-              density="compact" icon="mdi mdi-map-marker-path" variant="tonal" color="primary" elevation="3"
+              density="compact" icon="mdi mdi-map-marker-path" variant="tonal" elevation="2" color="grey-darken-2"
               @click="showEnumeratePaths = true">
             </v-btn>
           </template>
@@ -160,8 +160,8 @@
         <v-tooltip location="end">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props" :disabled="isCanvasEmpty" title="Enumerate paths to starting materials"
-              density="compact" icon="mdi mdi-marker" variant="tonal" :color="treeViewEnabled ? 'success' : 'primary'"
-              elevation="3" @click="treeViewEnabled = !treeViewEnabled">
+              density="compact" icon="mdi mdi-marker" variant="tonal" :color="treeViewEnabled ? 'success': 'grey-darken-2'"
+              elevation="2" @click="treeViewEnabled = !treeViewEnabled">
             </v-btn>
           </template>
           <span>Enumerate paths ON/OFF</span>
@@ -1030,7 +1030,7 @@ export default {
       this.isCanvasEmpty = false;
       this.visible = false;
       let reader = new FileReader();
-      reader.readAsText(this.uploadFile[0]);
+      reader.readAsDataURL(this.uploadFile[0]);
       reader.onload = (e) => {
         try {
           let data = JSON.parse(e.target.result);
