@@ -901,9 +901,10 @@ export default {
       }
     },
     toggleHierarchical() {
-      this.settingsStore.setVisHierachicalEnabled(
-        !this.settingsStore.visjsOptions.layout.hierarchical.enabled
-      );
+      // this.settingsStore.setVisHierachicalEnabled(
+      //   !this.settingsStore.visjsOptions.layout.hierarchical.enabled
+      // );
+      this.settingsStore.visjsOptions.layout.hierarchical.enabled = !this.settingsStore.visjsOptions.layout.hierarchical.enabled
       this.updateNetworkOptions();
     },
     expandNode() {

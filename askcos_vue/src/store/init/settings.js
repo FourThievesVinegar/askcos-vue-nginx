@@ -118,7 +118,7 @@ const visjsOptionsDefault = {
   },
   layout: {
     hierarchical: {
-      enabled: false,
+      enabled: true,
       levelSeparation: 150,
       nodeSpacing: 120,
       treeSpacing: 200,
