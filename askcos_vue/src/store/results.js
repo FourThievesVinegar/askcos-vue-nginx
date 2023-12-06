@@ -774,6 +774,7 @@ export const useResultsStore = defineStore("results", {
             if (node["tforms"]) {
               templateIds.push(...node["tforms"]);
             }
+            console.log(node)
             return {
               id: node["id"],
               rank: node["rank"],
@@ -782,13 +783,13 @@ export const useResultsStore = defineStore("results", {
               ffScore: node["plausibility"],
               forwardScore: node["forward_score"],
               retroScore: node["template_score"],
-              templateScore: node["template_score"],
+              templateScore: node["template"]["template_score"],
               templateIds: node["tforms"],
               templateSets: node["tsources"],
               precursors: node["precursor_smiles"].split("."),
               precursorSmiles: node["precursor_smiles"],
               numExamples: node["num_examples"],
-              necessaryReagent: node["necessary_reagent"],
+              necessaryReagent: node["template"]["necessary_reagent"],
               numRings: node["num_rings"],
               rmsMolwt: node["rms_molwt"],
               scscore: node["scscore"],
