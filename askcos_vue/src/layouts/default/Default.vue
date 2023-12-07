@@ -1,6 +1,6 @@
 <template>
-  <v-app>
-    <v-layout>
+  <v-app class="overflow-auto">
+    <v-layout style="min-width: 1150px;">
       <default-bar />
 
       <default-view />

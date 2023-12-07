@@ -1,5 +1,5 @@
 <template>
-    <div ref='vantaRef' style="height: 100vh" class="d-flex justify-center align-center">
+    <div ref='vantaRef' style="min-width: 1150px; height: 100vh" class="d-flex justify-center align-center overflow-auto">
         <v-container fluid>
             <v-row class="d-flex justify-space-between align-center px-16">
                 <v-col cols="12" md="6" lg="5">
