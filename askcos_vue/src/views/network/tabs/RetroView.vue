@@ -41,7 +41,7 @@
                     <v-carousel height="300" hide-delimiters :continuous="false" v-model="carouselSlide">
                         <v-carousel-item v-for="(item, index) in predictions" :key="index">
                             <div class="mx-auto d-flex justify-center align-center" style="height:100%">
-                                <v-card width="400" prepend-icon="mdi-cog" variant="outlined">
+                                <v-card width="400" variant="outlined">
                                     <template v-slot:title>
                                         <div class="d-flex justify-space-between align-center">
                                             <div v-if="item.edit" style="width:100%" class="mr-2 mt-2 mb-2">
@@ -49,7 +49,7 @@
                                                     @blur="item.edit = false" @keyup.enter="item.edit = false"
                                                     hide-details></v-text-field>
                                             </div>
-                                            <div v-else class="d-flex align-items-baseline">
+                                            <div v-else class="d-flex align-items-baseline ml-3">
                                                 <h4>{{ labels[index] }}</h4>
                                                 <v-icon size="small" icon="mdi mdi-pencil" @click="item.edit = true"
                                                     class="ml-2"></v-icon>
@@ -183,7 +183,7 @@
                 <v-row>
                     <v-col cols="12" v-for="(item, index) in predictions" :key="index">
                         <div class="justify-center align-center" style="height:100%">
-                            <v-card width="400" prepend-icon="mdi-cog" variant="outlined">
+                            <v-card width="400" variant="outlined">
                                 <template v-slot:title>
                                     <div class="d-flex justify-space-between align-center">
                                         <div v-if="item.edit" style="width:100%" class="mr-2 mt-2 mb-2">
@@ -191,7 +191,7 @@
                                                 @blur="item.edit = false" @keyup.enter="item.edit = false"
                                                 hide-details></v-text-field>
                                         </div>
-                                        <div v-else class="d-flex align-items-baseline">
+                                        <div v-else class="d-flex align-items-baseline ml-3">
                                             <h4>{{ labels[index] }}</h4>
                                             <v-icon size="small" icon="mdi mdi-pencil" @click="item.edit = true"
                                                 class="ml-2"></v-icon>

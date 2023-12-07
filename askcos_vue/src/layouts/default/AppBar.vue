@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer expand-on-hover rail elevation="2" width="1000px" class="sidebar"
+  <v-navigation-drawer expand-on-hover rail permanent elevation="2" width="1000px" class="sidebar"
     @update:rail="($event) => rail = $event">
     <v-list>
       <v-list-item prepend-icon="mdi-tools" title="ASKCOS" :subtitle="org" to="/" value="home"
