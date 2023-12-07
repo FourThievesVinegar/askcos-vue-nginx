@@ -316,7 +316,7 @@ Normally, only the top 'Max. num. templates' will be applied - with these filter
         </v-card>
     </v-dialog>
 
-    <v-dialog v-model="showSettingsViewModal" persistent max-width="600px">
+    <v-dialog v-model="showSettingsViewModal" max-width="600px">
         <v-card>
             <v-card-title class="headline">Prediction Settings</v-card-title>
             <v-card-text>
