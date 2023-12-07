@@ -176,7 +176,7 @@
         </v-row>
     </v-container>
 
-    <v-dialog v-model="allPredictionsDialog" persistent max-width="450px" max-height="700px" scrollable>
+    <v-dialog v-model="allPredictionsDialog" max-width="450px" max-height="700px" scrollable>
         <v-card>
             <v-card-title class="headline">All Predictions</v-card-title>
             <v-card-text>
