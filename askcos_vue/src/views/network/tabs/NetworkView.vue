@@ -763,7 +763,7 @@ export default {
       API.post(url, body)
         .then(async (json) => {
           this.tb.taskId = json;
-          this.createConfirm({ title: 'Success', content: 'Tree Builder job submitted successfully!', dialogProps: { width: "auto" } })
+          this.createConfirm({ title: 'Success', content: 'Tree Builder job submitted successfully! Please visit results page for more details.', dialogProps: { width: "auto" } })
           const output = await API.pollCeleryResult(json);
           this.treeID = output.result.result_id
           return output

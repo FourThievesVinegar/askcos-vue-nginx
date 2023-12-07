@@ -1,9 +1,9 @@
 <template>
   <v-container fluid style="min-height: calc(100vh-50px)">
     <v-row class="justify-center">
-      <v-col cols="12" md="12" xl="10">
+      <v-col cols="12" md="12" xl="12">
 
-        <v-sheet elevation="2" class="my-6">
+        <v-sheet elevation="2">
           <v-tabs v-model="tab" color="primary" align-tabs="center" grow class="mb-4">
             <v-tab @click="replaceRoute('context')" value="context">Condition Recommendation</v-tab>
             <v-tab @click="replaceRoute('forward')" value="forward">Product Prediction</v-tab>

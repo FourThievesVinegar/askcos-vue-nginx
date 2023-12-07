@@ -41,7 +41,7 @@
                     <v-carousel height="300" hide-delimiters :continuous="false" v-model="carouselSlide">
                         <v-carousel-item v-for="(item, index) in predictions" :key="index">
                             <div class="mx-auto d-flex justify-center align-center" style="height:100%">
-                                <v-card width="400" prepend-icon="mdi-cog" variant="outlined">
+                                <v-card width="400" variant="outlined">
                                     <template v-slot:title>
                                         <div class="d-flex justify-space-between align-center">
                                             <div v-if="item.edit" style="width:100%" class="mr-2 mt-2 mb-2">
@@ -49,7 +49,7 @@
                                                     @blur="item.edit = false" @keyup.enter="item.edit = false"
                                                     hide-details></v-text-field>
                                             </div>
-                                            <div v-else class="d-flex align-items-baseline">
+                                            <div v-else class="d-flex align-items-baseline ml-3">
                                                 <h4>{{ labels[index] }}</h4>
                                                 <v-icon size="small" icon="mdi mdi-pencil" @click="item.edit = true"
                                                     class="ml-2"></v-icon>
@@ -176,14 +176,14 @@
         </v-row>
     </v-container>
 
-    <v-dialog v-model="allPredictionsDialog" persistent max-width="450px" max-height="700px" scrollable>
+    <v-dialog v-model="allPredictionsDialog" max-width="450px" max-height="700px" scrollable>
         <v-card>
             <v-card-title class="headline">All Predictions</v-card-title>
             <v-card-text>
                 <v-row>
                     <v-col cols="12" v-for="(item, index) in predictions" :key="index">
                         <div class="justify-center align-center" style="height:100%">
-                            <v-card width="400" prepend-icon="mdi-cog" variant="outlined">
+                            <v-card width="400" variant="outlined">
                                 <template v-slot:title>
                                     <div class="d-flex justify-space-between align-center">
                                         <div v-if="item.edit" style="width:100%" class="mr-2 mt-2 mb-2">
@@ -191,7 +191,7 @@
                                                 @blur="item.edit = false" @keyup.enter="item.edit = false"
                                                 hide-details></v-text-field>
                                         </div>
-                                        <div v-else class="d-flex align-items-baseline">
+                                        <div v-else class="d-flex align-items-baseline ml-3">
                                             <h4>{{ labels[index] }}</h4>
                                             <v-icon size="small" icon="mdi mdi-pencil" @click="item.edit = true"
                                                 class="ml-2"></v-icon>
@@ -316,7 +316,7 @@ Normally, only the top 'Max. num. templates' will be applied - with these filter
         </v-card>
     </v-dialog>
 
-    <v-dialog v-model="showSettingsViewModal" persistent max-width="600px">
+    <v-dialog v-model="showSettingsViewModal" max-width="600px">
         <v-card>
             <v-card-title class="headline">Prediction Settings</v-card-title>
             <v-card-text>
@@ -415,6 +415,7 @@ Normally, only the top 'Max. num. templates' will be applied - with these filter
 
 <script>
 import { ref, reactive, computed, watch, onMounted, nextTick } from "vue";
+import { useSnackbar } from 'vuetify-use-dialog';
 import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage";
 import SettingInput from "@/components/network/SettingInput";
@@ -454,7 +455,7 @@ export default {
         }
     },
     setup() {
-
+        const createSnackbar = useSnackbar()
         const target = ref("");
         const validSmiles = ref(true);
         const modelStatus = ref([]);
@@ -645,7 +646,8 @@ export default {
             API.runCeleryTask(url, body)
                 .then((output) => {
                     if(output["status_code"] === 500){
-                        alert("There was an error predicting precursors for this target: " + output["message"]);
+                        // alert("There was an error predicting precursors for this target: " + output["message"]);
+                         createSnackbar({ text: "There was an error predicting precursors for this target: " + output["message"], snackbarProps: { timeout: -1, vertical: true } })
                         return;
                     }
                     results.value[newIndex] = output["result"];
@@ -657,7 +659,8 @@ export default {
                     });
                 })
                 .catch((error) => {
-                    alert("There was an error predicting precursors for this target: " + error);
+                    // alert("There was an error predicting precursors for this target: " + error);
+                    createSnackbar({ text: "There was an error predicting precursors for this target: " + error["message"], snackbarProps: { timeout: -1, vertical: true } })
                 })
                 .finally(() => {
                     predictions.value[newIndex].loading = false;
