@@ -119,7 +119,7 @@
         </v-sheet>
 
 
-        <v-window v-model="tab" class="elevation-2 my-6">
+        <v-window v-model="tab" class="elevation-2 my-6" :touch="false">
           <v-window-item value="context" rounded="lg">
             <ConditionRecommendation value="context" rounded="lg" :results="contextResults" :models="contextModel"
               :pending="pendingTasks" :pendingRank="pendingRank" :evaluating="evaluating" @go-to-forward="goToForward"
