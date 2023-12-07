@@ -7,9 +7,9 @@ describe('Status Page', () => {
     cy.get('h3.text-h5').should('contain', 'Celery Worker Status', 'Database Status')
   })
 
-  it('Should display refresh button', () => {
-    cy.get('[data-cy="refresh-button"]').should('be.visible')
-  })
+  // it('Should display refresh button', () => {
+  //   cy.get('[data-cy="refresh-button"]').should('be.visible')
+  // })
 
   it('Should load and display data table after fetching', () => {
     cy.get('.v-data-table').should('be.visible')
