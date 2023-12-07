@@ -415,6 +415,7 @@ Normally, only the top 'Max. num. templates' will be applied - with these filter
 
 <script>
 import { ref, reactive, computed, watch, onMounted, nextTick } from "vue";
+import { useSnackbar } from 'vuetify-use-dialog';
 import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage";
 import SettingInput from "@/components/network/SettingInput";
@@ -454,7 +455,7 @@ export default {
         }
     },
     setup() {
-
+        const createSnackbar = useSnackbar()
         const target = ref("");
         const validSmiles = ref(true);
         const modelStatus = ref([]);
@@ -645,7 +646,8 @@ export default {
             API.runCeleryTask(url, body)
                 .then((output) => {
                     if(output["status_code"] === 500){
-                        alert("There was an error predicting precursors for this target: " + output["message"]);
+                        // alert("There was an error predicting precursors for this target: " + output["message"]);
+                         createSnackbar({ text: "There was an error predicting precursors for this target: " + output["message"], snackbarProps: { timeout: -1, vertical: true } })
                         return;
                     }
                     results.value[newIndex] = output["result"];
@@ -657,7 +659,8 @@ export default {
                     });
                 })
                 .catch((error) => {
-                    alert("There was an error predicting precursors for this target: " + error);
+                    // alert("There was an error predicting precursors for this target: " + error);
+                    createSnackbar({ text: "There was an error predicting precursors for this target: " + error["message"], snackbarProps: { timeout: -1, vertical: true } })
                 })
                 .finally(() => {
                     predictions.value[newIndex].loading = false;
