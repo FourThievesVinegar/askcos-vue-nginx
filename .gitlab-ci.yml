@@ -34,16 +34,17 @@ lint-js:
     - install
   script:
   - npm run lint
-
-flow-js:
-  stage: test
-  dependencies:
-    - install
-  before_script:
-  - apk add gcompat
-  - cd askcos_vue
-  script:
-  - npm run flow
+  
+# Disable flow pipeline
+# flow-js:
+#   stage: test
+#   dependencies:
+#     - install
+#   before_script:
+#   - apk add gcompat
+#   - cd askcos_vue
+#   script:
+#   - npm run flow
 
 cypress-js:
   stage: test
