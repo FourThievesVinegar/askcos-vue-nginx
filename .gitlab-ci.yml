@@ -41,6 +41,7 @@ flow-js:
     - install
   before_script:
   - apk add gcompat
+  - cd askcos_vue
   script:
   - npm run flow
 
