@@ -14,7 +14,7 @@ Software package for the prediction of feasible synthetic routes towards a desir
   <tbody>
     <tr>
         <td align="center" valign="top" width="14.28%"><a href="https://gitlab.com/zhengkaitu"><img src="https://secure.gravatar.com/avatar/81953fa49c4301334fc0bce0a5077886?s=800&d=identicon" width="100px;" alt="Zhengkai Tu"/><br /><sub><b>Zhengkai Tu</b></sub></a><br />Maintainer</td>
-        <td align="center" valign="top" width="14.28%"><a href="https://gitlab.com/sjchoure"><img src="https://secure.gravatar.com/avatar/f611408778b98d0f49603585dbeb56f9?s=800&d=identicon" width="100px;" alt="Sourabh Choure"/><br /><sub><b>Sourabh Choure</b></sub></a><br /> 
+        <td align="center" valign="top" width="14.28%"><a href="https://gitlab.com/sjchoure"><img src="https://gitlab.com/uploads/-/system/user/avatar/13707115/avatar.png" width="100px;" alt="Sourabh Choure"/><br /><sub><b>Sourabh Choure</b></sub></a><br /> 
         Maintainer</td>
         <td align="center" valign="top" width="14.28%"><a href="https://gitlab.com/mliu49"><img src="https://secure.gravatar.com/avatar/df2af3699cf45364b0e72774a11acec4?s=192&d=identicon" width="100px;" alt="Max Liu"/><br /><sub><b>Max Liu</b></sub></a><br />Developer</td>
          <td align="center" valign="top" width="14.28%"><a href="https://gitlab.com/gosamuel719"><img src="https://secure.gravatar.com/avatar/a549e4fab7d773a3ec207962f20e918f?s=192&d=identicon" width="100px;" alt="Samuel Gong"/><br /><sub><b>Samuel Gong</b></sub></a><br />Developer</td>
