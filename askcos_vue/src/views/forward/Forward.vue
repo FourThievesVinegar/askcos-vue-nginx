@@ -250,7 +250,7 @@
                 </v-col>
                 <v-col cols="12">
                   <v-switch label="Use atom mapping" placeholder="Whether to use atom mapping to check reaction modes."
-                      v-model="impurityCheckMapping"></v-switch>
+                      v-model="impurityCheckMapping" color="primary"></v-switch>
                 </v-col>
               </v-row>
             </v-card-text>
