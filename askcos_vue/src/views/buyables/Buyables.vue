@@ -83,7 +83,7 @@
                     <template v-slot:activator="{ tooltipprop }">
                   <div v-bind="tooltipprop">
                     <v-btn color="orange-accent-4" v-bind="props" append-icon="mdi mdi-menu-down" variant="flat" 
-                      :disabled="!adminName">
+                    :disabled="isAdmin === false" >
                       Add Compound
                     </v-btn>
                     </div>
@@ -251,16 +251,10 @@ const showKetcher = ref(false);
 const ketcherRef = ref(null);
 const selectedSource = ref(null);
 const selectedSources = ref([]);
+const isAdmin = ref(false);
 const createConfirm = useConfirm();
 const createSnackbar = useSnackbar()
 
-const adminName = computed(() => {
-  let user = localStorage.getItem("username");
-  if (user) {
-    return user.startsWith('admin_')
-  }
-  return false;
-})
 const headers = computed(() => {
   let headers = [
     { key: 'smiles', title: 'SMILES', align: 'center', width: '500px' },
@@ -297,6 +291,14 @@ const showLoader = computed(() => {
   return pendingTasks.value > 0
 });
 
+const fetchAdminStatus = async () => {
+  try {
+    const res = await API.get("/api/user/am-i-superuser");
+    isAdmin.value = res;
+  } catch (error) {
+    console.error("Error fetching admin status:", error);
+  }
+};
 const openKetcher = (source) => {
   searchSmilesQuery.value = source;
   showKetcher.value = true;
@@ -308,6 +310,7 @@ const updateSmiles = (newSmiles) => {
 }
 
 onMounted(() => {
+  fetchAdminStatus()
   API.get('/api/buyables/sources')
     .then(json => {
       buyablesSources.value = json.sources

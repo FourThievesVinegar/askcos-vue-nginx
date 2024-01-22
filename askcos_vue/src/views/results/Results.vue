@@ -53,7 +53,7 @@
               <tr>
                 <td :colspan="columns.length">
                   <div class="d-flex justify-space-evenly my-3">
-                    <span class="align-center" style="max-width: 400px" >
+                    <span class="align-center" style="max-width: 400px" v-if="item.raw.tags[0] != ''">
                       <p  v-if="item.raw.tags.length > 0" class="text-center mr-3">Tags: 
                         <v-chip class="text-center ma-1" v-for="tag in item.raw.tags" :key="tag" small>
                           {{ tag }}
