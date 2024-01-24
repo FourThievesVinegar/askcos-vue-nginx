@@ -47,8 +47,8 @@
             </tr>
             <tr>
               <th></th>
-              <td>Num. templates: {{ settings.expand_one_options.retro_backend_options.max_num_templates }}</td>
-              <td>Max cum. prob: {{ settings.expand_one_options.retro_backend_options.max_cum_prob }}</td>
+              <td>Num. templates: {{ settings.expand_one_options.retro_backend_options[0].max_num_templates }}</td>
+              <td>Max cum. prob: {{ settings.expand_one_options.retro_backend_options[0].max_cum_prob }}</td>
             </tr>
             <tr>
               <th></th>
