@@ -206,7 +206,7 @@ export const useResultsStore = defineStore("results", {
         modifiedDisp: dayjs(resultObj["modified"]).format(
           "MMMM D, YYYY h:mm A"
         ),
-        target: resultObj["target_smiles"],
+        target: resultObj["target_smiles"].trim(),
       };
       this.updateSavedResultInfo(savedResultInfo);
       // Restore result graphs
@@ -238,7 +238,8 @@ export const useResultsStore = defineStore("results", {
     importTreeBuilderResult({ data, numTrees }) {
       const settings = useSettingsStore();
       let resultObj = data;
-      let target = resultObj["target_smiles"];
+      console.log(resultObj)
+      let target = resultObj["target_smiles"].trim();
       this.setTarget(target);
       // Disable precusrsor clustering by default for tree builder results
       settings.setOption({ key: "allowCluster", value: false }, { root: true });
@@ -256,7 +257,7 @@ export const useResultsStore = defineStore("results", {
           "MMMM D, YYYY h:mm A"
         ),
         tbSettings: resultObj["settings"],
-        target: resultObj["target_smiles"],
+        target: resultObj["target_smiles"].trim(),
       };
       let status = null;
       // let status = resultObj["result"]["stats"];

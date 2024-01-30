@@ -575,6 +575,7 @@
 
 <script>
 import { NO_SOURCE, NO_SOURCE_TEXT, sourceArgsToDisplay } from "@/common/buyables";
+import {storageAvailable } from "@/common/utils";
 import { API } from "@/common/api";
 import SettingInput from "./SettingInput";
 import { mapStores } from "pinia";
@@ -1124,7 +1125,38 @@ export default {
         });
     },
     methods: {
+        getAllSettings() {
+            return {
+                network: this.settingsStore.visjsUserOptions,
+                interactive_path_planner: this.settingsStore.interactive_path_planner_settings,
+                tree_builder: this.settingsStore.tree_builder_settings,
+                tb: this.settingsStore.tbSettings,
+                ipp: this.settingsStore.ippSettings,
+            };
+        },
         clearEmit() {
+            if (!storageAvailable("localStorage")) return;
+            const settings = this.getAllSettings();
+            localStorage.setItem(
+                "visjsOptions",
+                encodeURIComponent(JSON.stringify(settings.network))
+            );
+            localStorage.setItem(
+                "interactive_path_planner_settings",
+                encodeURIComponent(JSON.stringify(settings.interactive_path_planner))
+            );
+            localStorage.setItem(
+                "tree_builder_settings",
+                encodeURIComponent(JSON.stringify(settings.tree_builder))
+            );
+            localStorage.setItem(
+                "tbSettings",
+                encodeURIComponent(JSON.stringify(settings.tb))
+            );
+            localStorage.setItem(
+                "ippSettings",
+                encodeURIComponent(JSON.stringify(settings.ipp))
+            );
             this.$emit('update:settingsVisible', false);
         },
         trainingSets(model) {
