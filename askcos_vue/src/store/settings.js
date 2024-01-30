@@ -6,7 +6,7 @@ import { interactive_path_planner_settings_default, tree_builder_settings_defaul
 
 export const useSettingsStore = defineStore("settings", {
   state: () => ({
-    allowCluster: ippSettingsDefault.allowCluster,
+    allowCluster: interactive_path_planner_settings_default.cluster_precursors,
     allowResolve: ippSettingsDefault.allowResolve,
     isHighlightAtom: ippSettingsDefault.isHighlightAtom,
     alignNodeImagesToTarget: ippSettingsDefault.alignNodeImagesToTarget,

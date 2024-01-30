@@ -1413,10 +1413,10 @@ export default {
     },
     allowCluster: {
       get() {
-        return this.settingsStore.allowCluster;
+        return this.settingsStore.interactive_path_planner_settings.cluster_precursors;
       },
       set(value) {
-        this.settingsStore.allowCluster = value;
+        this.settingsStore.interactive_path_planner_settings.cluster_precursors = value;
       },
     },
     reactionLimit: {
