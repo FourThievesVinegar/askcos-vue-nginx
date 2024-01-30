@@ -1,7 +1,12 @@
 <template>
   <v-row class="align-center">
     <v-col :cols="labelCols" class="pa-0">
-      <v-icon v-if="helpText" icon="mdi-information" size="x-small"></v-icon>
+      <v-tooltip v-if="helpText" max-width="200px" location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-icon v-bind="props" size="x-small">mdi-information</v-icon>
+        </template>
+        <span>{{ helpText }}</span>
+      </v-tooltip>
       {{ label }}
     </v-col>
     <v-col class="pa-0">
