@@ -46,6 +46,7 @@
                           <v-row align="center">
                             <v-col cols="auto">
                               <v-list-item-title>
+                                <!-- {{ tb.modes[name].settings }} -->
                                 {{ value.label }}
                                 <v-icon class="ml-1 mb-2" icon="mdi-check" v-show="selectedMode === value.label"></v-icon>
                               </v-list-item-title>
@@ -705,8 +706,16 @@ export default {
       this.window.height = window.innerHeight;
     },
     applyTbPreset(mode) {
+      console.log('applyTbPreset called with mode:', mode);
+      console.log('TB modes:', this.tb.modes[mode]);
       if (Object.keys(this.tb.modes).includes(mode)) {
-        this.settingsStore.setTbSettings(this.tb.modes[mode].settings);
+        this.settingsStore.tree_builder_settings.build_tree_options.expansion_time = this.tb.modes[mode].settings.expansionTime
+        this.settingsStore.tree_builder_settings.build_tree_options.max_branching = this.tb.modes[mode].settings.maxBranching
+        this.settingsStore.tree_builder_settings.expand_one_options.template_max_cum_prob = this.tb.modes[mode].settings.maxCumProb
+        this.settingsStore.tree_builder_settings.expand_one_options.template_max_count = this.tb.modes[mode].settings.numTemplates
+        this.settingsStore.tree_builder_settings.build_tree_options.max_depth = this.tb.modes[mode].settings.maxDepth
+        this.settingsStore.interactive_path_planner_settings.fast_filter_threshold = this.tb.modes[mode].settings.minPlausibility
+        this.settingsStore.tree_builder_settings.build_tree_options.return_first = this.tb.modes[mode].settings.returnFirst
         this.selectedMode = (this.tb.modes[mode].label)
       }
     },
