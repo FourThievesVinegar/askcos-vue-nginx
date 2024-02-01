@@ -23,11 +23,11 @@
                             <v-row>
                                 <v-col>
                                     <h6 class="text-h6">Request:</h6>
-                                    <pre>{{ log.request || "No Request" }}</pre>
+                                    <pre style="white-space: pre-wrap">{{ log.request || "No Request" }}</pre>
                                 </v-col>
                                 <v-col>
                                     <h6 class="text-h6">Response:</h6>
-                                    <pre>{{ log.response || "No Response" }}</pre>
+                                    <pre style="white-space: pre-wrap">{{ log.response || "No Response" }}</pre>
                                 </v-col>
                             </v-row>
                         </template>
