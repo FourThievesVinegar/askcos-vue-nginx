@@ -92,7 +92,7 @@
                                 <v-select id="sortingCategory" v-model="sortInput.key" :items="treeSortOptions" hide-details
                                     variant="outlined" @update:modelValue="setDefaultSortOrder(sortInput)"></v-select>
                                 <template v-slot:append>
-                                    <v-btn :icon="sortInput.ascending ? 'mdi-sort-ascending' : 'mdi-sort-descending'" rounded variant="tonal" density="comfortable"
+                                    <v-btn :icon="sortInput.ascending ? 'mdi-sort-numeric-ascending' : 'mdi-sort-numeric-descending'" rounded variant="tonal" density="comfortable"
                                         @click="sortInput.ascending = !sortInput.ascending"></v-btn>
                                     <v-btn icon="mdi-close" size="small" density="compact" @click="deleteSortField(index)"
                                         variant="tonal" color="red" class="ml-2"></v-btn>
