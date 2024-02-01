@@ -687,6 +687,7 @@ const predict = async () => {
         sitesPredict()
         break
       default:
+        createConfirm({ title: 'Alert', content: "Unsupported Mode.", dialogProps: { width: "60%" } })
         alert('unsupported mode')
     }
   } finally {
@@ -734,7 +735,8 @@ const clear = async (skipConfirm = false) => {
       clearInputs()
       break;
     default:
-      alert('unsupported mode')
+      createConfirm({ title: 'Alert', content: "Unsupported Mode.", dialogProps: { width: "60%" } })
+      // alert('unsupported mode')
   }
 }
 
@@ -988,7 +990,8 @@ const contextPredict = () => {
       contextV2Predict()
       break
     default:
-      alert('unsupported context model')
+      // alert('unsupported context model')
+      createConfirm({ title: 'Alert', content: 'unsupported context model', dialogProps: { width: "60%" } })
   }
 }
 
@@ -1022,7 +1025,8 @@ const constructContextV1PostData = () => {
 
 const postprocessContextV2 = (output) => {
   if (!output.length) {
-    alert('Could not generate condition recommendations for this reaction. Please try a different model.');
+    createConfirm({ title: 'Alert', content: 'Could not generate condition recommendations for this reaction. Please try a different model.', dialogProps: { width: "60%" } })
+    // alert('Could not generate condition recommendations for this reaction. Please try a different model.');
   }
 
   const processedResults = output.map((val) => {
@@ -1063,7 +1067,8 @@ const constructContextV2PostData = () => {
 
 const downloadImpurityResults = () => {
   if (!impurityResults.value.length) {
-    alert('There are no impurity predictor results to download!');
+    createConfirm({ title: 'Alert', content: 'There are no impurity predictor results to download!', dialogProps: { width: "60%" } })
+    // alert('There are no impurity predictor results to download!');
     return;
   }
   let downloadData = 'No.,reactantData,productData,reagentData,solventData,SMILES,Mechanism,InspectorScore,SimilarityScore,MolWt\n';
@@ -1084,7 +1089,8 @@ const downloadImpurityResults = () => {
 
 const downloadSelectivityResults = () => {
   if (!selectivityResults.value) {
-    alert('There are no regio-selectivity results to download!')
+    createConfirm({ title: 'Alert', content: 'There are no regio-selectivity results to download!', dialogProps: { width: "60%" } })
+    // alert('There are no regio-selectivity results to download!')
   }
   let downloadData = 'Rank,SMILES,Probability\n'
   selectivityResults.value.forEach((res) => {
@@ -1096,7 +1102,8 @@ const downloadSelectivityResults = () => {
 
 const downloadForwardResults = () => {
   if (!forwardResults.value.length) {
-    alert('There are no forward predictor results to download!');
+    // alert('There are no forward predictor results to download!');
+     createConfirm({ title: 'Alert', content: 'There are no forward predictor results to download!', dialogProps: { width: "60%" } })
     return;
   }
   let downloadData = 'Rank,SMILES,Probability,Score,MolWt\n';
