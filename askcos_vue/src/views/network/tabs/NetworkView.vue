@@ -782,6 +782,8 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          const errorObj = JSON.parse(error.message)
+          this.createConfirm({title: 'Alert', content: "There was an error submitting the tree builder job with the supplied settings: " + errorObj.detail, dialogProps: { width: "auto" }})
           this.createSnackbar({ text: "Job failed. Try submitting a new job.", snackbarProps: { timeout: -1, vertical: true } })
         });
     },
