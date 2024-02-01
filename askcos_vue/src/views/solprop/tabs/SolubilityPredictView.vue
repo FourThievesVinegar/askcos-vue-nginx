@@ -215,9 +215,12 @@ import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage";
 import SmilesInput from "@/components/SmilesInput";
 import SolubilityModal from '@/components/solprop/SolubilityModal'
+import SolubilityError from '@/components/solprop/SolubilityError'
 import { API } from "@/common/api";
 import { saveAs } from "file-saver";
 import * as Papa from "papaparse";
+import { useConfirm } from 'vuetify-use-dialog'
+
 
 export default {
   name: "SolubilityPrediction",
@@ -226,6 +229,11 @@ export default {
     SmilesInput,
     SolubilityModal,
     KetcherModal,
+    SolubilityError,
+  },
+  setup(){
+    const createConfirm=useConfirm();
+    return {createConfirm}
   },
   data() {
     return {
@@ -427,8 +435,11 @@ export default {
         .then(output => {
           this.results.push(...output)
         })
-        .catch(error => {
-          alert('There was an error predicting solubility: ' + error)
+        .catch(async error => {
+          const errorObj=JSON.parse(error.message)
+          const isConfirmed = await this.createConfirm({ title: "Alert", contentComponent: SolubilityError, contentComponentProps: {errorObj:errorObj}, dialogProps:{width:"auto"}})
+          if (!isConfirmed)
+            return
         })
         .finally(() => {
           this.loading = false;
@@ -447,8 +458,11 @@ export default {
         .then(output => {
           this.results.push(...output)
         })
-        .catch(error => {
-          alert('There was an error predicting solubility: ' + error)
+        .catch(async error => {
+          const errorObj=JSON.parse(error.message)
+          const isConfirmed = await this.createConfirm({ title: "Alert", contentComponent: SolubilityError, contentComponentProps: {errorObj:errorObj}, dialogProps:{width:"auto"}})
+          if (!isConfirmed)
+            return
         })
         .finally(() => this.loading = false, this.pendingTasks -= 1)
     },
