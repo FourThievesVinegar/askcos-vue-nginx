@@ -81,9 +81,8 @@
                   <v-tooltip bottom text="Test"> 
                     <!-- notes -->
                     <template v-slot:activator="{ tooltipprop }">
-                  <div v-bind="tooltipprop">
-                    <v-btn color="orange-accent-4" v-bind="props" append-icon="mdi mdi-menu-down" variant="flat" 
-                    :disabled="isAdmin === false" >
+                  <div v-bind="tooltipprop" v-show="isAdmin = false">
+                    <v-btn  color="orange-accent-4" v-bind="props" append-icon="mdi mdi-menu-down" variant="flat" >
                       Add Compound
                     </v-btn>
                     </div>
@@ -260,7 +259,7 @@ const headers = computed(() => {
     { key: 'smiles', title: 'SMILES', align: 'center', width: '500px' },
     { key: 'ppg', title: 'Price ($/g)', align: 'center' },
     { key: 'source', title: 'Source', align: 'center' },
-    { key: 'tanimoto', title: 'Similarity', align: 'center' }
+    { key: 'similarity', title: 'Similarity', align: 'center' }
   ]
   if (buyables.value.length > 0) {
     headers.push({
