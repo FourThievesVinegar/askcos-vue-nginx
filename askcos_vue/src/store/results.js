@@ -157,7 +157,7 @@ export const useResultsStore = defineStore("results", {
       const settings = useSettingsStore();
       let sources = settings.tbSettings.buyablesSourceAll
         ? null
-        : settings.tbSettings.buyablesSource;
+        : settings.tree_builder_settings.build_tree_options.buyables_source;
       const price = await getPrice(smiles, sources);
       this.updateDataNodes(
         smiles.map((smi) => {
