@@ -215,7 +215,7 @@ import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage";
 import SmilesInput from "@/components/SmilesInput";
 import SolubilityModal from '@/components/solprop/SolubilityModal'
-import ErrorDialog from '@/components/solprop/ErrorDialog'
+import ErrorDialog from '@/components/ErrorDialog'
 import { API } from "@/common/api";
 import { saveAs } from "file-saver";
 import * as Papa from "papaparse";
