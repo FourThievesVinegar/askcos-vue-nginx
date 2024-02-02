@@ -57,7 +57,7 @@ const getStatus = async () => {
     data.value = json['queues'];
     date.value = new Date();
   } catch (error) {
-    console.error(error)
+    alert(error)
   } finally {
     loading.value = false
   }

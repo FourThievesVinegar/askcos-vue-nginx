@@ -183,9 +183,10 @@ const guestAccountSignup = () => {
     setTimeout(function() {
         waitGuest.value = false;
     }, 2000);
-    const randomId = Math.random().toString(36).substring(2, 8);
-    const guestUsername = 'guest_' + randomId;
-    const guestPassword = randomId;
+    const randomIdUserName = Math.random().toString(36).substring(2, 8);
+    const randomIdPassword = Math.random().toString(36).substring(2, 8);
+    const guestUsername = 'guest_' + randomIdUserName;
+    const guestPassword = randomIdPassword;
 
     const formData = new FormData();
     formData.append('username', guestUsername);

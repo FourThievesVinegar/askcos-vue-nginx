@@ -67,7 +67,7 @@ const getStatus = async () => {
     data.value = json['modules'];
     date.value = new Date();
   } catch (error) {
-    console.error(error);
+    alert(error);
   } finally {
     loading.value = false;
   }
