@@ -84,7 +84,7 @@
                 multiple>
                 <template v-slot:prepend-item>
                   <v-list-item ripple @click="toggleAllCategories">
-                      <v-list-item-title>Select All</v-list-item-title>
+                    <v-list-item-title>Select All</v-list-item-title>
                   </v-list-item>
                   <v-divider></v-divider>
                 </template>
@@ -215,7 +215,7 @@ import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage";
 import SmilesInput from "@/components/SmilesInput";
 import SolubilityModal from '@/components/solprop/SolubilityModal'
-import SolubilityError from '@/components/solprop/SolubilityError'
+import ErrorDialog from '@/components/solprop/ErrorDialog'
 import { API } from "@/common/api";
 import { saveAs } from "file-saver";
 import * as Papa from "papaparse";
@@ -229,11 +229,11 @@ export default {
     SmilesInput,
     SolubilityModal,
     KetcherModal,
-    SolubilityError,
+    ErrorDialog,
   },
-  setup(){
-    const createConfirm=useConfirm();
-    return {createConfirm}
+  setup() {
+    const createConfirm = useConfirm();
+    return { createConfirm }
   },
   data() {
     return {
@@ -436,8 +436,8 @@ export default {
           this.results.push(...output)
         })
         .catch(async error => {
-          const errorObj=JSON.parse(error.message)
-          const isConfirmed = await this.createConfirm({ title: "Alert", contentComponent: SolubilityError, contentComponentProps: {errorObj:errorObj}, dialogProps:{width:"auto"}})
+          const errorObj = JSON.parse(error.message)
+          const isConfirmed = await this.createConfirm({ title: "Alert", contentComponent: ErrorDialog, contentComponentProps: { errorObj: errorObj }, dialogProps: { width: "auto" } })
           if (!isConfirmed)
             return
         })
@@ -459,8 +459,8 @@ export default {
           this.results.push(...output)
         })
         .catch(async error => {
-          const errorObj=JSON.parse(error.message)
-          const isConfirmed = await this.createConfirm({ title: "Alert", contentComponent: SolubilityError, contentComponentProps: {errorObj:errorObj}, dialogProps:{width:"auto"}})
+          const errorObj = JSON.parse(error.message)
+          const isConfirmed = await this.createConfirm({ title: "Alert", contentComponent: ErrorDialog, contentComponentProps: { errorObj: errorObj }, dialogProps: { width: "auto" } })
           if (!isConfirmed)
             return
         })
