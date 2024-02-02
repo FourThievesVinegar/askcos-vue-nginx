@@ -286,7 +286,7 @@ import ImpurityPrediction from "@/views/forward/tab/ImpurityPrediction.vue"
 import Regioselectivity from "@/views/forward/tab/Regioselectivity.vue"
 import SiteSelectivity from "@/views/forward/tab/SiteSelectivity.vue"
 import { saveAs } from 'file-saver';
-import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
+import { useConfirm } from 'vuetify-use-dialog';
 import { createReaxysQuery } from "@/common/reaxys";
 import { copyToClipboard } from "@/common/utils";
 
@@ -330,12 +330,11 @@ const impurityProgress = ref({
 });
 const openSettingsPanel = ref(null)
 const createConfirm = useConfirm();
-const createSnackbar = useSnackbar()
 const siteResults = ref([])
 const siteResultsQuery = ref('')
 const siteSelectedAtoms = ref([])
 const pendingRank = ref(0)
-const ketcherMinRef = ref(null);
+// const ketcherMinRef = ref(null);
 const forwardFileName = ref('forward.csv');
 const impurityFileName = ref('impurity.csv');
 const selectivityFileName = ref('selectivity.csv');
@@ -790,7 +789,7 @@ const selectivityPredict = () => {
     .catch(error => {
       const errorData = JSON.parse(error.message);
       if (errorData && errorData.output) {
-        createSnackbar({ text: 'Error running selectivity prediction: Regioselectivity is not applicable for the given reaction.', snackbarProps: { timeout: -1, vertical: true } })
+        createConfirm({ title: 'Error', content: 'Error running selectivity prediction: Regioselectivity is not applicable for the given reaction.', dialogProps: { width: "60%" } })
       }
     })
     .finally(() => {
@@ -912,7 +911,7 @@ const forwardPredict = async () => {
   forwardResults.value = [];
 
   if (reactants.value.length < 4) {
-    createSnackbar({ text: 'Please enter a reactant with at least 4 atoms.', snackbarProps: { timeout: -1, vertical: true } })
+    createConfirm({ title: 'Error', content: 'Please enter a reactant with at least 4 atoms.', dialogProps: { width: "60%" } })
     pendingTasks.value--;
     return;
   }
@@ -1001,7 +1000,7 @@ const contextV1Predict = async () => {
   evaluating.value = false
   let postData = constructContextV1PostData()
   if (reactants.value.length < 4) {
-    createSnackbar({ text: 'Please enter a reactant with at least 4 atoms.', snackbarProps: { timeout: -1, vertical: true } })
+    createConfirm({ title: 'Error', content: 'Please enter a reactant with at least 4 atoms.', dialogProps: { width: "60%" } })
     pendingTasks.value--;
     return;
   }
