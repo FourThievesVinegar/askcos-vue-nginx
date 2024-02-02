@@ -60,6 +60,7 @@ const tree_builder_settings_default = {
     max_chemprop_n: null,
     max_chemprop_o: null,
     max_chemprop_h: null,
+    chemical_popularity_logic: "none",
     min_chempop_reactants: 5,
     min_chempop_products: 5
   },

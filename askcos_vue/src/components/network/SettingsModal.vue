@@ -388,7 +388,13 @@
                                                     variant="outlined" density="compact" hide-details
                                                     class="mt-2"></v-text-field>
                                             </setting-input>
-                                            <setting-input label="Min occurrences"
+                                            <setting-input label="Chemical popularity logic" label-for="chemPopLogic"
+                                                help-text="Sets the logic type for considering the number of times a chemical appeared in the training data for the template relevance machine learning model.">
+                                                <v-select id="chemPopLogic" :items="logicOptions"
+                                                    v-model="chemicalPopularityLogic" variant="outlined" density="compact"
+                                                    class="mt-2" hide-details></v-select>
+                                            </setting-input>
+                                            <setting-input v-if="chemicalPopularityLogic !== 'none'" label="Min occurrences"
                                                 help-text="This is the minimum number of prior occurrences above which a precursor will be considered terminal in the MCTS search.">
                                                 <v-text-field label="As reactant &ge;" id="chemPopR"
                                                     v-model="chemicalPopularityReactants" type="number" min="1" step="1"
@@ -575,7 +581,7 @@
 
 <script>
 import { NO_SOURCE, NO_SOURCE_TEXT, sourceArgsToDisplay } from "@/common/buyables";
-import {storageAvailable } from "@/common/utils";
+import { storageAvailable } from "@/common/utils";
 import { API } from "@/common/api";
 import SettingInput from "./SettingInput";
 import { mapStores } from "pinia";
@@ -1037,6 +1043,14 @@ export default {
             },
             set(value) {
                 this.settingsStore.tree_builder_settings.build_tree_options.max_chemprop_h = value;
+            },
+        },
+        chemicalPopularityLogic: {
+            get() {
+                return this.settingsStore.tree_builder_settings.build_tree_options.chemical_popularity_logic;
+            },
+            set(value) {
+                this.settingsStore.tree_builder_settings.build_tree_options.chemical_popularity_logic = value;
             },
         },
         chemicalPopularityReactants: {
