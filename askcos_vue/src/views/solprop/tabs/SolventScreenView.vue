@@ -238,6 +238,7 @@ import { Bar, Line } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
 import emptyChart from '@/assets/emptyChart.svg'
 import { useConfirm } from 'vuetify-use-dialog';
+import ErrorDialog from '@/components/ErrorDialog'
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
@@ -250,6 +251,7 @@ export default {
     KetcherModal,
     'bar-chart': Bar,
     'line-chart': Line,
+    ErrorDialog,
   },
   data() {
     return {
@@ -494,8 +496,11 @@ export default {
         promises.push(this.predictBatch(tasks))
       }
       Promise.all(promises)
-        .catch(error => {
-          alert('There was an error predicting solubility: ' + error)
+        .catch(async error => {
+          const errorObj = JSON.parse(error.message)
+          const isConfirmed = await this.createConfirm({ title: "Alert", contentComponent: ErrorDialog, contentComponentProps: { errorObj: errorObj }, dialogProps: { width: "auto" } })
+          if (!isConfirmed)
+            return
         })
         .finally(() => this.loading = false)
     },
