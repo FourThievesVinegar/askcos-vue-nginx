@@ -49,6 +49,17 @@
                     <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4 align-self-start"
                         style="width:100%">
                         <h6 class="text-h6">Analyze trees</h6>
+                        <div>
+                            <p>Current Tasks:
+                                <span v-if="currentTasks.length === 0">No active tasks</span>
+                                <span v-else>
+                                    <v-chip v-for="(task, index) in currentTasks" :key="index" class="ma-2" color="blue"
+                                        dark>
+                                        {{ task }}
+                                    </v-chip>
+                                </span>
+                            </p>
+                        </div>
                         <v-btn width="100%" @click="runPathwayRanking()" class="my-1" :disabled="trees.length === 0"
                             variant="flat" color="green">SCORE AND CLUSTER PATHWAY</v-btn>
                         <v-btn width="100%" @click="runReactionClassification()" class="my-1" :disabled="trees.length === 0"
@@ -92,7 +103,9 @@
                                 <v-select id="sortingCategory" v-model="sortInput.key" :items="treeSortOptions" hide-details
                                     variant="outlined" @update:modelValue="setDefaultSortOrder(sortInput)"></v-select>
                                 <template v-slot:append>
-                                    <v-btn :icon="sortInput.ascending ? 'mdi-sort-numeric-ascending' : 'mdi-sort-numeric-descending'" rounded variant="tonal" density="comfortable"
+                                    <v-btn
+                                        :icon="sortInput.ascending ? 'mdi-sort-numeric-ascending' : 'mdi-sort-numeric-descending'"
+                                        rounded variant="tonal" density="comfortable"
                                         @click="sortInput.ascending = !sortInput.ascending"></v-btn>
                                     <v-btn icon="mdi-close" size="small" density="compact" @click="deleteSortField(index)"
                                         variant="tonal" color="red" class="ml-2"></v-btn>
@@ -467,6 +480,7 @@ export default {
             },
             emptyTrees: emptyTrees,
             resultInfo: false,
+            currentTasks: [],
         };
     },
     created() {
@@ -607,19 +621,19 @@ export default {
                 { value: "precursor_cost", title: "Total precursor cost" },
             ];
             if (!this.depthDisabled) {
-                options.push( { value: "depth", title: "Length of longest linear path" });
+                options.push({ value: "depth", title: "Length of longest linear path" });
             }
-            if(!this.analogCountDisabled) {
-                options.push( { value: "num_analogs", title: "Number of possible analogs" });
+            if (!this.analogCountDisabled) {
+                options.push({ value: "num_analogs", title: "Number of possible analogs" });
             }
             if (!this.atomEconomyDisabled) {
-                options.push( { value: "atom_economy", title: "Overall atom economy" });
+                options.push({ value: "atom_economy", title: "Overall atom economy" });
             }
             if (!this.scoreDisabled) {
-                options.push( { value: "score", title: "Strategic quotient" });
+                options.push({ value: "score", title: "Strategic quotient" });
             }
             if (!this.pmiDisabled) {
-                options.push( { value: "pmi", title: "Average PMI" });
+                options.push({ value: "pmi", title: "Average PMI" });
             }
             return options;
         },
@@ -896,6 +910,8 @@ export default {
             if (!confirm("This will start a pathway ranking job for this result. If you stay on this page, you will receive a notification once the job is complete.")) {
                 return;
             }
+
+            this.currentTasks.push('runPathwayRanking');
             const url = `/api/tree-analysis/controller/call-async`;
             const body = {
                 result_id: this.resultsStore.savedResultInfo.id,
@@ -918,6 +934,7 @@ export default {
                     this.createSnackbar({ text: "Pathway ranking job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 })
                 .finally(() => {
+                    this.currentTasks = this.currentTasks.filter(task => task !== 'runPathwayRanking');
                     this.analysisTaskRunning = false;
                 });
         },
@@ -1035,7 +1052,7 @@ export default {
             ) {
                 return;
             }
-
+            this.currentTasks.push('PMI Calculation');
             let selectTreeIdx = -1;
             if (selectedTree) {
                 selectTreeIdx = this.allTrees.indexOf(this.currentTree);
@@ -1060,6 +1077,7 @@ export default {
                     //     title: "pmi calculation",
                     //     noAutoHide: true,
                     // });
+                    this.currentTasks = this.currentTasks.filter(task => task !== 'PMI Calculation');
                     this.createSnackbar({ text: "PMI calculation job is complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
                 })
                 .catch(() => {
@@ -1067,6 +1085,7 @@ export default {
                     //     title: "PMI calculation",
                     //     noAutoHide: true,
                     // });
+                    this.currentTasks = this.currentTasks.filter(task => task !== 'PMI Calculation');
                     this.createSnackbar({ text: "PMI calculation job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 });
         },
