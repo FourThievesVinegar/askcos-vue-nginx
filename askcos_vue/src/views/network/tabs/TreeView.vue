@@ -911,7 +911,7 @@ export default {
                 return;
             }
 
-            this.currentTasks.push('runPathwayRanking');
+            this.currentTasks.push('Pathway Ranking');
             const url = `/api/tree-analysis/controller/call-async`;
             const body = {
                 result_id: this.resultsStore.savedResultInfo.id,
@@ -934,7 +934,7 @@ export default {
                     this.createSnackbar({ text: "Pathway ranking job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 })
                 .finally(() => {
-                    this.currentTasks = this.currentTasks.filter(task => task !== 'runPathwayRanking');
+                    this.currentTasks = this.currentTasks.filter(task => task !== 'Pathway Ranking');
                     this.analysisTaskRunning = false;
                 });
         },
@@ -945,7 +945,7 @@ export default {
             if (!confirm("This will start a job to estimate the number of analogs possible for this result. If you stay on this page, you will receive a notification once the job is complete.")) {
                 return;
             }
-
+            this.currentTasks.push('Analog Counting');
             let selectTreeIdx = -1;
             if (selectedTree) {
                 selectTreeIdx = this.allTrees.indexOf(this.currentTree);
@@ -974,6 +974,7 @@ export default {
                     this.createSnackbar({ text: "Analog counting job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 })
                 .finally(() => {
+                    this.currentTasks = this.currentTasks.filter(task => task !== 'Analog Counting');
                     this.analysisTaskRunning = false;
                 });
         },
@@ -984,6 +985,7 @@ export default {
             if (!confirm("This will start a reaction classification job for this result. If you stay on this page, you will receive a notification once the job is complete.")) {
                 return;
             }
+            this.currentTasks.push('Reaction Classification');
             const url = `/api/tree-analysis/controller/call-async`;
             const body = {
                 result_id: this.resultsStore.savedResultInfo.id,
@@ -1002,6 +1004,7 @@ export default {
                     }
                 })
                 .catch(() => {
+                    this.currentTasks = this.currentTasks.filter(task => task !== 'Reaction Classification');
                     this.createSnackbar({ text: "Reaction classification job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 });
         },
