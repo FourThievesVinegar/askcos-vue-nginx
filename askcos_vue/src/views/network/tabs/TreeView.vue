@@ -49,8 +49,8 @@
                     <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4 align-self-start"
                         style="width:100%">
                         <h6 class="text-h6">Analyze trees</h6>
-                        <div>
-                            <p>Current Tasks:
+                        <div class="my-2">
+                            <p >Current Tasks:
                                 <span v-if="currentTasks.length === 0">No active tasks</span>
                                 <span v-else>
                                     <v-chip v-for="(task, index) in currentTasks" :key="index" class="ma-2" color="blue"
@@ -903,110 +903,153 @@ export default {
                 initializeNetwork(networkData, elem, false);
             });
         },
-        runPathwayRanking() {
+        // runPathwayRanking() {
+        //     if (this.analysisTaskRunning) {
+        //         alert("An analysis task is already running. Please wait until it finishes before submitting another.");
+        //     }
+        //     if (!confirm("This will start a pathway ranking job for this result. If you stay on this page, you will receive a notification once the job is complete.")) {
+        //         return;
+        //     }
+
+        //     this.currentTasks.push('Pathway Ranking');
+        //     const url = `/api/tree-analysis/controller/call-async`;
+        //     const body = {
+        //         result_id: this.resultsStore.savedResultInfo.id,
+        //         task: "pathway_ranking",
+        //     };
+        //     API.post(url, body)
+        //         .then((json) => {
+        //             this.createSnackbar({ text: "Pathway ranking job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
+        //             return API.pollCeleryResult(json);
+        //         })
+        //         .then((output) => {
+        //             if (output.success) {
+        //                 this.createSnackbar({ text: "Pathway ranking job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
+        //             } else {
+
+        //                 this.createSnackbar({ text: `Pathway ranking job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
+        //             }
+        //         })
+        //         .catch(() => {
+        //             this.createSnackbar({ text: "Pathway ranking job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+        //         })
+        //         .finally(() => {
+        //             this.currentTasks = this.currentTasks.filter(task => task !== 'Pathway Ranking');
+        //             this.analysisTaskRunning = false;
+        //         });
+        // },
+        async runPathwayRanking() {
             if (this.analysisTaskRunning) {
                 alert("An analysis task is already running. Please wait until it finishes before submitting another.");
-            }
-            if (!confirm("This will start a pathway ranking job for this result. If you stay on this page, you will receive a notification once the job is complete.")) {
                 return;
             }
-
-            this.currentTasks.push('Pathway Ranking');
-            const url = `/api/tree-analysis/controller/call-async`;
-            const body = {
-                result_id: this.resultsStore.savedResultInfo.id,
-                task: "pathway_ranking",
-            };
-            API.post(url, body)
-                .then((json) => {
-                    this.createSnackbar({ text: "Pathway ranking job submitted!", snackbarProps: { timeout: -1, vertical: true } });
-                    return API.pollCeleryResult(json);
-                })
-                .then((output) => {
-                    if (output.success) {
-                        this.createSnackbar({ text: "Pathway ranking job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
-                    } else {
-
-                        this.createSnackbar({ text: `Pathway ranking job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
-                    }
-                })
-                .catch(() => {
-                    this.createSnackbar({ text: "Pathway ranking job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
-                })
-                .finally(() => {
-                    this.currentTasks = this.currentTasks.filter(task => task !== 'Pathway Ranking');
-                    this.analysisTaskRunning = false;
+            try {
+                await this.createConfirm({
+                    title: 'Start Pathway Ranking',
+                    content: 'This will start a pathway ranking job for this result. If you stay on this page, you will receive a notification once the job is complete. Do you want to continue?',
+                    dialogProps: { width: "60%" }
                 });
+
+                this.currentTasks.push('Pathway Ranking');
+                const url = `/api/tree-analysis/controller/call-async`;
+                const body = {
+                    result_id: this.resultsStore.savedResultInfo.id,
+                    task: "pathway_ranking",
+                };
+
+                const json = await API.post(url, body);
+                this.createSnackbar({ text: "Pathway ranking job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
+
+                const output = await API.pollCeleryResult(json);
+                if (output.success) {
+                    this.createSnackbar({ text: "Pathway ranking job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
+                } else {
+                    this.createSnackbar({ text: `Pathway ranking job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
+                }
+            } catch (error) {
+                this.createSnackbar({ text: "Pathway ranking job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+            } finally {
+                this.currentTasks = this.currentTasks.filter(task => task !== 'Pathway Ranking');
+                this.analysisTaskRunning = false;
+            }
         },
-        runAnalogCounting(selectedTree = false) {
+        async runAnalogCounting(selectedTree = false) {
             if (this.analysisTaskRunning) {
                 alert("An analysis task is already running. Please wait until it finishes before submitting another.");
-            }
-            if (!confirm("This will start a job to estimate the number of analogs possible for this result. If you stay on this page, you will receive a notification once the job is complete.")) {
                 return;
-            }
-            this.currentTasks.push('Analog Counting');
-            let selectTreeIdx = -1;
-            if (selectedTree) {
-                selectTreeIdx = this.allTrees.indexOf(this.currentTree);
             }
 
-            const url = `/api/tree-analysis/controller/call-async`;
-            const body = {
-                result_id: this.resultsStore.savedResultInfo.id,
-                task: "count_analogs",
-                index: selectTreeIdx,
-                min_plausibility: this.resultsStore.savedResultInfo.tbSettings["filter_threshold"],
-            };
-            API.post(url, body)
-                .then((json) => {
-                    this.createSnackbar({ text: "Analog counting job submitted!", snackbarProps: { timeout: -1, vertical: true } });
-                    return API.pollCeleryResult(json);
-                })
-                .then((output) => {
-                    if (output.success) {
-                        this.createSnackbar({ text: "Analog counting job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
-                    } else if (output.error) {
-                        this.createSnackbar({ text: `Analog counting job failed`, snackbarProps: { timeout: -1, vertical: true } });
-                    }
-                })
-                .catch(() => {
-                    this.createSnackbar({ text: "Analog counting job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
-                })
-                .finally(() => {
-                    this.currentTasks = this.currentTasks.filter(task => task !== 'Analog Counting');
-                    this.analysisTaskRunning = false;
+            try {
+                const confirmed = await this.createConfirm({
+                    title: 'Start Analog Counting',
+                    content: 'This will start a job to estimate the number of analogs possible for this result. If you stay on this page, you will receive a notification once the job is complete. Do you want to continue?',
+                    dialogProps: { width: "60%" },
                 });
+
+                if (!confirmed) {
+                    return;
+                }
+
+                this.currentTasks.push('Analog Counting');
+                let selectTreeIdx = -1;
+                if (selectedTree) {
+                    selectTreeIdx = this.allTrees.indexOf(this.currentTree);
+                }
+
+                const url = `/api/tree-analysis/controller/call-async`;
+                const body = {
+                    result_id: this.resultsStore.savedResultInfo.id,
+                    task: "count_analogs",
+                    index: selectTreeIdx,
+                    min_plausibility: this.resultsStore.savedResultInfo.tbSettings["filter_threshold"],
+                };
+
+                const json = await API.post(url, body);
+                this.createSnackbar({ text: "Analog counting job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
+
+                const output = await API.pollCeleryResult(json);
+                if (output.success) {
+                    this.createSnackbar({ text: "Analog counting job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
+                } else if (output.error) {
+                    this.createSnackbar({ text: `Analog counting job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
+                }
+            } catch (error) {
+                this.createSnackbar({ text: "Analog counting job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+            } finally {
+                this.currentTasks = this.currentTasks.filter(task => task !== 'Analog Counting');
+                this.analysisTaskRunning = false;
+            }
         },
-        runReactionClassification() {
+        async runReactionClassification() {
             if (this.analysisTaskRunning) {
                 alert("An analysis task is already running. Please wait until it finishes before submitting another.");
             }
-            if (!confirm("This will start a reaction classification job for this result. If you stay on this page, you will receive a notification once the job is complete.")) {
-                return;
-            }
-            this.currentTasks.push('Reaction Classification');
-            const url = `/api/tree-analysis/controller/call-async`;
-            const body = {
-                result_id: this.resultsStore.savedResultInfo.id,
-                task: "reaction_classification",
-            };
-            API.post(url, body)
-                .then((json) => {
-                    this.createSnackbar({ text: "Reaction classification job submitted!", snackbarProps: { timeout: -1, vertical: true } });
-                    return API.pollCeleryResult(json);
-                })
-                .then((output) => {
-                    if (output.success) {
-                        this.createSnackbar({ text: "Reaction classification job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
-                    } else {
-                        this.createSnackbar({ text: `Reaction classification job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
-                    }
-                })
-                .catch(() => {
+            try {
+                await this.createConfirm({
+                    title: 'Start Reaction Classification',
+                    content: 'This will start a reaction classification job for this result. If you stay on this page, you will receive a notification once the job is complete. Do you want to continue?',
+                    dialogProps: { width: "60%" }
+                });
+                this.currentTasks.push('Reaction Classification');
+                const url = `/api/tree-analysis/controller/call-async`;
+                const body = {
+                    result_id: this.resultsStore.savedResultInfo.id,
+                    task: "reaction_classification",
+                };
+                const json = await API.post(url, body);
+                this.createSnackbar({ text: "Reaction classification job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
+                const output = await API.pollCeleryResult(json);
+                if (output.success) {
                     this.currentTasks = this.currentTasks.filter(task => task !== 'Reaction Classification');
-                    this.createSnackbar({ text: "Reaction classification job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
-                });
+                    this.createSnackbar({ text: "Reaction classification job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
+                } else {
+                    this.currentTasks = this.currentTasks.filter(task => task !== 'Reaction Classification');
+                    this.createSnackbar({ text: `Reaction classification job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
+                }
+            } catch (error) {
+                this.currentTasks = this.currentTasks.filter(task => task !== 'Reaction Classification');
+                this.createSnackbar({ text: "Reaction classification job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+            }
         },
         runGraphOptimization() {
             if (
@@ -1072,7 +1115,7 @@ export default {
                     // this.$bvToast.toast("PMI job submitted!", {
                     //     title: "pmi_calculation",
                     // });
-                    this.createSnackbar({ text: "PMI job submitted!", snackbarProps: { timeout: -1, vertical: true } });
+                    this.createSnackbar({ text: "PMI job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
                     return API.pollCeleryResult(json);
                 })
                 .then(() => {
