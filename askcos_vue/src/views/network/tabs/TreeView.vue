@@ -909,11 +909,15 @@ export default {
                 return;
             }
             try {
-                await this.createConfirm({
+                  const confirmed = await this.createConfirm({
                     title: 'Start Pathway Ranking',
                     content: 'This will start a pathway ranking job for this result. If you stay on this page, you will receive a notification once the job is complete. Do you want to continue?',
                     dialogProps: { width: "60%" }
                 });
+
+                if (!confirmed) {
+                    return;
+                }
 
                 this.currentTasks.push('Pathway Ranking');
                 const url = `/api/tree-analysis/controller/call-async`;
@@ -990,11 +994,14 @@ export default {
                 alert("An analysis task is already running. Please wait until it finishes before submitting another.");
             }
             try {
-                await this.createConfirm({
+                const confirmed = await this.createConfirm({
                     title: 'Start Reaction Classification',
                     content: 'This will start a reaction classification job for this result. If you stay on this page, you will receive a notification once the job is complete. Do you want to continue?',
                     dialogProps: { width: "60%" }
                 });
+                if (!confirmed) {
+                    return;
+                }
                 this.currentTasks.push('Reaction Classification');
                 const url = `/api/tree-analysis/controller/call-async`;
                 const body = {
@@ -1059,12 +1066,14 @@ export default {
             }
 
             try {
-                await this.createConfirm({
+                const confirmed = await this.createConfirm({
                     title: 'Start PMI Calculation',
                     content: 'This will start a PMI calculation job for this result. Please note that this analysis will take a long time and depends on the number of trees and reactions. If you stay on this page, you will receive a notification once the job is complete. Do you want to continue?',
                     dialogProps: { width: "60%" }
                 });
-
+                if (!confirmed) {
+                    return;
+                }
                 this.currentTasks.push('PMI Calculation');
                 let selectTreeIdx = -1;
                 if (selectedTree) {
