@@ -49,6 +49,17 @@
                     <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4 align-self-start"
                         style="width:100%">
                         <h6 class="text-h6">Analyze trees</h6>
+                        <div class="my-2">
+                            <p >Current Tasks:
+                                <span v-if="currentTasks.length === 0">No active tasks</span>
+                                <span v-else>
+                                    <v-chip v-for="(task, index) in currentTasks" :key="index" class="ma-2" color="blue"
+                                        dark>
+                                        {{ task }}
+                                    </v-chip>
+                                </span>
+                            </p>
+                        </div>
                         <v-btn width="100%" @click="runPathwayRanking()" class="my-1" :disabled="trees.length === 0"
                             variant="flat" color="green">SCORE AND CLUSTER PATHWAY</v-btn>
                         <v-btn width="100%" @click="runReactionClassification()" class="my-1" :disabled="trees.length === 0"
@@ -92,7 +103,9 @@
                                 <v-select id="sortingCategory" v-model="sortInput.key" :items="treeSortOptions" hide-details
                                     variant="outlined" @update:modelValue="setDefaultSortOrder(sortInput)"></v-select>
                                 <template v-slot:append>
-                                    <v-btn :icon="sortInput.ascending ? 'mdi-sort-numeric-ascending' : 'mdi-sort-numeric-descending'" rounded variant="tonal" density="comfortable"
+                                    <v-btn
+                                        :icon="sortInput.ascending ? 'mdi-sort-numeric-ascending' : 'mdi-sort-numeric-descending'"
+                                        rounded variant="tonal" density="comfortable"
                                         @click="sortInput.ascending = !sortInput.ascending"></v-btn>
                                     <v-btn icon="mdi-close" size="small" density="compact" @click="deleteSortField(index)"
                                         variant="tonal" color="red" class="ml-2"></v-btn>
@@ -467,6 +480,7 @@ export default {
             },
             emptyTrees: emptyTrees,
             resultInfo: false,
+            currentTasks: [],
         };
     },
     created() {
@@ -607,19 +621,19 @@ export default {
                 { value: "precursor_cost", title: "Total precursor cost" },
             ];
             if (!this.depthDisabled) {
-                options.push( { value: "depth", title: "Length of longest linear path" });
+                options.push({ value: "depth", title: "Length of longest linear path" });
             }
-            if(!this.analogCountDisabled) {
-                options.push( { value: "num_analogs", title: "Number of possible analogs" });
+            if (!this.analogCountDisabled) {
+                options.push({ value: "num_analogs", title: "Number of possible analogs" });
             }
             if (!this.atomEconomyDisabled) {
-                options.push( { value: "atom_economy", title: "Overall atom economy" });
+                options.push({ value: "atom_economy", title: "Overall atom economy" });
             }
             if (!this.scoreDisabled) {
-                options.push( { value: "score", title: "Strategic quotient" });
+                options.push({ value: "score", title: "Strategic quotient" });
             }
             if (!this.pmiDisabled) {
-                options.push( { value: "pmi", title: "Average PMI" });
+                options.push({ value: "pmi", title: "Average PMI" });
             }
             return options;
         },
@@ -889,104 +903,125 @@ export default {
                 initializeNetwork(networkData, elem, false);
             });
         },
-        runPathwayRanking() {
+        async runPathwayRanking() {
             if (this.analysisTaskRunning) {
                 alert("An analysis task is already running. Please wait until it finishes before submitting another.");
-            }
-            if (!confirm("This will start a pathway ranking job for this result. If you stay on this page, you will receive a notification once the job is complete.")) {
                 return;
             }
-            const url = `/api/tree-analysis/controller/call-async`;
-            const body = {
-                result_id: this.resultsStore.savedResultInfo.id,
-                task: "pathway_ranking",
-            };
-            API.post(url, body)
-                .then((json) => {
-                    this.createSnackbar({ text: "Pathway ranking job submitted!", snackbarProps: { timeout: -1, vertical: true } });
-                    return API.pollCeleryResult(json);
-                })
-                .then((output) => {
-                    if (output.success) {
-                        this.createSnackbar({ text: "Pathway ranking job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
-                    } else {
-
-                        this.createSnackbar({ text: `Pathway ranking job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
-                    }
-                })
-                .catch(() => {
-                    this.createSnackbar({ text: "Pathway ranking job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
-                })
-                .finally(() => {
-                    this.analysisTaskRunning = false;
+            try {
+                  const confirmed = await this.createConfirm({
+                    title: 'Start Pathway Ranking',
+                    content: 'This will start a pathway ranking job for this result. If you stay on this page, you will receive a notification once the job is complete. Do you want to continue?',
+                    dialogProps: { width: "60%" }
                 });
+
+                if (!confirmed) {
+                    return;
+                }
+
+                this.currentTasks.push('Pathway Ranking');
+                const url = `/api/tree-analysis/controller/call-async`;
+                const body = {
+                    result_id: this.resultsStore.savedResultInfo.id,
+                    task: "pathway_ranking",
+                };
+
+                const json = await API.post(url, body);
+                this.createSnackbar({ text: "Pathway ranking job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
+
+                const output = await API.pollCeleryResult(json);
+                if (output.success) {
+                    this.createSnackbar({ text: "Pathway ranking job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
+                } else {
+                    this.createSnackbar({ text: `Pathway ranking job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
+                }
+            } catch (error) {
+                this.createSnackbar({ text: "Pathway ranking job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+            } finally {
+                this.currentTasks = this.currentTasks.filter(task => task !== 'Pathway Ranking');
+                this.analysisTaskRunning = false;
+            }
         },
-        runAnalogCounting(selectedTree = false) {
+        async runAnalogCounting(selectedTree = false) {
             if (this.analysisTaskRunning) {
                 alert("An analysis task is already running. Please wait until it finishes before submitting another.");
-            }
-            if (!confirm("This will start a job to estimate the number of analogs possible for this result. If you stay on this page, you will receive a notification once the job is complete.")) {
                 return;
             }
 
-            let selectTreeIdx = -1;
-            if (selectedTree) {
-                selectTreeIdx = this.allTrees.indexOf(this.currentTree);
-            }
-
-            const url = `/api/tree-analysis/controller/call-async`;
-            const body = {
-                result_id: this.resultsStore.savedResultInfo.id,
-                task: "count_analogs",
-                index: selectTreeIdx,
-                min_plausibility: this.resultsStore.savedResultInfo.tbSettings["filter_threshold"],
-            };
-            API.post(url, body)
-                .then((json) => {
-                    this.createSnackbar({ text: "Analog counting job submitted!", snackbarProps: { timeout: -1, vertical: true } });
-                    return API.pollCeleryResult(json);
-                })
-                .then((output) => {
-                    if (output.success) {
-                        this.createSnackbar({ text: "Analog counting job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
-                    } else if (output.error) {
-                        this.createSnackbar({ text: `Analog counting job failed`, snackbarProps: { timeout: -1, vertical: true } });
-                    }
-                })
-                .catch(() => {
-                    this.createSnackbar({ text: "Analog counting job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
-                })
-                .finally(() => {
-                    this.analysisTaskRunning = false;
+            try {
+                const confirmed = await this.createConfirm({
+                    title: 'Start Analog Counting',
+                    content: 'This will start a job to estimate the number of analogs possible for this result. If you stay on this page, you will receive a notification once the job is complete. Do you want to continue?',
+                    dialogProps: { width: "60%" },
                 });
+
+                if (!confirmed) {
+                    return;
+                }
+
+                this.currentTasks.push('Analog Counting');
+                let selectTreeIdx = -1;
+                if (selectedTree) {
+                    selectTreeIdx = this.allTrees.indexOf(this.currentTree);
+                }
+
+                const url = `/api/tree-analysis/controller/call-async`;
+                const body = {
+                    result_id: this.resultsStore.savedResultInfo.id,
+                    task: "count_analogs",
+                    index: selectTreeIdx,
+                    min_plausibility: this.resultsStore.savedResultInfo.tbSettings["filter_threshold"],
+                };
+
+                const json = await API.post(url, body);
+                this.createSnackbar({ text: "Analog counting job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
+
+                const output = await API.pollCeleryResult(json);
+                if (output.success) {
+                    this.createSnackbar({ text: "Analog counting job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
+                } else if (output.error) {
+                    this.createSnackbar({ text: `Analog counting job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
+                }
+            } catch (error) {
+                this.createSnackbar({ text: "Analog counting job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+            } finally {
+                this.currentTasks = this.currentTasks.filter(task => task !== 'Analog Counting');
+                this.analysisTaskRunning = false;
+            }
         },
-        runReactionClassification() {
+        async runReactionClassification() {
             if (this.analysisTaskRunning) {
                 alert("An analysis task is already running. Please wait until it finishes before submitting another.");
             }
-            if (!confirm("This will start a reaction classification job for this result. If you stay on this page, you will receive a notification once the job is complete.")) {
-                return;
-            }
-            const url = `/api/tree-analysis/controller/call-async`;
-            const body = {
-                result_id: this.resultsStore.savedResultInfo.id,
-                task: "reaction_classification",
-            };
-            API.post(url, body)
-                .then((json) => {
-                    this.createSnackbar({ text: "Reaction classification job submitted!", snackbarProps: { timeout: -1, vertical: true } });
-                    return API.pollCeleryResult(json);
-                })
-                .then((output) => {
-                    if (output.success) {
-                        this.createSnackbar({ text: "Reaction classification job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
-                    } else {
-                        this.createSnackbar({ text: `Reaction classification job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
-                    }
-                })
-                .catch(() => {
-                    this.createSnackbar({ text: "Reaction classification job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+            try {
+                const confirmed = await this.createConfirm({
+                    title: 'Start Reaction Classification',
+                    content: 'This will start a reaction classification job for this result. If you stay on this page, you will receive a notification once the job is complete. Do you want to continue?',
+                    dialogProps: { width: "60%" }
                 });
+                if (!confirmed) {
+                    return;
+                }
+                this.currentTasks.push('Reaction Classification');
+                const url = `/api/tree-analysis/controller/call-async`;
+                const body = {
+                    result_id: this.resultsStore.savedResultInfo.id,
+                    task: "reaction_classification",
+                };
+                const json = await API.post(url, body);
+                this.createSnackbar({ text: "Reaction classification job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
+                const output = await API.pollCeleryResult(json);
+                if (output.success) {
+                    this.currentTasks = this.currentTasks.filter(task => task !== 'Reaction Classification');
+                    this.createSnackbar({ text: "Reaction classification job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
+                } else {
+                    this.currentTasks = this.currentTasks.filter(task => task !== 'Reaction Classification');
+                    this.createSnackbar({ text: `Reaction classification job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
+                }
+            } catch (error) {
+                this.currentTasks = this.currentTasks.filter(task => task !== 'Reaction Classification');
+                this.createSnackbar({ text: "Reaction classification job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+            }
         },
         runGraphOptimization() {
             if (
@@ -1024,51 +1059,45 @@ export default {
                     this.createSnackbar({ text: "Network optimization job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 });
         },
-        runPmiCalculation(selectedTree = false) {
+        async runPmiCalculation(selectedTree = false) {
             if (this.analysisTaskRunning) {
                 alert("An analysis task is already running. Please wait until it finishes before submitting another.");
-            }
-            if (
-                !confirm(
-                    "This will start a PMI calculation job for this result. Please note that this analysis will take a long time and depends on the number of trees and reactions. If you stay on this page, you will receive a notification once the job is complete."
-                )
-            ) {
                 return;
             }
 
-            let selectTreeIdx = -1;
-            if (selectedTree) {
-                selectTreeIdx = this.allTrees.indexOf(this.currentTree);
-            }
-
-            const url = `/api/tree-analysis/controller/call-async`;
-            const body = {
-                result_id: this.resultsStore.savedResultInfo.id,
-                task: "pmi_calculation",
-                index: selectTreeIdx,
-            };
-            API.post(url, body)
-                .then((json) => {
-                    // this.$bvToast.toast("PMI job submitted!", {
-                    //     title: "pmi_calculation",
-                    // });
-                    this.createSnackbar({ text: "PMI job submitted!", snackbarProps: { timeout: -1, vertical: true } });
-                    return API.pollCeleryResult(json);
-                })
-                .then(() => {
-                    // this.$bvToast.toast("PMI calculation job is complete! Refresh the page to view updated results.", {
-                    //     title: "pmi calculation",
-                    //     noAutoHide: true,
-                    // });
-                    this.createSnackbar({ text: "PMI calculation job is complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
-                })
-                .catch(() => {
-                    // this.$bvToast.toast("PMI calculation job failed! Please try again or try submitting a new tree builder job.", {
-                    //     title: "PMI calculation",
-                    //     noAutoHide: true,
-                    // });
-                    this.createSnackbar({ text: "PMI calculation job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+            try {
+                const confirmed = await this.createConfirm({
+                    title: 'Start PMI Calculation',
+                    content: 'This will start a PMI calculation job for this result. Please note that this analysis will take a long time and depends on the number of trees and reactions. If you stay on this page, you will receive a notification once the job is complete. Do you want to continue?',
+                    dialogProps: { width: "60%" }
                 });
+                if (!confirmed) {
+                    return;
+                }
+                this.currentTasks.push('PMI Calculation');
+                let selectTreeIdx = -1;
+                if (selectedTree) {
+                    selectTreeIdx = this.allTrees.indexOf(this.currentTree);
+                }
+
+                const url = `/api/tree-analysis/controller/call-async`;
+                const body = {
+                    result_id: this.resultsStore.savedResultInfo.id,
+                    task: "pmi_calculation",
+                    index: selectTreeIdx,
+                };
+
+                const json = await API.post(url, body);
+                this.createSnackbar({ text: "PMI job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
+
+                await API.pollCeleryResult(json);
+                this.createSnackbar({ text: "PMI calculation job is complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
+            } catch (error) {
+                this.createSnackbar({ text: "PMI calculation job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+            } finally {
+                this.currentTasks = this.currentTasks.filter(task => task !== 'PMI Calculation');
+                this.analysisTaskRunning = false;
+            }
         },
         num2str,
     },
