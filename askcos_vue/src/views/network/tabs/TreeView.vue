@@ -903,41 +903,6 @@ export default {
                 initializeNetwork(networkData, elem, false);
             });
         },
-        // runPathwayRanking() {
-        //     if (this.analysisTaskRunning) {
-        //         alert("An analysis task is already running. Please wait until it finishes before submitting another.");
-        //     }
-        //     if (!confirm("This will start a pathway ranking job for this result. If you stay on this page, you will receive a notification once the job is complete.")) {
-        //         return;
-        //     }
-
-        //     this.currentTasks.push('Pathway Ranking');
-        //     const url = `/api/tree-analysis/controller/call-async`;
-        //     const body = {
-        //         result_id: this.resultsStore.savedResultInfo.id,
-        //         task: "pathway_ranking",
-        //     };
-        //     API.post(url, body)
-        //         .then((json) => {
-        //             this.createSnackbar({ text: "Pathway ranking job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
-        //             return API.pollCeleryResult(json);
-        //         })
-        //         .then((output) => {
-        //             if (output.success) {
-        //                 this.createSnackbar({ text: "Pathway ranking job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
-        //             } else {
-
-        //                 this.createSnackbar({ text: `Pathway ranking job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
-        //             }
-        //         })
-        //         .catch(() => {
-        //             this.createSnackbar({ text: "Pathway ranking job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
-        //         })
-        //         .finally(() => {
-        //             this.currentTasks = this.currentTasks.filter(task => task !== 'Pathway Ranking');
-        //             this.analysisTaskRunning = false;
-        //         });
-        // },
         async runPathwayRanking() {
             if (this.analysisTaskRunning) {
                 alert("An analysis task is already running. Please wait until it finishes before submitting another.");
@@ -1087,53 +1052,43 @@ export default {
                     this.createSnackbar({ text: "Network optimization job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
                 });
         },
-        runPmiCalculation(selectedTree = false) {
+        async runPmiCalculation(selectedTree = false) {
             if (this.analysisTaskRunning) {
                 alert("An analysis task is already running. Please wait until it finishes before submitting another.");
-            }
-            if (
-                !confirm(
-                    "This will start a PMI calculation job for this result. Please note that this analysis will take a long time and depends on the number of trees and reactions. If you stay on this page, you will receive a notification once the job is complete."
-                )
-            ) {
                 return;
             }
-            this.currentTasks.push('PMI Calculation');
-            let selectTreeIdx = -1;
-            if (selectedTree) {
-                selectTreeIdx = this.allTrees.indexOf(this.currentTree);
-            }
 
-            const url = `/api/tree-analysis/controller/call-async`;
-            const body = {
-                result_id: this.resultsStore.savedResultInfo.id,
-                task: "pmi_calculation",
-                index: selectTreeIdx,
-            };
-            API.post(url, body)
-                .then((json) => {
-                    // this.$bvToast.toast("PMI job submitted!", {
-                    //     title: "pmi_calculation",
-                    // });
-                    this.createSnackbar({ text: "PMI job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
-                    return API.pollCeleryResult(json);
-                })
-                .then(() => {
-                    // this.$bvToast.toast("PMI calculation job is complete! Refresh the page to view updated results.", {
-                    //     title: "pmi calculation",
-                    //     noAutoHide: true,
-                    // });
-                    this.currentTasks = this.currentTasks.filter(task => task !== 'PMI Calculation');
-                    this.createSnackbar({ text: "PMI calculation job is complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
-                })
-                .catch(() => {
-                    // this.$bvToast.toast("PMI calculation job failed! Please try again or try submitting a new tree builder job.", {
-                    //     title: "PMI calculation",
-                    //     noAutoHide: true,
-                    // });
-                    this.currentTasks = this.currentTasks.filter(task => task !== 'PMI Calculation');
-                    this.createSnackbar({ text: "PMI calculation job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+            try {
+                await this.createConfirm({
+                    title: 'Start PMI Calculation',
+                    content: 'This will start a PMI calculation job for this result. Please note that this analysis will take a long time and depends on the number of trees and reactions. If you stay on this page, you will receive a notification once the job is complete. Do you want to continue?',
+                    dialogProps: { width: "60%" }
                 });
+
+                this.currentTasks.push('PMI Calculation');
+                let selectTreeIdx = -1;
+                if (selectedTree) {
+                    selectTreeIdx = this.allTrees.indexOf(this.currentTree);
+                }
+
+                const url = `/api/tree-analysis/controller/call-async`;
+                const body = {
+                    result_id: this.resultsStore.savedResultInfo.id,
+                    task: "pmi_calculation",
+                    index: selectTreeIdx,
+                };
+
+                const json = await API.post(url, body);
+                this.createSnackbar({ text: "PMI job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
+
+                await API.pollCeleryResult(json);
+                this.createSnackbar({ text: "PMI calculation job is complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
+            } catch (error) {
+                this.createSnackbar({ text: "PMI calculation job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+            } finally {
+                this.currentTasks = this.currentTasks.filter(task => task !== 'PMI Calculation');
+                this.analysisTaskRunning = false;
+            }
         },
         num2str,
     },
