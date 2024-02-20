@@ -194,6 +194,7 @@ export const useResultsStore = defineStore("results", {
     importIppResult({ data }) {
       const settings = useSettingsStore();
       let resultObj = data;
+      console.log(data)
       // Update saved result info
       let savedResultInfo = {
         id: resultObj["result_id"],
@@ -206,7 +207,7 @@ export const useResultsStore = defineStore("results", {
         modifiedDisp: dayjs(resultObj["modified"]).format(
           "MMMM D, YYYY h:mm A"
         ),
-        target: resultObj["target_smiles"].trim(),
+        target: resultObj["target_smiles"],
       };
       this.updateSavedResultInfo(savedResultInfo);
       // Restore result graphs

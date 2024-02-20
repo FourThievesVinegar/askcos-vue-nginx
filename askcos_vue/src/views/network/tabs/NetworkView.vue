@@ -1042,17 +1042,15 @@ export default {
       this.isCanvasEmpty = false;
       this.visible = false;
       let reader = new FileReader();
-      reader.readAsDataURL(this.uploadFile[0]);
+      reader.readAsText(this.uploadFile[0]);
       reader.onload = (e) => {
         try {
           let data = JSON.parse(e.target.result);
-
           if (data.version === 1.0) {
             this.importDataV1(data);
           } else {
             this.importDataV0(data);
           }
-
         }
         catch {
           alert("Can't parse the input file")
