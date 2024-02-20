@@ -44,11 +44,13 @@
                 mdi-check
               </v-icon>
             </template>
-            <template v-slot:item.description="{ item }">
+          <template v-slot:item.description="{ item }">
+            <div :class="{ 'highlight-update': isRecentlyUpdated(item.updatedAt) }">
               <p><strong>{{ item.columns.description || "No Description" }}</strong></p>
               <p v-if="item.raw.num_trees !== 0">{{ `Found ${item.raw.num_trees} trees` }}</p>
               <p v-else>No trees found</p>
-            </template>
+            </div>
+          </template>
             <template v-slot:expanded-row="{ columns, item }">
               <tr>
                 <td :colspan="columns.length">
@@ -198,7 +200,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed, nextTick } from 'vue';
+import { ref, onMounted, watch, computed, nextTick, onUnmounted } from 'vue';
 import CopyTooltip from "@/components/CopyTooltip";
 import TbSettingsTable from '@/components/TbSettingsTable.vue';
 import results from "@/assets/emptyResults.svg";
@@ -220,6 +222,8 @@ const sortDescending = ref(true);
 const treeDialog = ref(false);
 const viewSettings = ref(null);
 const targetSmiles = ref("")
+const refreshInterval = ref(null);
+const showLoadingIndicator = ref(true);
 const clickRow = (_event, { item }) => {
   const index = expanded.value.findIndex(i => i === item.key);
   if (index !== -1) {
@@ -228,6 +232,24 @@ const clickRow = (_event, { item }) => {
     expanded.value.push(item.key);
   }
 }
+
+const checkAndRefreshResults = () => {
+  const hasStartedResults = allResults.value.some(result => result.result_state === "started");
+
+  if (hasStartedResults) {
+    if (!refreshInterval.value) {
+      refreshInterval.value = setInterval(() => {
+        update(true); // Pass true to suppress the loading indicator
+      }, 1000);
+    }
+  } else {
+    if (refreshInterval.value) {
+      clearInterval(refreshInterval.value);
+      refreshInterval.value = null;
+    }
+  }
+};
+
 
 const sortedAllResults = computed(() => {
   return allResults.value.sort((a, b) => {
@@ -239,6 +261,11 @@ const sortedAllResults = computed(() => {
     return 0;
   });
 })
+
+const isRecentlyUpdated = (updatedAt) => {
+  const highlightThreshold = 10000; // e.g., 10 seconds
+  return Date.now() - updatedAt < highlightThreshold;
+};
 
 const filteredResults = computed(() => {
   if (!searchQuery.value) return sortedAllResults.value;
@@ -279,6 +306,7 @@ onMounted(async () => {
     showSharedResultModal.value = true;
   } else {
     await update();
+    checkAndRefreshResults();
   }
 });
 
@@ -341,13 +369,20 @@ async function addSharedResult(id) {
   }
 }
 
+watch(allResults, (newValue, oldValue) => {
+  checkAndRefreshResults(); 
+});
 
-const update = async () => {
-  pendingTasks.value += 1;
+
+const update = async (suppressLoading = false) => {
+  if (!suppressLoading) {
+    pendingTasks.value += 1;
+  }
   try {
     const response = await API.get("/api/results/list");
     if (Array.isArray(response)) {
-      response.forEach(function (doc) {
+      response.forEach(doc => {
+        doc.updatedAt = Date.now();
         doc.created = dayjs(doc.created).format('MMMM D, YYYY h:mm A');
         doc.modified = dayjs(doc.modified).format('MMMM D, YYYY h:mm A');
       });
@@ -359,9 +394,18 @@ const update = async () => {
   } catch (error) {
     console.error("Error fetching results:", error);
   } finally {
-    pendingTasks.value -= 1;
+    if (!suppressLoading) {
+      pendingTasks.value -= 1;
+    }
+    checkAndRefreshResults();
   }
 }
+
+onUnmounted(() => {
+  if (refreshInterval.value) {
+    clearInterval(refreshInterval.value);
+  }
+});
 
 const deleteSelection = () => {
   if (window.confirm(`This will permanently delete ${selection.value.length} results. Continue?`)) {
