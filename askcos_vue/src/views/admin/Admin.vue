@@ -3,6 +3,8 @@
         <v-app-bar color="primary" density="compact">
             <v-app-bar-title>Admin Panel</v-app-bar-title>
             <template v-slot:append>
+                <v-btn prepend-icon="mdi-home" variant="flat" color="grey text-white mr-2"
+                    to="/">Home</v-btn>
                 <v-btn prepend-icon="mdi-logout" variant="flat" color="orange-darken-1 text-white"
                     @click="logout">Logout</v-btn>
             </template>

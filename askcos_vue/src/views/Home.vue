@@ -26,8 +26,8 @@
                 </v-menu>
                 <v-spacer></v-spacer>
                 <div v-if="username">
-                  <span class="text-body-1 mr-1">Logged in as,</span>
-                  <v-chip color="primary"><v-icon start icon="mdi-account-circle"></v-icon><span
+                  <span class="text-body-1 mr-1">Logged in as{{ superuser ? " superuser" : "" }},</span>
+                  <v-chip color="primary" to="/admin"><v-icon start icon="mdi-account-circle"></v-icon><span
                       class="text-body-1"><strong>{{ username }}</strong></span></v-chip>
                 </div>
               </v-col>
@@ -57,7 +57,8 @@
               <a target="_blank" href="https://gitlab.com/mlpds_mit/askcosv2/askcos-docs/-/wikis/home" color="primary">
                 ASKCOS wiki <v-icon size="small">mdi mdi-open-in-new</v-icon></a>.
               Several of the deployed models are described in publications listed
-              <a target="_blank" href="https://mlpds.mit.edu/papers/">here<v-icon size="small">mdi mdi-open-in-new</v-icon></a>.
+              <a target="_blank" href="https://mlpds.mit.edu/papers/">here<v-icon size="small">mdi
+                  mdi-open-in-new</v-icon></a>.
               References for the models are included in their respective pages
               where appropriate.
 
@@ -71,7 +72,8 @@
                 This work began under the DARPA Make-It program
                 (ARO W911NF-16-2-0023) and continues to be supported by the
                 <a target="_blank" href="https://mlpds.mit.edu">
-                  Machine Learning for Pharmaceutical Discovery and Synthesis Consortium <v-icon size="small">mdi mdi-open-in-new</v-icon></a>,
+                  Machine Learning for Pharmaceutical Discovery and Synthesis Consortium <v-icon size="small">mdi
+                    mdi-open-in-new</v-icon></a>,
                 and the National Institutes of Health (1U18TR004149-01).
               </template>
             </v-alert>
@@ -141,8 +143,10 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { API } from '@/common/api'
 import LaunchPad from "@/components/home/Launchpad.vue";
 
+const superuser = ref(false);
 const show = ref(false);
 const showEditFav = ref(false);
 
@@ -194,16 +198,28 @@ const contributorList = ref([
 ])
 
 onMounted(() => {
-  show.value = true; // <div>
+  show.value = true;
   const favData = localStorage.getItem(`${username.value}_fav`);
   if (JSON.parse(favData)) {
     favoritesMenu.value = JSON.parse(favData);
   }
+  if (username.value) { amisuperuser() }
 });
 
 const saveFav = () => {
   const favData = JSON.stringify(favoritesMenu.value);
   localStorage.setItem(`${username.value}_fav`, favData);
+}
+
+const amisuperuser = async () => {
+  try {
+    const json = await API.get('/api/user/am-i-superuser');
+    superuser.value = json
+  }
+  catch {
+    alert("Couldn't check for superuser status, please try re-login")
+    superuser.value = false
+  }
 }
 </script>
 
