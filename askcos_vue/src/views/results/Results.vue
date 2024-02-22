@@ -438,20 +438,4 @@ const deleteResult = (id, skipConfirm = false) => {
   update()
 }
 
-// const sendTreeBuilderJob = (description, settings) => {
-//   const url = "/api/tree_search/mcts/call_async";
-//   const body = {
-//     description: description,
-//     store_results: true,
-//     json_format: "nodelink",
-//   };
-//   Object.assign(body, tbSettingsPyToApi(settings));
-//   try {
-//      API.post(url, body);
-//      update();
-//   } catch (error) {
-//     alert("Failed to submit tree builder job: " + error);
-//   }
-// }
-
 </script>
