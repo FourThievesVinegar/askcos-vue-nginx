@@ -398,8 +398,8 @@ const update = async (supressLoading = false) => {
   } finally {
     if (!supressLoading) {
     pendingTasks.value -= 1;
-    }
     checkAndRefreshResults();
+    }
   }
 }
 
