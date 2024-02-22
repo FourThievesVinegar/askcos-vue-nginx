@@ -48,7 +48,7 @@
             <template v-slot:item.description="{ item }">
               <div :class="{ 'highlight-update': isRecentlyUpdated(item.updatedAt) }">
                 <p><strong>{{ item.columns.description || "No Description" }}</strong></p>
-                <p v-if="item.raw.num_trees !== 0">{{ `Found ${item.raw.num_trees} trees` }}</p>
+                <p v-if="item.raw.num_trees">{{ `Found ${item.raw.num_trees} trees` }}</p>
                 <p v-else>No trees found</p>
               </div>
             </template>
