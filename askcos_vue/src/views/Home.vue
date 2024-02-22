@@ -77,7 +77,7 @@
                 and the National Institutes of Health (1U18TR004149-01).
               </template>
             </v-alert>
-            <v-expansion-panels class="text-body-1" variant="">
+            <v-expansion-panels class="mb-2 text-body-1" variant="">
               <v-expansion-panel class="text-blue-darken-3">
                 <template v-slot:title><v-icon class="mr-1">mdi mdi-lifebuoy</v-icon><strong>Support</strong></template>
                 <template v-slot:text>
@@ -107,6 +107,7 @@
                 </template>
               </v-expansion-panel>
             </v-expansion-panels>
+            <p class="mt-4 text-subtitle-2">Please review the <a href="https://gitlab.com/mlpds_mit/askcosv2/askcos-docs/-/wikis/ASKCOS%20Terms%20of%20Service" target="_blank">Terms of Service <v-icon size="small">mdi mdi-open-in-new</v-icon></a> before using ASKCOS.</p>
           </v-sheet>
         </v-expand-transition>
       </v-col>
