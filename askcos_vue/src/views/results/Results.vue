@@ -234,9 +234,10 @@ const clickRow = (_event, { item }) => {
 }
 
 const checkAndRefreshResults = () => {
-  const hasStartedResults = allResults.value.some(result => result.result_state === "started");
+  // Check if there are any results that are not in the 'completed' state.
+  const hasNonCompletedResults = allResults.value.some(result => result.result_state !== "completed");
 
-  if (hasStartedResults) {
+  if (hasNonCompletedResults) {
     if (!refreshInterval.value) {
       refreshInterval.value = setInterval(() => {
         update(true); // Pass true to suppress the loading indicator
