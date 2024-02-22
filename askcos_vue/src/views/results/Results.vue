@@ -6,6 +6,7 @@
           <v-breadcrumbs class="pa-0 text-body-1" :items="['Home', 'Results']"></v-breadcrumbs>
           <h4 class="text-h4 text-primary">
             My Results
+            <span v-if="refreshInterval"><v-progress-circular indeterminate></v-progress-circular></span>
           </h4>
         </div>
       </v-col>
@@ -44,22 +45,23 @@
                 mdi-check
               </v-icon>
             </template>
-          <template v-slot:item.description="{ item }">
-            <div :class="{ 'highlight-update': isRecentlyUpdated(item.updatedAt) }">
-              <p><strong>{{ item.columns.description || "No Description" }}</strong></p>
-              <p v-if="item.raw.num_trees !== 0">{{ `Found ${item.raw.num_trees} trees` }}</p>
-              <p v-else>No trees found</p>
-            </div>
-          </template>
+            <template v-slot:item.description="{ item }">
+              <div :class="{ 'highlight-update': isRecentlyUpdated(item.updatedAt) }">
+                <p><strong>{{ item.columns.description || "No Description" }}</strong></p>
+                <p v-if="item.raw.num_trees !== 0">{{ `Found ${item.raw.num_trees} trees` }}</p>
+                <p v-else>No trees found</p>
+              </div>
+            </template>
             <template v-slot:expanded-row="{ columns, item }">
               <tr>
                 <td :colspan="columns.length">
                   <div class="d-flex justify-space-evenly my-3">
                     <span class="align-center" style="max-width: 400px" v-if="item.raw.tags[0] != ''">
-                      <p  v-if="item.raw.tags.length > 0" class="text-center mr-3">Tags: 
+                      <p v-if="item.raw.tags.length > 0" class="text-center mr-3">Tags:
                         <v-chip class="text-center ma-1" v-for="tag in item.raw.tags" :key="tag" small>
                           {{ tag }}
-                        </v-chip></p>
+                        </v-chip>
+                      </p>
                     </span>
                     <v-btn color="primary" variant="tonal"
                       v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'"
@@ -234,13 +236,12 @@ const clickRow = (_event, { item }) => {
 }
 
 const checkAndRefreshResults = () => {
-  // Check if there are any results that are not in the 'completed' state.
   const hasNonCompletedResults = allResults.value.some(result => result.result_state !== "completed");
 
   if (hasNonCompletedResults) {
     if (!refreshInterval.value) {
       refreshInterval.value = setInterval(() => {
-        update(true); // Pass true to suppress the loading indicator
+        update(true);
       }, 1000);
     }
   } else {
@@ -371,12 +372,12 @@ async function addSharedResult(id) {
 }
 
 watch(allResults, (newValue, oldValue) => {
-  checkAndRefreshResults(); 
+  checkAndRefreshResults();
 });
 
 
-const update = async (suppressLoading = false) => {
-  if (!suppressLoading) {
+const update = async (supressLoading = false) => {
+  if(!supressLoading){
     pendingTasks.value += 1;
   }
   try {
@@ -395,8 +396,8 @@ const update = async (suppressLoading = false) => {
   } catch (error) {
     console.error("Error fetching results:", error);
   } finally {
-    if (!suppressLoading) {
-      pendingTasks.value -= 1;
+    if (!supressLoading) {
+    pendingTasks.value -= 1;
     }
     checkAndRefreshResults();
   }
@@ -437,5 +438,4 @@ const deleteResult = (id, skipConfirm = false) => {
   }
   update()
 }
-
 </script>
