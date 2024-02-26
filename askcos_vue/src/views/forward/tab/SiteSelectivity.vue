@@ -62,6 +62,16 @@
                     </p>
                 </v-alert>
             </v-row>
+
+            <v-row v-if="!pending && results.length === 0" cols="12" class="pa-0 mt-4">
+                <v-col>
+                    <div class="d-flex flex-column align-center justify-center text-center">
+                        <img src="@/assets/emptyForwardSyn.svg" :width="400" class="mb-3" cover />
+                        <h2>No Results</h2>
+                        <p class="text-body-1">Begin a new prediction above</p>
+                    </div>
+                </v-col>
+            </v-row>
         </v-sheet>
     </v-container>
 </template>

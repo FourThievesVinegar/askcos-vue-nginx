@@ -149,6 +149,16 @@
                     </v-alert>
                 </v-col>
             </v-row>
+
+            <v-row v-if="!pending && results.length === 0" cols="12" class="pa-0 mt-4">
+                <v-col>
+                    <div class="d-flex flex-column align-center justify-center text-center">
+                        <img src="@/assets/emptyForwardSyn.svg" :width="400" class="mb-3" cover />
+                        <h2>No Results</h2>
+                        <p class="text-body-1">Begin a new prediction above</p>
+                    </div>
+                </v-col>
+            </v-row>
         </v-sheet>
     </v-container>
 </template>
@@ -195,7 +205,7 @@ const headers = ref([
     { key: 'catalyst', title: 'Catalyst', align: 'center', },
     { key: 'temperature', title: 'Temperature', align: 'center', },
     { key: 'solvent_score', title: 'Solvent Score', align: 'center', },
-    { key: 'predict', title: 'Predict with conditions', align: 'center'}
+    { key: 'predict', title: 'Predict with conditions', align: 'center' }
 ])
 
 
