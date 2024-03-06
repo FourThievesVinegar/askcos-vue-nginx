@@ -6,6 +6,7 @@
           <v-breadcrumbs class="pa-0 text-body-1" :items="['Home', 'Results']"></v-breadcrumbs>
           <h4 class="text-h4 text-primary">
             My Results
+            <span v-if="refreshInterval"><v-progress-circular indeterminate></v-progress-circular></span>
           </h4>
         </div>
       </v-col>
@@ -45,19 +46,22 @@
               </v-icon>
             </template>
             <template v-slot:item.description="{ item }">
-              <p><strong>{{ item.columns.description || "No Description" }}</strong></p>
-              <p v-if="item.raw.num_trees !== 0">{{ `Found ${item.raw.num_trees} trees` }}</p>
-              <p v-else>No trees found</p>
+              <div :class="{ 'highlight-update': isRecentlyUpdated(item.updatedAt) }">
+                <p><strong>{{ item.columns.description || "No Description" }}</strong></p>
+                <p v-if="item.raw.num_trees">{{ `Found ${item.raw.num_trees} trees` }}</p>
+                <p v-else>No trees found</p>
+              </div>
             </template>
             <template v-slot:expanded-row="{ columns, item }">
               <tr>
                 <td :colspan="columns.length">
                   <div class="d-flex justify-space-evenly my-3">
                     <span class="align-center" style="max-width: 400px" v-if="item.raw.tags[0] != ''">
-                      <p  v-if="item.raw.tags.length > 0" class="text-center mr-3">Tags: 
+                      <p v-if="item.raw.tags.length > 0" class="text-center mr-3">Tags:
                         <v-chip class="text-center ma-1" v-for="tag in item.raw.tags" :key="tag" small>
                           {{ tag }}
-                        </v-chip></p>
+                        </v-chip>
+                      </p>
                     </span>
                     <v-btn color="primary" variant="tonal"
                       v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'"
@@ -198,7 +202,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed, nextTick } from 'vue';
+import { ref, onMounted, watch, computed, nextTick, onUnmounted } from 'vue';
 import CopyTooltip from "@/components/CopyTooltip";
 import TbSettingsTable from '@/components/TbSettingsTable.vue';
 import results from "@/assets/emptyResults.svg";
@@ -220,6 +224,8 @@ const sortDescending = ref(true);
 const treeDialog = ref(false);
 const viewSettings = ref(null);
 const targetSmiles = ref("")
+const refreshInterval = ref(null);
+const showLoadingIndicator = ref(true);
 const clickRow = (_event, { item }) => {
   const index = expanded.value.findIndex(i => i === item.key);
   if (index !== -1) {
@@ -228,6 +234,24 @@ const clickRow = (_event, { item }) => {
     expanded.value.push(item.key);
   }
 }
+
+const checkAndRefreshResults = () => {
+  const hasNonCompletedResults = allResults.value.some(result => result.result_state !== "completed");
+
+  if (hasNonCompletedResults) {
+    if (!refreshInterval.value) {
+      refreshInterval.value = setInterval(() => {
+        update(true);
+      }, 1000);
+    }
+  } else {
+    if (refreshInterval.value) {
+      clearInterval(refreshInterval.value);
+      refreshInterval.value = null;
+    }
+  }
+};
+
 
 const sortedAllResults = computed(() => {
   return allResults.value.sort((a, b) => {
@@ -239,6 +263,11 @@ const sortedAllResults = computed(() => {
     return 0;
   });
 })
+
+const isRecentlyUpdated = (updatedAt) => {
+  const highlightThreshold = 10000; // e.g., 10 seconds
+  return Date.now() - updatedAt < highlightThreshold;
+};
 
 const filteredResults = computed(() => {
   if (!searchQuery.value) return sortedAllResults.value;
@@ -279,6 +308,7 @@ onMounted(async () => {
     showSharedResultModal.value = true;
   } else {
     await update();
+    checkAndRefreshResults();
   }
 });
 
@@ -341,13 +371,20 @@ async function addSharedResult(id) {
   }
 }
 
+watch(allResults, (newValue, oldValue) => {
+  checkAndRefreshResults();
+});
 
-const update = async () => {
-  pendingTasks.value += 1;
+
+const update = async (supressLoading = false) => {
+  if(!supressLoading){
+    pendingTasks.value += 1;
+  }
   try {
     const response = await API.get("/api/results/list");
     if (Array.isArray(response)) {
-      response.forEach(function (doc) {
+      response.forEach(doc => {
+        doc.updatedAt = Date.now();
         doc.created = dayjs(doc.created).format('MMMM D, YYYY h:mm A');
         doc.modified = dayjs(doc.modified).format('MMMM D, YYYY h:mm A');
       });
@@ -359,9 +396,18 @@ const update = async () => {
   } catch (error) {
     console.error("Error fetching results:", error);
   } finally {
+    if (!supressLoading) {
     pendingTasks.value -= 1;
+    checkAndRefreshResults();
+    }
   }
 }
+
+onUnmounted(() => {
+  if (refreshInterval.value) {
+    clearInterval(refreshInterval.value);
+  }
+});
 
 const deleteSelection = () => {
   if (window.confirm(`This will permanently delete ${selection.value.length} results. Continue?`)) {
@@ -392,21 +438,4 @@ const deleteResult = (id, skipConfirm = false) => {
   }
   update()
 }
-
-// const sendTreeBuilderJob = (description, settings) => {
-//   const url = "/api/tree_search/mcts/call_async";
-//   const body = {
-//     description: description,
-//     store_results: true,
-//     json_format: "nodelink",
-//   };
-//   Object.assign(body, tbSettingsPyToApi(settings));
-//   try {
-//      API.post(url, body);
-//      update();
-//   } catch (error) {
-//     alert("Failed to submit tree builder job: " + error);
-//   }
-// }
-
 </script>
