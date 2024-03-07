@@ -14,6 +14,7 @@
                     </v-btn>
                   </template>
                   <v-list>
+
                     <template v-for="(item, index) in favoritesMenu">
                       <v-list-item :to="item.link" v-if="item.selected" :key="index">
                         <v-list-item-title>{{ item.title }}</v-list-item-title>
@@ -68,6 +69,7 @@
               longer than expected if there are several other users on the site
               also performing computationally-expensive requests." variant="tonal" class="mb-2 py-2"></v-alert>
             <v-alert border="start" density="compact" variant="tonal" icon="mdi mdi-handshake" class="mb-2">
+
               <template v-slot:text class="text-body-1">
                 This work began under the DARPA Make-It program
                 (ARO W911NF-16-2-0023) and continues to be supported by the
@@ -79,7 +81,9 @@
             </v-alert>
             <v-expansion-panels class="mb-2 text-body-1" variant="">
               <v-expansion-panel class="text-blue-darken-3">
+
                 <template v-slot:title><v-icon class="mr-1">mdi mdi-lifebuoy</v-icon><strong>Support</strong></template>
+
                 <template v-slot:text>
                   If you have any questions or if any of the links/images appear
                   broken, please email <a href="mailto:askcos_support@mit.edu">askcos_support@mit.edu</a>
@@ -96,18 +100,24 @@
             IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
             OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
             IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."' class="text-blue-darken-3">
+
                 <template v-slot:title><v-icon class="mr-1">mdi mdi-license</v-icon><strong>License</strong></template>
               </v-expansion-panel>
               <v-expansion-panel class="text-blue-darken-3">
+
                 <template v-slot:title><v-icon class="mr-1">mdi
                     mdi-account-group</v-icon><strong>Contributors</strong></template>
+
                 <template v-slot:text>
                   <v-chip class="ma-1" v-for="person in contributorList"><v-icon start icon="mdi-account"></v-icon><span
                       class="text-body-1">{{ person }}</span></v-chip>
                 </template>
               </v-expansion-panel>
             </v-expansion-panels>
-            <p class="mt-4 text-subtitle-2">Please review the <a href="https://gitlab.com/mlpds_mit/askcosv2/askcos-docs/-/wikis/ASKCOS%20Terms%20of%20Service" target="_blank">Terms of Service <v-icon size="small">mdi mdi-open-in-new</v-icon></a> before using ASKCOS.</p>
+            <p class="mt-4 text-subtitle-2">Please review the <a
+                href="https://gitlab.com/mlpds_mit/askcosv2/askcos-docs/-/wikis/ASKCOS%20Terms%20of%20Service"
+                target="_blank">Terms of Service <v-icon size="small">mdi mdi-open-in-new</v-icon></a> before using
+              ASKCOS.</p>
           </v-sheet>
         </v-expand-transition>
       </v-col>
@@ -146,10 +156,14 @@
 import { ref, onMounted } from "vue";
 import { API } from '@/common/api'
 import LaunchPad from "@/components/home/Launchpad.vue";
+import { useConfirm } from 'vuetify-use-dialog';
+import { useRouter } from "vue-router";
 
 const superuser = ref(false);
 const show = ref(false);
 const showEditFav = ref(false);
+const createConfirm = useConfirm();
+const router = useRouter();
 
 const username = ref(localStorage.getItem("username"))
 
@@ -218,8 +232,9 @@ const amisuperuser = async () => {
     superuser.value = json
   }
   catch {
-    alert("Couldn't check for superuser status, please try re-login")
+    await createConfirm({ title: 'Login Error', content: 'Session expired, please re-login', dialogProps: { width: "auto" } })
     superuser.value = false
+    router.push("/login");
   }
 }
 </script>
