@@ -2,11 +2,11 @@
   <v-container fluid>
     <v-row class="justify-center">
       <v-col cols="12" md="12" xl="10">
-        <div class="mt-8 mb-5">
-          <v-breadcrumbs class="pa-0" :items="['Home', 'Buyables']"></v-breadcrumbs>
-          <h1>
+        <div class="my-4">
+          <v-breadcrumbs class="pa-0 text-body-1" :items="['Home', 'Buyables']"></v-breadcrumbs>
+          <h4 class="text-h4 text-primary">
             Buyable Compounds
-          </h1>
+          </h4>
         </div>
       </v-col>
     </v-row>
