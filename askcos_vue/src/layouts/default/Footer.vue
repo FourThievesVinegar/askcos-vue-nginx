@@ -6,7 +6,7 @@
           <v-img src="@/assets/MIT.png" :width="35" inline class="rounded-pill mr-1"></v-img>
           <h6 class="text-body-1">ASKCOS version: {{ version }} <b>|</b> Last
             updated {{ lastUpdated }} <b>|</b> Copyright <span class="mdi mdi-copyright"></span> {{ new
-              Date().getFullYear() }} <b>|</b> Created using FastAPI and Vue <b>|</b> <a href="https://gitlab.com/mlpds_mit/askcosv2/askcos-docs/-/wikis/ASKCOS%20Privacy%20Statement" target="_blank" style="text-decoration: underline; color: white;">Privacy Statement <v-icon size="small">mdi mdi-open-in-new</v-icon></a></h6>
+              Date().getFullYear() }} <b>|</b> Created using FastAPI and Vue <b>|</b> <a href="https://askcos-docs.mit.edu/guide/9-Privacy-&-Terms-of-Service/9.2-ASKCOS-Privacy-Statement.html" target="_blank" style="text-decoration: underline; color: white;">Privacy Statement <v-icon size="small">mdi mdi-open-in-new</v-icon></a></h6>
         </div>
       </v-col>
     </v-row>

@@ -115,7 +115,7 @@
               </v-expansion-panel>
             </v-expansion-panels>
             <p class="mt-4 text-subtitle-2">Please review the <a
-                href="https://gitlab.com/mlpds_mit/askcosv2/askcos-docs/-/wikis/ASKCOS%20Terms%20of%20Service"
+                href="https://askcos-docs.mit.edu/guide/9-Privacy-&-Terms-of-Service/9.1-ASKCOS-Terms-of-Service.html"
                 target="_blank">Terms of Service <v-icon size="small">mdi mdi-open-in-new</v-icon></a> before using
               ASKCOS.</p>
           </v-sheet>
