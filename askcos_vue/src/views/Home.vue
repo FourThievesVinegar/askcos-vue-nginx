@@ -79,7 +79,7 @@
                 and the National Institutes of Health (1U18TR004149-01).
               </template>
             </v-alert>
-            <v-expansion-panels class="mb-2 text-body-1" variant="">
+            <v-expansion-panels class="mb-2 text-body-1" >
               <v-expansion-panel class="text-blue-darken-3">
 
                 <template v-slot:title><v-icon class="mr-1">mdi mdi-lifebuoy</v-icon><strong>Support</strong></template>

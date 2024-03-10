@@ -670,6 +670,7 @@ export default {
         "interactive_path_planner_settings",
         encodeURIComponent(JSON.stringify(settings.interactive_path_planner))
       );
+      console.log(settings.tree_builder)
       localStorage.setItem(
         "tree_builder_settings",
         encodeURIComponent(JSON.stringify(settings.tree_builder))
