@@ -1754,6 +1754,10 @@ export default {
   gap: 0.5rem;
 }
 
+.vis-tooltip{
+  position: absolute;
+}
+
 /* .hover-btn {
   display: none;
   position: absolute;
