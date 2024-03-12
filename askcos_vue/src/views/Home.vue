@@ -55,7 +55,7 @@
               synthetic planning and other aspects of organic chemistry. These are
               listed under the Modules tab in the navigation bar on the left, with
               more detailed description in
-              <a target="_blank" href="https://gitlab.com/mlpds_mit/askcosv2/askcos-docs/-/wikis/home" color="primary">
+              <a target="_blank" href="https://askcos-docs.mit.edu/" color="primary">
                 ASKCOS wiki <v-icon size="small">mdi mdi-open-in-new</v-icon></a>.
               Several of the deployed models are described in publications listed
               <a target="_blank" href="https://mlpds.mit.edu/papers/">here<v-icon size="small">mdi
