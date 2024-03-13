@@ -18,8 +18,10 @@
                   </template>
                   <p v-if="!!allowResolve">Connection to NIH name resolver is ON, structures may be sent to an external
                     service. This can be turned off in the settings menu, or by clicking this icon.</p>
-                  <span v-else>Connection to NIH name resolver is OFF, structures will NOT be sent to an external service.
-                    Target query must be a SMILES string. This can be turned on in the settings menu, or by clicking this
+                  <span v-else>Connection to NIH name resolver is OFF, structures will NOT be sent to an external
+                    service.
+                    Target query must be a SMILES string. This can be turned on in the settings menu, or by clicking
+                    this
                     icon.</span>
                 </v-tooltip>
               </template>
@@ -46,9 +48,9 @@
                           <v-row align="center">
                             <v-col cols="auto">
                               <v-list-item-title>
-                                <!-- {{ tb.modes[name].settings }} -->
                                 {{ value.label }}
-                                <v-icon class="ml-1 mb-2" icon="mdi-check" v-show="selectedMode === value.label"></v-icon>
+                                <v-icon class="ml-1 mb-2" icon="mdi-check"
+                                  v-show="selectedMode === value.label"></v-icon>
                               </v-list-item-title>
                             </v-col>
                           </v-row>
@@ -86,8 +88,8 @@
             :disabled="!treeViewEnabled"></v-btn>
           <v-btn icon="mdi mdi-chevron-left" @click="changeTreeIndex('prev')" :disabled="!treeViewEnabled"></v-btn>
           <v-btn variant="tonal">Tree {{ treeViewEnabled ?
-            `${currentTreeIndex
-            + 1} of ${trees.length}` : "N/A" }}</v-btn>
+        `${currentTreeIndex
+        + 1} of ${trees.length}` : "N/A" }}</v-btn>
           <v-btn icon="mdi mdi-chevron-right" @click="changeTreeIndex('next')" :disabled="!treeViewEnabled"></v-btn>
           <v-btn icon="mdi mdi-chevron-double-right" @click="changeTreeIndex('last')"
             :disabled="!treeViewEnabled"></v-btn>
@@ -161,8 +163,9 @@
         <v-tooltip location="end">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props" :disabled="isCanvasEmpty" title="Enumerate paths to starting materials"
-              density="compact" icon="mdi mdi-marker" variant="tonal" :color="treeViewEnabled ? 'success': 'grey-darken-2'"
-              elevation="2" @click="treeViewEnabled = !treeViewEnabled">
+              density="compact" icon="mdi mdi-marker" variant="tonal"
+              :color="treeViewEnabled ? 'success' : 'grey-darken-2'" elevation="2"
+              @click="treeViewEnabled = !treeViewEnabled">
             </v-btn>
           </template>
           <span>Enumerate paths ON/OFF</span>
@@ -670,7 +673,6 @@ export default {
         "interactive_path_planner_settings",
         encodeURIComponent(JSON.stringify(settings.interactive_path_planner))
       );
-      console.log(settings.tree_builder)
       localStorage.setItem(
         "tree_builder_settings",
         encodeURIComponent(JSON.stringify(settings.tree_builder))
@@ -784,7 +786,7 @@ export default {
         .catch((error) => {
           console.error(error);
           const errorObj = JSON.parse(error.message)
-          this.createConfirm({title: 'Alert', content: "There was an error submitting the tree builder job with the supplied settings: " + errorObj.detail, dialogProps: { width: "auto" }})
+          this.createConfirm({ title: 'Alert', content: "There was an error submitting the tree builder job with the supplied settings: " + errorObj.detail, dialogProps: { width: "auto" } })
           this.createSnackbar({ text: "Job failed. Try submitting a new job.", snackbarProps: { timeout: -1, vertical: true } })
         });
     },
@@ -853,8 +855,8 @@ export default {
         .then(() => {
           this.saveTarget(this.resultsStore.target);
           if (this.resultsStore.target !== undefined) {
-            if(this.resultsStore.target.indexOf('.') !== -1){
-              this.createSnackbar({ text: "Warning: one-step retrosynthesis models are not intended to process multiple targets simultaneously.", snackbarProps: { timeout: 5000, color:'orange-darken-1'} })
+            if (this.resultsStore.target.indexOf('.') !== -1) {
+              this.createSnackbar({ text: "Warning: one-step retrosynthesis models are not intended to process multiple targets simultaneously.", snackbarProps: { timeout: 5000, color: 'orange-darken-1' } })
             }
             this.resultsStore.clearDataGraph();
             this.resultsStore.clearDispGraph();
@@ -1754,7 +1756,7 @@ export default {
   gap: 0.5rem;
 }
 
-.vis-tooltip{
+.vis-tooltip {
   position: absolute;
 }
 

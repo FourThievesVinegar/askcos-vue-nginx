@@ -57,7 +57,7 @@ export const useSettingsStore = defineStore("settings", {
       updateObj(this, options);
     },
     setTreeBuilderSettings(options) {
-      this.tree_builder_settings = options
+      updateObj(this.tree_builder_settings,options)
     },
     setTbSettings(options) {
       // Check for old template prioritizer settings
