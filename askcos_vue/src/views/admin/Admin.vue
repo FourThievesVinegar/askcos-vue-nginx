@@ -3,8 +3,7 @@
         <v-app-bar color="primary" density="compact">
             <v-app-bar-title>Admin Panel</v-app-bar-title>
             <template v-slot:append>
-                <v-btn prepend-icon="mdi-home" variant="flat" color="grey text-white mr-2"
-                    to="/">Home</v-btn>
+                <v-btn prepend-icon="mdi-home" variant="flat" color="grey text-white mr-2" to="/">Home</v-btn>
                 <v-btn prepend-icon="mdi-logout" variant="flat" color="orange-darken-1 text-white"
                     @click="logout">Logout</v-btn>
             </template>
@@ -33,30 +32,34 @@
                 </v-row>
                 <v-row dense>
                     <v-col cols="12">
-                        <v-sheet rounded="lg" elevation="2" class="pa-5">
+                        <v-sheet rounded="lg" elevation="2" class="pa-5" v-if="isAdmin">
                             <v-data-table :headers="headers" :items="tableItems" multi-sort :search="''" show-select
                                 v-if="isAdmin" v-model="selection" item-value="username">
                                 <template v-slot:top>
                                     <v-toolbar flat>
                                         <v-toolbar-title>ASKCOS Users</v-toolbar-title>
-                                        <v-select label="Filter by account type" density="comfortable" variant="outlined"
-                                            hide-details clearable :items="filterOptions" item-text="title" item-value="key"
-                                            v-model="filterSelected" class="mr-3"></v-select>
+                                        <v-select label="Filter by account type" density="comfortable"
+                                            variant="outlined" hide-details clearable :items="filterOptions"
+                                            item-text="title" item-value="key" v-model="filterSelected"
+                                            class="mr-3"></v-select>
                                         <v-menu location="end">
                                             <template v-slot:activator="{ props }">
-                                                <v-btn color="primary" dark v-bind="props" append-icon="mdi-chevron-down"
-                                                    v-if="selection.length" variant="flat">
+                                                <v-btn color="primary" dark v-bind="props"
+                                                    append-icon="mdi-chevron-down" v-if="selection.length"
+                                                    variant="flat">
                                                     Bulk Operation
                                                 </v-btn>
                                             </template>
 
                                             <v-list>
                                                 <v-list-item v-if="showMakeAdminButton">
-                                                    <v-btn variant="tonal" color="warning" @click="mutateAll('admin')">Make
+                                                    <v-btn variant="tonal" color="warning"
+                                                        @click="mutateAll('admin')">Make
                                                         selected admins</v-btn>
                                                 </v-list-item>
                                                 <v-list-item v-if="showMakeNormalButton">
-                                                    <v-btn variant="tonal" color="primary" @click="mutateAll('normal')">Make
+                                                    <v-btn variant="tonal" color="primary"
+                                                        @click="mutateAll('normal')">Make
                                                         selected normal users</v-btn>
                                                 </v-list-item>
                                                 <v-list-item>
@@ -70,7 +73,8 @@
                                                         accounts</v-btn>
                                                 </v-list-item>
                                                 <v-list-item>
-                                                    <v-btn variant="tonal" color="error" @click="mutateAll('delete')">Delete
+                                                    <v-btn variant="tonal" color="error"
+                                                        @click="mutateAll('delete')">Delete
                                                         selected accounts</v-btn>
                                                 </v-list-item>
                                             </v-list>
@@ -78,7 +82,8 @@
                                         <!-- <v-divider class="mx-4" inset vertical></v-divider> -->
                                         <v-spacer></v-spacer>
                                         <v-btn color="primary" variant="flat" prepend-icon="mdi-plus"
-                                            @click="dialog = true">New User</v-btn>
+                                            @click="dialog = true">New
+                                            User</v-btn>
                                     </v-toolbar>
                                 </template>
                                 <template v-slot:item.is_superuser="{ item }">
@@ -94,9 +99,9 @@
                                         {{ item.raw.accountType }}
                                     </v-chip>
                                 </template>
-                                 <template v-slot:item.last_login="{ item }">
+                                <template v-slot:item.last_login="{ item }">
                                     <span>{{ formatDateWithoutTimezone(item.raw.last_login) }}</span>
-                                    </template>
+                                </template>
                                 <template v-slot:item.actions="{ item }">
                                     <v-menu location="end">
                                         <template v-slot:activator="{ props }">
@@ -110,12 +115,14 @@
                                             <v-list-item
                                                 v-if="!(item.raw.accountType === 'Guest' || item.raw.accountType === 'Admin')">
                                                 <v-btn variant="tonal" color="warning"
-                                                    @click="mutate(item.raw.username, 'admin')">Make admin</v-btn>
+                                                    @click="mutate(item.raw.username, 'admin')">Make
+                                                    admin</v-btn>
                                             </v-list-item>
                                             <v-list-item
                                                 v-if="!(item.raw.accountType === 'Guest' || item.raw.accountType === 'Normal')">
                                                 <v-btn variant="tonal" color="primary"
-                                                    @click="mutate(item.raw.username, 'normal')">Make normal user</v-btn>
+                                                    @click="mutate(item.raw.username, 'normal')">Make
+                                                    normal user</v-btn>
                                             </v-list-item>
                                             <v-list-item v-if="!(item.raw.disabled === false)">
                                                 <v-btn variant="tonal" color="primary"
@@ -127,7 +134,8 @@
                                             </v-list-item>
                                             <v-list-item v-if="!(item.raw.accountType === 'Guest')">
                                                 <v-btn variant="tonal" color="primary"
-                                                    @click="mutate(item.raw.username, 'pwd')">Change Password</v-btn>
+                                                    @click="mutate(item.raw.username, 'pwd')">Change
+                                                    Password</v-btn>
                                             </v-list-item>
                                             <v-list-item v-if="!(item.raw.accountType === 'Guest')">
                                                 <v-btn variant="tonal" color="primary"
@@ -135,26 +143,37 @@
                                             </v-list-item>
                                             <v-list-item>
                                                 <v-btn variant="tonal" color="error"
-                                                    @click="mutate(item.raw.username, 'delete')">Delete Account</v-btn>
+                                                    @click="mutate(item.raw.username, 'delete')">Delete
+                                                    Account</v-btn>
                                             </v-list-item>
                                         </v-list>
                                     </v-menu>
                                 </template>
                             </v-data-table>
-                            <div v-if="!isAdmin">
-                                <v-row>
-                                    <v-col cols="12" class="d-flex flex-row justify-center align-center">
-                                        <v-btn color="warning" class="mr-2" @click="mutate(username, 'pwd')">Change
-                                            Password</v-btn>
-                                        <v-btn color="warning" class="mr-2" @click="mutate(username, 'email')">Update
-                                            Email</v-btn>
-                                        <v-btn color="error" @click="mutate(username, 'delete')">Delete Account</v-btn>
-                                    </v-col>
-                                </v-row>
-                            </div>
                         </v-sheet>
                     </v-col>
                 </v-row>
+                <div v-if="!isAdmin">
+                    <v-row class="d-flex flex-row justify-center align-center">
+                        <v-col cols="12" sm="3" class="d-flex flex-column justify-center align-center">
+                            <v-sheet class="pa-5 rounded-lg" elevation="2">
+                                <div>
+                                    <v-img :src="gravatarURL(username)" width="200" style="border-radius: 50%;"></v-img>
+                                </div>
+                                <p>Type</p>
+                            </v-sheet>
+                        </v-col>
+                        <v-col cols="12" sm="5" class="d-flex flex-row justify-center align-center">
+                            <v-sheet class="pa-5 rounded-lg" elevation="2">
+                                <v-btn color="warning" class="mr-2" @click="mutate(username, 'pwd')">Change
+                                    Password</v-btn>
+                                <v-btn color="warning" class="mr-2" @click="mutate(username, 'email')">Update
+                                    Email</v-btn>
+                                <v-btn color="error" @click="mutate(username, 'delete')">Delete Account</v-btn>
+                            </v-sheet>
+                        </v-col>
+                    </v-row>
+                </div>
             </v-container>
 
             <v-dialog v-model="dialog" max-width="600px">
@@ -202,8 +221,8 @@
                         Change Password
                     </v-card-title>
                     <v-card-text>
-                        <v-text-field v-model="newPassword" variant="outlined" label="Password" type="password" hide-details
-                            clearable></v-text-field>
+                        <v-text-field v-model="newPassword" variant="outlined" label="Password" type="password"
+                            hide-details clearable></v-text-field>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
@@ -238,6 +257,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from "vue-router";
 import { API } from "@/common/api";
 import { useSnackbar } from 'vuetify-use-dialog';
+import gravatar from "gravatar"
 
 // const createConfirm = useConfirm();
 const createSnackbar = useSnackbar()
@@ -269,6 +289,10 @@ const changePwd = ref(false)
 const updateEmail = ref(false)
 const usersDict = ref({});
 const filterSelected = ref(null)
+
+function gravatarURL(email) {
+    return gravatar.url(email, { d: "wavatar", s: '300' });
+}
 
 const tableItems = computed(() => {
     let items = users.value;
