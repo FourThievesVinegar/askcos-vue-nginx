@@ -172,6 +172,7 @@ const signup = () => {
 
     API.post('/api/user/register', formData, true).then(_json => {
         createdAccount.value = true;
+        localStorage.setItem('newAccount', "true");
         login()
     }).catch(() => {
         creationFailure.value = true;
