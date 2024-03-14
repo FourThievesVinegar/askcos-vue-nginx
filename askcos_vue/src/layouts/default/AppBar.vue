@@ -2,7 +2,7 @@
   <v-navigation-drawer expand-on-hover rail elevation="2" width="1000px" class="sidebar"
     @update:rail="($event) => rail = $event" permanent>
     <v-list>
-      <v-list-item prepend-icon="mdi-tools" title="ASKCOS" :subtitle="org" to="/" value="home"
+      <v-list-item prepend-avatar="/android-chrome-192x192.png" title="ASKCOS" :subtitle="org" to="/" value="home"
         :active="false"></v-list-item>
     </v-list>
 
@@ -65,13 +65,22 @@
         <TheSupportModal />
       </v-list-item>
       <v-list-item prepend-icon="mdi-code-json" title="Logs" value="logs" to="/logs"></v-list-item>
-      <v-divider></v-divider>
-      <v-list-item v-if=!isLoggedIn to="/login" prepend-icon="mdi-login" title="Login" :active="false"></v-list-item>
-      <v-list-item v-if=isLoggedIn prepend-icon="mdi-table" title="My Results" value="result" to="/results"></v-list-item>
+      <v-divider v-if=isLoggedIn></v-divider>
+      <v-list-item v-if=isLoggedIn prepend-icon="mdi-table" title="My Results" value="result"
+        to="/results"></v-list-item>
       <v-list-item v-if=isLoggedIn prepend-icon="mdi-cancel" title="My Banlist" value="banlist"
         to="/banlist"></v-list-item>
-      <v-list-item v-if=isLoggedIn @click="logout" prepend-icon="mdi-logout" title="Logout" :active="false"></v-list-item>
     </v-list>
+    <template v-slot:append>
+      <v-list nav color="primary" class="bg-grey-lighten-5 py-0">
+        <v-divider></v-divider>
+        <v-list-item v-if=!isLoggedIn to="/login" prepend-icon="mdi-login" title="Login" :active="false"></v-list-item>
+        <v-list-item v-if=isLoggedIn to="/admin" lines="two" :prepend-avatar='gravatarURL(myusername)'
+          subtitle="Logged in" :title="myusername"></v-list-item>
+        <v-list-item v-if=isLoggedIn @click="logout" prepend-icon="mdi-logout" title="Logout"
+          :active="false"></v-list-item>
+      </v-list>
+    </template>
   </v-navigation-drawer>
 </template>
 
@@ -79,6 +88,8 @@
 import { useRoute, useRouter } from "vue-router";
 import { ref, computed, inject } from "vue";
 import TheSupportModal from "@/components/TheSupportModal.vue"
+import gravatar from 'gravatar'
+
 const keycloak = inject('$keycloak')
 
 const _openedGroups = ref(['modules']);
@@ -104,6 +115,14 @@ const activeModules = computed(() => {
   return shouldBeActiveModules.some(el => route.path.includes(el));
 })
 
+const myusername = computed(() => {
+  const fixedLength = 20;
+  const username = localStorage.getItem('username');
+  if (username.length <= fixedLength) {
+    return username;
+  }
+  return username.substr(0, fixedLength) + '\u2026'
+})
 
 const isLoggedIn = computed(() => {
   const accessToken = localStorage.getItem('accessToken');
@@ -119,6 +138,25 @@ function logout() {
     router.push({ path: '/login' })
   }
 }
+
+function gravatarURL(email) {
+  return gravatar.url(email, {d: "wavatar"});
+}
+
+// async function hash(token) {
+//   const compatibleCrypto = getCrypto();
+
+//   const data = new TextEncoder().encode(token);
+//   const byteHash = await compatibleCrypto.subtle.digest('SHA-256', data);
+
+//   const arrayHash = Array.from(new Uint8Array(byteHash));
+//   const hexHash = arrayHash
+//     .map(b => b.toString(16).padStart(2, '0'))
+//     .join('')
+//     .toLocaleUpperCase();
+
+//   return hexHash;
+// }
 </script>
 
 <style scoped>

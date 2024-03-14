@@ -1,17 +1,17 @@
 // Plugins
-import { fileURLToPath, URL } from 'node:url';
-import vue from '@vitejs/plugin-vue';
-import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
+import { fileURLToPath, URL } from "node:url";
+import vue from "@vitejs/plugin-vue";
+import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
 // Utilities
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 
 const fastapiGatewayPtr = {
   target: "https://askcos.mit.edu/",
   changeOrigin: true,
   ws: true,
-  secure: false
-}
+  secure: false,
+};
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -23,31 +23,31 @@ export default defineConfig({
     vuetify({
       autoImport: true,
       styles: {
-        configFile: 'src/styles/settings.scss',
+        configFile: "src/styles/settings.scss",
       },
     }),
   ],
-  define: { 'process.env': {} },
+  define: { "process.env": {} },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
-    extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue'],
+    extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
   },
-  base: './',
+  base: "./",
   server: {
-    host: '0.0.0.0',
+    host: "0.0.0.0",
     port: 3000,
     proxy: {
       // Proxy configuration
       // FastAPI Docs Config
-      '/openapi.json': fastapiGatewayPtr,
-      '/docs': fastapiGatewayPtr,
+      "/openapi.json": fastapiGatewayPtr,
+      "/docs": fastapiGatewayPtr,
       // FastAPI Gateway
-      '/api/': fastapiGatewayPtr,
+      "/api/": fastapiGatewayPtr,
     },
   },
   optimizeDeps: {
-    exclude: ['vuetify'],
+    exclude: ["vuetify"],
   },
 });
