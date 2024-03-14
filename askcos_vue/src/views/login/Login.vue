@@ -196,6 +196,7 @@ const guestAccountSignup = () => {
     API.post('/api/user/register', formData, true).then(() => {
         username.value = guestUsername;
         password.value = guestPassword;
+        localStorage.setItem('guestAccount', "true");
         login();
     }).catch(() => {
         creationFailure.value = true;
