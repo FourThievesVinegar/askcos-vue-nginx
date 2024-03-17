@@ -155,21 +155,36 @@
                 </v-row>
                 <div v-if="!isAdmin">
                     <v-row class="d-flex flex-row justify-center align-center">
-                        <v-col cols="12" sm="3" class="d-flex flex-column justify-center align-center">
+                        <v-col cols="12" sm="3">
                             <v-sheet class="pa-5 rounded-lg" elevation="2">
-                                <div>
+                                <h4 class="text-h4">Profile Picture</h4>
+                                <v-divider></v-divider>
+                                <div class="d-flex flex-column justify-center align-center mt-1">
                                     <v-img :src="gravatarURL(username)" width="200" style="border-radius: 50%;"></v-img>
+                                    <p class="mt-1">Type</p>
                                 </div>
-                                <p>Type</p>
+                                <v-alert text="The above image is loaded via Gravatar" title="Info" type="info"
+                                    variant="tonal" class="mt-1" density="compact"></v-alert>
                             </v-sheet>
                         </v-col>
-                        <v-col cols="12" sm="5" class="d-flex flex-row justify-center align-center">
+                        <v-col cols="12" sm="4" class="d-flex flex-row justify-center align-center">
                             <v-sheet class="pa-5 rounded-lg" elevation="2">
-                                <v-btn color="warning" class="mr-2" @click="mutate(username, 'pwd')">Change
-                                    Password</v-btn>
-                                <v-btn color="warning" class="mr-2" @click="mutate(username, 'email')">Update
+                                <h4 class="text-h4">Email</h4>
+                                <v-divider></v-divider>
+                                <p class="text-body-1">soura@gmail.com</p>
+                                <v-btn color="warning" class="mr-2" @click="mutate(username, 'email')"
+                                    size="small">Update
                                     Email</v-btn>
-                                <v-btn color="error" @click="mutate(username, 'delete')">Delete Account</v-btn>
+                                <h4 class="mt-4 text-h4">Password</h4>
+                                <v-divider></v-divider>
+                                <p class="text-body-1">Last Login: Today</p>
+                                <v-btn color="warning" class="mr-2" @click="mutate(username, 'pwd')" size="small">Change
+                                    Password</v-btn>
+                                <v-alert text="If you wish to delete this account you can do so by clicking below"
+                                    title="Danger Zone" type="warning" class="mt-2" density="compact" color="#FF0000"
+                                    variant="outlined"></v-alert>
+                                <v-btn color="error" @click="mutate(username, 'delete')" size="small" class="mt-2">Delete
+                                    Account</v-btn>
                             </v-sheet>
                         </v-col>
                     </v-row>
@@ -291,7 +306,8 @@ const usersDict = ref({});
 const filterSelected = ref(null)
 
 function gravatarURL(email) {
-    return gravatar.url(email, { d: "wavatar", s: '300' });
+    const gtype = localStorage.getItem("gtype");
+    return gravatar.url(email, { d: gtype ?? "wavatar", s: '300' });
 }
 
 const tableItems = computed(() => {

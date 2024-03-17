@@ -285,6 +285,22 @@ const routes = [
     ],
   },
   {
+    path: "/qm",
+    component: () => import("@/layouts/default/Default.vue"),
+    meta: { title: "QM Descriptor" },
+    children: [
+      {
+        path: "",
+        name: "QM",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/qm/QM.vue"),
+      },
+    ],
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
     meta: { title: "404" },

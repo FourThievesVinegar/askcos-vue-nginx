@@ -28,7 +28,7 @@
                 <v-spacer></v-spacer>
                 <div v-if="username">
                   <span class="text-body-1 mr-1">Logged in as{{ superuser ? " superuser" : "" }},</span>
-                  <v-chip color="primary" to="/admin"><v-icon start icon="mdi-account-circle"></v-icon><span
+                  <v-chip color="primary" to="/admin" :disabled="username.startsWith('guest_')"><v-icon start icon="mdi-account-circle"></v-icon><span
                       class="text-body-1"><strong>{{ username }}</strong></span></v-chip>
                 </div>
               </v-col>

@@ -52,6 +52,7 @@
             :active="route.query.tab === 'solpred'"></v-list-item>
           <v-list-item to="/solprop?tab=solscreen" title="Solvent Screening" value="USS"
             :active="route.query.tab === 'solscreen'"></v-list-item>
+          <v-list-item to="/qm" title="QM Descriptor" value="QM"></v-list-item>
           <v-list-item to="/buyables" title="Buyable Look-up" value="UBLU"></v-list-item>
           <v-list-item to="/drawing" title="Drawing" value="UD"></v-list-item>
         </v-list-group>
@@ -76,7 +77,7 @@
         <v-divider></v-divider>
         <v-list-item v-if=!isLoggedIn to="/login" prepend-icon="mdi-login" title="Login" :active="false"></v-list-item>
         <v-list-item v-if=isLoggedIn to="/admin" lines="two" :prepend-avatar='gravatarURL(myusername)'
-          subtitle="Logged in" :title="myusername"></v-list-item>
+          subtitle="Logged in" :title="myusername" :disabled="myusername.startsWith('guest_')"></v-list-item>
         <v-list-item v-if=isLoggedIn @click="logout" prepend-icon="mdi-logout" title="Logout"
           :active="false"></v-list-item>
       </v-list>
@@ -140,7 +141,8 @@ function logout() {
 }
 
 function gravatarURL(email) {
-  return gravatar.url(email, {d: "wavatar"});
+  const gtype = localStorage.getItem("gtype");
+  return gravatar.url(email, { d: gtype ?? "wavatar" });
 }
 
 </script>

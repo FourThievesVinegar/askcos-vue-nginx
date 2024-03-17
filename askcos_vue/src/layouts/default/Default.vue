@@ -108,7 +108,7 @@ onMounted(() => {
     setTimeout(() => { confetti.stop() }, 5000);
     localStorage.removeItem("newAccount")
     newAccountDialog.value = true
-  }else if(isguest === "true"){
+  } else if (isguest === "true") {
     localStorage.removeItem("guestAccount")
     guestAccountDialog.value = true
   }

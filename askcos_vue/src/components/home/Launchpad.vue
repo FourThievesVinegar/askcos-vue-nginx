@@ -4,7 +4,7 @@
       @update:smiles="(ketcherSmiles) => smiles = ketcherSmiles" />
     <v-row class="my-6 justify-center">
       <v-col cols="12" md="10">
-        <v-text-field v-model="smiles" class="centered-input" variant="outlined" label="Type here or draw structure..."
+        <v-text-field v-model="smilesInput" class="centered-input" variant="outlined" label="Type here or draw structure..."
           prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable rounded="pill">
           <template v-slot:append-inner>
             <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
@@ -362,7 +362,7 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import KetcherModal from "@/components/KetcherModal";
-import CopyTooltip from "@/components/CopyTooltip";
+import { refDebounced } from '@vueuse/core'
 import SmilesImage from "@/components/SmilesImage";
 
 import { API } from "@/common/api";
@@ -371,7 +371,8 @@ import { num2str } from "@/common/utils";
 
 
 
-const smiles = ref("");
+const smilesInput = ref("");
+const smiles = refDebounced(smilesInput, 500)
 const validSmiles = ref(false);
 const scscore = ref(undefined);
 const reactionScore = ref(undefined);
@@ -493,29 +494,6 @@ const getClassification = (smiles) => {
     });
 };
 
-
-const tbPresetToArgs = () => {
-  // Convert tree builder preset options to API arguments
-  const preset = tbPresetOptions.value[tbPreset.value].settings;
-  const mapping = {
-    expansionTime: "expansion_time",
-    maxDepth: "max_depth",
-    maxBranching: "max_branching",
-    numTemplates: "template_count",
-    maxCumProb: "max_cum_prob",
-    minPlausibility: "filter_threshold",
-    chemicalPopularityLogic: "chemical_popularity_logic",
-    chemicalPopularityReactants: "min_chempop_reactants",
-    chemicalPopularityProducts: "min_chempop_products",
-    returnFirst: "return_first",
-  };
-  const args = {};
-  for (const [key, val] of Object.entries(preset)) {
-    args[mapping[key]] = val;
-  }
-  return args;
-};
-
 const sendTreeBuilderJob = (smiles) => {
   tbStatus.value = "pending";
   const url = "/api/tree-search/mcts/call-async";
@@ -536,6 +514,7 @@ const sendTreeBuilderJob = (smiles) => {
 
 watch(smiles, (newVal, oldVal) => {
   if (newVal !== oldVal) {
+    smilesInput.value = newVal
     validSmiles.value = false;
     scscore.value = undefined;
     reactionScore.value = undefined;
