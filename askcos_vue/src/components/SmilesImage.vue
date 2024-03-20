@@ -1,6 +1,10 @@
 <template>
   <component :is="allowCopy ? 'copy-tooltip' : 'div'" v-bind="copyProps">
-    <component :is="lazy ? 'v-img-lazy' : 'v-img'" v-bind="imageProps" class="hide-invalid"></component>
+    <component :is="lazy ? 'v-img-lazy' : 'v-img'" v-bind="imageProps" class="hide-invalid">
+      <template v-slot:error>
+        <v-img class="mx-auto" height="300" max-width="500" src="@/assets/wrongSmiles.png"></v-img>
+      </template>
+    </component>
   </component>
 </template>
 
