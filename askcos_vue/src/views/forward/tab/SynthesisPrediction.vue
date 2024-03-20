@@ -14,27 +14,27 @@
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" v-show="results.length > 0"
                 :items-per-page="10">
                 <template #item.outcome="{ item }">
-                    <copy-tooltip :data="item.columns.reagent" :title="'Click to copy: ' + item.columns.outcome">
-                        <smiles-image :smiles="item.columns.outcome" height="80px"></smiles-image>
+                    <copy-tooltip :data="item.reagent" :title="'Click to copy: ' + item.outcome">
+                        <smiles-image :smiles="item.outcome" height="80px"></smiles-image>
                     </copy-tooltip>
                 </template>
                 <template #item.prob="{ item }">
-                    {{ item.columns.prob.toFixed(4) }}
+                    {{ item.prob.toFixed(4) }}
                 </template>
                 <template #item.score="{ item }">
-                    {{ item.columns.score.toFixed(3) }}
+                    {{ item.score.toFixed(3) }}
                 </template>
                 <template #item.mol_wt="{ item }">
-                    {{ item.columns.mol_wt.toFixed(1) }}
+                    {{ item.mol_wt.toFixed(1) }}
                 </template>
                 <template #item.predict_impurities="{ item, index }">
-                    <v-btn variant="tonal" @click="emitGoToImpurity(item.columns.outcome)"
+                    <v-btn variant="tonal" @click="emitGoToImpurity(item.outcome)"
                         :id="'predict-impurities-' + index" title="Predict products">
                         <v-icon>mdi-arrow-right</v-icon>
                     </v-btn>
                 </template>
                 <template #item.predict_selectivity="{ item, index }">
-                    <v-btn variant="tonal" @click="goToSelectivity(item.columns.outcome)"
+                    <v-btn variant="tonal" @click="goToSelectivity(item.outcome)"
                         :id="'predict-regio-selectivities-' + index" title="Predict products">
                         <v-icon>mdi-arrow-right</v-icon>
                     </v-btn>

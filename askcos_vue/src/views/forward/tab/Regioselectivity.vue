@@ -12,12 +12,12 @@
 
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" :items-per-page="10">
                 <template #item.smiles="{ item }">
-                    <copy-tooltip :data="item.columns.smiles" :title="'Click to copy: ' + item.columns.smiles">
-                        <smiles-image :smiles="item.columns.smiles" max-height="125px"></smiles-image>
+                    <copy-tooltip :data="item.smiles" :title="'Click to copy: ' + item.smiles">
+                        <smiles-image :smiles="item.smiles" max-height="125px"></smiles-image>
                     </copy-tooltip>
                 </template>
                 <template #item.prob="{ item }">
-                    {{ item.columns.prob.toFixed(4) }}
+                    {{ item.prob.toFixed(4) }}
                 </template>
             </v-data-table>
 

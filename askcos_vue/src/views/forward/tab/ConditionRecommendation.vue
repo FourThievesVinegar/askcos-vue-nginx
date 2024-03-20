@@ -21,29 +21,29 @@
                 <template v-slot:item.evaluation="{ item }">
                     <td class="text-center">
                         <v-progress-circular indeterminate
-                            v-if="pendingRank > 0 && item.columns.evaluation === undefined"></v-progress-circular>
+                            v-if="pendingRank > 0 && item.evaluation === undefined"></v-progress-circular>
 
-                        <span v-else-if="item.columns.evaluation">
-                            <v-icon>mdi-check</v-icon> (rank: {{ item.columns.evaluation }})
+                        <span v-else-if="item.evaluation">
+                            <v-icon>mdi-check</v-icon> (rank: {{ item.evaluation }})
                         </span>
 
-                        <span v-else-if="item.columns.evaluation !== undefined && !item.columns.evaluation">
+                        <span v-else-if="item.evaluation !== undefined && !item.evaluation">
                             <v-icon>mdi-close</v-icon> (rank: N/A)
                         </span>
                     </td>
                 </template>
                 <template v-slot:item.solvent_score="{ item }">
-                    <v-chip :color="getColor(item.columns.solvent_score)" v-if="item.columns.solvent_score">
-                        {{ item.columns.solvent_score }}
+                    <v-chip :color="getColor(item.solvent_score)" v-if="item.solvent_score">
+                        {{ item.solvent_score }}
                     </v-chip>
                     <div v-else>
                         None
                     </div>
                 </template>
                 <template #item.reagent="{ item }">
-                    <template v-if="item.columns.reagent">
-                        <copy-tooltip :data="item.columns.reagent" :title="'Click to copy: ' + item.columns.reagent">
-                            <smiles-image :smiles="item.columns.reagent" height="80px"></smiles-image>
+                    <template v-if="item.reagent">
+                        <copy-tooltip :data="item.reagent" :title="'Click to copy: ' + item.reagent">
+                            <smiles-image :smiles="item.reagent" height="80px"></smiles-image>
                         </copy-tooltip>
                     </template>
                     <div v-else>
@@ -51,9 +51,9 @@
                     </div>
                 </template>
                 <template #item.solvent="{ item }">
-                    <template v-if="item.columns.solvent">
-                        <copy-tooltip :data="item.columns.solvent" :title="'Click to copy: ' + item.columns.solvent">
-                            <smiles-image :smiles="item.columns.solvent" height="80px"></smiles-image>
+                    <template v-if="item.solvent">
+                        <copy-tooltip :data="item.solvent" :title="'Click to copy: ' + item.solvent">
+                            <smiles-image :smiles="item.solvent" height="80px"></smiles-image>
                         </copy-tooltip>
                     </template>
                     <div v-else>
@@ -61,13 +61,13 @@
                     </div>
                 </template>
                 <template #item.temperature="{ item }">
-                    {{ Math.round(item.columns.temperature) }} &deg;C
+                    {{ Math.round(item.temperature) }} &deg;C
                 </template>
                 <template #item.catalyst="{ item }">
                     <div class="text-center">
-                        <template v-if="!!item.columns.catalyst || !!item.columns.catalyst_name_only">
-                            <copy-tooltip :data="item.columns.catalyst" :title="'Click to copy: ' + item.columns.catalyst">
-                                <smiles-image v-if="!!item.columns.catalyst" :smiles="item.columns.catalyst"></smiles-image>
+                        <template v-if="!!item.catalyst || !!item.catalyst_name_only">
+                            <copy-tooltip :data="item.catalyst" :title="'Click to copy: ' + item.catalyst">
+                                <smiles-image v-if="!!item.catalyst" :smiles="item.catalyst"></smiles-image>
                             </copy-tooltip>
                         </template>
                         <template v-else>
@@ -91,19 +91,19 @@
                 <template v-slot:item.evaluation="{ item }">
                     <td class="text-center">
                         <v-progress-circular indeterminate
-                            v-if="pendingRank > 0 && item.columns.evaluation === undefined"></v-progress-circular>
+                            v-if="pendingRank > 0 && item.evaluation === undefined"></v-progress-circular>
 
-                        <span v-else-if="item.columns.evaluation">
-                            <v-icon>mdi-check</v-icon> (rank: {{ item.columns.evaluation }})
+                        <span v-else-if="item.evaluation">
+                            <v-icon>mdi-check</v-icon> (rank: {{ item.evaluation }})
                         </span>
 
-                        <span v-else-if="item.columns.evaluation !== undefined && !item.columns.evaluation">
+                        <span v-else-if="item.evaluation !== undefined && !item.evaluation">
                             <v-icon>mdi-close</v-icon> (rank: N/A)
                         </span>
                     </td>
                 </template>
                 <template #item.reactants="{ item }">
-                    <div v-for="(amount, rct) in item.columns.reactants" class="text-center my-2" :key="rct">
+                    <div v-for="(amount, rct) in item.reactants" class="text-center my-2" :key="rct">
                         <copy-tooltip :data="rct" :title="'Click to copy: ' + rct">
                             <smiles-image :smiles="rct" max-height="80px"></smiles-image>
                         </copy-tooltip>
@@ -111,11 +111,11 @@
                     </div>
                 </template>
                 <template #item.temperature="{ item }">
-                    {{ Math.round(item.columns.temperature) }} &deg;C
+                    {{ Math.round(item.temperature) }} &deg;C
                 </template>
                 <template v-slot:item.reagents="{ item }">
-                    <div v-if="!!item.columns.reagents" class="text-center my-2"
-                        v-for="(amount, rgt) in item.columns.reagents" :key="rgt">
+                    <div v-if="!!item.reagents" class="text-center my-2"
+                        v-for="(amount, rgt) in item.reagents" :key="rgt">
                         <copy-tooltip :data="rgt" :title="'Click to copy: ' + rgt">
                             <smiles-image :smiles="rgt" max-height="80px"></smiles-image>
                         </copy-tooltip>

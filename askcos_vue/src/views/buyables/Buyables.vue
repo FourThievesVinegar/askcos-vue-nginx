@@ -105,12 +105,12 @@
         <v-sheet elevation="2" class="d-flex justify-center align-center pa-5" rounded="lg">
           <v-data-table v-if="buyables.length" :headers="headers" :items="buyables" :loading="showLoader">
             <template v-slot:item.smiles="{ item }">
-              <copy-tooltip :data="item.columns.smiles">
-                <smiles-image :smiles="item.columns.smiles" height="80px"></smiles-image>
+              <copy-tooltip :data="item.smiles">
+                <smiles-image :smiles="item.smiles" height="80px"></smiles-image>
               </copy-tooltip>
             </template>
             <template v-slot:item.delete="{ item }">
-              <v-icon @click="deleteBuyable(item.raw._id)" class="text-center">mdi-delete</v-icon>
+              <v-icon @click="deleteBuyable(item._id)" class="text-center">mdi-delete</v-icon>
             </template>
           </v-data-table>
           <div v-else class="text-center">

@@ -14,30 +14,30 @@
         </v-col>
         <v-data-table  ref="rtmTable" :headers="rtmFields" :items="rtmItems" density="compact">
           <template #item.reaction_smarts="{ item }">
-            <smiles-image :smiles="item.columns.reaction_smarts" input-type="template" highlight
+            <smiles-image :smiles="item.reaction_smarts" input-type="template" highlight
               allow-copy></smiles-image>
-            <a :href="`/template?id=${item.raw._id}`" target="_blank">{{ item.raw._id }} ({{ item.raw.template_set
+            <a :href="`/template?id=${item._id}`" target="_blank">{{ item._id }} ({{ item.template_set
             }})</a>
           </template>
           <template #item.rank="{ item }">
-            {{ item.raw.template_rank }}
+            {{ item.template_rank }}
           </template>
           <template #item.score="{ item }">
-            {{ item.raw.template_score.toFixed(4) }}
+            {{ item.template_score.toFixed(4) }}
           </template>
           <template #item.p_index="{ item }">
             1
           </template>
           <template #item.results="{ item }">
-            <template v-if="item.raw.results !== undefined">
-              <template v-if="item.raw.results[0]">
-                <smiles-image :smiles="item.raw.results[0]" transparent></smiles-image>
+            <template v-if="item.results !== undefined">
+              <template v-if="item.results[0]">
+                <smiles-image :smiles="item.results[0]" transparent></smiles-image>
               </template>
               <template v-else> No Precursors </template>
             </template>
               <template v-else>
-                <v-btn variant="tonal" color="primary" :loading="applyingTemplate === item.raw._id"
-                  @click="apply(selected.smiles, item.raw)"> Apply Template </v-btn>
+                <v-btn variant="tonal" color="primary" :loading="applyingTemplate === item._id"
+                  @click="apply(selected.smiles, item)"> Apply Template </v-btn>
               </template>
             </template>
         </v-data-table>

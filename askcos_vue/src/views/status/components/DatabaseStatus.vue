@@ -25,7 +25,7 @@
       <v-data-table v-model:expanded="expanded" :headers="headers" :items="data" show-expand item-value="name"
         :items-per-page="100">
         <template v-slot:item.url="{ item }">
-          <router-link v-if="item.columns.url" :to="item.columns.url">
+          <router-link v-if="item.url" :to="item.url">
             <v-btn color="primary">
               Search Collection
             </v-btn>
@@ -36,12 +36,12 @@
             <v-table density="compact" class="text-left">
               <thead>
                 <tr>
-                  <th class="text-left">{{ item.raw.field }}</th>
+                  <th class="text-left">{{ item.field }}</th>
                   <th class="text-left">Documents</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(value, key) in item.raw.details" :key="key">
+                <tr v-for="(value, key) in item.details" :key="key">
                   <td>{{ key }}</td>
                   <td>{{ value }}</td>
                 </tr>

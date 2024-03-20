@@ -87,20 +87,20 @@
                                     </v-toolbar>
                                 </template>
                                 <template v-slot:item.is_superuser="{ item }">
-                                    <span v-if="item.raw.is_superuser === true">Admin</span>
+                                    <span v-if="item.is_superuser === true">Admin</span>
                                     <span v-else>Not Admin</span>
                                 </template>
                                 <template v-slot:item.disabled="{ item }">
-                                    <span v-if="item.raw.disabled === true">Yes</span>
+                                    <span v-if="item.disabled === true">Yes</span>
                                     <span v-else>No</span>
                                 </template>
                                 <template v-slot:item.accountType="{ item }">
-                                    <v-chip :color="getColor(item.raw.accountType)">
-                                        {{ item.raw.accountType }}
+                                    <v-chip :color="getColor(item.accountType)">
+                                        {{ item.accountType }}
                                     </v-chip>
                                 </template>
                                 <template v-slot:item.last_login="{ item }">
-                                    <span>{{ formatDateWithoutTimezone(item.raw.last_login) }}</span>
+                                    <span>{{ formatDateWithoutTimezone(item.last_login) }}</span>
                                 </template>
                                 <template v-slot:item.actions="{ item }">
                                     <v-menu location="end">
@@ -113,37 +113,37 @@
 
                                         <v-list>
                                             <v-list-item
-                                                v-if="!(item.raw.accountType === 'Guest' || item.raw.accountType === 'Admin')">
+                                                v-if="!(item.accountType === 'Guest' || item.accountType === 'Admin')">
                                                 <v-btn variant="tonal" color="warning"
-                                                    @click="mutate(item.raw.username, 'admin')">Make
+                                                    @click="mutate(item.username, 'admin')">Make
                                                     admin</v-btn>
                                             </v-list-item>
                                             <v-list-item
-                                                v-if="!(item.raw.accountType === 'Guest' || item.raw.accountType === 'Normal')">
+                                                v-if="!(item.accountType === 'Guest' || item.accountType === 'Normal')">
                                                 <v-btn variant="tonal" color="primary"
-                                                    @click="mutate(item.raw.username, 'normal')">Make
+                                                    @click="mutate(item.username, 'normal')">Make
                                                     normal user</v-btn>
                                             </v-list-item>
-                                            <v-list-item v-if="!(item.raw.disabled === false)">
+                                            <v-list-item v-if="!(item.disabled === false)">
                                                 <v-btn variant="tonal" color="primary"
-                                                    @click="mutate(item.raw.username, 'enable')">Unlock Account</v-btn>
+                                                    @click="mutate(item.username, 'enable')">Unlock Account</v-btn>
                                             </v-list-item>
-                                            <v-list-item v-if="!(item.raw.disabled === true)">
+                                            <v-list-item v-if="!(item.disabled === true)">
                                                 <v-btn variant="tonal" color="primary"
-                                                    @click="mutate(item.raw.username, 'disable')">Lock Account</v-btn>
+                                                    @click="mutate(item.username, 'disable')">Lock Account</v-btn>
                                             </v-list-item>
-                                            <v-list-item v-if="!(item.raw.accountType === 'Guest')">
+                                            <v-list-item v-if="!(item.accountType === 'Guest')">
                                                 <v-btn variant="tonal" color="primary"
-                                                    @click="mutate(item.raw.username, 'pwd')">Change
+                                                    @click="mutate(item.username, 'pwd')">Change
                                                     Password</v-btn>
                                             </v-list-item>
-                                            <v-list-item v-if="!(item.raw.accountType === 'Guest')">
+                                            <v-list-item v-if="!(item.accountType === 'Guest')">
                                                 <v-btn variant="tonal" color="primary"
-                                                    @click="mutate(item.raw.username, 'email')">Change Email</v-btn>
+                                                    @click="mutate(item.username, 'email')">Change Email</v-btn>
                                             </v-list-item>
                                             <v-list-item>
                                                 <v-btn variant="tonal" color="error"
-                                                    @click="mutate(item.raw.username, 'delete')">Delete
+                                                    @click="mutate(item.username, 'delete')">Delete
                                                     Account</v-btn>
                                             </v-list-item>
                                         </v-list>
@@ -183,7 +183,8 @@
                                 <v-alert text="If you wish to delete this account you can do so by clicking below"
                                     title="Danger Zone" type="warning" class="mt-2" density="compact" color="#FF0000"
                                     variant="outlined"></v-alert>
-                                <v-btn color="error" @click="mutate(username, 'delete')" size="small" class="mt-2">Delete
+                                <v-btn color="error" @click="mutate(username, 'delete')" size="small"
+                                    class="mt-2">Delete
                                     Account</v-btn>
                             </v-sheet>
                         </v-col>
@@ -383,19 +384,19 @@ const fetchData = async () => {
         });
 
         if (isAdmin.value) {
-            const response = await API.get("/api/user/get-all-users");
+            let response = await API.get("/api/user/get-all-users");
             if (Array.isArray(response)) {
                 response.forEach((user) => {
                     usersDict.value[user.username] = user;
                     if (user.username.startsWith('guest_')) {
-                        user.accountType = "Guest"
+                        usersDict.value[user.username].accountType = "Guest"
                     } else if (user.is_superuser) {
-                        user.accountType = "Admin"
+                        usersDict.value[user.username].accountType = "Admin"
                     } else {
-                        user.accountType = "Normal"
+                        usersDict.value[user.username].accountType = "Normal"
                     }
                 })
-                users.value = response;
+                users.value = Object.values(usersDict.value)
                 console.log(users.value)
             } else {
                 console.error("API did not return an array as expected:", response);

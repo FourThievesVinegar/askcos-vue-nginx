@@ -104,13 +104,13 @@
                 <v-data-table :page="lastPage" :items-per-page="itemsPerPage"
                   @update:itemsPerPage="$event => itemsPerPage = $event" :headers="fields" :items="results">
                   <template v-slot:item.st_1="{ item }">
-                    {{ Number(item.columns.st_1).toExponential(2) }}
+                    {{ Number(item.st_1).toExponential(2) }}
                   </template>
                   <template v-slot:item.st_2="{ item }">
-                    {{ Number(item.columns.st_2).toExponential(2) }}
+                    {{ Number(item.st_2).toExponential(2) }}
                   </template>
                   <template v-slot:item.s_298="{ item }">
-                    {{ Number(item.columns.s_298).toExponential(2) }}
+                    {{ Number(item.s_298).toExponential(2) }}
                   </template>
                 </v-data-table></v-col>
             </v-row>

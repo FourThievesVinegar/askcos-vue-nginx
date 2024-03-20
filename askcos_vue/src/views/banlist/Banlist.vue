@@ -45,14 +45,14 @@
               <v-data-table :headers="headers" :items="tabItems" :items-per-page="10" :loading="pendingTasks > 0" >
                 <template v-slot:item.active="{ item }">
                   <v-btn @click="toggleActivation(item, activeTab === 0 ? 'chemicals' : 'reactions')" small>
-                    <v-icon v-if="item.columns.active">mdi-check-circle</v-icon>
+                    <v-icon v-if="item.active">mdi-check-circle</v-icon>
                     <v-icon v-else>mdi-cancel</v-icon>
-                    {{ item.columns.active ? 'Active' : 'Inactive' }}
+                    {{ item.active ? 'Active' : 'Inactive' }}
                   </v-btn>
                 </template>
                 <template #item.smiles="{ item }">
-                  <copy-tooltip :data="item.columns.smiles">
-                    <smiles-image :smiles="item.columns.smiles"></smiles-image>
+                  <copy-tooltip :data="item.smiles">
+                    <smiles-image :smiles="item.smiles"></smiles-image>
                   </copy-tooltip>
                 </template>
                 <template v-slot:item.delete="{ item }">
@@ -260,21 +260,21 @@ const deleteReaction = (id) => {
 }
 
 const toggleActivation = async (item, category) => {
-  const action = item.columns.active ? 'deactivate' : 'activate';
+  const action = item.active ? 'deactivate' : 'activate';
   try {
     const response = await API.get(`/api/banlist/${category}/${action}`, {
-      _id: item.raw.id
+      _id: item.id
     });
     const data = await response.json();
     if (data.success) {
-      item.columns.active = !item.columns.active;
+      item.active = !item.active;
     } else {
       console.error("Failed to toggle activation:", data.message);
     }
   } catch (error) {
     console.error("Error toggling activation:", error);
   }
-  item.columns.active = !item.columns.active;
+  item.active = !item.active;
   loadCollection(category);
 };
 

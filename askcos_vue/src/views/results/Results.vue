@@ -38,17 +38,17 @@
             item-value="result_id" :items="filteredResults" show-select v-model:expanded="expanded" show-expand
             v-model="selection" :items-per-page="10" :search="searchQuery" @click:row="clickRow" data-cy="results-table">
             <template v-slot:item.delete="{ item }">
-              <v-icon @click="deleteResult(item.raw.result_id)" class="text-center">mdi-delete</v-icon>
+              <v-icon @click="deleteResult(item.result_id)" class="text-center">mdi-delete</v-icon>
             </template>
             <template #item.public="{ item }">
-              <v-icon v-if="item.columns.public === true">
+              <v-icon v-if="item.public === true">
                 mdi-check
               </v-icon>
             </template>
             <template v-slot:item.description="{ item }">
               <div :class="{ 'highlight-update': isRecentlyUpdated(item.updatedAt) }">
-                <p><strong>{{ item.columns.description || "No Description" }}</strong></p>
-                <p v-if="item.raw.num_trees">{{ `Found ${item.raw.num_trees} trees` }}</p>
+                <p><strong>{{ item.description || "No Description" }}</strong></p>
+                <p v-if="item.num_trees">{{ `Found ${item.num_trees} trees` }}</p>
                 <p v-else>No trees found</p>
               </div>
             </template>
@@ -56,29 +56,29 @@
               <tr>
                 <td :colspan="columns.length">
                   <div class="d-flex justify-space-evenly my-3">
-                    <span class="align-center" style="max-width: 400px" v-if="item.raw.tags[0] != ''">
-                      <p v-if="item.raw.tags.length > 0" class="text-center mr-3">Tags:
-                        <v-chip class="text-center ma-1" v-for="tag in item.raw.tags" :key="tag" small>
+                    <span class="align-center" style="max-width: 400px" v-if="item.tags[0] != ''">
+                      <p v-if="item.tags.length > 0" class="text-center mr-3">Tags:
+                        <v-chip class="text-center ma-1" v-for="tag in item.tags" :key="tag" small>
                           {{ tag }}
                         </v-chip>
                       </p>
                     </span>
                     <v-btn color="primary" variant="tonal"
-                      v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'"
-                      :href="`network?tab=TE&id=${item.raw.result_id}`">
+                      v-if="item.result_type === 'tree_builder' && item.result_state === 'completed'"
+                      :href="`network?tab=TE&id=${item.result_id}`">
                       View trees
                     </v-btn>
                     <v-btn color="primary" variant="tonal"
-                      v-if="item.columns.result_type === 'tree_builder' && item.columns.result_state === 'completed'"
-                      :href="`network?tab=IPP&id=${item.raw.result_id}&view=25`">
+                      v-if="item.result_type === 'tree_builder' && item.result_state === 'completed'"
+                      :href="`network?tab=IPP&id=${item.result_id}&view=25`">
                       View in IPP
                     </v-btn>
-                    <v-btn color="primary" variant="tonal" v-if="item.columns.result_type === 'ipp'"
-                      :href="`network?tab=IPP&id=${item.raw.result_id}`">
+                    <v-btn color="primary" variant="tonal" v-if="item.result_type === 'ipp'"
+                      :href="`network?tab=IPP&id=${item.result_id}`">
                       View in IPP
                     </v-btn>
-                    <v-btn color="primary" variant="tonal" v-if="item.columns.result_type === 'tree_builder'"
-                      @click="openSetting(item.raw.result_id)">
+                    <v-btn color="primary" variant="tonal" v-if="item.result_type === 'tree_builder'"
+                      @click="openSetting(item.result_id)">
                       View Settings
                     </v-btn>
                     <v-btn class="bg-teal-lighten-3" variant="tonal" @click="shareResult(item.key)">

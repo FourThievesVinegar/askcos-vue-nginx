@@ -24,12 +24,12 @@
     <div v-if="!loading">
       <v-data-table :headers="headers" :items="data" :items-per-page="100">
         <template v-slot:item.ready="{ item }">
-          <v-icon :color="item.columns.ready ? 'success' : 'error'"
-            :icon="item.columns.ready ? 'mdi-check-circle' : 'mdi-alert-circle'" />
+          <v-icon :color="item.ready ? 'success' : 'error'"
+            :icon="item.ready ? 'mdi-check-circle' : 'mdi-alert-circle'" />
         </template>
         <template v-slot:item.available_model_names="{ item }">
-          <div v-if="item.columns.available_model_names && item.columns.available_model_names.length > 0">
-            <div v-for="modelName in item.columns.available_model_names" :key="modelName" class="my-2">
+          <div v-if="item.available_model_names && item.available_model_names.length > 0">
+            <div v-for="modelName in item.available_model_names" :key="modelName" class="my-2">
               {{ modelName.trim() }}
             </div>
           </div>

@@ -111,53 +111,53 @@
                         <template v-for="header in headers" v-slot:[`item.${header.key}`]="{ item }">
                             <!-- <pre>{{ item }}</pre> -->
                             <div v-if="header.key === 'smiles'">
-                                <smiles-image :smiles="item.raw.smiles" width="100px"></smiles-image>
+                                <smiles-image :smiles="item.smiles" width="100px"></smiles-image>
                                 <table>
-                                    <template v-if="item.raw.plausibility">
+                                    <template v-if="item.plausibility">
                                         <tbody>
                                             <tr>
                                                 <th>Plausibility</th>
-                                                <td>{{ num2str(item.raw.plausibility) }}</td>
+                                                <td>{{ num2str(item.plausibility) }}</td>
                                             </tr>
                                             <tr>
                                                 <th>SCScore</th>
-                                                <td>{{ num2str(item.raw.scscore) }}</td>
+                                                <td>{{ num2str(item.scscore) }}</td>
                                             </tr>
                                         </tbody>
                                     </template>
                                 </table>
                             </div>
                             <div v-else>
-                                <table v-if="item.columns[header.key]" class="text-nowrap">
+                                <table v-if="item[header.key]" class="text-nowrap">
                                     <tbody>
                                         <tr>
                                             <th>Rank</th>
-                                            <td>{{ item.columns[header.key].rank }}</td>
+                                            <td>{{ item[header.key].rank }}</td>
                                         </tr>
                                         <tr>
                                             <th>Score</th>
-                                            <td>{{ num2str(item.columns[header.key].score) }}</td>
+                                            <td>{{ num2str(item[header.key].score) }}</td>
                                         </tr>
                                         <tr v-if="predictions[header.key]['model'] === 'template_relevance'">
                                             <th>Template Rank</th>
-                                            <td>{{ item.columns[header.key].template.template_rank }}</td>
+                                            <td>{{ item[header.key].template.template_rank }}</td>
                                         </tr>
                                         <tr v-if="predictions[header.key]['model'] === 'template_relevance'">
                                             <th>Template Score</th>
-                                            <td>{{ num2str(item.columns[header.key].template.template_score) }}</td>
+                                            <td>{{ num2str(item[header.key].template.template_score) }}</td>
                                         </tr>
-                                        <tr v-if="item.columns[header.key].template">
+                                        <tr v-if="item[header.key].template">
                                             <th>Templates</th>
                                             <td>
                                                 <template v-if="predictions[header.key]['model'] === 'template_relevance'">
-                                                    <p v-for="id in item.columns[header.key].template.tforms" :key="id"
+                                                    <p v-for="id in item[header.key].template.tforms" :key="id"
                                                         class="mb-0">
                                                         <a :href="`/template?id=${id}`" target="_blank">{{ id }}</a>
                                                     </p>
                                                 </template>
                                                 <template v-else>
                                                     <v-btn
-                                                        v-for="(template, index) in item.columns[header.key].template.tforms"
+                                                        v-for="(template, index) in item[header.key].template.tforms"
                                                         :key="template" size="small" :class="{ 'ml-1': index > 0 }"
                                                         @click="viewTemplate(template)">
                                                         {{ index + 1 }}

@@ -103,7 +103,7 @@
                 <v-data-table :headers="fields" :items="tableData" fixed-header style="height: 100%" class="mt-3"
                   density="compact" :loading="loading">
                   <template v-slot:item.image="{ item }">
-                    <smiles-image :smiles="item.raw['solvent']"></smiles-image>
+                    <smiles-image :smiles="item['solvent']"></smiles-image>
                   </template>
                 </v-data-table>
               </v-col>

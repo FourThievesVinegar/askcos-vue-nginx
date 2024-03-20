@@ -18,30 +18,30 @@
             <v-data-table v-if="!pending && siteResults.length" :headers="headers" :items="results" class="my-3"
                 :items-per-page="5">
                 <template v-slot:item.task="{ item }">
-                    <smiles-image :smiles="item.columns.task"></smiles-image>
+                    <smiles-image :smiles="item.task"></smiles-image>
                 </template>
                 <template v-slot:item.smiles="{ item }">
-                    <smiles-image :smiles="item.columns.smiles" :reacting-atoms="item.raw.atom_scores"
+                    <smiles-image :smiles="item.smiles" :reacting-atoms="item.atom_scores"
                         :highlight=true></smiles-image>
                 </template>
                 <template v-slot:item.references="{ item }">
-                    <div v-if="item.columns.references === undefined">
-                        <v-btn outlined variant="tonal" @click="emitgetSitesRefs(item.raw.index)">
+                    <div v-if="item.references === undefined">
+                        <v-btn outlined variant="tonal" @click="emitgetSitesRefs(item.index)">
                             Get Training Reaction IDs
                         </v-btn>
                     </div>
                     <div v-else>
-                        <p class="my-3">{{ item.columns.references.length }} training reactions</p>
-                        <v-btn variant="outlined" @click="emitCopyToClipboard(item.columns.references.join('; '))">
+                        <p class="my-3">{{ item.references.length }} training reactions</p>
+                        <v-btn variant="outlined" @click="emitCopyToClipboard(item.references.join('; '))">
                             <v-icon>mdi-content-copy</v-icon> Copy all reaction IDs
                         </v-btn>
                         <br>
                         <v-btn variant="outlined" class="my-2"
-                            :href="createReaxysUrl(item.columns.references.slice(0, 50))">
+                            :href="createReaxysUrl(item.references.slice(0, 50))">
                             <v-icon>mdi-open-in-new</v-icon> Find first 50 in Reaxys
                         </v-btn>
                         <br>
-                        <v-btn variant="outlined" class="mb-3" @click="emitDownloadSitesRefs(item.columns)">
+                        <v-btn variant="outlined" class="mb-3" @click="emitDownloadSitesRefs(item)">
                             <v-icon>mdi-download</v-icon> Export all as Reaxys query
                         </v-btn>
                     </div>

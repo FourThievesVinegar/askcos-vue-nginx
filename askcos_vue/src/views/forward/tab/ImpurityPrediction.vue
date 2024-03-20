@@ -17,19 +17,19 @@
 
             <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" :items-per-page="10">
                 <template #item.prd_smiles="{ item }">
-                    <copy-tooltip :data="item.columns.prd_smiles" :title="'Click to copy: ' + item.columns.prd_smiles">
-                        <smiles-image :smiles="item.columns.prd_smiles" height="80px">
+                    <copy-tooltip :data="item.prd_smiles" :title="'Click to copy: ' + item.prd_smiles">
+                        <smiles-image :smiles="item.prd_smiles" height="80px">
                         </smiles-image>
                     </copy-tooltip>
                 </template>
                 <template #item.avg_insp_score="{ item }">
-                    {{ item.columns.avg_insp_score.toFixed(3) }}
+                    {{ item.avg_insp_score.toFixed(3) }}
                 </template>
                 <template #item.similarity_to_major="{ item }">
-                    {{ item.columns.similarity_to_major.toFixed(3) }}
+                    {{ item.similarity_to_major.toFixed(3) }}
                 </template>
                 <template #item.prd_mw="{ item }">
-                    {{ item.columns.prd_mw.toFixed(3) }}
+                    {{ item.prd_mw.toFixed(3) }}
                 </template>
             </v-data-table>
 

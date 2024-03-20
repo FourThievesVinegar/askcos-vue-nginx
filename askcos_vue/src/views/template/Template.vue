@@ -112,24 +112,24 @@
                             <v-data-table :headers="headers" :items="rxnListItems" :loading="loading"
                                 :no-data-text="'Reaction data not available!'" class="pa-2">
                                 <template #item.reaction_id="{ item }">
-                                    {{ item.raw.reaction_id }}
-                                    <smiles-image v-if="item.raw.reaction_smiles" :smiles="item.raw.reaction_smiles"
+                                    {{ item.reaction_id }}
+                                    <smiles-image v-if="item.reaction_smiles" :smiles="item.reaction_smiles"
                                         input-type="reaction" />
                                 </template>
                                 <template #item.spectators="{ item }">
-                                    {{ item.raw.spectators }}
+                                    {{ item.spectators }}
                                 </template>
                                 <template #item.reference="{ item }">
-                                    <template v-if="item.raw.reference_url">
-                                        <a v-if="item.raw.reference" :href="item.raw.reference_url" target="_blank">
-                                            {{ item.raw.reference }}
+                                    <template v-if="item.reference_url">
+                                        <a v-if="item.reference" :href="item.reference_url" target="_blank">
+                                            {{ item.reference }}
                                         </a>
-                                        <a v-else :href="item.raw.reference_url" target="_blank">
+                                        <a v-else :href="item.reference_url" target="_blank">
                                             link
                                         </a>
                                     </template>
                                     <template v-else>
-                                        {{ item.raw.reference }}
+                                        {{ item.reference }}
                                     </template>
                                 </template>
                             </v-data-table>
