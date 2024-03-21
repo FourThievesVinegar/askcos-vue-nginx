@@ -14,9 +14,8 @@
                 <v-row class="justify-center">
                     <v-col cols="12" md="12" xl="10">
                         <div class="mt-8 mb-5">
-
                             <h5 class="text-h4 text-blue">Hello, {{ username }}!</h5>
-                            <v-alert density="compact" type="warning" title="Warning" class="mt-3" v-if="isAdmin">
+                            <v-alert density="compact" type="warning" title="Warning" class="mt-3" v-if="isAdmin" closable>
                                 <template v-slot:text>
                                     <p class="text-body-1">
                                         We trust you have received the usual lecture from the local System
@@ -33,8 +32,8 @@
                 <v-row dense>
                     <v-col cols="12">
                         <v-sheet rounded="lg" elevation="2" class="pa-5" v-if="isAdmin">
-                            <v-data-table :headers="headers" :items="tableItems" multi-sort :search="''" show-select
-                                v-if="isAdmin" v-model="selection" item-value="username">
+                            <v-data-table-virtual :headers="headers" :items="tableItems" multi-sort show-select
+                                v-if="isAdmin" v-model="selection" item-value="username" height="500" :loading=dataLoading>
                                 <template v-slot:top>
                                     <v-toolbar flat>
                                         <v-toolbar-title>ASKCOS Users</v-toolbar-title>
@@ -79,7 +78,6 @@
                                                 </v-list-item>
                                             </v-list>
                                         </v-menu>
-                                        <!-- <v-divider class="mx-4" inset vertical></v-divider> -->
                                         <v-spacer></v-spacer>
                                         <v-btn color="primary" variant="flat" prepend-icon="mdi-plus"
                                             @click="dialog = true">New
@@ -149,7 +147,7 @@
                                         </v-list>
                                     </v-menu>
                                 </template>
-                            </v-data-table>
+                            </v-data-table-virtual>
                         </v-sheet>
                     </v-col>
                 </v-row>
@@ -305,6 +303,7 @@ const changePwd = ref(false)
 const updateEmail = ref(false)
 const usersDict = ref({});
 const filterSelected = ref(null)
+const dataLoading = ref(true)
 
 function gravatarURL(email) {
     const gtype = localStorage.getItem("gtype");
@@ -317,10 +316,6 @@ const tableItems = computed(() => {
         return items
     }
     return items.filter(item => item.accountType === filterSelected.value);
-})
-
-const guestSelected = computed(() => {
-    return selection.value.some(el => el.startsWith("guest_"))
 })
 
 const formatDateWithoutTimezone = (dateString) => {
@@ -374,6 +369,7 @@ onMounted(async () => {
 })
 
 const fetchData = async () => {
+    dataLoading.value = true
     try {
         // check if the username is admin
         isAdmin.value = await API.get("/api/user/am-i-superuser");
@@ -397,7 +393,6 @@ const fetchData = async () => {
                     }
                 })
                 users.value = Object.values(usersDict.value)
-                console.log(users.value)
             } else {
                 console.error("API did not return an array as expected:", response);
             }
@@ -405,6 +400,7 @@ const fetchData = async () => {
     } catch (error) {
         console.error("Error fetching users:", error);
     }
+    dataLoading.value = false
 }
 
 const addUser = () => {

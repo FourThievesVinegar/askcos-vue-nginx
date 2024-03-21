@@ -776,7 +776,6 @@ export const useResultsStore = defineStore("results", {
             if (node["tforms"]) {
               templateIds.push(...node["tforms"]);
             }
-            console.log(node)
             return {
               id: node["id"],
               rank: node["rank"],
@@ -875,7 +874,6 @@ export const useResultsStore = defineStore("results", {
       body.banned_reactions = loadCollection("reactions");
       try {
         const response = await API.runCeleryTask(url, body);
-        console.log(response);
         return response;
       } catch (error) {
         return [];

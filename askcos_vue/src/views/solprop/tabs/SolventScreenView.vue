@@ -37,15 +37,16 @@
               <v-col cols="12">
                 <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict"
                   :loading="loading">Submit</v-btn>
-                  <v-btn @click="dialog = true" variant="flat" class="mr-5" prepend-icon="mdi-dots-horizontal"
-                    color="primary">
-                    More Options
-                  </v-btn>
-                <v-btn variant="tonal" class="mr-5" @click="customDialog = !customDialog" v-if="solventSet === 'custom'">
+                <v-btn @click="dialog = true" variant="flat" class="mr-5" prepend-icon="mdi-dots-horizontal"
+                  color="primary">
+                  More Options
+                </v-btn>
+                <v-btn variant="tonal" class="mr-5" @click="customDialog = !customDialog"
+                  v-if="solventSet === 'custom'">
                   Save custom solvent set
                 </v-btn>
-                <v-btn variant="tonal" class="mr-5" color="red" v-if="Object.keys(customSolventSets).includes(solventSet)"
-                  @click="deleteSolventSet">
+                <v-btn variant="tonal" class="mr-5" color="red"
+                  v-if="Object.keys(customSolventSets).includes(solventSet)" @click="deleteSolventSet">
                   Delete custom solvent set
                 </v-btn>
                 <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0" @click="clear(false)">
@@ -66,8 +67,8 @@
             <v-row>
               <v-col cols="12" md="12">
                 <div class="d-flex flex-row justify-center align-center">
-                  <v-select label="Calculation Method" variant="outlined" v-model="selectedMethod" :items="methodOptions"
-                    hide-details class="mr-4">
+                  <v-select label="Calculation Method" variant="outlined" v-model="selectedMethod"
+                    :items="methodOptions" hide-details class="mr-4">
                   </v-select>
                   <v-select label="Units" variant="outlined" v-model="selectedUnits" :items="unitOptions" hide-details
                     class="mr-4">
@@ -143,86 +144,87 @@
       </v-card>
     </v-dialog>
 
-       <v-dialog v-model="showUploadModal" max-width="600px">
-        <v-card>
-          <v-card-title class="mt-2">
-            <v-col cols="12">Upload file</v-col>
-          </v-card-title>
-          <v-card-text>
-            <v-row>
-              <v-col cols="12" class="mb-2">
-                <span>
-                  See Model Input/Output Details for notes on file format.
-                </span>
-              </v-col>
-            </v-row>
+    <v-dialog v-model="showUploadModal" max-width="600px">
+      <v-card>
+        <v-card-title class="mt-2">
+          <v-col cols="12">Upload file</v-col>
+        </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col cols="12" class="mb-2">
+              <span>
+                See Model Input/Output Details for notes on file format.
+              </span>
+            </v-col>
+          </v-row>
 
-            <v-row>
-              <v-col cols="12">
-                <v-file-input label="File" v-model="uploadFile" :rules="[v => !!v || 'File is required']"
-                  density="comfortable" variant="outlined" clearable></v-file-input>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="showUploadModal = false">Close</v-btn>
-            <v-btn color="green darken-1" text
-              @click="() => { showUploadModal = false; handleUploadSubmit() }">Upload</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+          <v-row>
+            <v-col cols="12">
+              <v-file-input label="File" v-model="uploadFile" :rules="[v => !!v || 'File is required']"
+                density="comfortable" variant="outlined" clearable></v-file-input>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="showUploadModal = false">Close</v-btn>
+          <v-btn color="green darken-1" text
+            @click="() => { showUploadModal = false; handleUploadSubmit() }">Upload</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
-      <v-dialog v-model="dialog" width="auto" class="justify-center align-center">
-        <v-card>
-          <v-card-title class="headline">
-            Additional Information
-          </v-card-title>
-          <v-divider></v-divider>
-          <v-card-text class="pa-3">
-            <v-expand-transition>
-              <v-expansion-panels v-model="panel" multiple>
-                <v-expansion-panel title="Reference Information (Optional)" class="text-primary">
-                  <v-expansion-panel-text class="text-black">
-                    <v-text-field variant="outlined" label="Ref. Solvent" v-model="refSolvent">
-                      <template v-slot:append-inner>
-                        <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('refSolvent')">Draw</v-btn>
-                      </template>
-                    </v-text-field>
-                    <div v-if="!!refSolvent" class="my-3">
-                      <smiles-image :smiles="refSolvent" height="100px"></smiles-image>
-                    </div>
-                    <v-text-field variant="outlined" label="Ref. Solubility (log10(mol/L))"
-                      v-model="refSolubility"></v-text-field>
-                    <v-text-field variant="outlined" label="Ref. Temperature (K)" v-model="refTemperature"></v-text-field>
-                  </v-expansion-panel-text>
-                </v-expansion-panel>
-                <v-expansion-panel title="Solute Information (Optional)" class="text-primary">
-                  <v-expansion-panel-text class="text-black">
-                    <v-text-field variant="outlined" label="ΔHsub298 (kcal/mol)" v-model="soluteHsub"></v-text-field>
-                    <v-text-field variant="outlined" label="Cpg298 (cal/mol/K)" v-model="soluteCpg"></v-text-field>
-                    <v-text-field variant="outlined" label="Cps298 (cal/mol/K)" v-model="soluteCps"></v-text-field>
-                  </v-expansion-panel-text>
-                </v-expansion-panel>
-              </v-expansion-panels>
-            </v-expand-transition>
-          </v-card-text>
-          <v-divider></v-divider>
-          <v-card-actions class="d-flex justify-end pa-3">
-            <v-btn class="mr-2" variant="tonal" color="success" @click="dialog = false">
-              Save
-            </v-btn>
-            <v-btn variant="tonal" color="primary" @click="() => { dialog = false; predict() }">
-              Run
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+    <v-dialog v-model="dialog" width="auto" class="justify-center align-center">
+      <v-card>
+        <v-card-title class="headline">
+          Additional Information
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="pa-3">
+          <v-expand-transition>
+            <v-expansion-panels v-model="panel" multiple>
+              <v-expansion-panel title="Reference Information (Optional)" class="text-primary">
+                <v-expansion-panel-text class="text-black">
+                  <v-text-field variant="outlined" label="Ref. Solvent" v-model="refSolvent">
+                    <template v-slot:append-inner>
+                      <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
+                        @click="openKetcher('refSolvent')">Draw</v-btn>
+                    </template>
+                  </v-text-field>
+                  <div v-if="!!refSolvent" class="my-3">
+                    <smiles-image :smiles="refSolvent" height="100px"></smiles-image>
+                  </div>
+                  <v-text-field variant="outlined" label="Ref. Solubility (log10(mol/L))"
+                    v-model="refSolubility"></v-text-field>
+                  <v-text-field variant="outlined" label="Ref. Temperature (K)" v-model="refTemperature"></v-text-field>
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+              <v-expansion-panel title="Solute Information (Optional)" class="text-primary">
+                <v-expansion-panel-text class="text-black">
+                  <v-text-field variant="outlined" label="ΔHsub298 (kcal/mol)" v-model="soluteHsub"></v-text-field>
+                  <v-text-field variant="outlined" label="Cpg298 (cal/mol/K)" v-model="soluteCpg"></v-text-field>
+                  <v-text-field variant="outlined" label="Cps298 (cal/mol/K)" v-model="soluteCps"></v-text-field>
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+            </v-expansion-panels>
+          </v-expand-transition>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions class="d-flex justify-end pa-3">
+          <v-btn class="mr-2" variant="tonal" color="success" @click="dialog = false">
+            Save
+          </v-btn>
+          <v-btn variant="tonal" color="primary" @click="() => { dialog = false; predict() }">
+            Run
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
   </v-container>
   <solubility-modal :visible="showInfo" width="auto" @close-dialog="$event => showInfo = $event"></solubility-modal>
 </template>
-  
+
 <script>
 import SmilesImage from "@/components/SmilesImage";
 import SmilesInput from "@/components/SmilesInput";
@@ -284,6 +286,7 @@ export default {
       showInfo: false,
       currentInputSource: '',
       showKetcher: false,
+      showUploadModal: false,
     }
   },
   setup() {
@@ -571,7 +574,7 @@ export default {
   },
 }
 </script>
-  
+
 <style scoped>
 #solvent-screen-left-pane {
   overflow-y: auto;
