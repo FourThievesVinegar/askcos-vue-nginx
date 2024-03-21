@@ -81,7 +81,7 @@
       </v-container>
     </v-toolbar>
     <div v-if="!isCanvasEmpty">
-      <div id="network" :class="visible ? 'open-toolbar' : 'close-toolbar'"></div>
+      <div id="network" :class="visible ? 'open-toolbar' : 'close-toolbar'" ref="network"></div>
       <div v-if="treeViewEnabled" id="tree-view-overlay">
         <v-btn-group variant="outlined" density="comfortable" divided :border="true">
           <v-btn icon="mdi mdi-chevron-double-left" @click="changeTreeIndex('first')"
@@ -566,9 +566,8 @@ export default {
     removeTag(index) {
       this.savedResultTags.splice(index, 1);
     },
-    createNetwork({ id, options, callback }) {
-      const elem = document.getElementById(id);
-      const network = new Network(elem, this.resultsStore.dispGraph, options);
+    createNetwork({options, callback }) {
+      const network = new Network(this.$refs.network, this.resultsStore.dispGraph, options);
       callback(network);
     },
     initializeNetwork() {
@@ -578,7 +577,6 @@ export default {
       // Also, note that this.network cannot be initialized in data as a reactive property
       // Otherwise, vue reactivity interferes with vis-network physics and event handlers
       this.createNetwork({
-        id: "network",
         options: JSON.parse(JSON.stringify(this.settingsStore.visjsOptions)),
         callback: (network) => {
           this.network = network;

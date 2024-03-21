@@ -215,7 +215,7 @@
                     <v-btn variant="tonal" @click="addTreeToIpp(currentTree)"> Add to IPP </v-btn>
                 </div>
                 <v-sheet class="position-relative elevation-2" rounded="lg">
-                    <div id="graph"></div>
+                    <div id="graph" ref="graph"></div>
                     <div v-if="currentTreeData" id="tree-data-overlay">
                         <table>
                             <tr v-for="(value, key) in currentTreeData" :key="key">
@@ -738,7 +738,7 @@ export default {
                 return;
             }
             this.clearSelection();
-            const elem = document.getElementById("graph");
+            const elem = this.$refs.graph;
             this.networkData = this.loadNodeLinkGraph(this.currentTree, true);
             this.network = initializeNetwork(this.networkData, elem, true);
             this.network.on("selectNode", this.showNode);

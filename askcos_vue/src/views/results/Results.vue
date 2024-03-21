@@ -225,7 +225,6 @@ const treeDialog = ref(false);
 const viewSettings = ref(null);
 const targetSmiles = ref("")
 const refreshInterval = ref(null);
-const showLoadingIndicator = ref(true);
 const clickRow = (_event, { item }) => {
   const index = expanded.value.findIndex(i => i === item.key);
   if (index !== -1) {
@@ -236,7 +235,7 @@ const clickRow = (_event, { item }) => {
 }
 
 const checkAndRefreshResults = () => {
-  const hasNonCompletedResults = allResults.value.some(result => result.result_state !== "completed");
+  const hasNonCompletedResults = allResults.value.some(result => result.result_state === "started");
 
   if (hasNonCompletedResults) {
     if (!refreshInterval.value) {

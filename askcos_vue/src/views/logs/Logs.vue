@@ -1,23 +1,24 @@
 <template>
     <v-container fluid>
         <v-row class="justify-center">
-            <v-col cols="12" md="12" lg="12" xl="10">
-                <div class="mt-8 mb-5">
-                    <v-breadcrumbs class="pa-0" :items="['Home', 'Logs']"></v-breadcrumbs>
-                    <h1>
+            <v-col cols="12" md="12" xl="10">
+                <div class="my-4">
+                    <v-breadcrumbs class="pa-0 text-body-1" :items="['Home', 'Logs']"></v-breadcrumbs>
+                    <h4 class="text-h4 text-primary">
                         User's FastAPI Logs
-                    </h1>
+                    </h4>
                 </div>
             </v-col>
         </v-row>
         <v-row class="justify-center">
             <v-col cols="12" md="12" lg="12" xl="10" class="d-flex align-center justify-center">
-                <v-expansion-panels multiple density="compact" v-if="fastapiStore.logs.length !== 0" v-model="logsOpened">
+                <v-expansion-panels multiple density="compact" v-if="fastapiStore.logs.length !== 0"
+                    v-model="logsOpened">
                     <v-expansion-panel v-for="(log, index) in fastapiStore.logs" :key="index" density="compact">
                         <template v-slot:title>
                             <v-chip :color="methodToColors[log.method]">{{ log.method }}</v-chip> <span
                                 class="text-body-1 ml-2"><b>{{
-                                    log.endpoint }}</b></span>
+                        log.endpoint }}</b></span>
                         </template>
                         <template v-slot:text>
                             <v-row>
