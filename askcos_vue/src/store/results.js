@@ -239,7 +239,6 @@ export const useResultsStore = defineStore("results", {
     importTreeBuilderResult({ data, numTrees }) {
       const settings = useSettingsStore();
       let resultObj = data;
-      console.log(resultObj)
       let target = resultObj["target_smiles"].trim();
       this.setTarget(target);
       // Disable precusrsor clustering by default for tree builder results

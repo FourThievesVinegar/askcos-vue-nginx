@@ -295,11 +295,23 @@
 
   <v-snackbar v-model="snackbar" vertical>
     <p>Tree builder job complete! Visit results page for more details</p>
-    <a :href="`/network?tab=TE&id=${this.treeID}`" role="button">
-      <p>Visit results</p>
-    </a>
+    <v-btn :href="`/network?tab=TE&id=${this.treeID}`" variant="outlined" class="text-white">
+      Visit results
+    </v-btn>
     <template v-slot:actions>
-      <v-btn color="indigo" variant="text" @click="snackbar = false">
+      <v-btn color="white" variant="text" @click="snackbar = false" class="text-white">
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
+
+  <v-snackbar v-model="snackbarIPP" vertical>
+    <p>Interactive Path Planner job complete!</p>
+    <v-btn :to="`/network?tab=IPP`" @click="snackbarIPP = false" variant="outlined" class="text-white">
+      Visit IPP
+    </v-btn>
+    <template v-slot:actions>
+      <v-btn color="white" variant="text" @click="snackbarIPP = false" class="text-white">
         Close
       </v-btn>
     </template>
@@ -359,6 +371,7 @@ export default {
       selectedMode: null,
       treeID: null,
       snackbar: false,
+      snackbarIPP: false,
       visible: true,
       treeBuilderModalShow: false,
       networkInitialized: false,
@@ -566,7 +579,7 @@ export default {
     removeTag(index) {
       this.savedResultTags.splice(index, 1);
     },
-    createNetwork({options, callback }) {
+    createNetwork({ options, callback }) {
       const network = new Network(this.$refs.network, this.resultsStore.dispGraph, options);
       callback(network);
     },
@@ -879,6 +892,9 @@ export default {
         })
         .finally(() => {
           this.pendingTasks -= 1;
+          if (this.$route.path !== '/network' && this.$route.query.tab !== "IPP") {
+            this.snackbarIPP = true;
+          }
         });
     },
     initTargetDataNode(update = true) {
@@ -948,6 +964,9 @@ export default {
         })
         .finally(() => {
           this.pendingTasks -= 1;
+          if (this.$route.path !== '/network' && this.$route.query.tab !== "IPP") {
+            this.snackbarIPP = true;
+          }
           this.network.unselectAll();
         });
     },
