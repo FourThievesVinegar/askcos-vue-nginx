@@ -81,7 +81,7 @@
                   <v-tooltip bottom text="Test"> 
                     <!-- notes -->
                     <template v-slot:activator="{ tooltipprop }">
-                  <div v-bind="tooltipprop" v-show="isAdmin = false">
+                  <div v-bind="tooltipprop" v-show="isAdmin">
                     <v-btn  color="orange-accent-4" v-bind="props" append-icon="mdi mdi-menu-down" variant="flat" >
                       Add Compound
                     </v-btn>
