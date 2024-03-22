@@ -14,22 +14,26 @@
                     </v-btn>
                   </template>
                   <v-list>
-
                     <template v-for="(item, index) in favoritesMenu">
                       <v-list-item :to="item.link" v-if="item.selected" :key="index">
                         <v-list-item-title>{{ item.title }}</v-list-item-title>
                       </v-list-item>
                     </template>
-
                   </v-list>
                   <v-divider></v-divider>
                   <v-btn prepend-icon="mdi-pencil" @click="showEditFav = true">Edit Faviorites</v-btn>
                 </v-menu>
+                <v-switch v-model="nameResolver" class="ml-3" hide-details color="primary" inset density="compact" true-icon="mdi-check">
+                  <template v-slot:label>
+                    Global Name Resolver: {{ nameResolver ? "ON" : "OFF" }}
+                  </template>
+                </v-switch>
                 <v-spacer></v-spacer>
                 <div v-if="username">
                   <span class="text-body-1 mr-1">Logged in as{{ superuser ? " superuser" : "" }},</span>
-                  <v-chip color="primary" to="/admin" :disabled="username.startsWith('guest_')"><v-icon start icon="mdi-account-circle"></v-icon><span
-                      class="text-body-1"><strong>{{ username }}</strong></span></v-chip>
+                  <v-chip color="primary" to="/admin" :disabled="username.startsWith('guest_')"><v-icon start
+                      icon="mdi-account-circle"></v-icon><span class="text-body-1"><strong>{{ username
+                        }}</strong></span></v-chip>
                 </div>
               </v-col>
             </v-row>
@@ -79,7 +83,7 @@
                 and the National Institutes of Health (1U18TR004149-01).
               </template>
             </v-alert>
-            <v-expansion-panels class="mb-2 text-body-1" >
+            <v-expansion-panels class="mb-2 text-body-1">
               <v-expansion-panel class="text-blue-darken-3">
 
                 <template v-slot:title><v-icon class="mr-1">mdi mdi-lifebuoy</v-icon><strong>Support</strong></template>
@@ -164,6 +168,7 @@ const show = ref(false);
 const showEditFav = ref(false);
 const createConfirm = useConfirm();
 const router = useRouter();
+const nameResolver = ref(false);
 
 const username = ref(localStorage.getItem("username"))
 

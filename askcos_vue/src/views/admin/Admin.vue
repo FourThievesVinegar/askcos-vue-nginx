@@ -307,7 +307,7 @@ const dataLoading = ref(true)
 
 function gravatarURL(email) {
     const gtype = localStorage.getItem("gtype");
-    return gravatar.url(email, { d: gtype ?? "wavatar", s: '300' });
+    return gravatar.url(email, { d: gtype ?? "mp", s: '300' });
 }
 
 const tableItems = computed(() => {

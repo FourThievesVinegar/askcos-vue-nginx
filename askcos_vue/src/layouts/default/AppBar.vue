@@ -142,7 +142,7 @@ function logout() {
 
 function gravatarURL(email) {
   const gtype = localStorage.getItem("gtype");
-  return gravatar.url(email, { d: gtype ?? "wavatar" });
+  return gravatar.url(email, { d: gtype ?? "mp" });
 }
 
 </script>

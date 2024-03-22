@@ -198,14 +198,15 @@
                     @click="getMappedSmiles(smiles)">Evaluate</v-btn>
                   <v-btn v-if="!!mappedSmiles" prepend-icon="mdi mdi-play" variant="tonal"
                     @click="showMappedSmiles = !showMappedSmiles"> {{ showMappedSmiles ? 'Hide' :
-                      'Show' }}</v-btn>
+      'Show' }}</v-btn>
                   <v-menu location="bottom" id="mapper-settings" :close-on-content-click="false">
                     <template v-slot:activator="{ props }">
                       <v-btn v-bind="props" icon="mdi mdi-menu-down" variant="tonal" color="primary" />
                     </template>
                     <v-card width="auto" min-width="250px">
-                      <v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary" @click="getMappedSmiles(smiles)"
-                        class="pa-3 justify-center" :disabled="mappedSmiles === undefined">Re-evaluate</v-btn>
+                      <v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                        @click="getMappedSmiles(smiles)" class="pa-3 justify-center"
+                        :disabled="mappedSmiles === undefined">Re-evaluate</v-btn>
                       <v-divider class="ma-2" :thickness="2"></v-divider>
                       <p class="text-subtitle-2 pl-3">Quick Settings</p>
                       <v-list density="compact">
@@ -300,7 +301,7 @@
               </template>
               <v-btn variant="tonal" color="primary" v-if="classificationResults.length"
                 @click="showClassificationResults = !showClassificationResults"> {{ showClassificationResults ? 'Hide' :
-                  'Show' }}</v-btn>
+      'Show' }}</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
