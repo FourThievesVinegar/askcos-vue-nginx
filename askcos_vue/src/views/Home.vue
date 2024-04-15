@@ -23,11 +23,22 @@
                   <v-divider></v-divider>
                   <v-btn prepend-icon="mdi-pencil" @click="showEditFav = true">Edit Faviorites</v-btn>
                 </v-menu>
-                <v-switch v-model="nameResolver" class="ml-3" hide-details color="primary" inset density="compact" true-icon="mdi-check">
-                  <template v-slot:label>
-                    Global Name Resolver: {{ nameResolver ? "ON" : "OFF" }}
+                <v-tooltip max-width="200px" location="bottom">
+                  <template v-slot:activator="{ props }">
+                    <v-switch v-bind="props" v-model="nameResolver" class="ml-3" hide-details color="primary" inset density="compact"
+                      true-icon="mdi-check">
+                      <template v-slot:label>
+                        Global Name Resolver: {{ nameResolver ? "ON" : "OFF" }}
+                      </template>
+                    </v-switch>
                   </template>
-                </v-switch>
+                  <p v-if="!!nameResolver">Connection to NIH name resolver is ON, structures may be sent to an external
+                    service.</p>
+                  <span v-else>Connection to NIH name resolver is OFF, structures will NOT be sent to an external
+                    service.
+                    Target query must be a SMILES string.</span>
+                </v-tooltip>
+
                 <v-spacer></v-spacer>
                 <div v-if="username">
                   <span class="text-body-1 mr-1">Logged in as{{ superuser ? " superuser" : "" }},</span>
