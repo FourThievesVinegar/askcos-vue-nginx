@@ -18,7 +18,7 @@
                             <v-icon start>
                                 mdi-factory
                             </v-icon>
-                            MCTS Tree Builder
+                            Tree Builder
                         </v-tab>
                         <v-tab value="IPPC">
                             <v-icon start>
@@ -240,12 +240,12 @@
                         <v-window-item value="mctsTB">
                             <v-container fluid>
                                 <v-expansion-panels multiple variant="popout" color="grey-lighten-4" v-model="mctsPanels">
-                                    <v-expansion-panel title="MCTS algorithm options">
+                                    <v-expansion-panel title="Tree Search algorithm options">
                                         <v-expansion-panel-text>
                                             <setting-input label="Tree builder version" label-for="tbVersion"
                                                 help-text="Which tree builder algorithm to use.">
-                                                <v-select :model-value="tbVersion" disabled variant="outlined"
-                                                    density="compact" hide-details class="my-2">
+                                                <v-select :model-value="tbVersion" variant="outlined"
+                                                    density="compact" hide-details class="my-2" :items="tbAlgo" @update:modelValue="($event) => tbVersion = $event">
                                                 </v-select>
                                             </setting-input>
                                             <setting-input label="Expansion time (seconds)" label-for="expansionTime"
@@ -613,6 +613,10 @@ export default {
     },
     data() {
         return {
+            tbAlgo: [
+                {value: "mcts", title: "MCTS"},
+                {value: "retro_star", title: "Retro Star"},
+            ],
             modelStatus: [],
             templateSetsList: [],
             buyablesSources: [],
@@ -962,8 +966,11 @@ export default {
         },
         tbVersion: {
             get() {
-                return "mcts";
+                return this.settingsStore.tree_builder_settings.backend;
             },
+            set(value) {
+                this.settingsStore.tree_builder_settings.backend = value;
+            }
         },
         buyableLogic: {
             get() {
