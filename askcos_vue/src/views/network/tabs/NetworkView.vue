@@ -772,7 +772,7 @@ export default {
     mctsTreeBuilderAPICall() {
       this.saveAllSettings();
       this.saveTarget();
-      const url = "/api/tree-search/mcts/call-async";
+      const url = "/api/tree-search/controller/call-async";
       const body = {
         smiles: this.resultsStore.target,
         description: this.tb.taskName || this.resultsStore.target

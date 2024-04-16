@@ -33,6 +33,7 @@ const interactive_path_planner_settings_default = {
 }
 
 const tree_builder_settings_default = {
+  backend: "mcts",
   expand_one_options: {
     template_max_count: 1000,
     template_max_cum_prob: 0.999,
