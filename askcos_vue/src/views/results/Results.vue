@@ -108,7 +108,7 @@
       </v-card-title>
       <v-divider></v-divider>
       <v-card-text class="pt-0">
-        <tb-settings-table v-if="viewSettings" :settings="viewSettings" :targetSmiles="targetSmiles"></tb-settings-table>
+        <tb-settings-table v-if="viewSettings" :settings="viewSettings" :targetSmiles="targetSmiles" :tbVersion="tbVersion"></tb-settings-table>
         <v-alert v-else type="warning" class="mb-0" dense text>Settings not available.</v-alert>
       </v-card-text>
       <v-divider></v-divider>
@@ -225,6 +225,7 @@ const treeDialog = ref(false);
 const viewSettings = ref(null);
 const targetSmiles = ref("")
 const refreshInterval = ref(null);
+const tbVersion = ref(null);
 const clickRow = (_event, { item }) => {
   const index = expanded.value.findIndex(i => i === item.key);
   if (index !== -1) {
@@ -350,6 +351,7 @@ const openSetting = async (id) => {
       treeDialog.value = true
       targetSmiles.value = json.target_smiles
       viewSettings.value = json.settings
+      tbVersion.value = json.result.version
     }
   } finally {
     pendingTasks.value -= 1;

@@ -35,11 +35,11 @@
                 <td>Model Name: {{ option.retro_model_name }}</td>
               </tr>
             </template>
-            <!-- <tr>
+            <tr>
             <th>Tree builder version:</th>
-            <td>{{ tbVersion > 1000 ? `C++ v${tbVersion % 1000}` : `v${tbVersion}` }}</td>
+            <td>{{ tbVersion === 2 ? "MCTS" : "Retro Star" }}</td>
             <td></td>
-          </tr> -->
+          </tr>
             <tr>
               <th>Expansion settings:</th>
               <td>Max. depth: {{ settings.build_tree_options.max_depth }}</td>
@@ -172,6 +172,10 @@ export default {
       type: String,
       default: ''
     },
+    tbVersion: {
+      type: String || Number,
+      default: 2
+    }
   },
   computed: {
     // tbVersion() {
