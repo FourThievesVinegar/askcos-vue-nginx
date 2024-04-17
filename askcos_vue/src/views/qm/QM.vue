@@ -34,7 +34,7 @@
                         </v-col>
                     </v-row>
                     <v-row class="justify-center" density="compact">
-                        <v-col  cols="12" md="10" my="10">
+                        <v-col cols="12" md="10" my="10">
                             <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict"
                                 :loading="!batch && loading">Submit</v-btn>
                             <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0" @click="clear()">
@@ -116,10 +116,11 @@
 
 <script setup>
 import { API } from "@/common/api";
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage.vue";
-import { useConfirm } from 'vuetify-use-dialog'
+import { useConfirm } from 'vuetify-use-dialog';
+import * as Papa from "papaparse";
 
 
 const smiles = ref('');
@@ -132,25 +133,20 @@ const pendingTasks = ref(0);
 const itemsPerPage = ref(10);
 
 const selectedColumnCategories = ref([
-    'npa_e',
-    'npa_e_pos',
+    'NPA',
 ]);
 
 const columnCategories = ref({
-    'Input Ref. Data': ['ref_solvent', 'ref_solubility', 'ref_temp'],
-    'Input Solute Data': ['hsub298', 'cp_gas_298', 'cp_solid_298'],
-    'logST': ['log_st_1', 'log_st_2'],
-    'Solubility(T) [mg/mL]': ['st_1', 'st_2'],
-    'dGsolvT': ['dg_solv_t'],
-    'dHsolvT': ['dh_solv_t'],
-    'dSsolvT': ['ds_solv_t'],
-    'logS298': ['log_s_298', 'uncertainty_log_s_298'],
-    'Solubility(298) [mg/mL]': ['s_298'],
-    'dGsolv298': ['dg_solv_298', 'uncertainty_dg_solv_298'],
-    'dHsolv298': ['dh_solv_298', 'uncertainty_dh_solv_298'],
-    'Pred. Solute Data': ['pred_hsub298', 'pred_cpg298', 'pred_cps298'],
-    'Solute Abraham Parameters': ['E', 'S', 'A', 'B', 'L', 'V'],
-    'Messages': ['error_message', 'warning_message'],
+    "NPA": ["npa_e", "npa_e_pos", "npa_e_neg", "npa_parr_func_e_pos", "npa_parr_func_e_neg"],
+    "Sheilding Constant (ppm)": ["sheilding_constant_ppm"],
+    "Valence": ["valence_1s", "valence_2s", "valence_2p", "valence_3s", "valence_3p", "valence_4s", "valence_4p"],
+    "Bond Props": ["bond_index", "bond_length", "bond_charge"],
+    "Natural Ionicity (unitless)": ["natural_ion"],
+    "Dipole Moment (debye)": ["dipole_moment"],
+    "Traceless Quadrupole Moment (debye⋅Å)": ["traceless"],
+    "HOMO/LUMO (hartree)": ["HOMO_3_LUMO", "HOMO_3_LUMO_1", "HOMO_3_LUMO_2", "HOMO_3_LUMO_3", "HOMO_2_LUMO", "HOMO_2_LUMO_1", "HOMO_2_LUMO_2", "HOMO_2_LUMO_3", "HOMO_1_LUMO", "HOMO_1_LUMO_2", "HOMO_1_LUMO_3", "HOMO_LUMO", "HOMO_LUMO_1", "HOMO_LUMO_2", "HOMO_LUMO_3"],
+    "IP (hartree)": ["IP"],
+    "EA (hartree)": ["EA"]
 });
 
 const fields = ref([]);
@@ -230,7 +226,6 @@ const predict = () => {
     API.runCeleryTask(url, body)
         .then(output => {
             results.value.push(...output.result)
-            console.log(results.value)
         })
         .catch(async error => {
             const errorObj = JSON.parse(error.message)
@@ -244,21 +239,23 @@ const predict = () => {
         })
 }
 
-const deselectColumn = (item) => {
+const deselectColumn = async (item) => {
     const index = selectedColumnCategories.value.indexOf(item.title);
     if (index !== -1) {
         selectedColumnCategories.value.splice(index, 1);
     }
-    this.$nextTick(() => {
-        onSelectedCategory();
-    });
+    await nextTick()
+    onSelectedCategory();
+
 };
-const toggleAllCategories = () => {
-    if (selectedColumnCategories.value.length < allfields.length) {
-        selectedColumnCategories.value = allfields.map(category => category.key);
+const toggleAllCategories = async () => {
+    console.log(allfields.value)
+    if (selectedColumnCategories.value.length < allfields.value.length) {
+        selectedColumnCategories.value = allfields.value.map(category => category.key);
     } else {
         selectedColumnCategories.value = [];
     }
+    await nextTick()
     onSelectedCategory();
 };
 const remove = (key) => {
@@ -274,11 +271,11 @@ const onSelectedCategory = (value) => {
     const baseFields = [
         { key: 'smiles', title: apiKeyToField.value['smiles'], sortable: true, removable: false },
     ];
-    // selectedColumnCategories.value.forEach((category) => {
-    //     columnCategories.value[category].forEach((key) => {
-    //         baseFields.push({ key: key, title: apiKeyToField.value[key], sortable: true, removable: true });
-    //     });
-    // });
+    selectedColumnCategories.value.forEach((category) => {
+        columnCategories.value[category].forEach((key) => {
+            baseFields.push({ key: key, title: apiKeyToField.value[key], sortable: false, removable: true });
+        });
+    });
 
     fields.value = baseFields;
 };
@@ -290,4 +287,25 @@ const allfields = computed(() => {
 const lastPage = computed(() => {
     return Math.ceil(results.value.length / itemsPerPage.value);
 })
+
+const downloadCSV = () => {
+    if (!results.value.length) {
+        alert('There are no results to download!')
+        return
+    }
+    let downloadData = Papa.unparse(results.value)
+    let blob = new Blob([downloadData], { type: 'data:text/csv;charset=utf-8' })
+    saveAs(blob, "qm.csv")
+};
+const downloadJSON = () => {
+    if (!results.value.length) {
+        alert('There are no results to download!')
+        return
+    }
+    let downloadData = JSON.stringify(results.value)
+    let blob = new Blob([downloadData], { type: 'data:text/json;charset=utf-8' })
+    saveAs(blob, 'qm.json')
+};
+
+onSelectedCategory();
 </script>

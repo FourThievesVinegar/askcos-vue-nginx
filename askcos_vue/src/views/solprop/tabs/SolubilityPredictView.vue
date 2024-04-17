@@ -434,7 +434,6 @@ export default {
       API.runCeleryTask(url, body)
         .then(output => {
           this.results.push(...output)
-          console.log(this.results)
         })
         .catch(async error => {
           const errorObj = JSON.parse(error.message)
