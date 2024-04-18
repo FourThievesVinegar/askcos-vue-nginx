@@ -194,7 +194,6 @@ export const useResultsStore = defineStore("results", {
     importIppResult({ data }) {
       const settings = useSettingsStore();
       let resultObj = data;
-      console.log(data)
       // Update saved result info
       let savedResultInfo = {
         id: resultObj["result_id"],
@@ -383,8 +382,9 @@ export const useResultsStore = defineStore("results", {
             reaction["score"]
           );
           if (
+            reaction["template"] &&
             existingNode["templateScore"] <=
-            reaction["template"]["template_score"]
+              reaction["template"]["template_score"]
           ) {
             existingNode["templateRank"] =
               reaction["template"]["template_rank"];
@@ -789,7 +789,8 @@ export const useResultsStore = defineStore("results", {
               precursors: node["precursor_smiles"].split("."),
               precursorSmiles: node["precursor_smiles"],
               numExamples: node["num_examples"],
-              necessaryReagent: node["template"]?.necessary_reagent ?? undefined,
+              necessaryReagent:
+                node["template"]?.necessary_reagent ?? undefined,
               numRings: node["num_rings"],
               rmsMolwt: node["rms_molwt"],
               scscore: node["scscore"],

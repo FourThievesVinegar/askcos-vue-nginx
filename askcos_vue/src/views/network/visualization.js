@@ -16,7 +16,7 @@ function getNodeColor(data, target) {
     if (data.asReactant || data.asProduct) {
       return "#4EB265"; // green
     }
-    return "#F6C141"; // yellow
+    return "#FFEB3B"; // yellow
   }
   if (data.asReactant || data.asProduct) {
     return "#E8601C"; // orange
