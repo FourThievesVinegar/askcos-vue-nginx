@@ -109,17 +109,19 @@
                 <smiles-image :smiles="item.smiles" height="80px"></smiles-image>
               </copy-tooltip>
             </template>
-            <template v-slot:item.delete="{ item }">
-              <v-icon @click="deleteBuyable(item._id)" class="text-center">mdi-delete</v-icon>
-            </template>
             <template v-slot:item.lead_time="{ item }">
-              7-21days
+              {{ item.lead_time ? item.lead_time : "Unknown" }}
             </template>
             <template v-slot:item.availability="{ item }">
-              In-Stock
+              {{ item.properties[1].value ? item.properties[1].value : "Unknown" }}
             </template>
             <template v-slot:item.link="{ item }">
-              <v-btn>Buy Now</v-btn>
+              <v-btn :href="item.properties[0].value" target="_blank" append-icon="mdi-open-in-new"
+                :disabled="!item.properties[0].value">Buy Now
+              </v-btn>
+            </template>
+            <template v-slot:item.delete="{ item }">
+              <v-icon @click="deleteBuyable(item._id)" class="text-center">mdi-delete</v-icon>
             </template>
           </v-data-table>
           <div v-else class="text-center">
@@ -273,7 +275,7 @@ const headers = computed(() => {
     { key: 'similarity', title: 'Similarity', align: 'center' },
     { key: 'link', title: 'Link', align: 'center' }
   ]
-  if (buyables.value.length > 0) {
+  if (buyables.value.length > 0 && isAdmin.value) {
     headers.push({
       key: 'delete', title: '', align: 'center'
     })
