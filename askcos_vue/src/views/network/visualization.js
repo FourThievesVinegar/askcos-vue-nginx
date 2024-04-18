@@ -1,5 +1,5 @@
-import { getMolImageUrl } from '@/common/drawing';
-import { num2str } from '@/common/utils';
+import { getMolImageUrl } from "@/common/drawing";
+import { num2str } from "@/common/utils";
 
 function edgeScaling(min, max, total, value) {
   if (value >= 0.25) {
@@ -10,37 +10,42 @@ function edgeScaling(min, max, total, value) {
 
 function getNodeColor(data, target) {
   if (data.id === target) {
-    return '#1965B0'; // blue
-  } if (data.ppg > 0) {
+    return "#1965B0"; // blue
+  }
+  if (data.ppg > 0) {
     if (data.asReactant || data.asProduct) {
-      return '#4EB265'; // green
+      return "#4EB265"; // green
     }
-    return '#F6C141'; // yellow
+    return "#F6C141"; // yellow
   }
   if (data.asReactant || data.asProduct) {
-    return '#E8601C'; // orange
+    return "#E8601C"; // orange
   }
-  return '#DC050C'; // red
+  return "#DC050C"; // red
 }
 
 function makeNodeTitleEl(node) {
-  const el = document.createElement('div');
+  const el = document.createElement("div");
   el.innerHTML = node.id;
-  if ('asReactant' in node) {
+  if ("asReactant" in node) {
     el.innerHTML += `<br>${node.asReactant} precedents as reactant`;
   }
-  if ('asProduct' in node) {
+  if ("asProduct" in node) {
     el.innerHTML += `<br>${node.asProduct} precedents as product`;
   }
-  if ('ppg' in node) {
-    const buyableString = node.ppg > 0 ? `$${node.ppg}/g` : 'not buyable';
+  if ("ppg" in node) {
+    const buyableString = node.ppg > 0 ? `$${node.ppg}/g` : "not buyable";
     el.innerHTML += `<br>${buyableString}`;
   }
   return el;
 }
 
 function makeChemicalDisplayNode({
-  id, data, target, align = false, scale = true,
+  id,
+  data,
+  target,
+  align = false,
+  scale = true,
 }) {
   return {
     id,
@@ -49,22 +54,29 @@ function makeChemicalDisplayNode({
     color: {
       border: getNodeColor(data, target),
     },
-    shape: 'image',
-    image: getMolImageUrl(data, false, true, align ? target : undefined, true, scale ? 80 : undefined),
+    shape: "image",
+    image: getMolImageUrl(
+      data,
+      false,
+      true,
+      align ? target : undefined,
+      true,
+      scale ? 80 : undefined
+    ),
     title: makeNodeTitleEl(data),
-    type: 'chemical',
+    type: "chemical",
   };
 }
 
 function makeReactionDisplayNode({ id, data, detail = false }) {
-    const node = {
+  const node = {
     id,
     smiles: data.id,
     label: `#${data.rank}`,
     font: {
-      align: 'center',
+      align: "center",
     },
-    type: 'reaction',
+    type: "reaction",
   };
 
   if (detail) {
@@ -81,27 +93,25 @@ Template score: ${num2str(data.templateScore)}`;
     node.label = `#${data.rank}`;
   }
 
-  if ('outcomes' in data) {
+  if ("outcomes" in data) {
     node.borderWidth = 2;
-    node.color = { border: '#DC050C' };
-    node.title = 'Selectivity warning! Select this node to see more details';
-  } else if ('selecError' in data) {
+    node.color = { border: "#DC050C" };
+    node.title = "Selectivity warning! Select this node to see more details";
+  } else if ("selecError" in data) {
     node.borderWidth = 2;
-    node.color = { border: '#F6C141' };
+    node.color = { border: "#F6C141" };
   }
 
   return node;
 }
 
-function makeDisplayEdge({
-  id, from, to, value,
-}) {
+function makeDisplayEdge({ id, from, to, value }) {
   const node = {
     id,
     from,
     to,
     color: {
-      color: '#000000',
+      color: "#000000",
       inherit: false,
     },
   };
