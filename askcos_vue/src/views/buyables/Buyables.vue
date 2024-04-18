@@ -78,22 +78,22 @@
               </v-menu>
               <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
                 <template v-slot:activator="{ props }">
-                  <v-tooltip bottom text="Test"> 
+                  <v-tooltip bottom text="Test">
                     <!-- notes -->
                     <template v-slot:activator="{ tooltipprop }">
-                  <div v-bind="tooltipprop" v-show="isAdmin">
-                    <v-btn  color="orange-accent-4" v-bind="props" append-icon="mdi mdi-menu-down" variant="flat" >
-                      Add Compound
-                    </v-btn>
-                    </div>
-                  </template>
+                      <div v-bind="tooltipprop" v-show="isAdmin">
+                        <v-btn color="orange-accent-4" v-bind="props" append-icon="mdi mdi-menu-down" variant="flat">
+                          Add Compound
+                        </v-btn>
+                      </div>
+                    </template>
                   </v-tooltip>
                 </template>
-                  <v-list>
-                    <v-list-item @click="showAddModal = !showAddModal">Add One</v-list-item>
-                    <v-list-item @click="showUploadModal = !showUploadModal">Add Buyable(s)</v-list-item>
-                  </v-list>
-                </v-menu>
+                <v-list>
+                  <v-list-item @click="showAddModal = !showAddModal">Add One</v-list-item>
+                  <v-list-item @click="showUploadModal = !showUploadModal">Add Buyable(s)</v-list-item>
+                </v-list>
+              </v-menu>
             </v-col>
           </v-row>
         </v-sheet>
@@ -111,6 +111,15 @@
             </template>
             <template v-slot:item.delete="{ item }">
               <v-icon @click="deleteBuyable(item._id)" class="text-center">mdi-delete</v-icon>
+            </template>
+            <template v-slot:item.lead_time="{ item }">
+              7-21days
+            </template>
+            <template v-slot:item.availability="{ item }">
+              In-Stock
+            </template>
+            <template v-slot:item.link="{ item }">
+              <v-btn>Buy Now</v-btn>
             </template>
           </v-data-table>
           <div v-else class="text-center">
@@ -257,9 +266,12 @@ const createSnackbar = useSnackbar()
 const headers = computed(() => {
   let headers = [
     { key: 'smiles', title: 'SMILES', align: 'center', width: '500px' },
+    { key: "availability", title: 'Availability', align: 'center' },
     { key: 'ppg', title: 'Price ($/g)', align: 'center' },
+    { key: 'lead_time', title: 'Lead Time', align: 'center' },
     { key: 'source', title: 'Source', align: 'center' },
-    { key: 'similarity', title: 'Similarity', align: 'center' }
+    { key: 'similarity', title: 'Similarity', align: 'center' },
+    { key: 'link', title: 'Link', align: 'center' }
   ]
   if (buyables.value.length > 0) {
     headers.push({
