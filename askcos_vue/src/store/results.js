@@ -917,6 +917,9 @@ export const useResultsStore = defineStore("results", {
 
       await strategyPromise.then(
         async (response) => {
+          if (response.status_code === 500) {
+            alert(response.message);
+          }
           if (settings.modelRank) {
             for (const [idx, precursor] of Object.entries(response.result)) {
               const addedReactions = await this.addRetroResultToDataGraph({

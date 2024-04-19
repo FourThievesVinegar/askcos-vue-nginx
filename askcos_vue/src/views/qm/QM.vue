@@ -99,7 +99,7 @@
             <v-col v-show="!results.length && pendingTasks === 0" cols="12" class="pa-0 mt-4">
                 <v-sheet elevation="2" rounded="lg" class="pa-4">
                     <div class="d-flex flex-column align-center justify-center text-center">
-                        <img src="@/assets/emptySolProp.svg" :width="400" class="mb-3" cover />
+                        <img src="@/assets/qm.svg" :width="400" class="mb-3" cover />
                         <h2>No Results</h2>
                         <p class="text-body-1">Begin a new prediction above</p>
                     </div>

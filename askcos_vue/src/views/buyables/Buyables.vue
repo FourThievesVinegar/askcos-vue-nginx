@@ -109,11 +109,14 @@
                 <smiles-image :smiles="item.smiles" height="80px"></smiles-image>
               </copy-tooltip>
             </template>
+            <template v-slot:item.availability="{ item }">
+              {{ item.properties[1].value ? item.properties[1].value : "Unknown" }}
+            </template>
             <template v-slot:item.lead_time="{ item }">
               {{ item.lead_time ? item.lead_time : "Unknown" }}
             </template>
-            <template v-slot:item.availability="{ item }">
-              {{ item.properties[1].value ? item.properties[1].value : "Unknown" }}
+            <template v-slot:item.similarity="{ item }">
+              {{ item.similarity ? item.similarity : "1" }}
             </template>
             <template v-slot:item.link="{ item }">
               <v-btn :href="item.properties[0].value" target="_blank" append-icon="mdi-open-in-new"
@@ -347,7 +350,6 @@ const search = () => {
   )
     .then(json => {
       buyables.value = json['result'];
-
     })
     .finally(() => {
       pendingTasks.value--
