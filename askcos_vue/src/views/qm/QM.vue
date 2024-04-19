@@ -44,7 +44,7 @@
         </v-row>
 
         <v-row>
-            <v-col v-show="pendingTasks > 0 || results.length" cols="12" md="12" class="pa-0 mt-4">
+            <v-col v-show="pendingTasks > 0 || results.length" cols="12" md="12">
                 <v-sheet elevation="2" class="pa-4" rounded="lg">
                     <v-row v-if="pendingTasks === 0" class="mx-auto my-auto pa-2">
                         <v-col md="5">

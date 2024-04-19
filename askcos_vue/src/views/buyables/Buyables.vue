@@ -34,6 +34,9 @@
                     size="small">Draw</v-btn>
                 </template>
               </v-text-field>
+              <div v-if="!!searchSmilesQuery" class="my-3">
+                <smiles-image :smiles="searchSmilesQuery" height="100px"></smiles-image>
+              </div>
             </v-col>
           </v-row>
           <v-row class="mb-2 px-5 pt-5">

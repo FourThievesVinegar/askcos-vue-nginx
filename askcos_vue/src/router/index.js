@@ -6,13 +6,6 @@ const DEFAULT_TITLE = "ASKCOS";
 
 const routes = [
   {
-    name: "Login",
-    path: "/login",
-    meta: { title: "Login" },
-    component: () =>
-      import(/* webpackChunkName: "login" */ "@/views/login/Login.vue"),
-  },
-  {
     path: "/commands",
     meta: { title: "Command" },
     component: () => import("@/views/parse/Parse.vue"),
@@ -59,7 +52,7 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () =>
           import(
-            /* webpackChunkName: "network" */ "@/views/network/Network.vue"
+            /* webpackChunkName: "network-ipp" */ "@/views/network/Network.vue"
           ),
       },
       {
@@ -73,7 +66,7 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () =>
           import(
-            /* webpackChunkName: "network" */ "@/views/network/Network.vue"
+            /* webpackChunkName: "network-rp" */ "@/views/network/Network.vue"
           ),
       },
       {
@@ -87,7 +80,7 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () =>
           import(
-            /* webpackChunkName: "network" */ "@/views/network/Network.vue"
+            /* webpackChunkName: "network-te" */ "@/views/network/Network.vue"
           ),
       },
     ],
@@ -146,7 +139,7 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () =>
           import(
-            /* webpackChunkName: "buyables" */ "@/views/results/Results.vue"
+            /* webpackChunkName: "results" */ "@/views/results/Results.vue"
           ),
       },
     ],
@@ -171,7 +164,7 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () =>
           import(
-            /* webpackChunkName: "buyables" */ "@/views/banlist/Banlist.vue"
+            /* webpackChunkName: "banlist" */ "@/views/banlist/Banlist.vue"
           ),
       },
     ],
@@ -192,7 +185,7 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () =>
           import(
-            /* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"
+            /* webpackChunkName: "forward-context" */ "@/views/forward/Forward.vue"
           ),
       },
       {
@@ -206,7 +199,7 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () =>
           import(
-            /* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"
+            /* webpackChunkName: "forward-forward" */ "@/views/forward/Forward.vue"
           ),
       },
       {
@@ -220,7 +213,7 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () =>
           import(
-            /* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"
+            /* webpackChunkName: "forward-impurity" */ "@/views/forward/Forward.vue"
           ),
       },
       {
@@ -234,7 +227,7 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () =>
           import(
-            /* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"
+            /* webpackChunkName: "forward-selectivity" */ "@/views/forward/Forward.vue"
           ),
       },
       {
@@ -248,7 +241,7 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () =>
           import(
-            /* webpackChunkName: "forward" */ "@/views/forward/Forward.vue"
+            /* webpackChunkName: "forward-sites" */ "@/views/forward/Forward.vue"
           ),
       },
     ],
@@ -268,7 +261,9 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/solprop/SolProp.vue"),
+          import(
+            /* webpackChunkName: "solprop-solpred" */ "@/views/solprop/SolProp.vue"
+          ),
       },
       {
         path: "",
@@ -280,7 +275,9 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/solprop/SolProp.vue"),
+          import(
+            /* webpackChunkName: "solprop-solscreen" */ "@/views/solprop/SolProp.vue"
+          ),
       },
     ],
   },
@@ -296,7 +293,7 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/qm/QM.vue"),
+          import(/* webpackChunkName: "qm" */ "@/views/qm/QM.vue"),
       },
     ],
   },
@@ -314,7 +311,7 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () =>
           import(
-            /* webpackChunkName: "buyables" */ "@/views/notfound/NotFound.vue"
+            /* webpackChunkName: "notfound" */ "@/views/notfound/NotFound.vue"
           ),
       },
     ],
@@ -332,7 +329,7 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "buyables" */ "@/views/logs/Logs.vue"),
+          import(/* webpackChunkName: "logs" */ "@/views/logs/Logs.vue"),
       },
     ],
   },
@@ -350,7 +347,7 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () =>
           import(
-            /* webpackChunkName: "buyables" */ "@/views/drawing/Drawing.vue"
+            /* webpackChunkName: "drawing" */ "@/views/drawing/Drawing.vue"
           ),
       },
     ],
@@ -369,7 +366,7 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () =>
           import(
-            /* webpackChunkName: "buyables" */ "@/views/template/Template.vue"
+            /* webpackChunkName: "template" */ "@/views/template/Template.vue"
           ),
       },
     ],
@@ -379,7 +376,23 @@ const routes = [
     path: "/admin-login",
     meta: { title: "Admin Login" },
     component: () =>
-      import(/* webpackChunkName: "login" */ "@/views/login/AdminLogin.vue"),
+      import(
+        /* webpackChunkName: "admin-login" */ "@/views/login/AdminLogin.vue"
+      ),
+  },
+  {
+    name: "SSO Login",
+    path: "/sso-login",
+    meta: { title: "SSO Login" },
+    component: () =>
+      import(/* webpackChunkName: "sso-login" */ "@/views/login/SSOLogin.vue"),
+  },
+  {
+    name: "Login",
+    path: "/login",
+    meta: { title: "Login" },
+    component: () =>
+      import(/* webpackChunkName: "login" */ "@/views/login/Login.vue"),
   },
   {
     name: "Admin",
@@ -393,14 +406,7 @@ const routes = [
       }
     },
     component: () =>
-      import(/* webpackChunkName: "login" */ "@/views/admin/Admin.vue"),
-  },
-  {
-    name: "SSO Login",
-    path: "/sso-login",
-    meta: { title: "SSO Login" },
-    component: () =>
-      import(/* webpackChunkName: "login" */ "@/views/login/SSOLogin.vue"),
+      import(/* webpackChunkName: "admin" */ "@/views/admin/Admin.vue"),
   },
 ];
 
