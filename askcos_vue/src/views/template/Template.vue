@@ -2,11 +2,15 @@
     <v-container fluid>
         <v-row class="justify-center">
             <v-col cols="12" md="12" xl="10">
-                <div class="mt-8 mb-5">
-                    <v-breadcrumbs class="pa-0" :items="['Home', 'Template']"></v-breadcrumbs>
-                    <h1>
+                <div class="my-4">
+                    <v-breadcrumbs class="pa-0 text-body-1" :items="breadCrumbItems">
+                        <template v-slot:prepend>
+                            <v-icon icon="mdi-home" size="small"></v-icon>
+                        </template>
+                    </v-breadcrumbs>
+                    <h4 class="text-h4 text-primary">
                         Template Info
-                    </h1>
+                    </h4>
                 </div>
             </v-col>
         </v-row>
@@ -41,13 +45,14 @@
                         <v-col col="12" sm="8" md="10" v-if="templateInfo['necessary_reagent']">
                             <p v-if="templateInfo['necessary_reagent']"><em>
                                     Note: This reaction would require a reagent to contribute {{
-                                        templateInfo['necessary_reagent'] }}
+                        templateInfo['necessary_reagent'] }}
                                 </em></p>
                             <p v-if="templateInfo['intra_only']"><em>
                                     Note: This template should be used for intramolecular reactions <b>only</b>
                                 </em></p>
                             <p v-if="templateInfo['dimer_only']"><em>
-                                    Note: This template should be used for symmetric (dimerization) reactions <b>only</b>
+                                    Note: This template should be used for symmetric (dimerization) reactions
+                                    <b>only</b>
                                 </em></p>
                         </v-col>
 
@@ -72,7 +77,8 @@
                                     </v-btn>
                                 </div>
 
-                                <template v-if="templateInfo.template_set === 'cas' && rxnListItems && rxnListItems.length">
+                                <template
+                                    v-if="templateInfo.template_set === 'cas' && rxnListItems && rxnListItems.length">
                                     <sci-findern-button class="ml-2" @click="casSearch"></sci-findern-button>
                                     <v-menu location="bottom" :close-on-content-click="false" id="proxy-settings">
                                         <template v-slot:activator="{ props }">
@@ -161,7 +167,7 @@
         </v-row>
     </v-container>
 </template>
-  
+
 <script>
 import { ref, reactive, onMounted, computed, watch } from 'vue';
 import CopyTooltip from "@/components/CopyTooltip";
@@ -172,6 +178,7 @@ import { createReaxysQuery, createReaxysUrl } from "@/common/reaxys";
 import { createCasClient } from "@/common/cas-client";
 import { storageAvailable } from "@/common/utils";
 import { saveAs } from 'file-saver';
+import { useRoute } from 'vue-router';
 
 const PROXY_STORAGE_KEY = 'casProxyUrl';
 
@@ -193,6 +200,8 @@ export default {
         const rxnListCurrentPage = ref(1);
         const rxnListItemsPerPage = ref(50);
         const loading = ref(false);
+        const route = useRoute();
+        const breadCrumbItems = [{ title: 'Home', to: "/" }, { title: route.meta.title }]
 
         const headers = ref([
             { key: 'reaction_id', title: 'Reaction ID', },
@@ -443,6 +452,7 @@ export default {
             casSearch,
             initializeCasClient,
             saveProxyUrl,
+            breadCrumbItems,
         };
     },
 };

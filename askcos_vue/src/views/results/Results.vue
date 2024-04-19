@@ -3,7 +3,11 @@
     <v-row class="justify-center">
       <v-col cols="12" md="12" xl="10">
         <div class="my-4">
-          <v-breadcrumbs class="pa-0 text-body-1" :items="['Home', 'Results']"></v-breadcrumbs>
+          <v-breadcrumbs class="pa-0 text-body-1" :items="breadCrumbItems">
+            <template v-slot:prepend>
+              <v-icon icon="mdi-home" size="small"></v-icon>
+            </template>
+          </v-breadcrumbs>
           <h4 class="text-h4 text-primary">
             My Results
             <span v-if="refreshInterval"><v-progress-circular indeterminate></v-progress-circular></span>
@@ -36,7 +40,8 @@
         <v-sheet elevation="2" rounded="lg" class="d-flex justify-center pa-5">
           <v-data-table :loading="pendingTasks > 0" v-if="allResults.length || pendingTasks > 0" :headers="headers"
             item-value="result_id" :items="filteredResults" show-select v-model:expanded="expanded" show-expand
-            v-model="selection" :items-per-page="10" :search="searchQuery" @click:row="clickRow" data-cy="results-table">
+            v-model="selection" :items-per-page="10" :search="searchQuery" @click:row="clickRow"
+            data-cy="results-table">
             <template v-slot:item.delete="{ item }">
               <v-icon @click="deleteResult(item.result_id)" class="text-center">mdi-delete</v-icon>
             </template>
@@ -108,7 +113,8 @@
       </v-card-title>
       <v-divider></v-divider>
       <v-card-text class="pt-0">
-        <tb-settings-table v-if="viewSettings" :settings="viewSettings" :targetSmiles="targetSmiles" :tbVersion="tbVersion"></tb-settings-table>
+        <tb-settings-table v-if="viewSettings" :settings="viewSettings" :targetSmiles="targetSmiles"
+          :tbVersion="tbVersion"></tb-settings-table>
         <v-alert v-else type="warning" class="mb-0" dense text>Settings not available.</v-alert>
       </v-card-text>
       <v-divider></v-divider>
@@ -131,7 +137,8 @@
               <v-text-field v-model="shareLink" readonly allow-copy append-icon="mdi-content-copy">
               </v-text-field>
             </copy-tooltip>
-            <v-alert type="warning">Please note that shared results cannot be edited and saved simultaneously by multiple
+            <v-alert type="warning">Please note that shared results cannot be edited and saved simultaneously by
+              multiple
               users.</v-alert>
           </v-col>
         </v-row>
@@ -208,6 +215,7 @@ import TbSettingsTable from '@/components/TbSettingsTable.vue';
 import results from "@/assets/emptyResults.svg";
 import { API } from "@/common/api";
 import dayjs from "dayjs";
+import { useRoute } from 'vue-router';
 
 const allResults = ref([]);
 const totalItems = ref(1);
@@ -226,6 +234,8 @@ const viewSettings = ref(null);
 const targetSmiles = ref("")
 const refreshInterval = ref(null);
 const tbVersion = ref(null);
+const route = useRoute();
+const breadCrumbItems = [{ title: 'Home', to: "/" }, { title: route.meta.title }]
 const clickRow = (_event, { item }) => {
   const index = expanded.value.findIndex(i => i === item.key);
   if (index !== -1) {
@@ -378,7 +388,7 @@ watch(allResults, (newValue, oldValue) => {
 
 
 const update = async (supressLoading = false) => {
-  if(!supressLoading){
+  if (!supressLoading) {
     pendingTasks.value += 1;
   }
   try {
@@ -398,8 +408,8 @@ const update = async (supressLoading = false) => {
     console.error("Error fetching results:", error);
   } finally {
     if (!supressLoading) {
-    pendingTasks.value -= 1;
-    checkAndRefreshResults();
+      pendingTasks.value -= 1;
+      checkAndRefreshResults();
     }
   }
 }
