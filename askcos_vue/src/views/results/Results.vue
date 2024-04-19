@@ -45,7 +45,21 @@
             <template v-slot:item.delete="{ item }">
               <v-icon @click="deleteResult(item.result_id)" class="text-center">mdi-delete</v-icon>
             </template>
-            <template #item.public="{ item }">
+            <template v-slot:item.result_state="{ item }">
+              <v-chip color="green" variant="flat" v-if="item.result_state=== 'completed'">
+                <v-icon icon="mdi-check-circle" start></v-icon>
+                Completed
+              </v-chip>
+              <v-chip color="orange-darken-1" variant="flat" v-if="item.result_state=== 'started'">
+                <v-icon icon="mdi-timer" start></v-icon>
+                Started
+              </v-chip>
+              <v-chip color="red-darken-1" variant="flat" v-if="item.result_state=== 'failed'">
+                <v-icon icon="mdi-alert-circle" start></v-icon>
+                Failed
+              </v-chip>
+            </template>
+            <template v-slot:item.public="{ item }">
               <v-icon v-if="item.public === true">
                 mdi-check
               </v-icon>
@@ -86,10 +100,11 @@
                       @click="openSetting(item.result_id)">
                       View Settings
                     </v-btn>
-                    <v-btn class="bg-teal-lighten-3" variant="tonal" @click="shareResult(item.key)">
+                    <v-btn class="bg-teal-darken-1" variant="tonal" @click="shareResult(item.result_id)">
                       <v-icon color="white">
                         mdi-share
                       </v-icon>
+                      Share
                     </v-btn>
                   </div>
                 </td>
@@ -237,11 +252,11 @@ const tbVersion = ref(null);
 const route = useRoute();
 const breadCrumbItems = [{ title: 'Home', to: "/" }, { title: route.meta.title }]
 const clickRow = (_event, { item }) => {
-  const index = expanded.value.findIndex(i => i === item.key);
+  const index = expanded.value.findIndex(i => i === item.result_id);
   if (index !== -1) {
     expanded.value.splice(index, 1)
   } else {
-    expanded.value.push(item.key);
+    expanded.value.push(item.result_id);
   }
 }
 
