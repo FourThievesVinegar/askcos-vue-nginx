@@ -9,7 +9,7 @@
             <v-row class="justify-center align-center">
               <v-col cols="12" md="4">
                 <v-text-field :rules="[v => !!v || 'Solute is required']" variant="outlined" label="Solute"
-                  v-model="solute" clearable>
+                  v-model="solute" clearable prepend-inner-icon="mdi mdi-flask">
                   <template v-slot:append-inner>
                     <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solute')">Draw</v-btn>
                   </template>

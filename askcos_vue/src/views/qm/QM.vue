@@ -43,8 +43,8 @@
             </v-col>
         </v-row>
 
-        <v-row>
-            <v-col v-show="pendingTasks > 0 || results.length" cols="12" md="12">
+        <v-row class="justify-center" >
+            <v-col v-show="pendingTasks > 0 || results.length" cols="12" md="12" xl="10">
                 <v-sheet elevation="2" class="pa-4" rounded="lg">
                     <v-row v-if="pendingTasks === 0" class="mx-auto my-auto pa-2">
                         <v-col md="5">
@@ -96,7 +96,7 @@
                     </v-row>
                 </v-sheet>
             </v-col>
-            <v-col v-show="!results.length && pendingTasks === 0" cols="12" class="pa-0 mt-4">
+            <v-col v-show="!results.length && pendingTasks === 0" cols="12" md="12" xl="10" >
                 <v-sheet elevation="2" rounded="lg" class="pa-4">
                     <div class="d-flex flex-column align-center justify-center text-center">
                         <img src="@/assets/qm.svg" :width="400" class="mb-3" cover />

@@ -1,7 +1,7 @@
 <template>
     <v-container fluid>
         <v-row class="justify-center">
-            <v-col id="tree-view-left" cols="12" lg="3" style="height: calc(100vh - 11rem); overflow-y: auto;">
+            <v-col cols="12" lg="4" md="12" style="height: calc(100vh - 11rem); overflow-y: auto;">
                 <v-sheet elevation="2" class="pa-5 d-flex align-center flex-column" rounded="lg" :border="true">
                     <div class="d-flex align-self-center">
                         <v-btn-group divided variant="flat">
@@ -191,7 +191,7 @@
                     </div>
                 </v-sheet>
             </v-col>
-            <v-col cols="12" lg="9" id="tree-view-right" style="overflow-y: hide" v-show="trees.length !== 0" class="py-0">
+            <v-col cols="12" lg="8" style="overflow-y: hide" v-show="trees.length !== 0" class="py-0">
                 <div class="my-2 d-flex justify-space-around align-center">
                     <v-btn-group variant="outlined" density="comfortable" divided :border="true">
                         <v-btn icon="mdi mdi-chevron-double-left" @click="changeClusterId('first')"
@@ -227,7 +227,7 @@
                     <network-legend></network-legend>
                 </v-sheet>
             </v-col>
-            <v-col cols="12" md="9" id="tree-view-right" style="overflow-y: hide" v-if="trees.length === 0"
+            <v-col cols="12" md="8" style="overflow-y: hide" v-if="trees.length === 0"
                 class="d-flex justify-center align-center">
                 <div class="text-center">
                     <v-img :width="400" cover :src="emptyTrees" class="mb-3"></v-img>
