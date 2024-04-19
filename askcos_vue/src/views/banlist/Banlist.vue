@@ -3,7 +3,11 @@
     <v-row class="justify-center">
       <v-col cols="12" md="12" xl="10">
         <div class="my-4">
-          <v-breadcrumbs class="pa-0 text-body-1" :items="['Home', 'Banlist']"></v-breadcrumbs>
+          <v-breadcrumbs class="pa-0 text-body-1" :items="breadCrumbItems">
+            <template v-slot:prepend>
+              <v-icon icon="mdi-home" size="small"></v-icon>
+            </template>
+          </v-breadcrumbs>
           <h4 class="text-h4 text-primary">
             My Banlist
           </h4>
@@ -26,7 +30,7 @@
             </v-col>
           </v-row>
 
-          <v-tabs v-model="activeTab" color="primary" align-tabs="center" grow class="mb-0" >
+          <v-tabs v-model="activeTab" color="primary" align-tabs="center" grow class="mb-0">
             <v-tab>Chemicals</v-tab>
             <v-tab>Reactions</v-tab>
           </v-tabs>
@@ -42,7 +46,7 @@
             hide-details clearable></v-select>
           <v-row v-if="tabItems.length || pendingTasks > 0">
             <v-col cols="12">
-              <v-data-table :headers="headers" :items="tabItems" :items-per-page="10" :loading="pendingTasks > 0" >
+              <v-data-table :headers="headers" :items="tabItems" :items-per-page="10" :loading="pendingTasks > 0">
                 <template v-slot:item.active="{ item }">
                   <v-btn @click="toggleActivation(item, activeTab === 0 ? 'chemicals' : 'reactions')" small>
                     <v-icon v-if="item.active">mdi-check-circle</v-icon>
@@ -56,7 +60,7 @@
                   </copy-tooltip>
                 </template>
                 <template v-slot:item.delete="{ item }">
-                  <v-icon @click="activeTab === 0 ? deleteChemical(item.key) : deleteReaction(item.key)"
+                  <v-icon @click="activeTab === 0 ? deleteChemical(item.id) : deleteReaction(item.id)"
                     class="text-center">mdi-delete</v-icon>
                 </template>
               </v-data-table>
@@ -95,13 +99,13 @@
             <v-text-field v-model="newSmiles" label="SMILES" maxlength="150" autocomplete="off" density="comfortable"
               variant="outlined" hide-details clearable>
               <template v-slot:append-inner>
-                      <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher(newSmiles)">Draw</v-btn>
-                    </template>
+                <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher(newSmiles)">Draw</v-btn>
+              </template>
             </v-text-field>
           </v-col>
-           <v-col cols="12" v-if="!!newSmiles"  >
-              <smiles-image :smiles="newSmiles" height="100px"></smiles-image>
-            </v-col>
+          <v-col cols="12" v-if="!!newSmiles">
+            <smiles-image :smiles="newSmiles" height="100px"></smiles-image>
+          </v-col>
           <v-col cols="12">
             <v-text-field v-model="newDesc" label="Description" maxlength="150" autocomplete="off" density="comfortable"
               variant="outlined" hide-details clearable></v-text-field>
@@ -115,8 +119,8 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
-    <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="newSmiles" @input="showKetcher = false"
-      @update:smiles="updateSmiles" />
+  <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="newSmiles" @input="showKetcher = false"
+    @update:smiles="updateSmiles" />
 </template>
 
 <script setup>
@@ -127,6 +131,10 @@ import SmilesImage from "@/components/SmilesImage.vue";
 import CopyTooltip from "@/components/CopyTooltip";
 import { API } from "@/common/api";
 import dayjs from 'dayjs';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+const breadCrumbItems = [{ title: 'Home', to: "/" }, { title: route.meta.title }]
 
 const ketcherRef = ref(null);
 const showKetcher = ref(false);

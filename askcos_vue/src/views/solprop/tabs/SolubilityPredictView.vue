@@ -9,7 +9,7 @@
             <v-row>
               <v-col>
                 <v-text-field :rules="[v => !!v || 'Solute is required']" variant="outlined" label="Solute"
-                  v-model="solute" clearable>
+                  v-model="solute" clearable prepend-inner-icon="mdi mdi-flask">
                   <template v-slot:append-inner>
                     <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solute')">Draw</v-btn>
                   </template>
@@ -21,7 +21,7 @@
               </v-col>
               <v-col>
                 <v-text-field :rules="[v => !!v || 'Solvent is required']" variant="outlined" label="Solvent"
-                  v-model="solvent" clearable>
+                  v-model="solvent" clearable prepend-inner-icon="mdi mdi-flask">
                   <template v-slot:append-inner>
                     <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solvent')">Draw</v-btn>
                   </template>
@@ -32,7 +32,7 @@
               </v-col>
               <v-col>
                 <v-text-field :rules="[v => !!v || 'Temperature is required']" variant="outlined" label="Temperature"
-                  v-model="temperature" clearable>
+                  v-model="temperature" clearable prepend-inner-icon="mdi-thermometer-lines">
                 </v-text-field>
               </v-col>
             </v-row>

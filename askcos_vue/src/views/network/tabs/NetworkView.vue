@@ -174,7 +174,7 @@
       <network-legend></network-legend>
     </div>
     <div v-else class="d-flex justify-center pa-16">
-      <div v-if="!!resultsStore.target">
+      <div v-if="!!resultsStore.target && !allowResolve">
         <smiles-image :smiles="resultsStore.target"></smiles-image>
         <p class="text-body-1">
           Perform either 'One-Step' or 'Build Tree' on this target
