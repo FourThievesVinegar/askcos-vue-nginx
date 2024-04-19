@@ -7,7 +7,7 @@ import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 import { defineConfig } from "vite";
 
 const fastapiGatewayPtr = {
-  target: "http://72.70.38.18/",
+  target: "https://askcos.mit.edu/",
   changeOrigin: true,
   ws: true,
   secure: false,

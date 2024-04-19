@@ -34,6 +34,9 @@
                     size="small">Draw</v-btn>
                 </template>
               </v-text-field>
+              <div v-if="!!searchSmilesQuery" class="my-3">
+                <smiles-image :smiles="searchSmilesQuery" height="100px"></smiles-image>
+              </div>
             </v-col>
           </v-row>
           <v-row class="mb-2 px-5 pt-5">
@@ -78,22 +81,22 @@
               </v-menu>
               <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
                 <template v-slot:activator="{ props }">
-                  <v-tooltip bottom text="Test"> 
+                  <v-tooltip bottom text="Test">
                     <!-- notes -->
                     <template v-slot:activator="{ tooltipprop }">
-                  <div v-bind="tooltipprop" v-show="isAdmin">
-                    <v-btn  color="orange-accent-4" v-bind="props" append-icon="mdi mdi-menu-down" variant="flat" >
-                      Add Compound
-                    </v-btn>
-                    </div>
-                  </template>
+                      <div v-bind="tooltipprop" v-show="isAdmin">
+                        <v-btn color="orange-accent-4" v-bind="props" append-icon="mdi mdi-menu-down" variant="flat">
+                          Add Compound
+                        </v-btn>
+                      </div>
+                    </template>
                   </v-tooltip>
                 </template>
-                  <v-list>
-                    <v-list-item @click="showAddModal = !showAddModal">Add One</v-list-item>
-                    <v-list-item @click="showUploadModal = !showUploadModal">Add Buyable(s)</v-list-item>
-                  </v-list>
-                </v-menu>
+                <v-list>
+                  <v-list-item @click="showAddModal = !showAddModal">Add One</v-list-item>
+                  <v-list-item @click="showUploadModal = !showUploadModal">Add Buyable(s)</v-list-item>
+                </v-list>
+              </v-menu>
             </v-col>
           </v-row>
         </v-sheet>
@@ -108,6 +111,20 @@
               <copy-tooltip :data="item.smiles">
                 <smiles-image :smiles="item.smiles" height="80px"></smiles-image>
               </copy-tooltip>
+            </template>
+            <template v-slot:item.availability="{ item }">
+              {{ item.properties[1].value ? item.properties[1].value : "Unknown" }}
+            </template>
+            <template v-slot:item.lead_time="{ item }">
+              {{ item.lead_time ? item.lead_time : "Unknown" }}
+            </template>
+            <template v-slot:item.similarity="{ item }">
+              {{ item.similarity ? item.similarity : "1" }}
+            </template>
+            <template v-slot:item.link="{ item }">
+              <v-btn :href="item.properties[0].value" target="_blank" append-icon="mdi-open-in-new"
+                :disabled="!item.properties[0].value">Buy Now
+              </v-btn>
             </template>
             <template v-slot:item.delete="{ item }">
               <v-icon @click="deleteBuyable(item._id)" class="text-center">mdi-delete</v-icon>
@@ -257,11 +274,14 @@ const createSnackbar = useSnackbar()
 const headers = computed(() => {
   let headers = [
     { key: 'smiles', title: 'SMILES', align: 'center', width: '500px' },
+    { key: "availability", title: 'Availability', align: 'center' },
     { key: 'ppg', title: 'Price ($/g)', align: 'center' },
+    { key: 'lead_time', title: 'Lead Time', align: 'center' },
     { key: 'source', title: 'Source', align: 'center' },
-    { key: 'similarity', title: 'Similarity', align: 'center' }
+    { key: 'similarity', title: 'Similarity', align: 'center' },
+    { key: 'link', title: 'Link', align: 'center' }
   ]
-  if (buyables.value.length > 0) {
+  if (buyables.value.length > 0 && isAdmin.value) {
     headers.push({
       key: 'delete', title: '', align: 'center'
     })
@@ -333,7 +353,6 @@ const search = () => {
   )
     .then(json => {
       buyables.value = json['result'];
-
     })
     .finally(() => {
       pendingTasks.value--

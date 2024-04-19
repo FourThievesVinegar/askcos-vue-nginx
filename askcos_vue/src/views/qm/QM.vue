@@ -19,13 +19,17 @@
                             <v-text-field v-model="smiles" class="centered-input" variant="outlined"
                                 label="Enter a molecule or reaction SMILES" prepend-inner-icon="mdi mdi-flask"
                                 placeholder="SMILES" hide-details clearable @click:clear="smiles = ''">
-                                <template v-slot:append>
-                                    <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large"
-                                        @click="canonicalize(smiles)">Canonicalize</v-btn>
-                                </template>
                                 <template v-slot:append-inner>
                                     <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
                                         @click="openKetcher(smiles)">Draw</v-btn>
+                                </template>
+                                <template v-slot:append>
+                                    <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict"
+                                        :loading="!batch && loading">Submit</v-btn>
+                                    <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0"
+                                        @click="clear()">
+                                        Clear Results
+                                    </v-btn>
                                 </template>
                             </v-text-field>
                             <div v-if="!!smiles" class="my-3">
@@ -34,20 +38,13 @@
                         </v-col>
                     </v-row>
                     <v-row class="justify-center" density="compact">
-                        <v-col cols="12" md="10" my="10">
-                            <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict"
-                                :loading="!batch && loading">Submit</v-btn>
-                            <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0" @click="clear()">
-                                Clear Results
-                            </v-btn>
-                        </v-col>
                     </v-row>
                 </v-sheet>
             </v-col>
         </v-row>
 
         <v-row>
-            <v-col v-show="pendingTasks > 0 || results.length" cols="12" md="12" class="pa-0 mt-4">
+            <v-col v-show="pendingTasks > 0 || results.length" cols="12" md="12">
                 <v-sheet elevation="2" class="pa-4" rounded="lg">
                     <v-row v-if="pendingTasks === 0" class="mx-auto my-auto pa-2">
                         <v-col md="5">
@@ -102,7 +99,7 @@
             <v-col v-show="!results.length && pendingTasks === 0" cols="12" class="pa-0 mt-4">
                 <v-sheet elevation="2" rounded="lg" class="pa-4">
                     <div class="d-flex flex-column align-center justify-center text-center">
-                        <img src="@/assets/emptySolProp.svg" :width="400" class="mb-3" cover />
+                        <img src="@/assets/qm.svg" :width="400" class="mb-3" cover />
                         <h2>No Results</h2>
                         <p class="text-body-1">Begin a new prediction above</p>
                     </div>

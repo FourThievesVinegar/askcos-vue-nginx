@@ -829,17 +829,6 @@ export default {
         }
       });
     },
-    getNodeColor(smiles, ppg) {
-      let obj = {};
-      if (smiles === this.resultsStore.target) {
-        obj.border = "#000088";
-      } else if (ppg === "not buyable") {
-        obj.border = "#880000";
-      } else if (ppg !== undefined) {
-        obj.border = "#008800";
-      }
-      return obj;
-    },
     async changeTarget() {
       if (this.resultsStore.dataGraph.nodes.length) {
         const isConfirmed = await this.createConfirm({ title: 'Please Confirm', content: 'This will clear existing results. Continue?', dialogProps: { width: "auto" } })
