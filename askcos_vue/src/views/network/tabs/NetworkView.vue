@@ -651,7 +651,13 @@ export default {
     },
     centerGraph() {
       if (this.network) {
-        this.network.fit();
+        this.network.fit({
+          animation: {
+            duration: 1000,
+            easingFunction: "easeInOutQuad",
+          }
+        }
+        );
       }
     },
     saveTarget() {
@@ -945,7 +951,13 @@ export default {
       this.resultsStore
         .expand(nodeId)
         .then(() => {
-          this.network.fit();
+          this.network.fit({
+            nodes: [nodeId],
+            animation: {
+              duration: 1000,
+              easingFunction: "easeInOutQuad",
+            }
+          });
         })
         .catch((error) => {
           let error_msg = error.message || error || "unknown error";
