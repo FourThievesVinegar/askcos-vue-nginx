@@ -12,24 +12,22 @@
                     <v-sheet elevation="10" rounded="lg">
                         <v-form ref="form" class="pa-5" @submit.prevent>
                             <v-text-field label="Username" variant="outlined" v-model="username" :rules="usernameRules"
-                                clearable data-cy="username" v-show="!show"></v-text-field>
+                                clearable data-cy="username" v-show="!showNextStep"></v-text-field>
+                            <v-text-field label="Email (Optional)" variant="outlined" v-model="email" clearable
+                                data-cy="email" v-show="showNextStep"></v-text-field>
+
                             <v-text-field label="Password" variant="outlined" required type="password"
                                 v-model="password" :rules="passwordRules" clearable data-cy="password"
-                                v-show="!show"></v-text-field>
-                            <div v-if="loginFailure" class="text-red text-center text-subtitle-1" v-show="!show">
+                                v-show="!showNextStep"></v-text-field>
+                            <v-text-field label="Company (Optional)" variant="outlined" v-model="company" clearable
+                                data-cy="company" v-show="showNextStep"></v-text-field>
+                            <div v-if="loginFailure" class="text-red text-center text-subtitle-1"
+                                v-show="!showNextStep">
                                 <p>Either username or password is incorrect</p>
                             </div>
-                            <v-slide-x-transition>
-                                <v-text-field label="Email (Optional)" variant="outlined" v-model="email" clearable
-                                    data-cy="email" v-show="show"></v-text-field>
-                            </v-slide-x-transition>
-                            <v-slide-x-transition>
-                                <v-text-field label="Company (Optional)" variant="outlined" v-model="company" clearable
-                                    data-cy="company" v-show="show"></v-text-field>
-                            </v-slide-x-transition>
                             <div class="d-flex flex-column">
                                 <v-container>
-                                    <v-row wrap no-gutters v-show="!show">
+                                    <v-row wrap no-gutters v-show="!showNextStep">
                                         <v-col cols="6" class="text-center">
                                             <v-btn color="primary" size="x-large" @click="login" type="submit"
                                                 variant="flat" data-cy="login">
@@ -37,22 +35,26 @@
                                             </v-btn>
                                         </v-col>
                                         <v-col cols="6" class="text-center">
-                                            <v-btn color="primary" size="x-large" @click="show = true" type="submit"
+                                            <v-btn color="primary" size="x-large" @click="showNextSignup" type="submit"
                                                 variant="flat" data-cy="signup">
                                                 Sign Up
                                             </v-btn>
                                         </v-col>
                                     </v-row>
-                                    <v-slide-x-transition>
-                                        <v-row wrap no-gutters v-show="show">
-                                            <v-col cols="12" class="text-center">
-                                                <v-btn color="primary" size="x-large" @click="signup" type="submit"
-                                                    variant="flat" data-cy="signup">
-                                                    Finish
-                                                </v-btn>
-                                            </v-col>
-                                        </v-row>
-                                    </v-slide-x-transition>
+                                    <v-row wrap no-gutters v-show="showNextStep">
+                                        <v-col cols="6" class="text-center">
+                                            <v-btn color="primary" size="x-large" @click="showNextStep = false"
+                                                type="submit" variant="flat" data-cy="signup">
+                                                Back
+                                            </v-btn>
+                                        </v-col>
+                                        <v-col cols="6" class="text-center">
+                                            <v-btn color="primary" size="x-large" @click="signup" type="submit"
+                                                variant="flat" data-cy="signup">
+                                                Finish
+                                            </v-btn>
+                                        </v-col>
+                                    </v-row>
                                 </v-container>
                                 <v-divider class="my-4">
                                 </v-divider>
@@ -61,6 +63,7 @@
                                     Continue as Guest
                                 </v-btn>
                             </div>
+
                         </v-form>
                     </v-sheet>
                 </v-col>
@@ -113,7 +116,7 @@ const loginFailure = ref(false);
 const route = useRoute();
 const router = useRouter();
 const waitGuest = ref(false);
-const show = ref(false);
+const showNextStep = ref(false);
 
 const usernameRules = ref([
     value => {
@@ -185,7 +188,7 @@ const signup = () => {
         return
     }
 
-    // show dialog for creation of user
+    // showNextStep dialog for creation of user
     createdAccount.value = false;
     creationFailure.value = false;
     loginFailure.value = false;
@@ -202,6 +205,13 @@ const signup = () => {
     }).catch(() => {
         creationFailure.value = true;
     })
+}
+
+const showNextSignup = () => {
+    if (!username.value || !password.value) {
+        return
+    }
+    showNextStep.value = true
 }
 
 const guestAccountSignup = () => {
