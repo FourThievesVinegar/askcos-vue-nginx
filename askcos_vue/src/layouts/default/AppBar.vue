@@ -76,7 +76,7 @@
       <v-list nav color="primary" class="bg-grey-lighten-5 py-0">
         <v-divider></v-divider>
         <v-list-item v-if=!isLoggedIn to="/login" prepend-icon="mdi-login" title="Login" :active="false"></v-list-item>
-        <v-list-item v-if=isLoggedIn to="/admin" lines="two" :prepend-avatar='gravatarURL(myusername)'
+        <v-list-item v-if=isLoggedIn to="/admin" lines="two" prepend-icon='mdi-account'
           subtitle="Logged in" :title="myusername" :disabled="myusername.startsWith('guest_')"></v-list-item>
         <v-list-item v-if=isLoggedIn @click="logout" prepend-icon="mdi-logout" title="Logout"
           :active="false"></v-list-item>
@@ -89,7 +89,6 @@
 import { useRoute, useRouter } from "vue-router";
 import { ref, computed, inject } from "vue";
 import TheSupportModal from "@/components/TheSupportModal.vue"
-import gravatar from 'gravatar'
 
 const keycloak = inject('$keycloak')
 
@@ -138,11 +137,6 @@ function logout() {
   } else {
     router.push({ path: '/login' })
   }
-}
-
-function gravatarURL(email) {
-  const gtype = localStorage.getItem("gtype");
-  return gravatar.url(email, { d: gtype ?? "mp" });
 }
 
 </script>
