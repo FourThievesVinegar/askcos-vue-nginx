@@ -161,8 +161,6 @@
                                     <v-img :src="gravatarURL(username)" width="200" style="border-radius: 50%;"></v-img>
                                     <p class="mt-1">Type</p>
                                 </div>
-                                <v-alert text="The above image is loaded via Gravatar" title="Info" type="info"
-                                    variant="tonal" class="mt-1" density="compact"></v-alert>
                             </v-sheet>
                         </v-col>
                         <v-col cols="12" sm="4" class="d-flex flex-row justify-center align-center">

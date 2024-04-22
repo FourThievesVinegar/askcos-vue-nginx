@@ -951,8 +951,14 @@ export default {
       this.resultsStore
         .expand(nodeId)
         .then(() => {
+          let centerNodes = [nodeId];
+          this.resultsStore.dispGraph.getSuccessors(nodeId).forEach((rxn) => {
+            this.resultsStore.dispGraph.getSuccessors(rxn).forEach((chem) => {
+              centerNodes.push(chem)
+            });
+          });
           this.network.fit({
-            nodes: [nodeId],
+            nodes: centerNodes,
             animation: {
               duration: 1000,
               easingFunction: "easeInOutQuad",
