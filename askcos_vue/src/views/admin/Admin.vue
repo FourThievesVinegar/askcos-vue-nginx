@@ -32,7 +32,7 @@
                 <v-row dense>
                     <v-col cols="12">
                         <v-sheet rounded="lg" elevation="2" class="pa-5" v-if="isAdmin">
-                            <v-data-table-virtual :headers="headers" :items="tableItems" multi-sort show-select
+                            <v-data-table :headers="headers" :items="tableItems" multi-sort show-select
                                 v-if="isAdmin" v-model="selection" item-value="username" height="500" :loading=dataLoading>
                                 <template v-slot:top>
                                     <v-toolbar flat>
@@ -147,7 +147,7 @@
                                         </v-list>
                                     </v-menu>
                                 </template>
-                            </v-data-table-virtual>
+                            </v-data-table>
                         </v-sheet>
                     </v-col>
                 </v-row>

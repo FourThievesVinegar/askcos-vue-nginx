@@ -309,7 +309,6 @@ const contextV2ModelType = ref('fp');
 const contextV2ModelVersion = ref('20191118');
 const forwardModel = ref('wldn5');
 const forwardModelTrainingSet = ref("pistachio");
-// const forwardModelVersion = ref('1');
 const numContextResults = ref(10);
 const numForwardResults = ref(100);
 const impurityTopk = ref(3);
@@ -338,7 +337,6 @@ const siteResults = ref([])
 const siteResultsQuery = ref('')
 const siteSelectedAtoms = ref([])
 const pendingRank = ref(0)
-// const ketcherMinRef = ref(null);
 const forwardFileName = ref('forward.csv');
 const impurityFileName = ref('impurity.csv');
 const selectivityFileName = ref('selectivity.csv');
@@ -705,17 +703,17 @@ const clearInputs = () => {
   solvent.value = '';
 }
 
-const clear = async (skipConfirm = false) => {
-  if (!skipConfirm) {
-    const isConfirmed = await createConfirm({
-      title: 'Please Confirm',
-      content: 'This will clear all of your current results. Continue anyway?',
-      dialogProps: { width: "auto" }
-    });
-    if (!isConfirmed) {
-      return;
-    }
+const clear = async () => {
+
+  const isConfirmed = await createConfirm({
+    title: 'Please Confirm',
+    content: 'This will clear all of your current results. Continue anyway?',
+    dialogProps: { width: "auto" }
+  });
+  if (!isConfirmed) {
+    return;
   }
+
   switch (tab.value) {
     case 'forward':
       clearForward()
