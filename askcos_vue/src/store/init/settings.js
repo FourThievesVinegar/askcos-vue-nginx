@@ -9,8 +9,8 @@ const interactive_path_planner_settings_default = {
       retro_model_name: "reaxys",
       max_num_templates: 1000,
       max_cum_prob: 0.999,
-      attribute_filter: []
-    }
+      attribute_filter: [],
+    },
   ],
   banned_chemicals: [],
   banned_reactions: [],
@@ -24,20 +24,20 @@ const interactive_path_planner_settings_default = {
     fp_type: "morgan",
     fp_length: 512,
     fp_radius: 1,
-    classification_threshold: 0.2
+    classification_threshold: 0.2,
   },
   extract_template: false,
   return_reacting_atoms: true,
   selectivity_check: false,
-  group_by_strategy: true
-}
+  group_by_strategy: true,
+};
 
 const tree_builder_settings_default = {
   backend: "mcts",
   expand_one_options: {
     template_max_count: 1000,
     template_max_cum_prob: 0.999,
-    ...interactive_path_planner_settings_default
+    ...interactive_path_planner_settings_default,
   },
   build_tree_options: {
     buyable_logic: "and",
@@ -63,7 +63,7 @@ const tree_builder_settings_default = {
     max_chemprop_h: null,
     chemical_popularity_logic: "none",
     min_chempop_reactants: 5,
-    min_chempop_products: 5
+    min_chempop_products: 5,
   },
   enumerate_paths_options: {
     path_format: "json",
@@ -76,10 +76,10 @@ const tree_builder_settings_default = {
     min_samples: 5,
     min_cluster_size: 5,
     paths_only: false,
-    max_paths: 200
+    max_paths: 200,
   },
   run_async: false,
-}
+};
 
 const tbSettingsDefault = {
   quick: "normal",
@@ -170,12 +170,12 @@ const visjsOptionsDefault = {
     solver: "barnesHut",
     stabilization: {
       enabled: true,
-      iterations: 1000,
-      updateInterval: 100,
+      iterations: 5,
+      updateInterval: 1,
       onlyDynamicEdges: false,
       fit: true,
     },
-    timestep: 0.5,
+    timestep: 0.2,
     adaptiveTimestep: true,
   },
 };
@@ -276,6 +276,13 @@ function getVisjsUserOptions(obj) {
   };
 }
 
-export { interactive_path_planner_settings_default, tree_builder_settings_default,ippSettingsDefault, tbSettingsDefault, visjsOptionsDefault, visjsOptionsTreeDefault, visjsOptionsTreeCondensed, getVisjsUserOptions };
-
-
+export {
+  interactive_path_planner_settings_default,
+  tree_builder_settings_default,
+  ippSettingsDefault,
+  tbSettingsDefault,
+  visjsOptionsDefault,
+  visjsOptionsTreeDefault,
+  visjsOptionsTreeCondensed,
+  getVisjsUserOptions,
+};

@@ -71,12 +71,14 @@
 
                 <p class="text-h6"><strong>File format for uploads:</strong></p>
                 <p>
-                    Input parameters can also be provided by uploading a .csv or .json file. Column/field names should match
+                    Input parameters can also be provided by uploading a .csv or .json file. Column/field names should
+                    match
                     the
                     parameter names for the <a href="/api/v2/solubility/" target="_blank">Solubility API</a>.
                     For .csv files, the header row is required, and all columns must be present, though empty values are
                     allowed.
-                    For .json files, parameters should be specified as an array of objects, and each object is not required
+                    For .json files, parameters should be specified as an array of objects, and each object is not
+                    required
                     to have
                     all fields defined. Null values for empty fields are also accepted.
                 </p>
@@ -119,7 +121,8 @@
                         <b>logS (method1) [log10(mol/L)]</b>:
                         Predicted solubility of the input solute in the input solvent at the input temperature in
                         log10(mol/L).
-                        This prediction is made using method 1, which approximates the temperature dependence of solubility
+                        This prediction is made using method 1, which approximates the temperature dependence of
+                        solubility
                         using
                         the constant dissolution enthalpy at 298 K. Below 350 K, the prediction accuracy of method 1 and
                         method 2
@@ -132,8 +135,10 @@
                         log10(mol/L).
                         This prediction is made using method 2, which estimates the temperature dependence of solubility
                         using the
-                        temperature-dependent dissolution enthalpy at 298 K. Method 2 provides more accurate prediction than
-                        method 1 at high temperature. However, method 2 is currently only available for around 100 common
+                        temperature-dependent dissolution enthalpy at 298 K. Method 2 provides more accurate prediction
+                        than
+                        method 1 at high temperature. However, method 2 is currently only available for around 100
+                        common
                         solvents.
                         Please refer to our paper for more details.
                     </li>
@@ -147,13 +152,17 @@
                     </li>
                     <li>
                         <b>dHsolv [kcal/mol]</b>:
-                        Predicted solvation enthalpy of the input solvent-solute pair at the input temperature in kcal/mol.
-                        This prediction is available if method 2 is available. The same standard state as dGsolvT is used.
+                        Predicted solvation enthalpy of the input solvent-solute pair at the input temperature in
+                        kcal/mol.
+                        This prediction is available if method 2 is available. The same standard state as dGsolvT is
+                        used.
                     </li>
                     <li>
                         <b>dSsolv [cal/K/mol]</b>:
-                        Predicted solvation entropy of the input solvent-solute pair at the input temperature in cal/K/mol.
-                        This prediction is available if method 2 is available. The same standard state as dGsolvT is used.
+                        Predicted solvation entropy of the input solvent-solute pair at the input temperature in
+                        cal/K/mol.
+                        This prediction is available if method 2 is available. The same standard state as dGsolvT is
+                        used.
                     </li>
                     <li>
                         <b>Pred. Hsub298 [kcal/mol]</b>:
@@ -220,7 +229,7 @@
         </v-card>
     </v-dialog>
 </template>
-  
+
 <script>
 import { computed } from 'vue'
 export default {
@@ -252,4 +261,3 @@ export default {
     }
 }
 </script>
-  

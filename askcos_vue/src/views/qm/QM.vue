@@ -200,16 +200,6 @@ const apiKeyToField = ref({
 
 const createConfirm = useConfirm();
 
-const canonicalize = () => {
-    API.post("/api/rdkit/canonicalize/", { smiles: smiles.value })
-        .then((json) => {
-            smiles.value = json.smiles;
-        })
-        .catch((error) => {
-            console.error("Could not canonicalize: " + error);
-        });
-};
-
 const openKetcher = (source) => {
     smiles.value = source;
     showKetcher.value = true;
@@ -263,9 +253,6 @@ const toggleAllCategories = async () => {
     }
     await nextTick()
     onSelectedCategory();
-};
-const remove = (key) => {
-    fields.value = fields.value.filter(header => header.key !== key)
 };
 const clear = () => {
     results.value = []

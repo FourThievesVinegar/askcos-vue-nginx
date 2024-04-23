@@ -177,8 +177,8 @@
               </v-col>
 
               <v-col cols="12" v-if="contextModel === 'neuralnetworkv2'">
-                <v-select label="Neural Network v2 dataset version" density="comfortable" variant="outlined" hide-details
-                  clearable v-model="contextV2ModelVersion" :items="['20191118']"></v-select>
+                <v-select label="Neural Network v2 dataset version" density="comfortable" variant="outlined"
+                  hide-details clearable v-model="contextV2ModelVersion" :items="['20191118']"></v-select>
               </v-col>
 
               <v-col cols="12">
@@ -191,84 +191,88 @@
           </v-card-text>
         </template>
         <template v-if="openSettingsPanel === 'forward-settings'">
-            <v-card-title class="headline">
-              Forward predictor settings
-            </v-card-title>
-            <v-card-text>
-              <v-row>
-                <v-col cols="12">
-                  <v-select label="Forward prediction model" v-model="forwardModel" density="comfortable" hide-details
-                      clearable variant="outlined" :items="forwardModels"></v-select>
-                </v-col>
+          <v-card-title class="headline">
+            Forward predictor settings
+          </v-card-title>
+          <v-card-text>
+            <v-row>
+              <v-col cols="12">
+                <v-select label="Forward prediction model" v-model="forwardModel" density="comfortable" hide-details
+                  clearable variant="outlined" :items="forwardModels"></v-select>
+              </v-col>
 
-                <v-col cols="12">
-                   <v-select label="Forward model training set" v-model="forwardModelTrainingSet" density="comfortable"
-                      hide-details clearable variant="outlined" :items="forwardModelTrainingSets"></v-select>
-                </v-col>
+              <v-col cols="12">
+                <v-select label="Forward model training set" v-model="forwardModelTrainingSet" density="comfortable"
+                  hide-details clearable variant="outlined" :items="forwardModelTrainingSets"></v-select>
+              </v-col>
 
-                <v-col cols="12">
-                 <v-text-field label="Num. results" placeholder="How many forward prediction results to return?"
-                      prepend-inner-icon="mdi mdi-flask" hide-details clearable density="comfortable" variant="outlined"
-                      type="number" v-model="numForwardResults"></v-text-field>
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </template>
+              <v-col cols="12">
+                <v-text-field label="Num. results" placeholder="How many forward prediction results to return?"
+                  prepend-inner-icon="mdi mdi-flask" hide-details clearable density="comfortable" variant="outlined"
+                  type="number" v-model="numForwardResults"></v-text-field>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </template>
         <template v-if="openSettingsPanel === 'impurity-settings'">
-            <v-card-title class="headline">
-              Forward Inspector
-            </v-card-title>
-            <v-card-text>
-              <v-row>
-                <v-col cols="12">
-                    <v-select label="Forward prediction model" v-model="forwardModel" density="comfortable" hide-details
-                        clearable variant="outlined" :items="forwardModels"></v-select>
-                  </v-col>
+          <v-card-title class="headline">
+            Forward Inspector
+          </v-card-title>
+          <v-card-text>
+            <v-row>
+              <v-col cols="12">
+                <v-select label="Forward prediction model" v-model="forwardModel" density="comfortable" hide-details
+                  clearable variant="outlined" :items="forwardModels"></v-select>
+              </v-col>
 
-                <v-col cols="12">
-                     <v-select label="Forward model training set" v-model="forwardModelTrainingSet" density="comfortable"
-                        hide-details clearable variant="outlined" :items="forwardModelTrainingSets"></v-select>
-                  </v-col>
+              <v-col cols="12">
+                <v-select label="Forward model training set" v-model="forwardModelTrainingSet" density="comfortable"
+                  hide-details clearable variant="outlined" :items="forwardModelTrainingSets"></v-select>
+              </v-col>
 
-                <v-col cols="12">
-                    <v-text-field label="Top-k from forward prediction" density="comfortable" variant="outlined"
-                      hide-details clearable
-                      placeholder="How many of the top forward prediction products should be included in impurity prediction?"
-                      type="number" v-model="impurityTopk"></v-text-field>
-                </v-col>
+              <v-col cols="12">
+                <v-text-field label="Top-k from forward prediction" density="comfortable" variant="outlined"
+                  hide-details clearable
+                  placeholder="How many of the top forward prediction products should be included in impurity prediction?"
+                  type="number" v-model="impurityTopk"></v-text-field>
+              </v-col>
 
-                <v-col cols="12">
-                   <v-text-field label="Inspection threshold" placeholder="Threshold for filtering out bad reactions."
-                      density="comfortable" variant="outlined" hide-details clearable type="number"
-                      v-model="inspectionThreshold"></v-text-field>
-                </v-col>
+              <v-col cols="12">
+                <v-text-field label="Inspection threshold" placeholder="Threshold for filtering out bad reactions."
+                  density="comfortable" variant="outlined" hide-details clearable type="number"
+                  v-model="inspectionThreshold"></v-text-field>
+              </v-col>
 
-                <v-col cols="12">
-                 <v-select label="Inspector Score Selection" placeholder="Select inspector scorer to use."
-                      density="comfortable" variant="outlined" hide-details clearable v-model="inspectionModel"
-                      :items="['WLN forward inspector', 'Reaxys inspector']"></v-select>
-                </v-col>
-                <v-col cols="12">
-                  <v-switch label="Use atom mapping" placeholder="Whether to use atom mapping to check reaction modes."
-                      v-model="impurityCheckMapping" color="primary"></v-switch>
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </template>
-          <template v-if="openSettingsPanel === 'selectivity-settings'">
-              <v-card-title class="headline">
-                Forward Inspector
-              </v-card-title>
-              <v-card-text>
-                <v-row>
-                  <v-col cols="12">
-                    <v-switch :label="`Do not map reagents: ${absoluteReagents ? 'yes' : 'no'}`"
-                      hint="Reagents do not provide any atom to the product." v-model="absoluteReagents" color="primary">
-                    </v-switch>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </template>
+              <v-col cols="12">
+                <v-select label="Inspector Score Selection" placeholder="Select inspector scorer to use."
+                  density="comfortable" variant="outlined" hide-details clearable v-model="inspectionModel"
+                  :items="['WLN forward inspector', 'Reaxys inspector']"></v-select>
+              </v-col>
+              <v-col cols="12">
+                <v-switch label="Use atom mapping" placeholder="Whether to use atom mapping to check reaction modes."
+                  v-model="impurityCheckMapping" color="primary"></v-switch>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </template>
+        <template v-if="openSettingsPanel === 'selectivity-settings'">
+          <v-card-title class="headline">
+            Forward Inspector
+          </v-card-title>
+          <v-card-text>
+            <v-row>
+              <v-col cols="12">
+                <v-switch :label="`Do not map reagents: ${absoluteReagents ? 'yes' : 'no'}`"
+                  hint="Reagents do not provide any atom to the product." v-model="absoluteReagents" color="primary">
+                </v-switch>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </template>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text="Ok" @click="dialog = false" variant="tonal"></v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-container>
@@ -735,7 +739,7 @@ const clear = async (skipConfirm = false) => {
       break;
     default:
       createConfirm({ title: 'Alert', content: "Unsupported Mode.", dialogProps: { width: "60%" } })
-      // alert('unsupported mode')
+    // alert('unsupported mode')
   }
 }
 
@@ -1102,7 +1106,7 @@ const downloadSelectivityResults = () => {
 const downloadForwardResults = () => {
   if (!forwardResults.value.length) {
     // alert('There are no forward predictor results to download!');
-     createConfirm({ title: 'Alert', content: 'There are no forward predictor results to download!', dialogProps: { width: "60%" } })
+    createConfirm({ title: 'Alert', content: 'There are no forward predictor results to download!', dialogProps: { width: "60%" } })
     return;
   }
   let downloadData = 'Rank,SMILES,Probability,Score,MolWt\n';
@@ -1137,23 +1141,4 @@ const constructSiteSelectivityPostData = () => {
     smiles: reactants.value
   }
 }
-
-// const getMolImgUrl = (smiles, highlight, reactingAtoms) => {
-//   let url = `/api/v2/draw/?smiles=${encodeURIComponent(smiles)}`;
-//   if (highlight !== undefined) {
-//     url += '&highlight=true';
-//   }
-//   if (reactingAtoms !== undefined) {
-//     for (const ra of reactingAtoms) {
-//       url += `&reacting_atoms=${encodeURIComponent(ra)}`;
-//     }
-//   }
-//   return url;
-// };
-
-
 </script>
-
-
-
-
