@@ -10,6 +10,7 @@ const interactive_path_planner_settings_default = {
       max_num_templates: 1000,
       max_cum_prob: 0.999,
       attribute_filter: [],
+      threshold: 0.3,
     },
   ],
   banned_chemicals: [],

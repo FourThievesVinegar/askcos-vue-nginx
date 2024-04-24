@@ -50,8 +50,9 @@
                                 <setting-input label="Min. plausibility" label-for="minPlausibility"
                                     help-text="This is the minimum plausibility that a predictor transformation must receive from the Fast Filter model in order to be kept and returned as a result.
         The plausibility score can help filter out bad suggestions, but in some cases can be over conservative and filter out false negatives.">
-                                    <v-text-field variant="outlined" type="number" v-model="minPlausibility" min="0" max="1"
-                                        step="0.000001" hide-details density="compact" class="mb-2"></v-text-field>
+                                    <v-text-field variant="outlined" type="number" v-model="minPlausibility" min="0"
+                                        max="1" step="0.000001" hide-details density="compact"
+                                        class="mb-2"></v-text-field>
                                 </setting-input>
                                 <setting-input label="Apply regio-selectivity checking"
                                     help-text="When enabled, will automatically identify reactions which have potential regio-selectivity considerations.">
@@ -66,10 +67,11 @@
                                 <setting-input label="Top-N result to add to graph" label-for="reactionLimit"
                                     help-text="This number of results from each one-step prediction will automatically be added to the graph visualization.
         In some circumstances, it may be advantageous to add 0 results automatically, and manually choose which to add from the list on the right.">
-                                    <v-text-field label="" id="reactionLimit" v-model.number="reactionLimit" type="number"
-                                        variant="outlined" density="compact" hide-details></v-text-field>
+                                    <v-text-field label="" id="reactionLimit" v-model.number="reactionLimit"
+                                        type="number" variant="outlined" density="compact" hide-details></v-text-field>
                                 </setting-input>
-                                <setting-input label="Strategy Plan" help-text="Tell which strategy to use" class="my-5">
+                                <setting-input label="Strategy Plan" help-text="Tell which strategy to use"
+                                    class="my-5">
                                     <v-btn variant="flat" @click="addStrategy" icon="mdi-plus" color="green"
                                         density="compact">
                                     </v-btn>
@@ -82,7 +84,7 @@
                                                     <v-row>
                                                         <v-col cols="10">
                                                             <span class="text-subtitle-1">{{ "Strategy " + (idx + 1)
-                                                            }}</span>
+                                                                }}</span>
                                                         </v-col>
                                                         <v-col cols="2">
                                                             <v-btn icon="mdi-close" variant="flat" density="compact"
@@ -97,20 +99,33 @@
                                                         <v-select :items="models" variant="outlined" density="compact"
                                                             hide-details :model-value="strategy.retro_backend"
                                                             @update:modelValue="($event) => {
-                                                                updateStrategy(idx, 'retro_backend', $event);
-                                                                updateStrategy(idx, 'retro_model_name', trainingSets($event)[0]);
-                                                            }
-                                                                "></v-select>
+        updateStrategy(idx, 'retro_backend', $event);
+        updateStrategy(idx, 'retro_model_name', trainingSets($event)[0]);
+    }
+        "></v-select>
                                                     </setting-input>
-                                                    <setting-input v-if="strategy.retro_backend !== 'template_relevance'"
-                                                        label="Training Set"
-                                                        help-text="By specifiying this you can change the type of the model used for prediction">
-                                                        <v-select density="compact" hide-details
-                                                            :model-value="strategy.retro_model_name" variant="outlined"
-                                                            @update:modelValue="($event) => updateStrategy(idx, 'retro_model_name', $event)"
-                                                            :items="trainingSets(strategy.retro_backend)">
-                                                        </v-select>
-                                                    </setting-input>
+                                                    <div v-if="strategy.retro_backend !== 'template_relevance'">
+                                                        <setting-input label="Training Set"
+                                                            help-text="By specifiying this you can change the type of the model used for prediction"
+                                                            class="mt-2">
+                                                            <v-select density="compact" hide-details
+                                                                :model-value="strategy.retro_model_name"
+                                                                variant="outlined"
+                                                                @update:modelValue="($event) => updateStrategy(idx, 'retro_model_name', $event)"
+                                                                :items="trainingSets(strategy.retro_backend)">
+                                                            </v-select>
+                                                        </setting-input>
+                                                        <setting-input v-if="strategy.retro_backend === 'retrosim'"
+                                                            label="Threshold"
+                                                            help-text="By specifiying this you can change the type of the model used for prediction"
+                                                            class="mt-5">
+                                                            <v-text-field :model-value="strategy.threshold"
+                                                                @update:modelValue="($event) => updateStrategy(idx, 'threshold', parseFloat($event))"
+                                                                type="number" variant="outlined" density="compact"
+                                                                max="1" min="0" hide-details></v-text-field>
+                                                        </setting-input>
+                                                    </div>
+
                                                     <div v-else>
                                                         <setting-input label="Template Set" help-text="Specify the template prioritizers you wish to use for one-step retro predictions.
                           If multiple prioritizers are selected, their predictions will be combined.
@@ -139,8 +154,8 @@
                                                                         <tr v-for="(filter, afIdx) in strategy.attribute_filter"
                                                                             :key="`p-${idx}-f-${afIdx}`">
                                                                             <td style="width: 30%">
-                                                                                <v-select class="mr-2" variant="outlined"
-                                                                                    density="compact"
+                                                                                <v-select class="mr-2"
+                                                                                    variant="outlined" density="compact"
                                                                                     :items="templateAttributes[strategy['retro_model_name']]"
                                                                                     :model-value="filter.name"
                                                                                     @update:modelValue="updateAttributeFilter(idx, afIdx, 'name', $event)"
@@ -148,8 +163,8 @@
                                                                                 </v-select>
                                                                             </td>
                                                                             <td style="width: 30%">
-                                                                                <v-select class="mr-2" variant="outlined"
-                                                                                    density="compact"
+                                                                                <v-select class="mr-2"
+                                                                                    variant="outlined" density="compact"
                                                                                     :items="['>', '>=', '&lt;', '&le;', '==']"
                                                                                     :model-value="filter.logic"
                                                                                     @update:modelValue="updateAttributeFilter(idx, afIdx, 'logic', $event)"
@@ -239,13 +254,15 @@
                         </v-window-item>
                         <v-window-item value="mctsTB">
                             <v-container fluid>
-                                <v-expansion-panels multiple variant="popout" color="grey-lighten-4" v-model="mctsPanels">
+                                <v-expansion-panels multiple variant="popout" color="grey-lighten-4"
+                                    v-model="mctsPanels">
                                     <v-expansion-panel title="Tree Search algorithm options">
                                         <v-expansion-panel-text>
                                             <setting-input label="Tree builder version" label-for="tbVersion"
                                                 help-text="Which tree builder algorithm to use.">
-                                                <v-select :model-value="tbVersion" variant="outlined"
-                                                    density="compact" hide-details class="my-2" :items="tbAlgo" @update:modelValue="($event) => tbVersion = $event">
+                                                <v-select :model-value="tbVersion" variant="outlined" density="compact"
+                                                    hide-details class="my-2" :items="tbAlgo"
+                                                    @update:modelValue="($event) => tbVersion = $event">
                                                 </v-select>
                                             </setting-input>
                                             <setting-input label="Expansion time (seconds)" label-for="expansionTime"
@@ -297,7 +314,8 @@
                                     <v-expansion-panel title="Terminal chemical criteria">
                                         <v-expansion-panel-text>
                                             <v-alert type="info" title="Note" variant="tonal" density="compact">
-                                                <p class="text-body-2"> The following options allow you to set additional
+                                                <p class="text-body-2"> The following options allow you to set
+                                                    additional
                                                     criteria to be used in
                                                     determining
                                                     whether a precursor is terminal. All AND criteria must be satisfied
@@ -321,8 +339,9 @@
                                                         </v-list-item>
                                                         <v-list-item v-for="(source, index) in buyablesSources"
                                                             :key="index">
-                                                            <v-checkbox hide-details v-model="buyablesSource" :key="source"
-                                                                :value="source" :disabled="buyablesSourceAll != []">
+                                                            <v-checkbox hide-details v-model="buyablesSource"
+                                                                :key="source" :value="source"
+                                                                :disabled="buyablesSourceAll != []">
                                                                 <template v-slot:label>
                                                                     {{ source === NO_SOURCE ? NO_SOURCE_TEXT : source }}
                                                                 </template>
@@ -391,10 +410,11 @@
                                             <setting-input label="Chemical popularity logic" label-for="chemPopLogic"
                                                 help-text="Sets the logic type for considering the number of times a chemical appeared in the training data for the template relevance machine learning model.">
                                                 <v-select id="chemPopLogic" :items="logicOptions"
-                                                    v-model="chemicalPopularityLogic" variant="outlined" density="compact"
-                                                    class="mt-2" hide-details></v-select>
+                                                    v-model="chemicalPopularityLogic" variant="outlined"
+                                                    density="compact" class="mt-2" hide-details></v-select>
                                             </setting-input>
-                                            <setting-input v-if="chemicalPopularityLogic !== 'none'" label="Min occurrences"
+                                            <setting-input v-if="chemicalPopularityLogic !== 'none'"
+                                                label="Min occurrences"
                                                 help-text="This is the minimum number of prior occurrences above which a precursor will be considered terminal in the MCTS search.">
                                                 <v-text-field label="As reactant &ge;" id="chemPopR"
                                                     v-model="chemicalPopularityReactants" type="number" min="1" step="1"
@@ -420,9 +440,9 @@
                                             <setting-input label="Pathway clustering algorithm"
                                                 label-for="pathClusterMethod"
                                                 help-text="Sets the clustering algorithm to use for pathway clustering.">
-                                                <v-select hide-details id="pathClusterMethod" v-model="pathClusterMethod"
-                                                    :items="pathClusterMethodItems" variant="outlined"
-                                                    density="compact"></v-select>
+                                                <v-select hide-details id="pathClusterMethod"
+                                                    v-model="pathClusterMethod" :items="pathClusterMethodItems"
+                                                    variant="outlined" density="compact"></v-select>
                                             </setting-input>
                                             <setting-input v-show="pathClusterMethod === 'hdbscan'"
                                                 label="Min. cluster size" label-for="pathClusterMinSize"
@@ -436,8 +456,8 @@
                                                 label-for="pathClusterMinSamples"
                                                 help-text="This is the min_samples parameter for the hdbscan algorithm.">
                                                 <v-text-field label="As product &ge;" id="pathClusterMinSamples"
-                                                    v-model.number="pathClusterMinSamples" type="number" min="1" max="100"
-                                                    step="1" variant="outlined" density="compact" hide-details
+                                                    v-model.number="pathClusterMinSamples" type="number" min="1"
+                                                    max="100" step="1" variant="outlined" density="compact" hide-details
                                                     class="mt-2"></v-text-field>
                                             </setting-input>
                                         </v-expansion-panel-text>
@@ -452,9 +472,9 @@
                                             </setting-input>
                                             <setting-input label="Maximum pathways to return" label-for="maxTrees"
                                                 help-text="This allows limiting how many pathways are returned by the tree builder. Note that the cutoff is checked during depth-first pathway enumeration, so there is no guarantee on which pathways are returned.">
-                                                <v-text-field label="" id="maxTrees" v-model.number="maxTrees" type="number"
-                                                    min="1" step="1" variant="outlined" density="compact" hide-details
-                                                    class="mt-2"></v-text-field>
+                                                <v-text-field label="" id="maxTrees" v-model.number="maxTrees"
+                                                    type="number" min="1" step="1" variant="outlined" density="compact"
+                                                    hide-details class="mt-2"></v-text-field>
                                             </setting-input>
                                             <setting-input label="Redirect to IPP results view"
                                                 help-text="This setting allows you to redirect to the entire graph visualization of the tree builder results in this IPP interface instead of the pathway visualization page that lets you view individual pathways one at a time.">
@@ -489,16 +509,16 @@
                                             :items="precursorClusterMethodItems" variant="outlined"
                                             density="compact"></v-select>
                                     </setting-input>
-                                    <v-alert v-if="precursorClusterMethod === 'rxn_class'" title="Warning" type="warning"
-                                        class="my-4" density="compact">
+                                    <v-alert v-if="precursorClusterMethod === 'rxn_class'" title="Warning"
+                                        type="warning" class="my-4" density="compact">
                                         rxn_class clustering takes longer than other clustering methods.
                                     </v-alert>
                                     <div v-if="precursorClusterMethod === 'rxn_class'">
                                         <setting-input label="Feature" label-for="clusterFeature"
                                             help-text="This clustering parameter determines which fingerprint features are used as input to the clustering algorithm.">
                                             <v-select id="clusterFeature" v-model="precursorClusterFeature"
-                                                :items="precursorClusterFeatureItems" variant="outlined" density="compact"
-                                                hide-details class="mt-2"></v-select>
+                                                :items="precursorClusterFeatureItems" variant="outlined"
+                                                density="compact" hide-details class="mt-2"></v-select>
                                         </setting-input>
                                         <setting-input label="Fingerprint" label-for="clusterFingerprint"
                                             help-text="Currently only morgan fingerprint methods are supported.">
@@ -530,7 +550,8 @@
                                         @update:modelValue="$emit('changeNetopt')" min="0" max="0.3" step="0.005"
                                         density="compact" hide-details class="mt-2" color="primary"></v-slider>
                                 </setting-input>
-                                <setting-input :label="`Chemical node size: ${graphNodeSize}`" label-for="graphNodeSize">
+                                <setting-input :label="`Chemical node size: ${graphNodeSize}`"
+                                    label-for="graphNodeSize">
                                     <v-slider label="" id="graphNodeSize" v-model="graphNodeSize"
                                         @update:modelValue="$emit('changeNetopt')" min="1" max="60" step="1"
                                         density="compact" hide-details class="mt-2" color="primary"></v-slider>
@@ -541,7 +562,8 @@
                                         @update:modelValue="$emit('changeNetopt')" min="1" max="20" step="1"
                                         density="compact" hide-details class="mt-2" color="primary"></v-slider>
                                 </setting-input>
-                                <setting-input :label="`Node effective mass: ${graphNodeMass}`" label-for="graphNodeMass">
+                                <setting-input :label="`Node effective mass: ${graphNodeMass}`"
+                                    label-for="graphNodeMass">
                                     <v-slider label="" id="graphNodeMass" v-model="graphNodeMass"
                                         @update:modelValue="$emit('changeNetopt')" min="0.1" max="5" step="0.1"
                                         density="compact" hide-details class="mt-2" color="primary"></v-slider>
@@ -614,8 +636,8 @@ export default {
     data() {
         return {
             tbAlgo: [
-                {value: "mcts", title: "MCTS"},
-                {value: "retro_star", title: "Retro Star"},
+                { value: "mcts", title: "MCTS" },
+                { value: "retro_star", title: "Retro Star" },
             ],
             modelStatus: [],
             templateSetsList: [],
@@ -732,6 +754,14 @@ export default {
                     key: "reactionLimit",
                     value: value,
                 });
+            },
+        },
+        threshold: {
+            get() {
+                return this.settingsStore.interactive_path_planner_settings.retro_backend_options.threshold;
+            },
+            set(value) {
+                this.settingsStore.interactive_path_planner_settings.retro_backend_options.threshold = value;
             },
         },
         precursorClusterEnabled: {
@@ -1228,6 +1258,7 @@ export default {
                     attribute_filter: [],
                     max_num_templates: 1000,
                     max_cum_prob: 0.999,
+                    threshold: 0.3
                 },
             });
         },

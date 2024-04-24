@@ -59,7 +59,7 @@ const API = {
     fastapiStore.logs.unshift({
       endpoint: endpoint,
       method: "GET",
-      request: params,
+      request: JSON.stringify(params),
       response: json,
     });
     return json;
@@ -88,7 +88,7 @@ const API = {
     fastapiStore.logs.unshift({
       endpoint: endpoint,
       method: "POST",
-      request: data,
+      request: JSON.stringify(data),
       response: json,
     });
     return json;
@@ -105,7 +105,7 @@ const API = {
     fastapiStore.logs.unshift({
       endpoint: endpoint,
       method: "PUT",
-      request: data,
+      request: JSON.stringify(data),
       response: json,
     });
     return json;

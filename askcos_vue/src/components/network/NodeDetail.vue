@@ -9,8 +9,8 @@
               <b>Smiles: </b>
               {{ selected.smiles }}
             </copy-tooltip>
-            <div><b>Price ($/g): </b>{{ selected.data.ppg }}</div>
-            <div v-if="selected.data.source"><b>Source: </b>{{ selected.data.source }}</div>
+            <div><b>Min Price ($/g): </b>{{ selected.data.ppg }}</div>
+            <div v-if="selected.data.source"><b>Min Source: </b>{{ selected.data.source }}</div>
             <v-btn class="my-2" color="primary" variant="tonal" prepend-icon="mdi-cart-variant" :href="`/buyables?q=${encodeURIComponent(selected.smiles)}`" target="_blank">Search Buyables</v-btn>
             <ketcher-min id="ketcher-min-chemical" ref="ketcher-min" class="position-relative"
               @change="selectedAtoms = $event"></ketcher-min>

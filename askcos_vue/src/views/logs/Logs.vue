@@ -28,7 +28,7 @@
                             <v-row>
                                 <v-col>
                                     <h6 class="text-h6">Request:</h6>
-                                    <pre style="white-space: pre-wrap">{{ log.request || "No Request" }}</pre>
+                                    <pre style="white-space: pre-wrap">{{ log.request ? JSON.parse(log.request) : "No Request" }}</pre>
                                 </v-col>
                                 <v-col>
                                     <h6 class="text-h6">Response:</h6>
