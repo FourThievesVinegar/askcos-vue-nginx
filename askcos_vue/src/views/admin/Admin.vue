@@ -158,11 +158,10 @@
                 <v-row class="d-flex flex-row justify-center align-center" v-if="!isAdmin && !dataLoading">
                     <v-col cols="12" sm="3">
                         <v-sheet class="pa-5 rounded-lg" elevation="2">
-                            <h4 class="text-h4">Profile Picture</h4>
+                            <h4 class="text-h4">Profile</h4>
                             <v-divider></v-divider>
                             <div class="d-flex flex-column justify-center align-center mt-1">
-                                <v-img :src="gravatarURL(username)" width="200" style="border-radius: 50%;"></v-img>
-                                <p class="mt-1">Type</p>
+                                <v-img :src="wp" width="200" style="border-radius: 50%;"></v-img>
                             </div>
                         </v-sheet>
                     </v-col>
@@ -278,7 +277,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from "vue-router";
 import { API } from "@/common/api";
 import { useSnackbar } from 'vuetify-use-dialog';
-import gravatar from "gravatar"
+import wp from "@/assets/wp.png"
 
 // const createConfirm = useConfirm();
 const createSnackbar = useSnackbar()
@@ -312,10 +311,10 @@ const usersDict = ref({});
 const filterSelected = ref(null)
 const dataLoading = ref(true)
 
-function gravatarURL(email) {
-    const gtype = localStorage.getItem("gtype");
-    return gravatar.url(email, { d: gtype ?? "mp", s: '300' });
-}
+// function gravatarURL(email) {
+//     const gtype = localStorage.getItem("gtype");
+//     return gravatar.url(email, { d: gtype ?? "mp", s: '300' });
+// }
 
 const tableItems = computed(() => {
     let items = users.value;
