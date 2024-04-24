@@ -69,9 +69,13 @@
         </v-row>
         <v-row class="justify-center align-center"><span class="text-overline">Using model(s):</span>
           <div v-if="strategies.length !== 0" class="pa-0 test">
-            <v-chip v-for="(strategy, idx) in strategies" :key="idx" class="text-overline">
-              {{ strategy.retro_backend }} {{ strategy.retro_model_name }}
-            </v-chip>
+            <v-slide-group show-arrows>
+              <v-slide-group-item v-for="(strategy, idx) in strategies" :key="idx">
+                <v-chip class="text-overline">
+                  {{ strategy.retro_backend }} {{ strategy.retro_model_name }}
+                </v-chip>
+              </v-slide-group-item>
+            </v-slide-group>
           </div>
           <div v-else>No strategy added</div>
           <v-divider class="border-opacity-75 mx-2" vertical></v-divider>
