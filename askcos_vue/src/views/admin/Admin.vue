@@ -382,9 +382,6 @@ const fetchData = async () => {
         isAdmin.value = await API.get("/api/user/am-i-superuser");
 
         usersDict.value = {};
-        users.value.forEach(user => {
-            usersDict.value[user.username] = user;
-        });
 
         if (isAdmin.value) {
             let response = await API.get("/api/user/get-all-users");
@@ -424,11 +421,11 @@ const addUser = () => {
     };
 
     API.post('/api/user/register', body, true)
-        .then(response => {
+        .then(async response => {
             console.log(response.Error)
             if (response === "OK") {
+                await fetchData();
                 createSnackbar({ text: "User added successfully!", snackbarProps: { timeout: 3000 } });
-                users.value.push({ ...body, accountType: newSuperuser.value ? "Admin" : "Normal" });
                 clearUserFields();
             }
         })
@@ -471,7 +468,7 @@ const mutate = async (username, method) => {
         case 'admin':
             await API.get('/api/user/promote', { username: username }, true)
                 .then(async response => {
-                    console.log(response.Error)
+                    console.error(response.Error)
                     if (response === "OK") {
                         await fetchData()
                         createSnackbar({ text: "Successfully made admin!", snackbarProps: { timeout: 3000 } });
@@ -486,7 +483,7 @@ const mutate = async (username, method) => {
         case 'normal':
             await API.get('/api/user/demote', { username: username }, true)
                 .then(async response => {
-                    console.log(response.Error)
+                    console.error(response.Error)
                     if (response === "OK") {
                         await fetchData()
                         createSnackbar({ text: "Successfully made normal user!", snackbarProps: { timeout: 3000 } });
@@ -501,7 +498,7 @@ const mutate = async (username, method) => {
         case 'disable':
             await API.post('/api/user/update', { username: username, disabled: true }, true)
                 .then(async response => {
-                    console.log(response.Error)
+                    console.error(response.Error)
                     if (response === "OK") {
                         await fetchData()
                         createSnackbar
