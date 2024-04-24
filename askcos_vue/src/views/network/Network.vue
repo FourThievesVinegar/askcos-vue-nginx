@@ -75,7 +75,6 @@ export default {
       if (resultId) {
         loadResultFromURL({ resultId: resultId, numTrees: numTrees }).then(
           () => {
-
             init(tab.value);
           }
         );

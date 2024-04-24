@@ -15,7 +15,8 @@
                     <v-col cols="12" md="12" xl="10">
                         <div class="mt-8 mb-5">
                             <h5 class="text-h4 text-blue">Hello, {{ username }}!</h5>
-                            <v-alert density="compact" type="warning" title="Warning" class="mt-3" v-if="isAdmin" closable>
+                            <v-alert density="compact" type="warning" title="Warning" class="mt-3"
+                                v-if="isAdmin && !dataLoading" closable>
                                 <template v-slot:text>
                                     <p class="text-body-1">
                                         We trust you have received the usual lecture from the local System
@@ -29,11 +30,11 @@
                         </div>
                     </v-col>
                 </v-row>
-                <v-row dense>
+                <v-row dense v-if="isAdmin && !dataLoading">
                     <v-col cols="12">
-                        <v-sheet rounded="lg" elevation="2" class="pa-5" v-if="isAdmin">
+                        <v-sheet rounded="lg" elevation="2" class="pa-5">
                             <v-data-table :headers="headers" :items="tableItems" multi-sort show-select
-                                v-if="isAdmin" v-model="selection" item-value="username" height="500" :loading=dataLoading>
+                                v-model="selection" item-value="username" height="500" :loading=dataLoading>
                                 <template v-slot:top>
                                     <v-toolbar flat>
                                         <v-toolbar-title>ASKCOS Users</v-toolbar-title>
@@ -124,11 +125,13 @@
                                             </v-list-item>
                                             <v-list-item v-if="!(item.disabled === false)">
                                                 <v-btn variant="tonal" color="primary"
-                                                    @click="mutate(item.username, 'enable')">Unlock Account</v-btn>
+                                                    @click="mutate(item.username, 'enable')">Unlock
+                                                    Account</v-btn>
                                             </v-list-item>
                                             <v-list-item v-if="!(item.disabled === true)">
                                                 <v-btn variant="tonal" color="primary"
-                                                    @click="mutate(item.username, 'disable')">Lock Account</v-btn>
+                                                    @click="mutate(item.username, 'disable')">Lock
+                                                    Account</v-btn>
                                             </v-list-item>
                                             <v-list-item v-if="!(item.accountType === 'Guest')">
                                                 <v-btn variant="tonal" color="primary"
@@ -137,7 +140,8 @@
                                             </v-list-item>
                                             <v-list-item v-if="!(item.accountType === 'Guest')">
                                                 <v-btn variant="tonal" color="primary"
-                                                    @click="mutate(item.username, 'email')">Change Email</v-btn>
+                                                    @click="mutate(item.username, 'email')">Change
+                                                    Email</v-btn>
                                             </v-list-item>
                                             <v-list-item>
                                                 <v-btn variant="tonal" color="error"
@@ -151,41 +155,46 @@
                         </v-sheet>
                     </v-col>
                 </v-row>
-                <div v-if="!isAdmin">
-                    <v-row class="d-flex flex-row justify-center align-center">
-                        <v-col cols="12" sm="3">
-                            <v-sheet class="pa-5 rounded-lg" elevation="2">
-                                <h4 class="text-h4">Profile Picture</h4>
-                                <v-divider></v-divider>
-                                <div class="d-flex flex-column justify-center align-center mt-1">
-                                    <v-img :src="gravatarURL(username)" width="200" style="border-radius: 50%;"></v-img>
-                                    <p class="mt-1">Type</p>
-                                </div>
-                            </v-sheet>
-                        </v-col>
-                        <v-col cols="12" sm="4" class="d-flex flex-row justify-center align-center">
-                            <v-sheet class="pa-5 rounded-lg" elevation="2">
-                                <h4 class="text-h4">Email</h4>
-                                <v-divider></v-divider>
-                                <p class="text-body-1">soura@gmail.com</p>
-                                <v-btn color="warning" class="mr-2" @click="mutate(username, 'email')"
-                                    size="small">Update
-                                    Email</v-btn>
-                                <h4 class="mt-4 text-h4">Password</h4>
-                                <v-divider></v-divider>
-                                <p class="text-body-1">Last Login: Today</p>
-                                <v-btn color="warning" class="mr-2" @click="mutate(username, 'pwd')" size="small">Change
-                                    Password</v-btn>
-                                <v-alert text="If you wish to delete this account you can do so by clicking below"
-                                    title="Danger Zone" type="warning" class="mt-2" density="compact" color="#FF0000"
-                                    variant="outlined"></v-alert>
-                                <v-btn color="error" @click="mutate(username, 'delete')" size="small"
-                                    class="mt-2">Delete
-                                    Account</v-btn>
-                            </v-sheet>
-                        </v-col>
-                    </v-row>
-                </div>
+                <v-row class="d-flex flex-row justify-center align-center" v-if="!isAdmin && !dataLoading">
+                    <v-col cols="12" sm="3">
+                        <v-sheet class="pa-5 rounded-lg" elevation="2">
+                            <h4 class="text-h4">Profile Picture</h4>
+                            <v-divider></v-divider>
+                            <div class="d-flex flex-column justify-center align-center mt-1">
+                                <v-img :src="gravatarURL(username)" width="200" style="border-radius: 50%;"></v-img>
+                                <p class="mt-1">Type</p>
+                            </div>
+                        </v-sheet>
+                    </v-col>
+                    <v-col cols="12" sm="4" class="d-flex flex-row justify-center align-center">
+                        <v-sheet class="pa-5 rounded-lg" elevation="2">
+                            <h4 class="text-h4">Email</h4>
+                            <v-divider></v-divider>
+                            <p class="text-body-1">soura@gmail.com</p>
+                            <v-btn color="warning" class="mr-2" @click="mutate(username, 'email')" size="small">Update
+                                Email</v-btn>
+                            <h4 class="mt-4 text-h4">Password</h4>
+                            <v-divider></v-divider>
+                            <p class="text-body-1">Last Login: Today</p>
+                            <v-btn color="warning" class="mr-2" @click="mutate(username, 'pwd')" size="small">Change
+                                Password</v-btn>
+                            <v-alert text="If you wish to delete this account you can do so by clicking below"
+                                title="Danger Zone" type="warning" class="mt-2" density="compact" color="#FF0000"
+                                variant="outlined"></v-alert>
+                            <v-btn color="error" @click="mutate(username, 'delete')" size="small" class="mt-2">Delete
+                                Account</v-btn>
+                        </v-sheet>
+                    </v-col>
+                </v-row>
+                <v-row align-content="center" class="fill-height" justify="center" v-if="dataLoading">
+                    <v-col class="text-subtitle-1 text-center" cols="12">
+                        Fetching User Details
+                    </v-col>
+                    <v-col cols="6">
+                        <v-progress-linear color="primary" height="6" indeterminate
+                            rounded></v-progress-linear>
+                    </v-col>
+                </v-row>
             </v-container>
 
             <v-dialog v-model="dialog" max-width="600px">
