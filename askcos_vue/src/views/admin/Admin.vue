@@ -169,7 +169,7 @@
                         <v-sheet class="pa-5 rounded-lg" elevation="2">
                             <h4 class="text-h4">Email</h4>
                             <v-divider></v-divider>
-                            <p class="text-body-1">soura@gmail.com</p>
+                            <p class="text-body-1">**Dummy Email**</p>
                             <v-btn color="warning" class="mr-2" @click="mutate(username, 'email')" size="small">Update
                                 Email</v-btn>
                             <h4 class="mt-4 text-h4">Password</h4>
