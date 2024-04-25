@@ -126,8 +126,8 @@
               {{ item.similarity ? item.similarity : "1" }}
             </template>
             <template v-slot:item.link="{ item }">
-              <v-btn :href="item.properties[0] ? item.properties[0].value : ''" target="_blank" append-icon="mdi-open-in-new"
-                :disabled="!item.properties[0] || !item.properties[0].value">Buy Now
+              <v-btn :href="item.properties[0] ? item.properties[0].value : ''" target="_blank"
+                append-icon="mdi-open-in-new" :disabled="!item.properties[0] || !item.properties[0].value">Buy Now
               </v-btn>
             </template>
             <template v-slot:item.delete="{ item }">
@@ -411,6 +411,10 @@ const handleUploadSubmit = () => {
       showUploadModal.value = false;
       uploadFile.value = null;
       pendingTasks.value--;
+      API.get('/api/buyables/sources')
+        .then(json => {
+          buyablesSources.value = json.sources
+        });
     });
 };
 
@@ -450,6 +454,10 @@ const addBuyable = () => {
     })
     .finally(() => {
       pendingTasks.value--;
+      API.get('/api/buyables/sources')
+        .then(json => {
+          buyablesSources.value = json.sources
+        });
     });
 };
 
@@ -488,6 +496,10 @@ const deleteBuyable = (_id) => {
     })
     .finally(() => {
       pendingTasks.value--;
+      API.get('/api/buyables/sources')
+        .then(json => {
+          buyablesSources.value = json.sources
+        });
     });
 };
 
