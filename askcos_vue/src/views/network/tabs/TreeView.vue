@@ -978,9 +978,9 @@ export default {
 
                 const output = await API.pollCeleryResult(json);
                 if (output.success) {
-                    this.createSnackbar({ text: "Analog counting job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
+                    this.createSnackbar({ text: "Analog counting job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true , color: "green"} });
                 } else if (output.error) {
-                    this.createSnackbar({ text: `Analog counting job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
+                    this.createSnackbar({ text: `Analog counting job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true, color: "red-darken-4" } });
                 }
             } catch (error) {
                 this.createSnackbar({ text: "Analog counting job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });

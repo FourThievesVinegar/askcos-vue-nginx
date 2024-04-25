@@ -117,7 +117,7 @@
               </copy-tooltip>
             </template>
             <template v-slot:item.availability="{ item }">
-              {{ item.properties[1].value ? item.properties[1].value : "Unknown" }}
+              {{ item.properties[1] && item.properties[1].value ? item.properties[1].value : "Unknown" }}
             </template>
             <template v-slot:item.lead_time="{ item }">
               {{ item.lead_time ? item.lead_time : "Unknown" }}
@@ -126,8 +126,8 @@
               {{ item.similarity ? item.similarity : "1" }}
             </template>
             <template v-slot:item.link="{ item }">
-              <v-btn :href="item.properties[0].value" target="_blank" append-icon="mdi-open-in-new"
-                :disabled="!item.properties[0].value">Buy Now
+              <v-btn :href="item.properties[0] ? item.properties[0].value : ''" target="_blank" append-icon="mdi-open-in-new"
+                :disabled="!item.properties[0] || !item.properties[0].value">Buy Now
               </v-btn>
             </template>
             <template v-slot:item.delete="{ item }">
