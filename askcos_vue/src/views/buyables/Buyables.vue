@@ -45,20 +45,20 @@
           </v-row>
           <v-row class="mb-2 px-5 pt-5">
             <v-col cols="12" md="4">
-              <v-slider hide-details v-model="simThresh" label="Similarity Threshold" min="0" max="1" step="0.0001"
-                color="primary">
+              <v-slider :rules="[rulesSim.required, rulesSim.min, rulesSim.max]" v-model="simThresh"
+                label="Similarity Threshold" min="0" max="1" step="0.0001" color="primary">
                 <template v-slot:append>
-                  <v-text-field data-cy="similarity-input-element" v-model="simThresh" type="number" style="width: 80px"
-                    density="compact" hide-details variant="outlined"></v-text-field>
+                  <v-text-field hide-details data-cy="similarity-input-element" v-model="simThresh" type="number"
+                    style="width: 80px" density="compact" variant="outlined" min="0" max="1"></v-text-field>
                 </template>
               </v-slider>
             </v-col>
             <v-col cols="12" md="4">
-              <v-slider hide-details v-model="searchLimit" label="Limit Results" min="1" max="100" step="1"
-                color="primary">
+              <v-slider :rules="[rulesRetLim.required, rulesRetLim.min, rulesRetLim.max]" v-model="searchLimit"
+                label="Limit Results" min="1" max="100" step="1" color="primary">
                 <template v-slot:append>
                   <v-text-field v-model="searchLimit" data-cy="result-input-element" type="number" style="width: 80px"
-                    density="compact" hide-details variant="outlined"></v-text-field>
+                    density="compact" hide-details variant="outlined" min="1" max="100"></v-text-field>
                 </template>
               </v-slider>
             </v-col>
@@ -278,6 +278,16 @@ const selectedSources = ref([]);
 const isAdmin = ref(false);
 const createConfirm = useConfirm();
 const createSnackbar = useSnackbar()
+
+const rulesSim = {
+  min: v => v >= 0 || `The Min is 0`,
+  max: v => v <= 1 || `The Max is 1`
+}
+
+const rulesRetLim = {
+  min: v => v >= 1 || `The Min is 1`,
+  max: v => v <= 100 || `The Max is 100`
+}
 
 const headers = computed(() => {
   let headers = [

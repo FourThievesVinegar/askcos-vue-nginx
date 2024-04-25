@@ -474,7 +474,6 @@ export default {
                 id: "listPanel",
                 headerTitle: "List View",
                 headerControls: { size: "sm" },
-                position: { my: "center-top", at: "center-top", of: "#graph" },
                 panelSize: { width: () => (window.innerWidth * 10) / 12, height: "calc(100vh - 22rem)" },
                 callback: this.buildTreeList,
             },
@@ -927,16 +926,16 @@ export default {
                 };
 
                 const json = await API.post(url, body);
-                this.createSnackbar({ text: "Pathway ranking job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
+                this.createSnackbar({ text: "Pathway ranking job submitted!", snackbarProps: { timeout: 2000, vertical: true, color: "grey-darken-1" } });
 
                 const output = await API.pollCeleryResult(json);
                 if (output.success) {
-                    this.createSnackbar({ text: "Pathway ranking job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
+                    this.createSnackbar({ text: "Pathway ranking job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true, color: "green" } });
                 } else {
-                    this.createSnackbar({ text: `Pathway ranking job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
+                    this.createSnackbar({ text: `Pathway ranking job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true, color: "red-darken-1" } });
                 }
             } catch (error) {
-                this.createSnackbar({ text: "Pathway ranking job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+                this.createSnackbar({ text: "Pathway ranking job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true, color: "red-darken-1" } });
             } finally {
                 this.currentTasks = this.currentTasks.filter(task => task !== 'Pathway Ranking');
                 this.analysisTaskRunning = false;
@@ -974,16 +973,16 @@ export default {
                 };
 
                 const json = await API.post(url, body);
-                this.createSnackbar({ text: "Analog counting job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
+                this.createSnackbar({ text: "Analog counting job submitted!", snackbarProps: { timeout: 2000, vertical: true, color: "grey-darken-1" } });
 
                 const output = await API.pollCeleryResult(json);
                 if (output.success) {
                     this.createSnackbar({ text: "Analog counting job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true , color: "green"} });
                 } else if (output.error) {
-                    this.createSnackbar({ text: `Analog counting job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true, color: "red-darken-4" } });
+                    this.createSnackbar({ text: `Analog counting job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true, color: "red-darken-1" } });
                 }
             } catch (error) {
-                this.createSnackbar({ text: "Analog counting job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+                this.createSnackbar({ text: "Analog counting job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true, color: "red-darken-1" } });
             } finally {
                 this.currentTasks = this.currentTasks.filter(task => task !== 'Analog Counting');
                 this.analysisTaskRunning = false;
@@ -1009,55 +1008,19 @@ export default {
                     task: "reaction_classification",
                 };
                 const json = await API.post(url, body);
-                this.createSnackbar({ text: "Reaction classification job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
+                this.createSnackbar({ text: "Reaction classification job submitted!", snackbarProps: { timeout: 2000, vertical: true, color: "grey-darken-1" } });
                 const output = await API.pollCeleryResult(json);
                 if (output.success) {
                     this.currentTasks = this.currentTasks.filter(task => task !== 'Reaction Classification');
-                    this.createSnackbar({ text: "Reaction classification job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
+                    this.createSnackbar({ text: "Reaction classification job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true, color: "green" } });
                 } else {
                     this.currentTasks = this.currentTasks.filter(task => task !== 'Reaction Classification');
-                    this.createSnackbar({ text: `Reaction classification job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true } });
+                    this.createSnackbar({ text: `Reaction classification job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true, color: "red-darken-1" } });
                 }
             } catch (error) {
                 this.currentTasks = this.currentTasks.filter(task => task !== 'Reaction Classification');
-                this.createSnackbar({ text: "Reaction classification job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+                this.createSnackbar({ text: "Reaction classification job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true, color: "red-darken-1" } });
             }
-        },
-        runGraphOptimization() {
-            if (
-                !confirm(
-                    "This will start a network optimization job for this result. Please note that this analysis will take a long time and depends on the number of reactions in the full reaction network. If you stay on this page, you will receive a notification once the job is complete."
-                )
-            ) {
-                return;
-            }
-            const url = `/api/v2/optimization/`;
-            const body = {
-                smiles: this.esultsStore.savedResultInfo.smiles,
-                result_id: this.resultsStore.savedResultInfo.id,
-            };
-            let resultId = "";
-            API.post(url, body)
-                .then((json) => {
-                    this.createSnackbar({ text: "Network optimization job submitted!", snackbarProps: { timeout: -1, vertical: true } });
-                    resultId = json.task_id;
-                    return API.pollCeleryResult(json.task_id);
-                })
-                .then(() => {
-                    // this.$bvToast.toast("Network optimization job complete! Click here to view results.", {
-                    //     title: "Network optimization",
-                    //     href: `/retro/network/?tab=2&id=${resultId}`,
-                    //     noAutoHide: true,
-                    // });
-                    this.createSnackbar({ text: "Network optimization job complete! Click here to view results.", snackbarProps: { timeout: -1, vertical: true } });
-                })
-                .catch(() => {
-                    // this.$bvToast.toast("Network optimization job failed! Please try again or try submitting a new tree builder job.", {
-                    //     title: "Network optimization",
-                    //     noAutoHide: true,
-                    // });
-                    this.createSnackbar({ text: "Network optimization job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
-                });
         },
         async runPmiCalculation(selectedTree = false) {
             if (this.analysisTaskRunning) {
@@ -1088,12 +1051,12 @@ export default {
                 };
 
                 const json = await API.post(url, body);
-                this.createSnackbar({ text: "PMI job submitted!", snackbarProps: { timeout: 2000, vertical: true } });
+                this.createSnackbar({ text: "PMI job submitted!", snackbarProps: { timeout: 2000, vertical: true, color: "grey-darken-1" } });
 
                 await API.pollCeleryResult(json);
-                this.createSnackbar({ text: "PMI calculation job is complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true } });
+                this.createSnackbar({ text: "PMI calculation job is complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true, color: "green" } });
             } catch (error) {
-                this.createSnackbar({ text: "PMI calculation job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true } });
+                this.createSnackbar({ text: "PMI calculation job failed! Please try again or try submitting a new tree builder job.", snackbarProps: { timeout: -1, vertical: true, color: "red-darken-1" } });
             } finally {
                 this.currentTasks = this.currentTasks.filter(task => task !== 'PMI Calculation');
                 this.analysisTaskRunning = false;
