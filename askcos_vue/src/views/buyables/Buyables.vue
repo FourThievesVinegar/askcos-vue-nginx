@@ -45,8 +45,8 @@
           </v-row>
           <v-row class="mb-2 px-5 pt-5">
             <v-col cols="12" md="4">
-              <v-slider :rules="[rulesSim.required, rulesSim.min, rulesSim.max]" v-model="simThresh"
-                label="Similarity Threshold" min="0" max="1" step="0.0001" color="primary">
+              <v-slider :rules="[rulesSim.min, rulesSim.max]" v-model="simThresh" label="Similarity Threshold" min="0"
+                max="1" step="0.0001" color="primary">
                 <template v-slot:append>
                   <v-text-field hide-details data-cy="similarity-input-element" v-model="simThresh" type="number"
                     style="width: 80px" density="compact" variant="outlined" min="0" max="1"></v-text-field>
@@ -54,8 +54,8 @@
               </v-slider>
             </v-col>
             <v-col cols="12" md="4">
-              <v-slider :rules="[rulesRetLim.required, rulesRetLim.min, rulesRetLim.max]" v-model="searchLimit"
-                label="Limit Results" min="1" max="100" step="1" color="primary">
+              <v-slider :rules="[rulesRetLim.min, rulesRetLim.max]" v-model="searchLimit" label="Limit Results" min="1"
+                max="100" step="1" color="primary">
                 <template v-slot:append>
                   <v-text-field v-model="searchLimit" data-cy="result-input-element" type="number" style="width: 80px"
                     density="compact" hide-details variant="outlined" min="1" max="100"></v-text-field>
