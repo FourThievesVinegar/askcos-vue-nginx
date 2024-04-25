@@ -117,7 +117,8 @@
               </copy-tooltip>
             </template>
             <template v-slot:item.availability="{ item }">
-              {{ item.properties[1] && item.properties[1].value ? item.properties[1].value : "Unknown" }}
+              {{ (item.properties && item.properties[1] && (item.properties[1].value !== "" || item.properties[1].availability )) ? (item.properties[1].value || item.properties[1].availability ) :
+            "Unknown" }}
             </template>
             <template v-slot:item.lead_time="{ item }">
               {{ item.lead_time ? item.lead_time : "Unknown" }}
@@ -126,8 +127,9 @@
               {{ item.similarity ? item.similarity : "1" }}
             </template>
             <template v-slot:item.link="{ item }">
-              <v-btn :href="item.properties[0] ? item.properties[0].value : ''" target="_blank"
-                append-icon="mdi-open-in-new" :disabled="!item.properties[0] || !item.properties[0].value">Buy Now
+              <v-btn :href="(item.properties && item.properties[0]) ? item.properties[0].value : ''" target="_blank"
+                append-icon="mdi-open-in-new"
+                :disabled="!item.properties || !item.properties[0] || !item.properties[0].value">Buy Now
               </v-btn>
             </template>
             <template v-slot:item.delete="{ item }">
@@ -189,29 +191,55 @@
     </v-card>
   </v-dialog>
 
-  <v-dialog v-model="showUploadModal" max-width="600px">
+  <v-dialog v-model="showUploadModal" max-width="600px" scrollable>
     <v-card>
-      <v-card-title class="mt-2">
-        <v-col cols="12">Upload buyable compound file</v-col>
+      <v-card-title>
+        Upload buyable compound file
       </v-card-title>
+      <v-divider></v-divider>
       <v-card-text>
         <v-row>
-          <v-col cols="12" class="mb-2">
-            <span>
-              File uploads should be in CSV format containing "smiles", "ppg", and "source" columns or
-              in
-              JSON format as an
-              array of objects containing "smiles", "ppg", and "source" fields. Optionally, a
-              "properties" field containing additional metadata can be specified as an array of JSON
-              objects
-              with "name" and
-              "value" fields.
-            </span>
+          <v-col cols="12">
+            <p class="text-body-1 mb-4">
+              File uploads should be in CSV/JSON format. Optionally, a "properties" field
+              containing additional metadata can be specified as an array of JSON objects with "name" and "value"
+              fields.
+            </p>
+            <v-expansion-panels multiple flat>
+              <v-expansion-panel title="Example JSON Format" class="text-primary">
+                <template v-slot:text>
+                  <pre style="white-space: pre-wrap">
+                    {{ exJSON }}
+                  </pre>
+                </template>
+              </v-expansion-panel>
+              <v-expansion-panel title="Example CSV Format" class="text-primary">
+                <template v-slot:text>
+                  <pre>
+                  [
+                    {
+                      "smiles": "CCC",
+                      "ppg": 1,
+                      "source": "test source 1"
+                    },
+                    {
+                      "smiles": "CCC",
+                      "ppg": 1.5,
+                      "source": "test source 2"
+                    },
+                  ]
+                  </pre>
+                </template>
+              </v-expansion-panel>
+            </v-expansion-panels>
           </v-col>
         </v-row>
-
         <v-row>
-          <v-col cols="12">
+          <v-col cols="4">
+            <v-select label="Format" v-model="uploadFileFormat" :items="['JSON', 'CSV']" density="comfortable"
+              variant="outlined" hide-details></v-select>
+          </v-col>
+          <v-col cols="8">
             <v-file-input label="File" v-model="uploadFile" :rules="[v => !!v || 'File is required']"
               density="comfortable" variant="outlined" clearable></v-file-input>
           </v-col>
@@ -219,22 +247,15 @@
 
         <v-row>
           <v-col cols="12">
-            <v-select label="Format" v-model="uploadFileFormat" :items="['json', 'csv']" density="comfortable"
-              variant="outlined" hide-details clearable></v-select>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12">
-            <v-checkbox label="Allow overwriting exisiting result" v-model="allowOverwrite"></v-checkbox>
+            <v-checkbox label="Allow overwriting exisiting result" v-model="allowOverwrite" hide-details></v-checkbox>
           </v-col>
         </v-row>
       </v-card-text>
-
+      <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="showUploadModal = false">Close</v-btn>
-        <v-btn color="green darken-1" text @click="handleUploadSubmit">Upload</v-btn>
+        <v-btn color="error" variant="tonal" @click="showUploadModal = false">Close</v-btn>
+        <v-btn color="primary" variant="tonal" @click="handleUploadSubmit">Upload</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -268,7 +289,7 @@ const showUploadModal = ref(false);
 const addBuyableSmiles = ref('');
 const addBuyablePrice = ref(1);
 const addBuyableSource = ref('');
-const uploadFileFormat = ref('json');
+const uploadFileFormat = ref('JSON');
 const pendingTasks = ref(0);
 const buyablesSources = ref([]);
 const showKetcher = ref(false);
@@ -278,6 +299,28 @@ const selectedSources = ref([]);
 const isAdmin = ref(false);
 const createConfirm = useConfirm();
 const createSnackbar = useSnackbar()
+const exJSON = [
+  {
+    "smiles": "CCC",
+    "ppg": 1,
+    "source": "test source 1",
+    "lead_time": "1day",
+    "properties": {
+      "link": "https://test.com/query=CCC",
+      "availability": "In-stock"
+    }
+  },
+  {
+    "smiles": "CCC",
+    "ppg": 1.5,
+    "source": "test source 2",
+    "lead_time": "1day",
+    "properties": {
+      "link": "https://test1.com/query=CCC",
+      "availability": "In-stock"
+    }
+  },
+]
 
 const rulesSim = {
   min: v => v >= 0 || `The Min is 0`,
@@ -387,7 +430,7 @@ const handleUploadSubmit = () => {
 
   let formData = new FormData();
   formData.append('file', uploadFile.value[0]);
-  formData.append('format', uploadFileFormat.value);
+  formData.append('format', uploadFileFormat.value === "JSON" ? 'json' : "csv");
   formData.append('allowOverwrite', allowOverwrite.value);
   formData.append('returnLimit', 200);
   API.post('/api/buyables/upload', formData)
@@ -524,11 +567,11 @@ const selectSource = (source) => {
 };
 
 watch(uploadFile, (file) => {
-  if (file && file.name) {
-    if (file.name.endsWith('.json')) {
-      uploadFileFormat.value = 'json'
-    } else if (file.name.endsWith('.csv')) {
-      uploadFileFormat.value = 'csv'
+  if (file && file[0] && file[0].name) {
+    if (file[0].name.endsWith('.json')) {
+      uploadFileFormat.value = 'JSON'
+    } else if (file[0].name.endsWith('.csv')) {
+      uploadFileFormat.value = 'CSV'
     }
   }
 });
