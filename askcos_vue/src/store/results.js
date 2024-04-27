@@ -178,7 +178,7 @@ export const useResultsStore = defineStore("results", {
       let url = "/api/results/retrieve";
       const json = await API.get(url, { result_id: resultId });
       if (json.error) {
-        throw new Error(json.error)
+        throw new Error(json.error);
       }
       if (json["result_type"] === "ipp") {
         return this.importIppResult({ data: json });
@@ -383,7 +383,7 @@ export const useResultsStore = defineStore("results", {
         for (let nodeSucc of succNodes)
           succNodesSet.add(this.dispGraph.nodes.get(nodeSucc).smiles);
       }
-      
+
       for (let reaction of data) {
         let reactionSmiles = reaction["outcome"] + ">>" + parentSmiles;
         let existingNode = this.dataGraph.nodes.get(reactionSmiles);
@@ -1022,18 +1022,20 @@ export const useResultsStore = defineStore("results", {
         let precursors = this.dataGraph.nodes.get(precursorSmiles);
         let results = {};
         for (let p of precursors) {
-          for (let t of p["templateIds"]) {
-            // If template settings were changed, results may include IDs which are not in recommended templates
-            if (
-              Object.prototype.hasOwnProperty.call(
-                this.recommendedTemplates[smiles],
-                t
-              )
-            ) {
-              if (results[t] === undefined) {
-                results[t] = [p["precursorSmiles"]];
-              } else {
-                results[t].push(p["precursorSmiles"]);
+          if (p["templateIds"]) {
+            for (let t of p["templateIds"]) {
+              // If template settings were changed, results may include IDs which are not in recommended templates
+              if (
+                Object.prototype.hasOwnProperty.call(
+                  this.recommendedTemplates[smiles],
+                  t
+                )
+              ) {
+                if (results[t] === undefined) {
+                  results[t] = [p["precursorSmiles"]];
+                } else {
+                  results[t].push(p["precursorSmiles"]);
+                }
               }
             }
           }
