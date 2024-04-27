@@ -117,7 +117,8 @@
               </copy-tooltip>
             </template>
             <template v-slot:item.availability="{ item }">
-              {{ (item.properties && item.properties[1] && (item.properties[1].value !== "" || item.properties[1].availability )) ? (item.properties[1].value || item.properties[1].availability ) :
+              {{ (item.properties && item.properties[1] && (item.properties[1].value !== "" ||
+            item.properties[1].availability)) ? (item.properties[1].value || item.properties[1].availability) :
             "Unknown" }}
             </template>
             <template v-slot:item.lead_time="{ item }">
@@ -294,11 +295,11 @@ const pendingTasks = ref(0);
 const buyablesSources = ref([]);
 const showKetcher = ref(false);
 const ketcherRef = ref(null);
-const selectedSource = ref(null);
 const selectedSources = ref([]);
 const isAdmin = ref(false);
 const createConfirm = useConfirm();
 const createSnackbar = useSnackbar()
+const fetchLoad = ref(false)
 const exJSON = [
   {
     "smiles": "CCC",
@@ -360,11 +361,12 @@ const clear = async (skipConfirm = false) => {
     if (!isConfirmed) return;
   }
 
-  searchSmilesQuery.value = "",
-    searchSourceQuery.value = [],
-    buyables.value = [],
-    searchLimit.value = 100,
-    simThresh.value = 1
+  searchSmilesQuery.value = "";
+  searchSourceQuery.value = [];
+  selectedSources.value = []
+  buyables.value = [];
+  searchLimit.value = 100;
+  simThresh.value = 1
 };
 
 const showLoader = computed(() => {
@@ -389,12 +391,18 @@ const updateSmiles = (newSmiles) => {
   searchSmilesQuery.value = newSmiles;
 }
 
-onMounted(() => {
-  fetchAdminStatus()
+const fetchSources = () => {
+  fetchLoad.value = true;
   API.get('/api/buyables/sources')
     .then(json => {
       buyablesSources.value = json.sources
+      fetchLoad.value = false;
     });
+}
+
+onMounted(() => {
+  fetchAdminStatus()
+  fetchSources()
   let urlParams = new URLSearchParams(window.location.search);
   let query = urlParams.get('q');
   if (query) {
@@ -464,10 +472,7 @@ const handleUploadSubmit = () => {
       showUploadModal.value = false;
       uploadFile.value = null;
       pendingTasks.value--;
-      API.get('/api/buyables/sources')
-        .then(json => {
-          buyablesSources.value = json.sources
-        });
+      fetchSources()
     });
 };
 
@@ -507,10 +512,7 @@ const addBuyable = () => {
     })
     .finally(() => {
       pendingTasks.value--;
-      API.get('/api/buyables/sources')
-        .then(json => {
-          buyablesSources.value = json.sources
-        });
+      fetchSources()
     });
 };
 
@@ -549,10 +551,7 @@ const deleteBuyable = (_id) => {
     })
     .finally(() => {
       pendingTasks.value--;
-      API.get('/api/buyables/sources')
-        .then(json => {
-          buyablesSources.value = json.sources
-        });
+      fetchSources()
     });
 };
 
@@ -576,14 +575,6 @@ watch(uploadFile, (file) => {
   }
 });
 
-watch(selectedSource, (newValue) => {
-  console.log('Selected source changed:', newValue);
-  if (newValue) {
-    console.log('Source selected successfully:', newValue);
-  } else {
-    console.log('Source deselected');
-  }
-});
 
 </script>
 

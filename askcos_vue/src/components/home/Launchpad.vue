@@ -4,8 +4,9 @@
       @update:smiles="(ketcherSmiles) => smiles = ketcherSmiles" />
     <v-row class="my-6 justify-center">
       <v-col cols="12" md="10">
-        <v-text-field v-model="smilesInput" class="centered-input" variant="outlined" label="Type here or draw structure..."
-          prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable rounded="pill">
+        <v-text-field v-model="smilesInput" class="centered-input" variant="outlined"
+          label="Type here or draw structure..." prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details
+          clearable rounded="pill">
           <template v-slot:append-inner>
             <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
               @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }" rounded="pill">Draw</v-btn>
@@ -155,9 +156,18 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Buyables
             </v-card-title>
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi-cart-variant" variant="tonal"
+                color="primary" :href="`/buyables?q=${encodeURIComponent(smiles)}`" target="_blank">Search
+                Buyables</v-btn></v-card-actions>
+          </v-card>
+        </v-col>
+        <v-col cols="12" sm="4" md="4">
+          <v-card min-height="100px">
+            <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
+              QM Descriptor
+            </v-card-title>
             <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
-                :href="`/buyables?q=${encodeURIComponent(smiles)}`" target="_blank">Run
-                Task</v-btn></v-card-actions>
+                :href="`/qm?smiles=${encodeURIComponent(smiles)}`" target="_blank">Run Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
       </v-row>

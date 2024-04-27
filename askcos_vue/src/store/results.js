@@ -347,7 +347,12 @@ export const useResultsStore = defineStore("results", {
       }
       return Promise.all(promises);
     },
-    async addRetroResultToDataGraph({ data, parentSmiles, update = true }) {
+    async addRetroResultToDataGraph({
+      data,
+      parentSmiles,
+      update = true,
+      nodeID = null,
+    }) {
       // Add results as reaction and chemical nodes under the specified parent chemical
       // Arguments should be list of outcome objects and the SMILES of the parent node
       if (!this.dataGraph.nodes.get(parentSmiles)) {
@@ -372,10 +377,27 @@ export const useResultsStore = defineStore("results", {
       let newPrecursors = new Set();
       let newNodes = [];
       let newEdges = [];
+      let succNodes = this.dispGraph.getSuccessors(nodeID);
+      let succNodesSet = new Set([]);
+      if (succNodes) {
+        for (let nodeSucc of succNodes)
+          succNodesSet.add(this.dispGraph.nodes.get(nodeSucc).smiles);
+      }
+      console.log(succNodesSet);
       for (let reaction of data) {
         let reactionSmiles = reaction["outcome"] + ">>" + parentSmiles;
         let existingNode = this.dataGraph.nodes.get(reactionSmiles);
-        if (existingNode) {
+        if (
+          existingNode &&
+          !succNodesSet.has(existingNode.id) &&
+          existingNode.model === reaction["retro_backend"] &&
+          existingNode.trainingSet === reaction["retro_model_name"]
+        ) {
+          // if not in the successor list and 
+          // was already created by the same model and training set then add it to the node
+          addedReactions.push(reactionSmiles);
+        } 
+        else if (existingNode) {
           // Reaction already exists, update metadata
           existingNode["retroScore"] = Math.max(
             existingNode["model_score"],
@@ -925,8 +947,8 @@ export const useResultsStore = defineStore("results", {
               const addedReactions = await this.addRetroResultToDataGraph({
                 data: precursor,
                 parentSmiles: smiles,
+                nodeID: nodeId,
               });
-
               let reactionsToAdd = [];
               if (
                 settings.interactive_path_planner_settings
