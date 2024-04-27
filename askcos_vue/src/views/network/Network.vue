@@ -33,6 +33,7 @@ import NetworkView from "@/views/network/tabs/NetworkView";
 import RetroView from "@/views/network/tabs/RetroView";
 import TreeView from "@/views/network/tabs/TreeView";
 import { useResultsStore } from "@/store/results";
+import { useConfirm } from 'vuetify-use-dialog';
 
 export default {
   name: "Network",
@@ -49,6 +50,8 @@ export default {
     const treeDetail = ref(null);
     const treeViewVisible = ref(false);
     const tab = ref("IPP");
+    const createConfirm = useConfirm();
+
 
     const replaceRoute = (tab) => {
       const newPath = { path: '/network', query: { tab: tab, id: route.query.id } }
@@ -56,7 +59,7 @@ export default {
     }
 
     const loadResultFromURL = async (payload) => {
-      await resultsStore.loadResult(payload);
+      await resultsStore.loadResult(payload)
     };
 
     onMounted(() => {
@@ -77,7 +80,9 @@ export default {
           () => {
             init(tab.value);
           }
-        );
+        ).catch((e) => {
+          createConfirm({ title: "Result load failed", content: e, dialogProps: { width: "auto" } })
+        })
       }
     });
 

@@ -178,7 +178,7 @@ export const useResultsStore = defineStore("results", {
       let url = "/api/results/retrieve";
       const json = await API.get(url, { result_id: resultId });
       if (json.error) {
-        alert(json.error);
+        throw new Error(json.error)
       }
       if (json["result_type"] === "ipp") {
         return this.importIppResult({ data: json });
@@ -383,7 +383,7 @@ export const useResultsStore = defineStore("results", {
         for (let nodeSucc of succNodes)
           succNodesSet.add(this.dispGraph.nodes.get(nodeSucc).smiles);
       }
-      console.log(succNodesSet);
+      
       for (let reaction of data) {
         let reactionSmiles = reaction["outcome"] + ">>" + parentSmiles;
         let existingNode = this.dataGraph.nodes.get(reactionSmiles);
@@ -393,11 +393,10 @@ export const useResultsStore = defineStore("results", {
           existingNode.model === reaction["retro_backend"] &&
           existingNode.trainingSet === reaction["retro_model_name"]
         ) {
-          // if not in the successor list and 
+          // if not in the successor list and
           // was already created by the same model and training set then add it to the node
           addedReactions.push(reactionSmiles);
-        } 
-        else if (existingNode) {
+        } else if (existingNode) {
           // Reaction already exists, update metadata
           existingNode["retroScore"] = Math.max(
             existingNode["model_score"],
@@ -889,8 +888,10 @@ export const useResultsStore = defineStore("results", {
       // }
       // throw error if the strategies are not unique
       if (!checkUniqueStrategy(body.retro_backend_options)) {
-        alert("Strategies must be unique");
-        return [];
+        return {
+          message: "Strategies must be unique",
+          result: [],
+        };
       }
       body.banned_chemicals = loadCollection("chemicals");
       body.banned_reactions = loadCollection("reactions");
@@ -898,22 +899,24 @@ export const useResultsStore = defineStore("results", {
         const response = await API.runCeleryTask(url, body);
         return response;
       } catch (error) {
-        return [];
+        return {
+          message: "No precursor found",
+          result: [],
+        };
       }
     },
     async expand(nodeId) {
+      // const createConfirm = useConfirm();
       if (typeof nodeId == "string" && nodeId.startsWith("cluster")) {
-        alert(
+        throw new Error(
           "Cannot expand collapsed node! To toggle collapsed state, click collapse toggle button again with collapsed cluster selected."
         );
-        return;
       }
       const node = this.dispGraph.nodes.get(nodeId);
       if (node.type !== "chemical") {
-        alert(
+        throw new Error(
           "Cannot expand reaction; try expanding with a chemical node selected"
         );
-        return;
       }
       const smiles = node.smiles;
       const settings = useSettingsStore();
@@ -922,25 +925,27 @@ export const useResultsStore = defineStore("results", {
         settings.interactive_path_planner_settings.retro_backend_options
           .length === 0
       ) {
-        alert("Please add atleast one strategy");
-        return;
+        throw new Error("Please add atleast one strategy");
       }
 
       const strategyPromise = new Promise((resolve, reject) => {
-        this.requestRetro({ smiles: smiles }).then((response) => {
-          if (response.length === 0) {
-            reject(new Error("No precursors found!"));
-            alert("No precursors found!");
-          } else {
-            resolve(response);
-          }
-        });
+        this.requestRetro({ smiles: smiles })
+          .then((response) => {
+            if (response.result === null || response.result.length === 0) {
+              reject(new Error(response.message));
+            } else {
+              resolve(response);
+            }
+          })
+          .catch(async (error) => {
+            throw error;
+          });
       });
 
-      await strategyPromise.then(
-        async (response) => {
+      await strategyPromise
+        .then(async (response) => {
           if (response.status_code === 500) {
-            alert(response.message);
+            throw new Error(response.message);
           }
           if (settings.modelRank) {
             for (const [idx, precursor] of Object.entries(response.result)) {
@@ -986,12 +991,10 @@ export const useResultsStore = defineStore("results", {
               parentId: nodeId,
             });
           }
-        },
-        (error) => {
-          console.error(error);
-          alert("Error occurred while expanding: ", error);
-        }
-      );
+        })
+        .catch(async (error) => {
+          throw error;
+        });
     },
     async templateRelevance(smiles) {
       const settings = useSettingsStore();

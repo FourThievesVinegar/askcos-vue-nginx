@@ -71,14 +71,17 @@
           <div v-if="strategies.length !== 0" class="pa-0 test">
             <v-slide-group show-arrows>
               <v-slide-group-item v-for="(strategy, idx) in strategies" :key="idx">
-                <v-chip class="text-overline">
+                <v-chip class="text-overline mr-1">
                   {{ strategy.retro_backend }} {{ strategy.retro_model_name }}
                 </v-chip>
               </v-slide-group-item>
             </v-slide-group>
           </div>
-          <div v-else>No strategy added</div>
-          <v-divider class="border-opacity-75 mx-2" vertical></v-divider>
+          <div v-else>
+            <v-chip class="text-overline mr-1" color="error">
+              No strategy added
+            </v-chip>
+          </div>
           <v-btn variant="tonal" color="primary" prepend-icon="mdi mdi-cog" @click="settingsVisible = true">Strategy
             Settings</v-btn>
         </v-row>
@@ -755,7 +758,7 @@ export default {
     },
     sendTreeBuilderJob() {
       if (this.settingsStore.interactive_path_planner_settings.retro_backend_options.length === 0) {
-        alert("Please add atleast one strategy");
+        this.createConfirm({ title: "Action Unsuccessful", content: "Please add atleast one strategy", dialogProps: { width: "auto" } })
         return;
       }
       if (this.tb.taskName === "") {
@@ -886,7 +889,7 @@ export default {
         })
         .catch(async (error) => {
           let error_msg = error.message || error || "unknown error";
-          await this.createConfirm({ title: 'Alert', content: 'There was an error fetching precursors for this target with the supplied settings: ' + error_msg, dialogProps: { width: "auto" } })
+          await this.createConfirm({ title: 'Action Unsuccessful', content: error_msg, dialogProps: { width: "auto" } })
           this.clear(true)
         })
         .finally(() => {
@@ -971,7 +974,7 @@ export default {
         })
         .catch((error) => {
           let error_msg = error.message || error || "unknown error";
-          this.createConfirm({ title: 'Alert', content: 'There was an error fetching precursors for this target with the supplied settings: ' + error_msg, dialogProps: { width: "auto" } })
+          this.createConfirm({ title: 'Action Unsuccessful', content: error_msg, dialogProps: { width: "auto" } })
         })
         .finally(() => {
           this.pendingTasks -= 1;

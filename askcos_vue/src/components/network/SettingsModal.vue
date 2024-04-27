@@ -141,7 +141,7 @@
                                                             v-if="templateAttributes && templateAttributes[strategy.retro_model_name] && templateAttributes[strategy.retro_model_name].length">
                                                             <setting-input label="Template attribute filters" help-text="Filter templates based on pre-computed attributes prior to application to the target molecule.
                                     Max. num. templates. and Max cum. prob. are applied after filtering." class="my-5">
-                                                                <v-btn variant="link" size="sm"
+                                                                <v-btn variant="flat" color="green"
                                                                     @click="addAttributeFilter(idx)">
                                                                     Add <i class="fas fa-plus"></i>
                                                                 </v-btn>
@@ -173,7 +173,7 @@
                                                                             </td>
                                                                             <td style="width: 30%">
                                                                                 <v-text-field class="mr-2"
-                                                                                    variant="outlined" size="small"
+                                                                                    variant="outlined"
                                                                                     density="compact" type="number"
                                                                                     :model-value="filter.value"
                                                                                     @update:modelValue="updateAttributeFilter(idx, afIdx, 'value', $event)"
@@ -610,6 +610,7 @@ import { mapStores } from "pinia";
 import { useResultsStore } from "@/store/results";
 import { useSettingsStore } from "@/store/settings";
 
+
 export default {
     name: "SettingsModal",
     components: {
@@ -727,11 +728,8 @@ export default {
                 return this.settingsStore.alignNodeImagesToTarget;
             },
             set(value) {
-                this.settingsStore.setOption({
-                    key: "alignNodeImagesToTarget",
-                    value: value,
-                });
-                this.resutlsStore.updateImageUrls();
+                this.settingsStore.alignNodeImagesToTarget = value;
+                this.resultsStore.updateImageUrls();
             },
         },
         alignPrecursorsToProduct: {
