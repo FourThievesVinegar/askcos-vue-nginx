@@ -4,15 +4,14 @@
             <v-row align="center" justify="space-between" class="mx-auto my-auto" v-show="!!results.length">
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn variant="flat"  @click="dialog = true" height="30px"
-                        color="primary mx-2">
+                    <v-btn variant="flat" @click="dialog = true" height="30px" color="primary mx-2">
                         Export
                     </v-btn>
                 </v-col>
             </v-row>
 
-            <v-data-table v-if="!pending && results.length" :headers="headers" :items="results" v-show="results.length > 0"
-                :items-per-page="10">
+            <v-data-table v-if="!pending && results.length" :headers="headers" :items="results"
+                v-show="results.length > 0" :items-per-page="10">
                 <template #item.outcome="{ item }">
                     <copy-tooltip :data="item.reagent" :title="'Click to copy: ' + item.outcome">
                         <smiles-image :smiles="item.outcome" height="80px"></smiles-image>
@@ -28,8 +27,8 @@
                     {{ item.mol_wt.toFixed(1) }}
                 </template>
                 <template #item.predict_impurities="{ item, index }">
-                    <v-btn variant="tonal" @click="emitGoToImpurity(item.outcome)"
-                        :id="'predict-impurities-' + index" title="Predict products">
+                    <v-btn variant="tonal" @click="emitGoToImpurity(item.outcome)" :id="'predict-impurities-' + index"
+                        title="Predict products">
                         <v-icon>mdi-arrow-right</v-icon>
                     </v-btn>
                 </template>
@@ -42,21 +41,25 @@
             </v-data-table>
             <v-skeleton-loader v-if="!!pending" class="mx-auto" min-height="100px" type="table"></v-skeleton-loader>
             <v-row align="center" justify="space-between" class="mx-auto my-3">
-                <v-alert border="start" elevation="2" type="info" variant="tonal" density="compact" title="Reference">
+                <v-alert border="start" type="info" variant="tonal" density="compact" title="Reference">
                     <p>
                         Predict most likely outcomes of a chemical reaction using either
                         <br />
                         1) a template-free WLN model for predicting likely bond changes
-                        <a href="https://doi.org/10.1039/C8SC04228D">
-                            (Chem. Sci., 2019, 10, 370-377)</a>, or
+                        <a class="text-decoration-none text-primary font-weight-medium d-inline-flex align-center"
+                            href="https://doi.org/10.1039/C8SC04228D">
+                            (Chem. Sci., 2019, 10, 370-377 <v-icon size="x-small">mdi-open-in-new</v-icon>)</a>, or
                         <br />
                         2) a template-free augmented Transformer model for end-to-end prediction.
-                        <a href="https://www.nature.com/articles/s41467-020-19266-y">
-                            (Nat. Commun., 2020, 11, 5575)</a>, or
+                        <a class="text-decoration-none text-primary font-weight-medium d-inline-flex align-center"
+                            href="https://www.nature.com/articles/s41467-020-19266-y">
+                            (Nat. Commun., 2020, 11, 5575 <v-icon size="x-small">mdi-open-in-new</v-icon>)</a>, or
                         <br />
                         3) a template-free Graph2SMILES model for end-to-end prediction.
-                        <a href="https://doi.org/10.1021/acs.jcim.2c00321">
-                            (J. Chem. Inf. Model., 2022, 62, 15, 3503–3513)</a>
+                        <a class="text-decoration-none text-primary font-weight-medium d-inline-flex align-center"
+                            href="https://doi.org/10.1021/acs.jcim.2c00321">
+                            (J. Chem. Inf. Model., 2022, 62, 15, 3503–3513 <v-icon
+                                size="x-small">mdi-open-in-new</v-icon>)</a>
                     </p>
                 </v-alert>
             </v-row>
@@ -75,8 +78,9 @@
                 <v-card>
                     <v-card-title class="headline">Export Results</v-card-title>
                     <v-card-text>
-                        <v-text-field v-model="filename" @input="updateFilename($event.target.value)" density="comfortable"
-                            variant="outlined" placeholder="Filename" hide-details clearable type="string"></v-text-field>
+                        <v-text-field v-model="filename" @input="updateFilename($event.target.value)"
+                            density="comfortable" variant="outlined" placeholder="Filename" hide-details clearable
+                            type="string"></v-text-field>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>

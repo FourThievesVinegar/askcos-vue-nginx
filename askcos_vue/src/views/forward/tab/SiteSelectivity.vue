@@ -51,14 +51,14 @@
             <v-skeleton-loader v-if="!!pending" class="mx-auto" min-height="100px" type="table"></v-skeleton-loader>
 
             <v-row align="center" justify="space-between" class="mx-auto my-3">
-                <v-alert border="start" elevation="2" type="info" variant="tonal" density="compact" title="Reference">
+                <v-alert border="start" type="info" variant="tonal" density="compact" title="Reference">
                     <p>
                         Predict site selectivity of aromatic C-H functionalization reactions with a
                         multitask
                         neural
                         network that uses a WLN graph encoding.
-                        <a href="https://doi.org/10.1039/D0RE00071J">(React. Chem. Eng., 2020, 5,
-                            896-902)</a>
+                        <a class="text-decoration-none text-primary font-weight-medium d-inline-flex align-center" href="https://doi.org/10.1039/D0RE00071J">(React. Chem. Eng., 2020, 5,
+                            896-902 <v-icon size="x-small">mdi-open-in-new</v-icon>)</a>
                     </p>
                 </v-alert>
             </v-row>

@@ -38,7 +38,7 @@
             </v-skeleton-loader>
 
             <v-row align="center" justify="space-between" class="mx-auto my-3">
-                <v-alert border="start" elevation="2" type="info" variant="tonal" density="compact" title="Reference">
+                <v-alert border="start" type="info" variant="tonal" density="compact" title="Reference">
                     <p>
                         Predict likely impurities for a chemical reaction. Considers minor products,
                         over-reaction,

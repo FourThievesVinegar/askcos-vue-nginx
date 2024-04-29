@@ -50,7 +50,7 @@
                         style="width:100%">
                         <h6 class="text-h6">Analyze trees</h6>
                         <div class="my-2">
-                            <p >Current Tasks:
+                            <p>Current Tasks:
                                 <span v-if="currentTasks.length === 0">No active tasks</span>
                                 <span v-else>
                                     <v-chip v-for="(task, index) in currentTasks" :key="index" class="ma-2" color="blue"
@@ -62,13 +62,14 @@
                         </div>
                         <v-btn width="100%" @click="runPathwayRanking()" class="my-1" :disabled="trees.length === 0"
                             variant="flat" color="green">SCORE AND CLUSTER PATHWAY</v-btn>
-                        <v-btn width="100%" @click="runReactionClassification()" class="my-1" :disabled="trees.length === 0"
-                            variant="flat" color="green">Run reaction
+                        <v-btn width="100%" @click="runReactionClassification()" class="my-1"
+                            :disabled="trees.length === 0" variant="flat" color="green">Run reaction
                             classification</v-btn>
                         <v-menu location="bottom" :close-on-content-click="false">
                             <template v-slot:activator="{ props }">
                                 <v-btn v-bind="props" append-icon="mdi mdi-menu-down" class="mt-1" width="100%"
-                                    :disabled="trees.length === 0" variant="flat" color="green">Run PMI calculation</v-btn>
+                                    :disabled="trees.length === 0" variant="flat" color="green">Run PMI
+                                    calculation</v-btn>
                             </template>
                             <v-list density="compact">
                                 <v-list-item @click="runPmiCalculation(true)">For this tree only</v-list-item>
@@ -100,27 +101,30 @@
                                 <template v-slot:prepend class="justify-content-center" style="width: 2.5rem">
                                     {{ index + 1 }}
                                 </template>
-                                <v-select id="sortingCategory" v-model="sortInput.key" :items="treeSortOptions" hide-details
-                                    variant="outlined" @update:modelValue="setDefaultSortOrder(sortInput)"></v-select>
+                                <v-select id="sortingCategory" v-model="sortInput.key" :items="treeSortOptions"
+                                    hide-details variant="outlined"
+                                    @update:modelValue="setDefaultSortOrder(sortInput)"></v-select>
                                 <template v-slot:append>
                                     <v-btn
                                         :icon="sortInput.ascending ? 'mdi-sort-numeric-ascending' : 'mdi-sort-numeric-descending'"
                                         rounded variant="tonal" density="comfortable"
                                         @click="sortInput.ascending = !sortInput.ascending"></v-btn>
-                                    <v-btn icon="mdi-close" size="small" density="compact" @click="deleteSortField(index)"
-                                        variant="tonal" color="red" class="ml-2"></v-btn>
+                                    <v-btn icon="mdi-close" size="small" density="compact"
+                                        @click="deleteSortField(index)" variant="tonal" color="red"
+                                        class="ml-2"></v-btn>
                                 </template>
                             </v-input>
                         </div>
                         <v-btn @click="addSortField" :disabled="trees.length === 0" variant="outlined" color="primary"
-                            width="100%">Add sort field</v-btn>
+                            width="100%">Add sort
+                            field</v-btn>
                     </div>
                     <div class="mt-2" style="width:100%">
                         <h6 class="text-h6">Filter trees</h6>
                         <p>
                             Show pathways which
-                            <v-btn id="filterInvertCheck" @click="filterInvert = !filterInvert" size="small" variant="flat"
-                                color="primary">
+                            <v-btn id="filterInvertCheck" @click="filterInvert = !filterInvert" size="small"
+                                variant="flat" color="primary">
                                 {{ filterInvert ? "do not" : "do" }}
                             </v-btn>
                             include
@@ -161,7 +165,8 @@
                         <a href="#" role="button" v-on:click.stop="() => { this.intermediateDialog = true }">
                             <p>Select intermediates by image</p>
                         </a>
-                        <v-dialog v-model="intermediateDialog" persistent max-width="1200px" max-height="700px" scrollable>
+                        <v-dialog v-model="intermediateDialog" persistent max-width="1200px" max-height="700px"
+                            scrollable>
                             <v-card>
                                 <v-card-title class="headline">Filter by intermediates</v-card-title>
                                 <v-card-text>
@@ -177,7 +182,8 @@
                                 </v-card-text>
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
-                                    <v-btn color="primary" variant="tonal" @click="intermediateDialog = false">OK</v-btn>
+                                    <v-btn color="primary" variant="tonal"
+                                        @click="intermediateDialog = false">OK</v-btn>
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
@@ -185,9 +191,9 @@
                         <v-select label="Intermediates" :items="intermediateOptions" v-model="selectedIntermediates"
                             multiple variant="outlined" density="compact" class="mt-1"></v-select>
 
-                        <v-select v-if="reactionClassOptions.length" label="Reaction classes" :items="reactionClassOptions"
-                            v-model="selectedReactionClasses" multiple variant="outlined" density="compact"
-                            class="mt-1"></v-select>
+                        <v-select v-if="reactionClassOptions.length" label="Reaction classes"
+                            :items="reactionClassOptions" v-model="selectedReactionClasses" multiple variant="outlined"
+                            density="compact" class="mt-1"></v-select>
                     </div>
                 </v-sheet>
             </v-col>
@@ -196,11 +202,13 @@
                     <v-btn-group variant="outlined" density="comfortable" divided :border="true">
                         <v-btn icon="mdi mdi-chevron-double-left" @click="changeClusterId('first')"
                             :disabled="!cluster"></v-btn>
-                        <v-btn icon="mdi mdi-chevron-left" @click="changeClusterId('prev')" :disabled="!cluster"></v-btn>
+                        <v-btn icon="mdi mdi-chevron-left" @click="changeClusterId('prev')"
+                            :disabled="!cluster"></v-btn>
                         <v-btn variant="tonal">{{ !cluster ? "Cluster N/A" : currentClusterId === -1 ? "Unclustered" :
-                            `Cluster
+                    `Cluster
                             ${currentClusterId + 1} of ${maxClusterId + 1}` }}</v-btn>
-                        <v-btn icon="mdi mdi-chevron-right" @click="changeClusterId('next')" :disabled="!cluster"></v-btn>
+                        <v-btn icon="mdi mdi-chevron-right" @click="changeClusterId('next')"
+                            :disabled="!cluster"></v-btn>
                         <v-btn icon="mdi mdi-chevron-double-right" @click="changeClusterId('last')"
                             :disabled="!cluster"></v-btn>
                     </v-btn-group>
@@ -208,7 +216,7 @@
                         <v-btn icon="mdi mdi-chevron-double-left" @click="changeTreeId('first')"></v-btn>
                         <v-btn icon="mdi mdi-chevron-left" @click="changeTreeId('prev')"></v-btn>
                         <v-btn variant="tonal">Tree {{ currentTreeId +
-                            1 }} of {{ trees.length }}</v-btn>
+                    1 }} of {{ trees.length }}</v-btn>
                         <v-btn icon="mdi mdi-chevron-right" @click="changeTreeId('next')"></v-btn>
                         <v-btn icon="mdi mdi-chevron-double-right" @click="changeTreeId('last')"></v-btn>
                     </v-btn-group>
@@ -283,7 +291,8 @@
                         :align="settingsStore.ippSettings.alignPrecursorsToProduct"></smiles-image>
                 </div>
                 <div class="text-center my-3">
-                    <v-btn variant="tonal" :href="'/forward?tab=context&rxnsmiles=' + encodeURIComponent(selected.smiles)"
+                    <v-btn variant="tonal"
+                        :href="'/forward?tab=context&rxnsmiles=' + encodeURIComponent(selected.smiles)"
                         target="_blank">Evaluate reaction</v-btn>
                 </div>
                 <v-table density="compact">
@@ -307,8 +316,8 @@
                         <tr>
                             <th>Necessary reagent</th>
                             <td>{{ Array.isArray(selected.data["necessaryReagent"]) ?
-                                selected.data["necessaryReagent"].filter((item) => item).join(".") :
-                                selected.data["necessaryReagent"] }}</td>
+                    selected.data["necessaryReagent"].filter((item) => item).join(".") :
+                    selected.data["necessaryReagent"] }}</td>
                         </tr>
                         <tr v-if="selected.data['className']">
                             <th>Reaction class</th>
@@ -321,7 +330,7 @@
                                     <li v-for="(id, index) in selected.data['templateIds']" :key="id">
                                         <a :href="'/template?id=' + id" target="_blank">
                                             {{ id }} <template v-if="selected.data['templateSets']">({{
-                                                selected.data["templateSets"][index] }})</template>
+                    selected.data["templateSets"][index] }})</template>
                                         </a>
                                     </li>
                                 </ul>
@@ -344,7 +353,7 @@
                 multiple>
                 <v-card-title>
                     <span class="text-body-1 ml-2"><b>Tree {{ (treeListCurrentPage - 1) * treeListItemsPerPage + index +
-                        1 }} </b></span>
+                    1 }} </b></span>
                 </v-card-title>
                 <v-card-text>
                     <div>
@@ -369,7 +378,7 @@
     </js-panel>
     <result-info-modal :visible="resultInfo" @close="$event => resultInfo = $event"></result-info-modal>
 </template>
-  
+
 <script>
 import BanButton from "@/components/BanButton";
 import CopyTooltip from "@/components/CopyTooltip";
@@ -908,7 +917,7 @@ export default {
                 return;
             }
             try {
-                  const confirmed = await this.createConfirm({
+                const confirmed = await this.createConfirm({
                     title: 'Start Pathway Ranking',
                     content: 'This will start a pathway ranking job for this result. If you stay on this page, you will receive a notification once the job is complete. Do you want to continue?',
                     dialogProps: { width: "60%" }
@@ -977,7 +986,7 @@ export default {
 
                 const output = await API.pollCeleryResult(json);
                 if (output.success) {
-                    this.createSnackbar({ text: "Analog counting job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true , color: "green"} });
+                    this.createSnackbar({ text: "Analog counting job complete! Refresh the page to view updated results.", snackbarProps: { timeout: -1, vertical: true, color: "green" } });
                 } else if (output.error) {
                     this.createSnackbar({ text: `Analog counting job failed: ${output.error}`, snackbarProps: { timeout: -1, vertical: true, color: "red-darken-1" } });
                 }
@@ -1098,7 +1107,7 @@ export default {
     },
 };
 </script>
-  
+
 <style>
 #graph {
     width: 100%;
@@ -1124,4 +1133,3 @@ export default {
     text-align: center !important;
 }
 </style>
-  

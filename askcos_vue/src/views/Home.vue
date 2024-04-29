@@ -54,10 +54,12 @@
               synthetic planning and other aspects of organic chemistry. These are
               listed under the Modules tab in the navigation bar on the left, with
               more detailed description in
-              <a target="_blank" href="https://askcos-docs.mit.edu/" color="primary">
-                ASKCOS wiki <v-icon size="small">mdi mdi-open-in-new</v-icon></a>.
+              <a class="text-decoration-none text-primary font-weight-medium d-inline-flex align-center" target="_blank"
+                href="https://askcos-docs.mit.edu/" color="primary">
+                ASKCOS wiki <v-icon size="x-small">mdi mdi-open-in-new</v-icon></a>.
               Several of the deployed models are described in publications listed
-              <a target="_blank" href="https://mlpds.mit.edu/papers/">here<v-icon size="small">mdi
+              <a class="text-decoration-none text-primary font-weight-medium d-inline-flex align-center" target="_blank"
+                href="https://mlpds.mit.edu/papers/">here<v-icon size="x-small">mdi
                   mdi-open-in-new</v-icon></a>.
               References for the models are included in their respective pages
               where appropriate.
@@ -72,8 +74,9 @@
               <template v-slot:text class="text-body-1">
                 This work began under the DARPA Make-It program
                 (ARO W911NF-16-2-0023) and continues to be supported by the
-                <a target="_blank" href="https://mlpds.mit.edu">
-                  Machine Learning for Pharmaceutical Discovery and Synthesis Consortium <v-icon size="small">mdi
+                <a class="text-decoration-none text-primary font-weight-medium d-inline-flex align-center"
+                  target="_blank" href="https://mlpds.mit.edu">
+                  Machine Learning for Pharmaceutical Discovery and Synthesis Consortium <v-icon size="x-small">mdi
                     mdi-open-in-new</v-icon></a>,
                 and the National Institutes of Health (1U18TR004149-01).
               </template>
@@ -85,7 +88,8 @@
 
                 <template v-slot:text>
                   If you have any questions or if any of the links/images appear
-                  broken, please email <a href="mailto:askcos_support@mit.edu">askcos_support@mit.edu</a>
+                  broken, please email <a href="mailto:askcos_support@mit.edu"
+                    class="text-decoration-none text-primary font-weight-medium d-inline-flex align-center">askcos_support@mit.edu</a>
                 </template>
               </v-expansion-panel>
               <v-expansion-panel text='THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESSED OR IMPLIED
@@ -114,8 +118,9 @@
               </v-expansion-panel>
             </v-expansion-panels>
             <p class="mt-4 text-subtitle-2">Please review the <a
+                class="text-decoration-none text-primary font-weight-medium d-inline-flex align-center"
                 href="https://askcos-docs.mit.edu/guide/9-Privacy-&-Terms-of-Service/9.1-ASKCOS-Terms-of-Service.html"
-                target="_blank">Terms of Service <v-icon size="small">mdi mdi-open-in-new</v-icon></a> before using
+                target="_blank">Terms of Service <v-icon size="x-small">mdi mdi-open-in-new</v-icon></a> before using
               ASKCOS.</p>
           </v-sheet>
         </v-expand-transition>

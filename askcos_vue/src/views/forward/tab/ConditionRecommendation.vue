@@ -7,7 +7,8 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="auto">
-                    <v-btn variant="flat" @click="handleClick" :disabled="evaluating" height="30px" color="primary mx-2">
+                    <v-btn variant="flat" @click="handleClick" :disabled="evaluating" height="30px"
+                        color="primary mx-2">
                         Get Reaction Score
                     </v-btn>
                 </v-col>
@@ -114,8 +115,8 @@
                     {{ Math.round(item.temperature) }} &deg;C
                 </template>
                 <template v-slot:item.reagents="{ item }">
-                    <div v-if="!!item.reagents" class="text-center my-2"
-                        v-for="(amount, rgt) in item.reagents" :key="rgt">
+                    <div v-if="!!item.reagents" class="text-center my-2" v-for="(amount, rgt) in item.reagents"
+                        :key="rgt">
                         <copy-tooltip :data="rgt" :title="'Click to copy: ' + rgt">
                             <smiles-image :smiles="rgt" max-height="80px"></smiles-image>
                         </copy-tooltip>
@@ -137,14 +138,19 @@
 
             <v-row align="center" justify="space-between" class="mx-auto my-3">
                 <v-col cols="12" class="pa-0">
-                    <v-alert border="start" elevation="2" type="info" variant="tonal" density="compact" title="Reference">
+                    <v-alert border="start" type="info" variant="tonal" density="compact" title="Reference">
                         <p>
                             Predict reagents, catalysts, solvents and temperature for a desired transformation
                             using a
                             neural
                             network model.
-                            <a href="https://doi.org/10.1021/acscentsci.8b00357">(ACS Cent. Sci., 2018, 4,
-                                1465-1476)</a>
+                            <a class="text-decoration-none text-primary font-weight-medium d-inline-flex align-center"
+                                href="https://doi.org/10.1021/acscentsci.8b00357" target="_blank">(ACS Cent. Sci., 2018,
+                                4,
+                                1465-1476
+                                <v-icon size="x-small">mdi-open-in-new</v-icon>
+                                )
+                            </a>
                         </p>
                     </v-alert>
                 </v-col>

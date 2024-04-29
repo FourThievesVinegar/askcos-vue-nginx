@@ -25,12 +25,12 @@
             </v-skeleton-loader>
 
             <v-row align="center" justify="space-between" class="mx-auto my-3">
-                <v-alert border="start" elevation="2" type="info" variant="tonal" density="compact" title="Reference">
+                <v-alert border="start" type="info" variant="tonal" density="compact" title="Reference">
                     <p>
                         Predict selectivity of regio-selective reactions. The QM-GNN model combines a WLN
                         graph encoding
                         with predicted quantum descriptors as input to a multitask neural network.
-                        <a href="https://doi.org/10.1039/D0SC04823B">(Chem. Sci., 2021, 12, 2198-2208)</a>
+                        <a class="text-decoration-none text-primary font-weight-medium d-inline-flex align-center" href="https://doi.org/10.1039/D0SC04823B">(Chem. Sci., 2021, 12, 2198-2208 <v-icon size="x-small">mdi-open-in-new</v-icon>)</a>
                     </p>
                 </v-alert>
             </v-row>
