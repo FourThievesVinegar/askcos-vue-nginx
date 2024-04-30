@@ -61,14 +61,14 @@
                     </v-card>
                   </v-menu>
                 </v-btn-group>
-                <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-application-import" class="ml-2"
+                <v-btn variant="flat" color="yellow-darken-4" prepend-icon="mdi mdi-application-import" class="ml-2"
                   @click="showImportNetwork = true">Import
                   Network</v-btn>
               </template>
             </v-text-field></v-col>
         </v-row>
         <v-row class="justify-center align-center"><span class="text-overline">Using model(s):</span>
-          <div v-if="strategies.length !== 0" class="pa-0 test">
+          <div v-if="strategies.length !== 0" class="pa-0 slider">
             <v-slide-group show-arrows>
               <v-slide-group-item v-for="(strategy, idx) in strategies" :key="idx">
                 <v-chip class="text-overline mr-1">
@@ -823,24 +823,23 @@ export default {
         );
       }
     },
-    validatesmiles(smiles, iswarning) {
-      return API.post("/api/rdkit/validate/", {
+    async validatesmiles(smiles, iswarning) {
+      const json = await API.post("/api/rdkit/validate/", {
         smiles: smiles,
-      }).then(async (json) => {
-        if (!json["correct_syntax"]) {
-          if (iswarning) {
-            await this.createConfirm({ title: 'Alert', content: 'Invalid SMILES entered: Invalid Syntax', dialogProps: { width: "auto" } })
-          }
-          return false;
-        } else if (!json["valid_chem_name"]) {
-          if (iswarning) {
-            await this.createConfirm({ title: 'Alert', content: 'Invalid SMILES entered: Invalid Chemical Name', dialogProps: { width: "auto" } })
-          }
-          return false;
-        } else {
-          return true;
-        }
       });
+      if (!json["correct_syntax"]) {
+        if (iswarning) {
+          await this.createConfirm({ title: 'Action Unsuccessful', content: 'Invalid SMILES entered: Invalid Syntax', dialogProps: { width: "auto" } });
+        }
+        return false;
+      } else if (!json["valid_chem_name"]) {
+        if (iswarning) {
+          await this.createConfirm({ title: 'Action Unsuccessful', content: 'Invalid SMILES entered: Invalid Chemical Name', dialogProps: { width: "auto" } });
+        }
+        return false;
+      } else {
+        return true;
+      }
     },
     async changeTarget() {
       if (this.resultsStore.dataGraph.nodes.length) {
@@ -1519,18 +1518,17 @@ export default {
       } else if (this.network) {
       }
     },
-    canonicalize(smiles, input) {
-      return API.post("/api/rdkit/canonicalize/", {
+    async canonicalize(smiles, input) {
+      const json = await API.post("/api/rdkit/canonicalize/", {
         smiles: smiles,
-      }).then((json) => {
-        if (json.smiles) {
-          if (typeof input === "string") {
-            this[input] = json.smiles;
-          } else if (input instanceof Function) {
-            input(json.smiles);
-          }
-        }
       });
+      if (json.smiles) {
+        if (typeof input === "string") {
+          this[input] = json.smiles;
+        } else if (input instanceof Function) {
+          input(json.smiles);
+        }
+      }
     },
     updateTerminalNodes() {
       let chemicals = this.resultsStore.dataGraph.getChemicalNodes();
@@ -1745,9 +1743,8 @@ export default {
 </script>
 
 <style>
-.test {
+.slider {
   max-width: 800px;
-
   white-space: nowrap;
   overflow-x: auto;
   /* Enable horizontal scrollbar for overflow */
@@ -1755,10 +1752,6 @@ export default {
 
 .target-input .v-input__control {
   background-color: white;
-}
-
-.slide {
-  margin-top: 5rem;
 }
 
 .open-toolbar {
@@ -1787,10 +1780,6 @@ export default {
   gap: 0.5rem;
 }
 
-.vis-tooltip {
-  position: absolute;
-}
-
 .result-btn {
   position: absolute;
   padding: 5px;
@@ -1810,11 +1799,5 @@ export default {
   padding: 5px;
   top: 120px;
   right: 1px;
-}
-
-.form-bg {
-  padding: 5px 15px;
-  border: 1px solid #d3d3d3;
-  border-radius: 30px;
 }
 </style>

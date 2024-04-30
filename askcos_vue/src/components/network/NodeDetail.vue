@@ -11,16 +11,17 @@
             </copy-tooltip>
             <div><b>Min Price ($/g): </b>{{ selected.data.ppg }}</div>
             <div v-if="selected.data.source"><b>Min Source: </b>{{ selected.data.source }}</div>
-            <v-btn class="my-2" color="primary" variant="tonal" prepend-icon="mdi-cart-variant" :href="`/buyables?q=${encodeURIComponent(selected.smiles)}`" target="_blank">Search Buyables</v-btn>
+            <v-btn class="my-2" color="primary" variant="tonal" prepend-icon="mdi-cart-variant"
+              :href="`/buyables?q=${encodeURIComponent(selected.smiles)}`" target="_blank">Search Buyables</v-btn>
             <ketcher-min id="ketcher-min-chemical" ref="ketcher-min" class="position-relative"
               @change="selectedAtoms = $event"></ketcher-min>
             <div v-if="!!selected.stats">
               <p>
                 <small>
                   Circle size = # of reactions involving atom ({{ selected.stats.reactions.min }} - {{
-                    selected.stats.reactions.max }})<br />
+    selected.stats.reactions.max }})<br />
                   Circle color = # of clusters involving atom (<span style="color: #c0f0c0">&cir;</span> {{
-                    selected.stats.clusters.min }} - {{ selected.stats.clusters.max }}
+    selected.stats.clusters.min }} - {{ selected.stats.clusters.max }}
                   <span style="color: #005020">&cir;</span>)
                 </small>
               </p>
@@ -68,8 +69,8 @@
           <div class="d-flex flex-row align-center">
             <h3>Precursors</h3>
             <v-spacer></v-spacer>
-            <v-switch id="allowCluster" v-model="allowCluster" name="allow-cluster-switch" @change="resetSortingCategory"
-              label="Group Cluster" density="compact" hide-details color="primary">
+            <v-switch id="allowCluster" v-model="allowCluster" name="allow-cluster-switch"
+              @change="resetSortingCategory" label="Group Cluster" density="compact" hide-details color="primary">
             </v-switch>
             <v-spacer></v-spacer>
             <v-switch id="invertAtomFilter" v-model="invertAtomFilter" name="invert-atom-filter-switch"
@@ -124,7 +125,8 @@
             <v-row class="pa-0 ma-0">
               <v-col class="d-flex justify-center">
                 <v-btn class="align-center" variant="flat" color="green-darken-1" id="addNote"
-                  @click="addNote = !addNote">Add Note</v-btn>
+                  @click="addNote = !addNote">Add
+                  Note</v-btn>
               </v-col>
             </v-row>
           </div>
@@ -139,8 +141,8 @@
             <v-row class="pa-0 ma-0">
               <v-col>
                 <v-textarea label="Comment" v-model="noteComment" density="compact" variant="outlined"
-                  placeholder="Enter your comment here. There is a max. character length of 1000." :rows="4" hide-details
-                  :counter="1000" id="note-comment" data-cy="network-view_input_user-comment"></v-textarea>
+                  placeholder="Enter your comment here. There is a max. character length of 1000." :rows="4"
+                  hide-details :counter="1000" id="note-comment" data-cy="network-view_input_user-comment"></v-textarea>
               </v-col>
             </v-row>
             <v-row class="pa-0 ma-0">
@@ -218,8 +220,8 @@
                       :data-rank="res.rank" @click="addFromResults(selected, res)" icon="mdi-plus" density="compact">
                     </v-btn>
                     <v-btn v-show="selected.id in res.inVis" variant="flat" color="red" class="remRes mr-1"
-                      title="Remove node(s)" :data-rank="res.rank" @click="remFromResults(selected, res)" icon="mdi-minus"
-                      density="compact">
+                      title="Remove node(s)" :data-rank="res.rank" @click="remFromResults(selected, res)"
+                      icon="mdi-minus" density="compact">
                     </v-btn>
                     <v-btn variant="flat" :data-rank="res.rank" title="Open cluser modal"
                       @click="openClusterPopoutModal(selected, res)" icon="mdi-group" density="compact">
@@ -303,13 +305,13 @@
                     <th># Examples</th>
                     <td>{{ num2str(selected.data.numExamples) }}</td>
                   </tr>
-                  <tr v-if = "selected.data.templateIds">
+                  <tr v-if="selected.data.templateIds">
                     <th>Supporting templates</th>
                     <td>
                       <ul>
                         <li v-for="id in selected.data.templateIds" :key="id">
                           <a :href="'/template?id=' + id" target="_blank"> {{ id }} ({{
-                            resultsStore.templateSetSource[id] }}, {{ resultsStore.templateNumExamples[id] }} examples)
+    resultsStore.templateSetSource[id] }}, {{ resultsStore.templateNumExamples[id] }} examples)
                           </a>
                         </li>
                       </ul>
@@ -341,7 +343,8 @@
                     <v-row>
                       <v-col>
                         <img :src="getMolDrawEndPoint(res)" class="ma-1"
-                          :class="res === selected.smiles.split('>>')[1] ? 'grey-border' : ''" style="max-width: 100%" />
+                          :class="res === selected.smiles.split('>>')[1] ? 'grey-border' : ''"
+                          style="max-width: 100%" />
                       </v-col>
                     </v-row>
                     <v-row>
@@ -370,28 +373,14 @@
       <v-card-title>View Cluster</v-card-title>
       <v-divider></v-divider>
       <v-card-text>
-        <div class="btn-toolbar justify-content-center mb-3">
-          <!-- <b-input-group>
-            <b-input-group-prepend>
-              <v-btn variant="outline-dark" @click="clusterPopoutModalDecGroupID()">
-                <i class="fas fa-arrow-left"></i>
-              </v-btn>
-            </b-input-group-prepend>
-            <select id="clusterSelect" v-model="selectedClusterId" class="form-control"
-              @change="clusterPopoutModalSetGroupID()">
-              <option v-for="idx in resultsStore.clusteredResultsIndex[clusterPopoutModalData['selectedSmiles']]"
-                :value="idx" :key="idx">
-                {{ selectPopoutClusterName(idx) }}
-              </option>
-            </select>
-            <b-input-group-append>
-              <v-btn variant="outline-dark" @click="clusterPopoutModalIncGroupID()">
-                <i class="fas fa-arrow-right"></i>
-              </v-btn>
-            </b-input-group-append>
-          </b-input-group> -->
+        <div class="d-flex justify-center mb-3">
+          <v-btn-group variant="outlined" density="comfortable" divided :border="true">
+            <v-btn icon="mdi mdi-chevron-left" @click="clusterPopoutModalDecGroupID()"></v-btn>
+            <!--  TODO: Make it a drop down option -->
+            <v-btn variant="tonal">{{ selectPopoutClusterName(selectedClusterId) }}</v-btn>
+            <v-btn icon="mdi mdi-chevron-right" @click="clusterPopoutModalIncGroupID()"></v-btn>
+          </v-btn-group>
         </div>
-
         <div class="scroll-list">
           <div class="grid-wrapper">
             <v-card no-body class="custom-shadow ma-2 pa-2" v-for="res in currentClusterViewPrecursors" :key="res.rank">
@@ -455,10 +444,9 @@
             title="Add precursor" icon="mdi-plus" color="success">
           </v-btn>
           <v-btn variant="flat" @click="
-            showClusterPopoutModal = false;
-          openClusterEditModal(clusterPopoutModalData['selected'], clusterPopoutModalData['clusterId'], clusterPopoutModalData['clusterName']);
-          closeClusterPopoutModal();
-          " title="Edit clusters" color="orange" icon="mdi-pencil" class="mr-1">
+    showClusterPopoutModal = false;
+  openClusterEditModal(clusterPopoutModalData['selected'], clusterPopoutModalData['clusterId'], clusterPopoutModalData['clusterName']);
+  " title="Edit clusters" color="orange" icon="mdi-pencil" class="mr-1">
           </v-btn>
         </div>
         <div class="form-check-inline">
@@ -483,40 +471,26 @@
     </v-card>
   </v-dialog>
 
-  <!-- <b-modal v-if="selected" id="cluster-edit-modal" title="Edit Cluster" size="xl" footer-class="justify-content-between" v-model="showClusterEditModal" @close="closeClusterEditModal">
-        <div class="btn-toolbar justify-content-center mb-3">
-          <b-input-group>
-            <b-input-group-prepend>
-              <v-btn variant="outline-dark" @click="clusterEditModalDecGroupID()">
-                <i class="fas fa-arrow-left"></i>
-              </v-btn>
-            </b-input-group-prepend>
-            <select id="clusterEditSelect" v-model="selectedClusterId" class="form-control" @change="clusterEditModalSetGroupID()">
-              <option v-for="idx in resultsStore.clusteredResultsIndex[clusterEditModalData['selectedSmiles']]" :value="idx" :key="idx">
-                {{ selectEditClusterName(idx) }}
-              </option>
-            </select>
-            <b-input-group-append>
-              <v-btn variant="outline-dark" @click="clusterEditModalIncGroupID()">
-                <i class="fas fa-arrow-right"></i>
-              </v-btn>
-            </b-input-group-append>
-          </b-input-group>
+  <v-dialog id="cluster-edit-modal" v-model="showClusterEditModal" min-width="600px" @close="closeClusterEditModal">
+    <v-card>
+      <v-card-title>Edit Cluster</v-card-title>
+      <v-divider></v-divider>
+      <v-card-text>
+        <div class="d-flex justify-center mb-3">
+          <v-btn-group variant="outlined" density="comfortable" divided :border="true">
+            <v-btn icon="mdi mdi-chevron-left" @click="clusterEditModalDecGroupID()"></v-btn>
+            <!-- TODO: Make it a drop down option -->
+            <v-btn variant="tonal">{{ selectEditClusterName(selectedClusterId) }}</v-btn>
+            <v-btn icon="mdi mdi-chevron-right" @click="clusterEditModalIncGroupID()"></v-btn>
+          </v-btn-group>
         </div>
-
-        <div class="scroll-list-x mb-3">
+        <div class="scroll-list-x">
           <div class="grid-wrapper-onerow">
-            <b-card
-              v-for="res in currentClusterEditPrecursors"
-              :key="res.rank"
-              no-body
-              class="custom-shadow m-2 p-2"
-              @dragstart="clusterEditOnDragstart(res, $event)"
-              @dragend="clusterEditOnDragend($event)"
-              draggable="true">
-              <div class="d-flex flex-column justify-content-between h-100">
+            <v-card no-body class="custom-shadow ma-2 pa-2" v-for="res in currentClusterEditPrecursors" :key="res.rank"
+              @dragstart="clusterEditOnDragstart(res, $event)" @dragend="clusterEditOnDragend($event)" draggable="true">
+              <div class="d-flex flex-column justify-space-between" style="height:100%">
                 <div>
-                  <table class="table table-sm table-bordered m-0 nopointer">
+                  <v-table class="ma-0">
                     <tbody>
                       <tr>
                         <td>Rank</td>
@@ -547,86 +521,75 @@
                         <td>{{ res.clusterName }}</td>
                       </tr>
                     </tbody>
-                  </table>
+                  </v-table>
                 </div>
                 <div>
-                  <img :src="getMolDrawEndPoint(res, true)" class="mw-100 nopointer" draggable="false" @dragstart.prevent />
+                  <img :src="getMolDrawEndPoint(res, true)" style="max-width:100%" draggable="false"
+                    @dragstart.prevent />
                 </div>
               </div>
-            </b-card>
+            </v-card>
           </div>
         </div>
-
         <div class="scroll-list-x">
           <div class="grid-wrapper-onerow">
-            <b-card
-              v-for="res in resultsStore.clusteredResults[selected.smiles]"
-              :key="res.clusterId"
-              no-body
-              class="custom-shadow m-2 p-2"
-              @drop.prevent="clusterEditOnDrop(res, $event)"
-              @dragover.prevent="clusterEditOnDragover($event)"
-              @dragenter.prevent="clusterEditOnDragenter($event)"
-              @dragleave.prevent="clusterEditOnDragleave($event)"
+            <v-card @drop.prevent="clusterEditOnDrop(res, $event)" @dragover.prevent="clusterEditOnDragover($event)"
+              @dragenter.prevent="clusterEditOnDragenter($event)" @dragleave.prevent="clusterEditOnDragleave($event)"
               @click="
-                clusterEditModalData['clusterId'] = res.clusterId;
-                clusterEditModalData['clusterName'] = res.clusterName;
-                selectedClusterId = res.clusterId;
-                $forceUpdate();
-              ">
+    clusterEditModalData['clusterId'] = res.clusterId;
+  clusterEditModalData['clusterName'] = res.clusterName;
+  selectedClusterId = res.clusterId;
+  $forceUpdate();
+  " class="custom-shadow m-2 p-2" v-for="res in resultsStore.clusteredResults[selected.smiles]" :key="res.clusterId">
               <div class="nopointer text-center">
                 <h4 class="nonselectable nopointer">{{ res.clusterName }}</h4>
                 <div class="nopointer">
-                  <img :src="getMolDrawEndPoint(res, true)" class="mw-100 nopointer" draggable="false" @dragstart.prevent />
+                  <img :src="getMolDrawEndPoint(res, true)" class="mw-100 nopointer" draggable="false"
+                    @dragstart.prevent />
                 </div>
               </div>
-            </b-card>
-            <b-card
-              no-body
-              class="custom-shadow m-2 p-2"
-              @drop.prevent="clusterEditOnDropNew($event)"
-              @dragover.prevent="clusterEditOnDragover($event)"
-              @dragenter.prevent="clusterEditOnDragenter($event)"
+            </v-card>
+            <v-card no-body class="custom-shadow m-2 p-2" @drop.prevent="clusterEditOnDropNew($event)"
+              @dragover.prevent="clusterEditOnDragover($event)" @dragenter.prevent="clusterEditOnDragenter($event)"
               @dragleave.prevent="clusterEditOnDragleave($event)">
               <div class="nopointer text-center">
                 <h4 class="nonselectable nopointer">New Reaction Cluster</h4>
                 <i class="fas fa-plus-circle fa-8x text-dark nopointer"></i>
               </div>
-            </b-card>
+            </v-card>
           </div>
         </div>
+      </v-card-text>
+      <v-card-actions>
+        <div>
+          <v-btn variant="flat" class="mr-1"
+            @click="openAddNewPrecursorModal(clusterEditModalData['selectedSmiles'], clusterEditModalData['clusterId'], clusterEditModalData['clusterName'])"
+            title="Add precursor" icon="mdi-plus" color="success">
+          </v-btn>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input" id="ceShowScore" type="checkbox"
+            v-model="clusterEditModalData.optionsDisplay.showScore" />
+          <label class="form-check-label mr-2" for="cpShowScore">Score</label>
+          <input class="form-check-input" id="ceShowSCScore" type="checkbox"
+            v-model="clusterEditModalData.optionsDisplay.showSCScore" />
+          <label class="form-check-label mr-2" for="cpShowSCScore">Synthetic complexity</label>
+          <input class="form-check-input" id="ceShowNumEx" type="checkbox"
+            v-model="clusterEditModalData.optionsDisplay.showNumExample" />
+          <label class="form-check-label mr-2" for="cpShowNumEx"># Examples</label>
+          <input class="form-check-input" id="ceShowTemp" type="checkbox"
+            v-model="clusterEditModalData.optionsDisplay.showTemplateScore" />
+          <label class="form-check-label mr-2" for="cpShowTemp">Template score</label>
+          <input class="form-check-input" id="ceShowPlaus" type="checkbox"
+            v-model="clusterEditModalData.optionsDisplay.showPlausibility" />
+          <label class="form-check-label mr-2" for="ceShowPlaus">Plausibility</label>
+        </div>
+        <v-btn variant="tonal" class="mr-1" @click="requestClusterId(clusterEditModalData['selectedSmiles'])">Re-cluster</v-btn>
+        <v-btn variant="flat" @click="showClusterEditModal = false" color="primary">Close</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 
-        <template #modal-footer="{ close }">
-          <div>
-            <v-btn
-              variant="success"
-              class="mr-1"
-              @click="openAddNewPrecursorModal(clusterEditModalData['selectedSmiles'], clusterEditModalData['clusterId'], clusterEditModalData['clusterName'])"
-              title="Add precursor">
-              <i class="fas fa-plus"></i>
-            </v-btn>
-            <v-btn v-b-modal.settings-modal variant="outline-dark" title="Open settings">
-              <i class="fas fa-cog"></i>
-            </v-btn>
-          </div>
-          <div class="form-check-inline">
-            <input class="form-check-input" id="ceShowScore" type="checkbox" v-model="clusterEditModalData.optionsDisplay.showScore" />
-            <label class="form-check-label mr-2" for="ceShowScore">Score</label>
-            <input class="form-check-input" id="ceShowSCScore" type="checkbox" v-model="clusterEditModalData.optionsDisplay.showSCScore" />
-            <label class="form-check-label mr-2" for="ceShowSCScore">Synthetic complexity</label>
-            <input class="form-check-input" id="ceShowNumEx" type="checkbox" v-model="clusterEditModalData.optionsDisplay.showNumExample" />
-            <label class="form-check-label mr-2" for="ceShowNumEx"># Examples</label>
-            <input class="form-check-input" id="ceShowTemp" type="checkbox" v-model="clusterEditModalData.optionsDisplay.showTemplateScore" />
-            <label class="form-check-label mr-2" for="ceShowTemp">Template score</label>
-            <input class="form-check-input" id="ceShowPlaus" type="checkbox" v-model="clusterEditModalData.optionsDisplay.showPlausibility" />
-            <label class="form-check-label mr-2" for="ceShowPlaus">Plausibility</label>
-          </div>
-          <div>
-            <v-btn variant="info" class="mr-1" @click="requestClusterId(clusterEditModalData['selectedSmiles'])">Re-cluster</v-btn>
-            <v-btn variant="outline-secondary" @click="close()">Close</v-btn>
-          </div>
-        </template>
-      </b-modal>  -->
   <v-dialog v-model="showAddNewPrecursorModal" width="auto" min-width="500px">
     <v-card>
       <v-card-title>Add Precursor</v-card-title>
@@ -645,8 +608,8 @@
         <v-select label="Cluster Number" :items="clusterItems" v-model="addNewPrecursorModal['clusterId']"
           variant="outlined" hide-details density="compact">
         </v-select>
-        <v-text-field v-if="addNewPrecursorModal['clusterId'] === -1" label="Cluster Name" variant="outlined" hide-details
-          density="compact" v-model="addNewPrecursorModal['newClusterName']" class="mt-2"></v-text-field>
+        <v-text-field v-if="addNewPrecursorModal['clusterId'] === -1" label="Cluster Name" variant="outlined"
+          hide-details density="compact" v-model="addNewPrecursorModal['newClusterName']" class="mt-2"></v-text-field>
         <v-checkbox v-model="addNewPrecursorModal['noDupCheck']" label="No Duplicate check" hide-details></v-checkbox>
       </v-card-text>
       <v-divider></v-divider>
@@ -978,18 +941,7 @@ export default {
             if (!this.addNewPrecursorModal["noDupCheck"]) {
               let s = this.checkDuplicatePrecursor(selecSmi, newSmi);
               if (s !== undefined) {
-                this.$bvModal.msgBoxOk(
-                  "There may be a duplicated precursor: rank: " + s.rank + " cluster: " + s.clusterId + '. If you still want to proceed, please select "No duplicate check" option.',
-                  {
-                    title: "Alert",
-                    size: "sm",
-                    okVariant: "danger",
-                    okTitle: "Ok",
-                    hideHeaderClose: true,
-                    centered: true,
-                    footerClass: "p-2",
-                  }
-                );
+                this.createConfirm({ title: "Action Unsuccessful", content: "There may be a duplicated precursor: rank: " + s.rank + " cluster: " + s.clusterId + '. If you still want to proceed, please select "No duplicate check" option.', dialogProps: { width: "auto" } })
                 return;
               }
             }
@@ -1004,15 +956,7 @@ export default {
           } else if (typeof error == "string") {
             error_msg = error;
           }
-          this.$bvModal.msgBoxOk("There was an error fetching precursors for this target with the supplied settings: " + error_msg, {
-            title: "Alert",
-            size: "sm",
-            okVariant: "danger",
-            okTitle: "Ok",
-            hideHeaderClose: true,
-            centered: true,
-            footerClass: "p-2",
-          });
+          this.createConfirm({ title: "Action Unsuccessful", content: "There was an error fetching precursors for this target with the supplied settings: " + error_msg, dialogProps: { width: "auto" } })
         });
     },
     addNewPrecursorModalName(clusterId) {
@@ -1063,17 +1007,7 @@ export default {
     },
     deleteFromGraph(reaction) {
       //removes from vuex store deletes from datagraph and removes from tree.
-      this.$bvModal
-        .msgBoxConfirm("This will be permanently deleted from the tree. Continue?", {
-          title: "Please Confirm",
-          size: "sm",
-          okVariant: "success",
-          okTitle: "Yes",
-          cancelTitle: "No",
-          footerClass: "p-2",
-          hideHeaderClose: false,
-          centered: true,
-        })
+      this.createConfirm({ title: 'Please Confirm', content: "This will be permanently deleted from the tree. Continue?", dialogProps: { width: "auto" } })
         .then((value) => {
           if (!value) return;
           this.resultsStore.deleteDataNode(reaction);
@@ -1091,29 +1025,11 @@ export default {
     },
     openClusterPopoutModal(selected, res) {
       if (selected === undefined) {
-        this.$bvModal.msgBoxOk("No target molecule selected. Please select a molecule in the tree.", {
-          title: "Alert",
-          size: "sm",
-          okVariant: "danger",
-          okTitle: "Ok",
-          hideHeaderClose: true,
-          centered: true,
-          footerClass: "p-2",
-        });
+        this.createConfirm({ title: "Action Unsuccessful", content: "No target molecule selected. Please select a molecule in the tree.", dialogProps: { width: "auto" } })
         return;
       }
       if (res.clusterId === undefined) {
-        this.$bvModal
-          .msgBoxConfirm("This precursor has not been clustered. Would you like to re-cluster the current list of precursors?", {
-            title: "Please Confirm",
-            size: "sm",
-            okVariant: "success",
-            okTitle: "Yes",
-            cancelTitle: "No",
-            footerClass: "p-2",
-            hideHeaderClose: false,
-            centered: true,
-          })
+        this.createConfirm({ title: 'Please Confirm', content: "This precursor has not been clustered. Would you like to re-cluster the current list of precursors?", dialogProps: { width: "auto" } })
           .then((value) => {
             if (!value) return;
             this.requestClusterId(selected.smiles).then(() => {
@@ -1145,15 +1061,7 @@ export default {
     },
     openClusterEditModal(selected, clusterId, clusterName) {
       if (selected === undefined) {
-        this.$bvModal.msgBoxOk("No target molecule selected. Please select a molecule in the tree.", {
-          title: "Alert",
-          size: "sm",
-          okVariant: "danger",
-          okTitle: "Ok",
-          hideHeaderClose: true,
-          centered: true,
-          footerClass: "p-2",
-        });
+        this.createConfirm({ title: "Action Unsuccessful", content: "No target molecule selected. Please select a molecule in the tree.", dialogProps: { width: "auto" } })
         return;
       }
       if (clusterId === undefined) {
@@ -1330,28 +1238,12 @@ export default {
       return API.post("/api/rdkit/validate/", { smiles: smiles }).then((json) => {
         if (!json["correct_syntax"]) {
           if (iswarning) {
-            this.$bvModal.msgBoxOk("Invalid SMILES entered: Invalid Syntax", {
-              title: "Alert",
-              size: "sm",
-              okVariant: "danger",
-              okTitle: "Ok",
-              hideHeaderClose: true,
-              centered: true,
-              footerClass: "p-2",
-            });
+            this.createConfirm({ title: "Action Unsuccessful", content: "Invalid SMILES entered: Invalid Syntax", dialogProps: { width: "auto" } })
           }
           return false;
         } else if (!json["valid_chem_name"]) {
           if (iswarning) {
-            this.$bvModal.msgBoxOk("Invalid SMILES entered: Invalid Chemical Name", {
-              title: "Alert",
-              size: "sm",
-              okVariant: "danger",
-              okTitle: "Ok",
-              hideHeaderClose: true,
-              centered: true,
-              footerClass: "p-2",
-            });
+            this.createConfirm({ title: "Action Unsuccessful", content: "Invalid SMILES entered: Invalid Chemical Name", dialogProps: { width: "auto" } })
           }
           return false;
         } else {
