@@ -169,12 +169,19 @@
                         <v-sheet class="pa-5 rounded-lg" elevation="2">
                             <h4 class="text-h4">Email</h4>
                             <v-divider></v-divider>
-                            <p class="text-body-1">**Dummy Email**</p>
+                            <p class="text-body-1">{{ userEmail }}</p>
                             <v-btn color="warning" class="mr-2" @click="mutate(username, 'email')" size="small">Update
                                 Email</v-btn>
                             <h4 class="mt-4 text-h4">Password</h4>
                             <v-divider></v-divider>
-                            <p class="text-body-1">Last Login: Today</p>
+                            <p class="text-body-1">Last Login:
+                                <timeago :datetime="userLastLogin" :converter-options="{
+                        includeSeconds: true,
+                        addSuffix: false,
+                        useStrict: false,
+                    }" auto-update />
+                                ago
+                            </p>
                             <v-btn color="warning" class="mr-2" @click="mutate(username, 'pwd')" size="small">Change
                                 Password</v-btn>
                             <v-alert text="If you wish to delete this account you can do so by clicking below"
@@ -190,8 +197,7 @@
                         Fetching User Details
                     </v-col>
                     <v-col cols="6">
-                        <v-progress-linear color="primary" height="6" indeterminate
-                            rounded></v-progress-linear>
+                        <v-progress-linear color="primary" height="6" indeterminate rounded></v-progress-linear>
                     </v-col>
                 </v-row>
             </v-container>
@@ -283,6 +289,8 @@ import wp from "@/assets/wp.png"
 const createSnackbar = useSnackbar()
 const router = useRouter();
 const username = ref(localStorage.getItem('username'))
+const userEmail = ref('')
+const userLastLogin = ref('')
 const newUsername = ref('')
 const newPassword = ref('')
 const newEmail = ref('')
@@ -398,6 +406,12 @@ const fetchData = async () => {
                 users.value = Object.values(usersDict.value)
             } else {
                 console.error("API did not return an array as expected:", response);
+            }
+        } else {
+            let response = await API.get("/api/user/get-current-user");
+            if (response) {
+                userEmail.value = response.email
+                userLastLogin.value = response.last_login
             }
         }
     } catch (error) {
