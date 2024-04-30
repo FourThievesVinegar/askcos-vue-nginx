@@ -180,6 +180,18 @@
 
         <v-row>
           <v-col cols="12">
+            <v-text-field id="leadtime" label="Lead Time" v-model="addBuyableLeadTime" density="comfortable"
+              variant="outlined" clearable></v-text-field>
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col cols="12">
+            <v-textarea label="Properties" v-model="addBuyableProps" variant="outlined"></v-textarea>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12">
             <v-checkbox label="Allow overwriting exisiting result" v-model="allowOverwrite"></v-checkbox>
           </v-col>
         </v-row>
@@ -267,6 +279,8 @@ const showUploadModal = ref(false);
 const addBuyableSmiles = ref('');
 const addBuyablePrice = ref(1);
 const addBuyableSource = ref('');
+const addBuyableLeadTime = ref('');
+const addBuyableProps = ref('[{"name": "link","value": ""},{"name": "availability","value": ""}]');
 const uploadFileFormat = ref('JSON');
 const pendingTasks = ref(0);
 const buyablesSources = ref([]);
@@ -368,18 +382,19 @@ const updateSmiles = (newSmiles) => {
   searchSmilesQuery.value = newSmiles;
 }
 
-const fetchSources = () => {
+const fetchSources = async () => {
   fetchLoad.value = true;
-  API.get('/api/buyables/sources')
+  await API.get('/api/buyables/sources')
     .then(json => {
       buyablesSources.value = json.sources
       fetchLoad.value = false;
     });
 }
 
-onMounted(() => {
-  fetchAdminStatus()
-  fetchSources()
+onMounted(async () => {
+  await fetchAdminStatus()
+  await fetchSources()
+  selectedSources.value = [...buyablesSources.value]
   let urlParams = new URLSearchParams(window.location.search);
   let query = urlParams.get('q');
   if (query) {
@@ -460,6 +475,8 @@ const addBuyable = () => {
     smiles: addBuyableSmiles.value,
     ppg: addBuyablePrice.value,
     source: addBuyableSource.value,
+    lead_time: addBuyableLeadTime.value,
+    properties: JSON.parse(addBuyableProps.value),
     allowOverwrite: allowOverwrite.value,
   };
   API.post('/api/buyables/create', body)
