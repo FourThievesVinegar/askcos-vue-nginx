@@ -202,7 +202,7 @@
         <v-row>
           <v-col cols="12">
             <p class="text-body-1 mb-4">
-              File uploads should be in CSV/JSON format. Optionally, a "properties" field
+              File uploads should be in JSON format. Optionally, a "properties" field
               containing additional metadata can be specified as an array of JSON objects with "name" and "value"
               fields.
             </p>
@@ -214,38 +214,15 @@
                   </pre>
                 </template>
               </v-expansion-panel>
-              <v-expansion-panel title="Example CSV Format" class="text-primary">
-                <template v-slot:text>
-                  <pre>
-                  [
-                    {
-                      "smiles": "CCC",
-                      "ppg": 1,
-                      "source": "test source 1"
-                    },
-                    {
-                      "smiles": "CCC",
-                      "ppg": 1.5,
-                      "source": "test source 2"
-                    },
-                  ]
-                  </pre>
-                </template>
-              </v-expansion-panel>
             </v-expansion-panels>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="4">
-            <v-select label="Format" v-model="uploadFileFormat" :items="['JSON', 'CSV']" density="comfortable"
-              variant="outlined" hide-details></v-select>
-          </v-col>
-          <v-col cols="8">
+          <v-col cols="12">
             <v-file-input label="File" v-model="uploadFile" :rules="[v => !!v || 'File is required']"
               density="comfortable" variant="outlined" clearable></v-file-input>
           </v-col>
         </v-row>
-
         <v-row>
           <v-col cols="12">
             <v-checkbox label="Allow overwriting exisiting result" v-model="allowOverwrite" hide-details></v-checkbox>

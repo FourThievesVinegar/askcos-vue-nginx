@@ -173,8 +173,8 @@
                                                                             </td>
                                                                             <td style="width: 30%">
                                                                                 <v-text-field class="mr-2"
-                                                                                    variant="outlined"
-                                                                                    density="compact" type="number"
+                                                                                    variant="outlined" density="compact"
+                                                                                    type="number"
                                                                                     :model-value="filter.value"
                                                                                     @update:modelValue="updateAttributeFilter(idx, afIdx, 'value', $event)"
                                                                                     hide-details></v-text-field>
@@ -497,12 +497,6 @@
                                     </v-switch>
                                 </setting-input>
                                 <div v-if="precursorClusterEnabled">
-                                    <setting-input label="Group Cluster"
-                                        help-text="This setting lets you turn on or off the precursor clustering.">
-                                        <v-switch id="allowCluster" v-model="allowCluster" name="allow-cluster-switch"
-                                            hide-details color="primary">
-                                        </v-switch>
-                                    </setting-input>
                                     <setting-input label="Clustering method" label-for="clusterMethod"
                                         help-text="This setting let's you choose between 'kmeans', 'hdbscan', and 'rxn_class' clustering algorithms.">
                                         <v-select hide-details id="clusterMethod" v-model="precursorClusterMethod"
@@ -768,14 +762,6 @@ export default {
             },
             set(value) {
                 this.settingsStore.interactive_path_planner_settings.cluster_precursors = value;
-            },
-        },
-        allowCluster: {
-            get() {
-                return this.settingsStore.allowCluster;
-            },
-            set(value) {
-                this.settingsStore.allowCluster = value;
             },
         },
         precursorClusterMethod: {
