@@ -319,11 +319,6 @@ const usersDict = ref({});
 const filterSelected = ref(null)
 const dataLoading = ref(true)
 
-// function gravatarURL(email) {
-//     const gtype = localStorage.getItem("gtype");
-//     return gravatar.url(email, { d: gtype ?? "mp", s: '300' });
-// }
-
 const tableItems = computed(() => {
     let items = users.value;
     if (filterSelected.value === 'all' || filterSelected.value === null) {
