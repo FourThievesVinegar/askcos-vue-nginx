@@ -13,9 +13,9 @@
                         <v-form ref="form" class="pa-5" @submit.prevent>
                             <v-text-field label="Username" variant="outlined" v-model="username" :rules="usernameRules"
                                 clearable data-cy="username" v-show="!showNextStep"></v-text-field>
-                            <v-text-field label="Email (Optional)" variant="outlined" v-model="email" clearable
-                                data-cy="email" v-show="showNextStep"></v-text-field>
-
+                            <v-text-field :label="emailRequired ? 'Email (Required)' : 'Email (Optional)'"
+                                variant="outlined" v-model="email" clearable data-cy="email" v-show="showNextStep"
+                                :rules="emailRequired ? emailRules : []"></v-text-field>
                             <v-text-field label="Password" variant="outlined" required type="password"
                                 v-model="password" :rules="passwordRules" clearable data-cy="password"
                                 v-show="!showNextStep"></v-text-field>
@@ -83,15 +83,13 @@
             <div v-if="creationFailure">
                 <v-icon class="mb-5" color="warning" icon="mdi-alert-circle" size="112"></v-icon>
                 <h2 class="text-h5 mb-6">Signup has failed!</h2>
-            </div>
-
-            <v-divider class="mb-4"></v-divider>
-
-            <div class="text-end">
-                <v-btn class="text-none" color="success" variant="flat" width="90"
-                    :disabled="!createdAccount && !creationFailure" @click="closeSignup">
-                    Done
-                </v-btn>
+                <v-divider class="mb-4"></v-divider>
+                <div class="text-end">
+                    <v-btn class="text-none" color="success" variant="flat" width="90"
+                        :disabled="!createdAccount && !creationFailure" @click="closeSignup">
+                        Close
+                    </v-btn>
+                </div>
             </div>
         </v-sheet>
     </v-dialog>
@@ -117,11 +115,18 @@ const route = useRoute();
 const router = useRouter();
 const waitGuest = ref(false);
 const showNextStep = ref(false);
+const emailRequired = ref(import.meta.env.VITE_EMAIL_REQUIRED === 'True')
+
+const emailRules = ref([
+    value => {
+        if (value) return true
+        return 'Email is required'
+    },
+])
 
 const usernameRules = ref([
     value => {
         if (value) return true
-
         return 'Username is required'
     },
     value => {
@@ -184,7 +189,7 @@ const login = () => {
 }
 
 const signup = () => {
-    if (!username.value || !password.value) {
+    if (!username.value || !password.value || (emailRequired.value && !email.value)) {
         return
     }
 
