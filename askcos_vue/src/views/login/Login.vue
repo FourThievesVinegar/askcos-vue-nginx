@@ -202,6 +202,9 @@ const signup = () => {
     const formData = new FormData();
     formData.append("username", username.value);
     formData.append("password", password.value);
+    if (emailRequired.value && email.value) {
+        formData.append("email", email.value);
+    }
 
     API.post('/api/user/register', formData, true).then(_json => {
         createdAccount.value = true;
