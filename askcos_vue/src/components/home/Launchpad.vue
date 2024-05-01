@@ -71,8 +71,7 @@
               Interactive Path Planner
             </v-card-title>
             <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
-                :href="`/network?tab=IPP&target=${encodeURIComponent(smiles)}`" target="_blank">Run
-                Task</v-btn></v-card-actions>
+                :href="`/network?tab=IPP&target=${encodeURIComponent(smiles)}`" target="_blank">Perform One-Step</v-btn></v-card-actions>
           </v-card>
         </v-col>
         <v-col cols="12" sm="4" md="4">
@@ -84,8 +83,7 @@
               <template v-if="tbStatus === undefined">
                 <v-btn-group density="compact" color="primary">
                   <v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
-                    @click="sendTreeBuilderJob(smiles)">Run
-                    Task</v-btn>
+                    @click="sendTreeBuilderJob(smiles)">Build Tree</v-btn>
                   <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
                     <template v-slot:activator="{ props }">
                       <v-btn v-bind="props" icon="mdi mdi-menu-down" variant="tonal" color="primary" />
