@@ -65,12 +65,12 @@
       <v-list-item prepend-icon="mdi-bug" title="Report a bug" value="bug" :active="false">
         <TheSupportModal />
       </v-list-item>
-      <v-list-item prepend-icon="mdi-code-json" title="Logs" value="logs" to="/logs"></v-list-item>
+      <v-list-item prepend-icon="mdi-code-json" title="Logs" value="logs" to="/logs" :active="route.path === '/logs'"></v-list-item>
       <v-divider v-if=isLoggedIn></v-divider>
       <v-list-item v-if=isLoggedIn prepend-icon="mdi-table" title="My Results" value="result"
-        to="/results"></v-list-item>
+        to="/results" :active="route.path === '/results'"></v-list-item>
       <v-list-item v-if=isLoggedIn prepend-icon="mdi-cancel" title="My Banlist" value="banlist"
-        to="/banlist"></v-list-item>
+        to="/banlist" :active="route.path === '/banlist'"></v-list-item>
     </v-list>
     <template v-slot:append>
       <v-list nav color="primary" class="bg-grey-lighten-5 py-0">
@@ -111,7 +111,7 @@ const openedGroups = computed({
 })
 
 const activeModules = computed(() => {
-  const shouldBeActiveModules = ['/network', '/buyables', '/forward', '/solprop']
+  const shouldBeActiveModules = ['/network', '/buyables', '/forward', '/solprop', '/drawing', '/qm']
   return shouldBeActiveModules.some(el => route.path.includes(el));
 })
 
