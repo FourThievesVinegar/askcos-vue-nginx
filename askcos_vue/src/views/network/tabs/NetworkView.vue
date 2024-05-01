@@ -523,7 +523,7 @@ export default {
         return this.settingsStore.allowCluster;
       },
       set(value) {
-        this.settingsStore.setOption({ key: "allowCluster", value: value });
+        this.settingsStore.allowCluster = value;
       },
     },
     allowResolve: {
@@ -531,7 +531,7 @@ export default {
         return this.settingsStore.allowResolve;
       },
       set(value) {
-        this.settingsStore.setOption({ key: "allowResolve", value: value });
+        this.settingsStore.allowResolve = value;
       },
     },
     trees: {
@@ -1024,11 +1024,7 @@ export default {
       this.network.unselectAll();
     },
     toggleResolver() {
-      if (this.allowResolve) {
-        this.allowResolve = false;
-      } else {
-        this.allowResolve = true;
-      }
+      this.allowResolve = !this.allowResolve;
     },
     download() {
       let data = {

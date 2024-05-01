@@ -7,9 +7,27 @@
         <v-text-field v-model="smilesInput" class="centered-input" variant="outlined"
           label="Type here or draw structure..." prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details
           clearable rounded="pill">
+          <template v-slot:prepend>
+            <v-tooltip max-width="200px" location="bottom">
+              <template v-slot:activator="{ props }" v-if="enableResolver">
+                <v-btn v-bind="props" icon="mdi mdi-server" :class="allowResolve ? 'text-green' : 'text-grey'"
+                  @click="toggleResolver" variant="flat">
+                </v-btn>
+              </template>
+              <p v-if="!!allowResolve">Connection to NIH name resolver is ON, structures may be sent to an external
+                service. This can be turned off in the settings menu, or by clicking this icon.</p>
+              <span v-else>Connection to NIH name resolver is OFF, structures will NOT be sent to an external
+                service.
+                Target query must be a SMILES string. This can be turned on in the settings menu, or by clicking
+                this
+                icon.</span>
+            </v-tooltip>
+          </template>
           <template v-slot:append-inner>
-            <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
+            <v-btn v-if="!allowResolve" variant="tonal" prepend-icon="mdi mdi-pencil"
               @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }" rounded="pill">Draw</v-btn>
+              <v-btn v-if="allowResolve" variant="flat" prepend-icon="mdi mdi-play"
+              @click="() => { resolveSmiles() }" rounded="pill" color="green">Resolve</v-btn>
           </template>
           <template v-slot:append>
             <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large" @click="canonicalize()"
@@ -326,7 +344,7 @@
       </v-row>
     </template>
 
-    <template v-if="smiles && !validSmiles">
+    <template v-if="smiles && !validSmiles && !allowResolve">
       <v-row>
         <v-col cols="12" sm="4" md="4">
           <v-skeleton-loader class="mx-auto border" elevation="2" min-height="100px" type="paragraph">
@@ -375,12 +393,12 @@ import { ref, computed, watch } from "vue";
 import KetcherModal from "@/components/KetcherModal";
 import { refDebounced } from '@vueuse/core'
 import SmilesImage from "@/components/SmilesImage";
-
+import { useSettingsStore } from "@/store/settings";
 import { API } from "@/common/api";
 import { TB_PRESETS } from "@/common/tb-presets";
 import { num2str } from "@/common/utils";
-
-
+import { resolveChemName } from "@/common/resolver";
+import { useConfirm } from 'vuetify-use-dialog';
 
 const smilesInput = ref("");
 const smiles = refDebounced(smilesInput, 500)
@@ -408,6 +426,26 @@ const headers = [
   { key: 'reaction_name', title: 'Reaction Name (Lvl 3)', align: 'center' },
   { key: 'prediction_certainty', title: 'Prediction Certainty', align: 'center' },
 ];
+const enableResolver = ref(import.meta.env.VITE_ENABLE_SMILES_RESOLVER === 'True')
+const settingsStore = useSettingsStore();
+const createConfirm = useConfirm()
+
+const allowResolve = computed({
+  get() {
+    return settingsStore.allowResolve;
+  },
+  set(value) {
+    settingsStore.allowResolve = value;
+  }
+});
+
+const resolveSmiles = async () => {
+  await resolveChemName(smilesInput.value).then((res) => {
+    smilesInput.value = res;
+  }).catch((error) => {
+    createConfirm({ title: "Action Unsuccessful", content: error.message, dialogProps: { width: "auto" } })
+  })
+}
 
 const type = computed(() => {
   if (smiles.value.includes(">")) {
@@ -522,6 +560,10 @@ const sendTreeBuilderJob = (smiles) => {
       console.error("Failed to submit tree builder job:", error);
     });
 };
+
+const toggleResolver = () => {
+  allowResolve.value = !allowResolve.value;
+}
 
 watch(smiles, (newVal, oldVal) => {
   if (newVal !== oldVal) {
