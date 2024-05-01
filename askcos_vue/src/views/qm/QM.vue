@@ -117,13 +117,12 @@
 
 <script setup>
 import { API } from "@/common/api";
-import { ref, computed, nextTick } from 'vue';
+import { ref, computed, nextTick, onMounted } from 'vue';
 import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage.vue";
 import { useConfirm } from 'vuetify-use-dialog';
 import * as Papa from "papaparse";
 import { useRoute } from 'vue-router';
-
 
 const smiles = ref('');
 const showKetcher = ref(false);
@@ -136,8 +135,6 @@ const itemsPerPage = ref(10);
 const route = useRoute();
 
 const breadCrumbItems = [{ title: 'Home', to: "/" }, { title: route.meta.title }]
-
-
 const selectedColumnCategories = ref([
     'NPA',
 ]);
@@ -269,7 +266,6 @@ const onSelectedCategory = (value) => {
             baseFields.push({ key: key, title: apiKeyToField.value[key], sortable: false, removable: true });
         });
     });
-
     fields.value = baseFields;
 };
 
@@ -300,5 +296,11 @@ const downloadJSON = () => {
     saveAs(blob, 'qm.json')
 };
 
-onSelectedCategory();
+onMounted(() => {
+    onSelectedCategory();
+    if (route.query.smiles) {
+        smiles.value= route.query.smiles
+        predict();
+    }
+});
 </script>

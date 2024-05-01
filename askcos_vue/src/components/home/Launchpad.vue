@@ -26,7 +26,7 @@
           <template v-slot:append-inner>
             <v-btn v-if="!allowResolve" variant="tonal" prepend-icon="mdi mdi-pencil"
               @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }" rounded="pill">Draw</v-btn>
-              <v-btn v-if="allowResolve" variant="flat" prepend-icon="mdi mdi-play"
+              <v-btn v-if="allowResolve" variant="flat" prepend-icon="mdi mdi-magnify"
               @click="() => { resolveSmiles() }" rounded="pill" color="green">Resolve</v-btn>
           </template>
           <template v-slot:append>
