@@ -26,8 +26,8 @@
           <template v-slot:append-inner>
             <v-btn v-if="!allowResolve" variant="tonal" prepend-icon="mdi mdi-pencil"
               @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }" rounded="pill">Draw</v-btn>
-              <v-btn v-if="allowResolve" variant="flat" prepend-icon="mdi mdi-magnify"
-              @click="() => { resolveSmiles() }" rounded="pill" color="green">Resolve</v-btn>
+            <v-btn v-if="allowResolve" variant="flat" prepend-icon="mdi mdi-magnify" @click="() => { resolveSmiles() }"
+              rounded="pill" color="green">Resolve</v-btn>
           </template>
           <template v-slot:append>
             <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large" @click="canonicalize()"
@@ -71,7 +71,8 @@
               Interactive Path Planner
             </v-card-title>
             <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
-                :href="`/network?tab=IPP&target=${encodeURIComponent(smiles)}`" target="_blank">Perform One-Step</v-btn></v-card-actions>
+                :href="`/network?tab=IPP&target=${encodeURIComponent(smiles)}`" target="_blank">Perform
+                One-Step</v-btn></v-card-actions>
           </v-card>
         </v-col>
         <v-col cols="12" sm="4" md="4">
@@ -115,8 +116,8 @@
                 <v-chip variant="tonal" color="red" class="text-body-1">Please login to submit</v-chip>
               </template>
               <template v-else>
-                <v-chip variant="tonal" class="text-body-1"><a href="/results" target="_blank">Go to My
-                    Results</a></v-chip>
+                <v-btn prepend-icon="mdi mdi-table" variant="tonal" color="primary" href="/results"
+                  target="_blank">Visit Results</v-btn>
               </template>
             </v-card-actions>
           </v-card>

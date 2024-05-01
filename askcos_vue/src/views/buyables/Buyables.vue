@@ -1,4 +1,6 @@
 <template>
+  <v-progress-linear :active="fetchLoad" :indeterminate="fetchLoad" color="green-darken-1" absolute
+    bottom></v-progress-linear>
   <v-container fluid>
     <v-row class="justify-center">
       <v-col cols="12" md="12" xl="10">
@@ -65,7 +67,7 @@
             <v-col cols="12" md="4" class="d-flex justify-space-evenly align-center">
               <v-menu location="bottom" :close-on-content-click="false">
                 <template v-slot:activator="{ props }">
-                  <v-btn color="primary" variant="flat" v-bind="props">
+                  <v-btn color="primary" variant="flat" v-bind="props" :disabled="fetchLoad" :loading="fetchLoad">
                     Select Sources
                   </v-btn>
                 </template>
@@ -118,8 +120,8 @@
             </template>
             <template v-slot:item.availability="{ item }">
               {{ (item.properties && item.properties[1] && (item.properties[1].value !== "" ||
-            item.properties[1].availability)) ? (item.properties[1].value || item.properties[1].availability) :
-            "Unknown" }}
+    item.properties[1].availability)) ? (item.properties[1].value || item.properties[1].availability) :
+    "Unknown" }}
             </template>
             <template v-slot:item.lead_time="{ item }">
               {{ item.lead_time ? item.lead_time : "Unknown" }}
