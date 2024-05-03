@@ -9,19 +9,19 @@
                 <v-menu location="end" v-if="username">
                   <template v-slot:activator="{ props }">
                     <v-btn color="orange-darken-1" dark v-bind="props" variant="tonal" prepend-icon="mdi-star"
-                      append-icon="mdi-chevron-down">
+                      append-icon="mdi-chevron-down" rounded="pill">
                       Favorites
                     </v-btn>
                   </template>
-                  <v-list>
+                  <v-list rounded="lg">
                     <template v-for="(item, index) in favoritesMenu">
                       <v-list-item :to="item.link" v-if="item.selected" :key="index">
                         <v-list-item-title>{{ item.title }}</v-list-item-title>
                       </v-list-item>
                     </template>
+                    <v-divider></v-divider>
+                    <v-list-item prepend-icon="mdi-pencil" @click="showEditFav = true">Edit Favorites</v-list-item>
                   </v-list>
-                  <v-divider></v-divider>
-                  <v-btn prepend-icon="mdi-pencil" @click="showEditFav = true">Edit Faviorites</v-btn>
                 </v-menu>
                 <v-spacer></v-spacer>
                 <div v-if="username">
