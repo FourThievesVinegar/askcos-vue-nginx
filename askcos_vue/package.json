@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore",
     "test": "jest --config ./jest.config.js --collectCoverage --coverageDirectory=\"./coverage\" --ci --reporters=default --reporters=jest-junit --watchAll=false",
-    "flow": "flow"
+    "flow": "flow",
+    "cy:open": "cypress open"
   },
   "dependencies": {
     "@mdi/font": "7.0.96",

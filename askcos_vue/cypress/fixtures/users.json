@@ -1,0 +1,10 @@
+{
+    "validUser": {
+        "username": "cypress",
+        "password": "reallbadpassword"
+    },
+    "invalidUser": {
+        "username": "idonotexist",
+        "password": "invalidpassword"
+    }
+}

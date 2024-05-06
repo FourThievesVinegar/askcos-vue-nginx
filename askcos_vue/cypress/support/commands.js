@@ -23,3 +23,21 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add("login", (username, password) => {
+  cy.session(
+    username,
+    () => {
+      cy.visit("/login");
+      cy.get("[data-cy=username]").type(username);
+      cy.get("[data-cy=password]").type(`${password}{enter}`, { log: false });
+      cy.url().should("include", "/");
+      cy.get("[data-cy=home-username]").should('contain', username)
+    },
+    {
+      validate: () => {
+        expect(localStorage.getItem("accessToken"))
+      },
+    }
+  );
+});
