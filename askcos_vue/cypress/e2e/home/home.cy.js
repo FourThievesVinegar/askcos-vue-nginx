@@ -3,10 +3,10 @@
 
 describe("ASKCOS Homepage", () => {
   beforeEach(() => {
+    cy.viewport("macbook-11");
     cy.visit("/");
   });
   before(() => {
-    cy.viewport("macbook-11");
     cy.fixture('users.json').then((users) => {
       const validUser = users.validUser;
       cy.login(validUser.username, validUser.password);

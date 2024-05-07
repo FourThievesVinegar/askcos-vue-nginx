@@ -1,7 +1,7 @@
 {
     "validUser": {
         "username": "cypress",
-        "password": "reallbadpassword"
+        "password": "reallybadpassword"
     },
     "invalidUser": {
         "username": "idonotexist",
