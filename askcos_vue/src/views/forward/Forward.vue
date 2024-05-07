@@ -50,7 +50,7 @@
             <v-row align="center" v-if="mode !== 'context' && mode !== 'sites'">
               <v-col cols="6">
                 <v-text-field v-model="reagents" label="Reagents" class="centered-input" variant="outlined"
-                  prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable
+                  prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" data-cy="reagents" hide-details clearable
                   :disabled="mode === 'context' || mode === 'sites'">
                   <template v-slot:append-inner>
                     <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('reagents')">Draw</v-btn>
@@ -59,7 +59,7 @@
               </v-col>
               <v-col cols="6">
                 <v-text-field v-model="solvent" label="Solvent" class="centered-input" variant="outlined"
-                  prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable
+                  prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" data-cy="solvent" hide-details clearable
                   :disabled="mode === 'context' || mode === 'sites'">
                   <template v-slot:append-inner>
                     <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solvent')">Draw</v-btn>
