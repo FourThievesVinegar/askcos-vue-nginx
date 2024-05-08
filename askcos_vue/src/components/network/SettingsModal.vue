@@ -1007,7 +1007,7 @@ export default {
                 return this.settingsStore.tree_builder_settings.build_tree_options.max_ppg;
             },
             set(value) {
-                this.tree_builder_settings.build_tree_options.max_ppg = value;
+                this.settingsStore.tree_builder_settings.build_tree_options.max_ppg = value;
             },
         },
         maxScscoreLogic: {
