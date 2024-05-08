@@ -3,12 +3,17 @@
         <v-row class="justify-center">
             <v-col cols="12" lg="4" md="12" style="height: calc(100vh - 11rem); overflow-y: auto;">
                 <v-sheet elevation="2" class="pa-5 d-flex align-center flex-column" rounded="lg" :border="true">
-                    <div class="d-flex align-self-center">
-                        <v-btn-group divided variant="flat">
-                            <v-btn color="blue" @click="resultInfo = true">Result Info</v-btn>
-                            <v-btn color="blue-grey" @click="showListView = true">Open List View</v-btn>
-                        </v-btn-group>
-                    </div>
+                    <v-alert type="info" dense class="mb-2" variant="tonal" title="Result details">
+                        <p class="text-body-1" v-if="resultsStore.savedResultInfo.type === 'tree_builder'">
+                            Discovered {{ allTrees.length }} trees after exploring
+                            {{ resultsStore.savedResultInfo.tbStats.total_chemicals }} total chemicals and
+                            {{ resultsStore.savedResultInfo.tbStats.total_reactions }} total reactions.
+                        </p>
+                        <p v-else>
+                            Click on "Show More" below to get more information
+                        </p>
+                        <v-btn variant="flat" color="primary" @click="resultInfo = true">Show More</v-btn>
+                    </v-alert>
                     <div v-if="resultsStore.savedResultInfo.type === 'tree_builder'" class="mt-4 align-self-start"
                         style="width:100%">
                         <h6 class="text-h6">Add results to IPP network</h6>
@@ -220,7 +225,15 @@
                         <v-btn icon="mdi mdi-chevron-right" @click="changeTreeId('next')"></v-btn>
                         <v-btn icon="mdi mdi-chevron-double-right" @click="changeTreeId('last')"></v-btn>
                     </v-btn-group>
-                    <v-btn variant="tonal" @click="addTreeToIpp(currentTree)"> Add to IPP </v-btn>
+                    <v-btn-group density="compact" divided>
+                        <v-btn variant="tonal" @click="addTreeToIpp(currentTree)"> Add to IPP </v-btn>
+                        <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="true">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="mdi mdi-menu-down" variant="tonal"/>
+                            </template>
+                            <v-btn color="blue-grey" @click="showListView = true">Open List View</v-btn>
+                        </v-menu>
+                    </v-btn-group>
                 </div>
                 <v-sheet class="position-relative elevation-2" rounded="lg">
                     <div id="graph" ref="graph"></div>
