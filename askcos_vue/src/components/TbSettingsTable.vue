@@ -36,10 +36,10 @@
               </tr>
             </template>
             <tr>
-            <th>Tree builder version:</th>
-            <td>{{ tbVersion === 2 ? "MCTS" : "Retro Star" }}</td>
-            <td></td>
-          </tr>
+              <th>Tree builder version:</th>
+              <td>{{ tbVersion === 2 ? "MCTS" : "Retro Star" }}</td>
+              <td></td>
+            </tr>
             <tr>
               <th>Expansion settings:</th>
               <td>Max. depth: {{ settings.build_tree_options.max_depth }}</td>
@@ -53,71 +53,66 @@
             <tr>
               <th></th>
               <td>Expansion time (s): {{ settings.build_tree_options.expansion_time }}</td>
-              <td>Max iterations: {{ settings.max_iterations || "N/A" }}</td>
+              <td>Max iterations: {{ settings.build_tree_options.max_iterations || "N/A" }}</td>
             </tr>
             <tr>
               <th></th>
-              <td>Max chemicals: {{ settings.max_chemicals || "N/A" }}</td>
-              <td>Max reactions: {{ settings.max_reactions || "N/A" }}</td>
+              <td>Max chemicals: {{ settings.build_tree_options.max_chemicals || "N/A" }}</td>
+              <td>Max reactions: {{ settings.build_tree_options.max_reactions || "N/A" }}</td>
             </tr>
-            <template v-if="!!settings['termination_logic']">
-              <!-- New termination settings -->
-              <template v-for="(criteria, logic) in settings['termination_logic']">
-                <tr v-for="(criterion, index) in criteria" :key="logic + criterion">
-                  <th v-if="index === 0">Stop criteria ({{ logic.toUpperCase() }}):</th>
-                  <th v-else></th>
-                  <td v-if="criterion === 'buyable'" colspan=2>
-                    Chemical found in buyables database
-                  </td>
-                  <td v-if="criterion === 'max_ppg'" colspan=2>
-                    Max. chemical price ($/g): {{ settings.max_ppg }}
-                  </td>
-                  <td v-if="criterion === 'max_scscore'" colspan=2>
-                    Max. SCScore: {{ settings.max_scscore }}
-                  </td>
-                  <td v-if="criterion === 'max_elements'" colspan=2>
-                    Max. element counts:
-                    <span v-if="'C' in settings['max_elements']">C &leq; {{ settings['max_elements']['C'] }};</span>
-                    <span v-if="'N' in settings['max_elements']">N &leq; {{ settings['max_elements']['N'] }};</span>
-                    <span v-if="'H' in settings['max_elements']">H &leq; {{ settings['max_elements']['H'] }};</span>
-                    <span v-if="'O' in settings['max_elements']">O &leq; {{ settings['max_elements']['O'] }};</span>
-                  </td>
-                  <td v-if="criterion === 'min_history'" colspan=2>
-                    Min. popularity:
-                    <span v-if="'as_reactant' in settings['min_history']">
-                      occurrences as reactant &geq; {{ settings['min_history']['as_reactant'] }};
-                    </span>
-                    <span v-if="'as_product' in settings['min_history']">
-                      occurrences as product &geq; {{ settings['min_history']['as_product'] }};
-                    </span>
-                  </td>
-                </tr>
-              </template>
-            </template>
-            <template v-else>
-              <!-- Old termination settings -->
+            <template v-if="!!settings.build_tree_options.buyable_logic">
               <tr>
-                <th>Stop criteria:</th>
-                <td>Maximum chemical price ($/g): {{ settings.max_ppg }}</td>
-                <td></td>
+                <th>Stop criteria for Buyables ({{ settings.build_tree_options.buyable_logic.toUpperCase() }})</th>
+                <td colspan=2>Chemical found in buyables database</td>
               </tr>
-              <tr v-if="!!settings['max_natom_dict'] && settings['max_natom_dict']['logic'] !== 'none'">
-                <th></th>
-                <td>
-                  Chemical property logic:
-                  C &leq; {{ settings['max_natom_dict']['C'] }}
-                  N &leq; {{ settings['max_natom_dict']['N'] }}
-                  H &leq; {{ settings['max_natom_dict']['H'] }}
-                  O &leq; {{ settings['max_natom_dict']['O'] }}
+            </template>
+            <template v-if="!!settings.build_tree_options.chemical_popularity_logic">
+              <tr>
+                <th>Stop criteria for Chemical Popularity
+                  ({{ settings.build_tree_options.chemical_popularity_logic.toUpperCase() }})</th>
+                <td colspan=2>
+                  Min. popularity: <br />
+                  <span v-if="!!settings.build_tree_options.min_chempop_reactants">
+                    occurrences as reactant &geq; {{ settings.build_tree_options.min_chempop_reactants }};
+                  </span>
+                  <span v-if="!!settings.build_tree_options.min_chempop_products">
+                    occurrences as product &geq; {{ settings.build_tree_options.min_chempop_products }};
+                  </span>
                 </td>
               </tr>
-              <tr
-                v-if="!!settings['min_chemical_history_dict'] && settings['min_chemical_history_dict']['logic'] !== 'none'">
-                <th></th>
-                <td>
-                  Chemical popularity logic:
-                  Min. freq. as reactant &geq; {{ settings['min_chemical_history_dict']['as_reactant'] }}
-                  Min. freq. as product &geq; {{ settings['min_chemical_history_dict']['as_product'] }}
+            </template>
+            <template v-if="!!settings.build_tree_options.chemical_property_logic">
+              <tr>
+                <th>Stop criteria for Chemical Property
+                  ({{ settings.build_tree_options.chemical_property_logic.toUpperCase() }})</th>
+                <td colspan=2>
+                  Max. element counts: <br />
+                  <span v-if="!!settings.build_tree_options.max_chemprop_c">C &leq; {{
+          settings.build_tree_options.max_chemprop_c }};</span>
+                  <span v-if="!!settings.build_tree_options.max_chemprop_n">N &leq; {{
+          settings.build_tree_options.max_chemprop_n }};</span>
+                  <span v-if="!!settings.build_tree_options.max_chemprop_h">H &leq; {{
+          settings.build_tree_options.max_chemprop_h }};</span>
+                  <span v-if="!!settings.build_tree_options.max_chemprop_o">O &leq; {{
+          settings.build_tree_options.max_chemprop_o }};</span>
+                </td>
+              </tr>
+            </template>
+            <template v-if="!!settings.build_tree_options.max_ppg_logic">
+              <tr>
+                <th>Stop criteria for Max PPG ({{ settings.build_tree_options.max_ppg_logic.toUpperCase() }})</th>
+                <td colspan=2> Max. chemical price ($/g):
+                  <span v-if="!!settings.build_tree_options.max_ppg"> {{ settings.build_tree_options.max_ppg }}</span>
+                </td>
+              </tr>
+            </template>
+            <template v-if="!!settings.build_tree_options.max_scscore_logic">
+              <tr>
+                <th>Stop criteria for Max SCScore ({{ settings.build_tree_options.max_scscore_logic.toUpperCase() }})
+                </th>
+                <td colspan=2> Max. SCScore:
+                  <span v-if="!!settings.build_tree_options.max_scscore"> {{ settings.build_tree_options.max_scscore
+                    }}</span>
                 </td>
               </tr>
             </template>
