@@ -1,13 +1,6 @@
 <template>
     <v-layout style="height:100vh">
-        <v-app-bar color="primary" density="compact">
-            <v-app-bar-title>Admin Panel</v-app-bar-title>
-            <template v-slot:append>
-                <v-btn prepend-icon="mdi-home" variant="flat" color="grey text-white mr-2" to="/">Home</v-btn>
-                <v-btn prepend-icon="mdi-logout" variant="flat" color="orange-darken-1 text-white"
-                    @click="logout">Logout</v-btn>
-            </template>
-        </v-app-bar>
+        <app-bar />
 
         <v-main style="background-color: #f0f2f5">
             <v-container fluid>
@@ -176,10 +169,10 @@
                             <v-divider></v-divider>
                             <p class="text-body-1">Last Login:
                                 <timeago :datetime="userLastLogin" :converter-options="{
-                        includeSeconds: true,
-                        addSuffix: false,
-                        useStrict: false,
-                    }" auto-update />
+                                includeSeconds: true,
+                                addSuffix: false,
+                                useStrict: false,
+                            }" auto-update />
                                 ago
                             </p>
                             <v-btn color="warning" class="mr-2" @click="mutate(username, 'pwd')" size="small">Change
@@ -192,14 +185,7 @@
                         </v-sheet>
                     </v-col>
                 </v-row>
-                <v-row align-content="center" class="fill-height" justify="center" v-if="dataLoading">
-                    <v-col class="text-subtitle-1 text-center" cols="12">
-                        Fetching User Details
-                    </v-col>
-                    <v-col cols="6">
-                        <v-progress-linear color="primary" height="6" indeterminate rounded></v-progress-linear>
-                    </v-col>
-                </v-row>
+                <loader v-if="dataLoading" />
             </v-container>
 
             <v-dialog v-model="dialog" max-width="600px">
@@ -241,53 +227,24 @@
                 </v-card>
             </v-dialog>
 
-            <v-dialog width="500px" v-model="changePwd">
-                <v-card>
-                    <v-card-title>
-                        Change Password
-                    </v-card-title>
-                    <v-card-text>
-                        <v-text-field v-model="newPassword" variant="outlined" label="Password" type="password"
-                            hide-details clearable></v-text-field>
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn text @click="changePwd = false; newPassword = ''">Cancel</v-btn>
-                        <v-btn text @click="changePassword()">Submit</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
-
-            <v-dialog width="500px" v-model="updateEmail">
-                <v-card>
-                    <v-card-title>
-                        Change Email
-                    </v-card-title>
-                    <v-card-text>
-                        <v-text-field v-model="newEmail" variant="outlined" label="Email" hide-details
-                            clearable></v-text-field>
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn text @click="updateEmail = false; newEmail = ''">Cancel</v-btn>
-                        <v-btn text @click="changeEmail()">Submit</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
+            <dialog-box v-model:openDialog="openDialogEmail" v-model:value="newEmail" @updateValue="changeEmail()"
+                label="Email" />
+            <dialog-box v-model:openDialog="openDialogPassword" v-model:value="newPassword"
+                @updateValue="changePassword()" label="Password" :hide="true" />
         </v-main>
     </v-layout>
 </template>
 
 <script setup>
+import AppBar from "@/components/admin/AppBar"
+import DialogBox from "@/components/admin/DialogBox"
+import Loader from "@/components/admin/Loader"
 import { ref, onMounted, computed } from 'vue'
-import { useRouter } from "vue-router";
 import { API } from "@/common/api";
 import { useSnackbar } from 'vuetify-use-dialog';
 import wp from "@/assets/wp.png"
 
-// const createConfirm = useConfirm();
 const createSnackbar = useSnackbar()
-const router = useRouter();
 const username = ref(localStorage.getItem('username'))
 const userEmail = ref('')
 const userLastLogin = ref('')
@@ -313,8 +270,8 @@ const headers = ref([
     { title: 'Last Login', key: 'last_login' },
     { title: 'Actions', key: 'actions', align: 'center' },
 ])
-const changePwd = ref(false)
-const updateEmail = ref(false)
+const openDialogPassword = ref(false)
+const openDialogEmail = ref(false)
 const usersDict = ref({});
 const filterSelected = ref(null)
 const dataLoading = ref(true)
@@ -335,6 +292,7 @@ const formatDateWithoutTimezone = (dateString) => {
 };
 
 const changePassword = async () => {
+    openDialogPassword.value = false;
     await API.post('/api/user/reset-password', { username: selectedUser.value, password: newPassword.value }, true)
         .then(async response => {
             console.log(response.Error)
@@ -350,10 +308,10 @@ const changePassword = async () => {
         })
     selectedUser.value = "";
     newPassword.value = "";
-    changePwd.value = false;
 }
 
 const changeEmail = async () => {
+    openDialogEmail.value = false;
     await API.post('/api/user/update', { username: selectedUser.value, email: newEmail.value }, true)
         .then(async response => {
             console.log(response.Error)
@@ -369,7 +327,6 @@ const changeEmail = async () => {
         })
     selectedUser.value = "";
     newEmail.value = "";
-    updateEmail.value = false;
 }
 
 
@@ -455,22 +412,14 @@ const clearUserFields = () => {
     newSuperuser.value = false;
 };
 
-// logout function
-const logout = () => {
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('username')
-    // logout to home page
-    router.push('/admin-login');
-}
-
 const mutate = async (username, method) => {
     switch (method) {
         case 'email':
-            updateEmail.value = true;
+            openDialogEmail.value = true;
             selectedUser.value = username;
             break;
         case 'pwd':
-            changePwd.value = true;
+            openDialogPassword.value = true;
             selectedUser.value = username;
             break;
         case 'admin':

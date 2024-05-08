@@ -253,5 +253,3 @@ const closeSignup = () => {
 }
 
 </script>
-
-<style lang="scss"></style>
