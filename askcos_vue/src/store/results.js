@@ -413,8 +413,8 @@ export const useResultsStore = defineStore("results", {
               reaction["template"]["template_score"];
           }
           let isNew = false;
-          if (reaction["templates"]) {
-            reaction["templates"].forEach((tid) => {
+          if (reaction["template"]) {
+            reaction["template"].tforms.forEach((tid) => {
               if (
                 existingNode["templateIds"] !== undefined &&
                 !existingNode["templateIds"].includes(tid)
