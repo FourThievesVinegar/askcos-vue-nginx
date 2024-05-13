@@ -47,13 +47,13 @@ Cypress.Commands.add("waitCelery", () => {
   const celeryPollingInterval = 1000;
   const check = () => {
     // wait for a response
-    cy.wait('@celery-task').then((json) => {
+    cy.wait("@celery-task").then((json) => {
       if (json.response.body.complete || json.response.body.failed) {
         return;
       }
-      // eslint-disable-line cypress/no-unnecessary-waiting
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(celeryPollingInterval);
-      check()
+      check();
     });
   };
   check();
