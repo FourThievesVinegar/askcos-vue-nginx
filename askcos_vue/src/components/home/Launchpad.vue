@@ -460,7 +460,7 @@ const resolveSmiles = async () => {
 }
 
 const type = computed(() => {
-  if (smilesInput.value.includes(">")) {
+  if (smiles.value.includes(">")) {
     return "rxn";
   } else {
     return "mol";
