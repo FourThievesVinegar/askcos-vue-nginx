@@ -17,7 +17,7 @@ COPY ./askcos_vue ./
 RUN npm run build
 
 # Stage 2: Serve the built application using Nginx
-FROM nginx:1.19-alpine as prod-build
+FROM nginx:1.25.5-alpine as prod-build
 
 RUN rm -rf /usr/share/nginx/html/*
 
