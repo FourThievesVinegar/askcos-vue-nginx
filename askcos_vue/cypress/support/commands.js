@@ -44,17 +44,16 @@ Cypress.Commands.add("login", (username, password) => {
 
 Cypress.Commands.add("waitCelery", () => {
   cy.intercept("GET", "/api/legacy/celery/task/*").as("celery-task");
-
+  const celeryPollingInterval = 1000;
   const check = () => {
     // wait for a response
     cy.wait('@celery-task').then((json) => {
       if (json.response.body.complete || json.response.body.failed) {
         return;
       }
-      cy.wait(1000);
+      cy.wait(celeryPollingInterval);
       check()
     });
   };
-
   check();
 });

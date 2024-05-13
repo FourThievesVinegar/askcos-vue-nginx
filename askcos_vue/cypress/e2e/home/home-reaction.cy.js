@@ -60,7 +60,7 @@ describe("ASKCOS Homepage", () => {
       .invoke("removeAttr", "target")
       .click();
     cy.url().should("include", "impurity&rxnsmiles=");
-    cy.wait(10000)
+    cy.waitCelery()
       .get('[data-cy="impurity-prediction-table"]')
       .contains("Predicted Impurities");
   });
