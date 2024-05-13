@@ -6,7 +6,7 @@
       <v-col cols="12" md="10" data-cy="home-smiles-input-field">
         <v-text-field v-model="smilesInput" class="centered-input" variant="outlined"
           label="Type here or draw structure..." prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details
-          clearable rounded="pill">
+          clearable rounded="pill" data-cy="home-searchbar">
           <template v-slot:prepend >
             <v-tooltip max-width="200px" location="bottom">
               <template v-slot:activator="{ props }" v-if="enableResolver">
