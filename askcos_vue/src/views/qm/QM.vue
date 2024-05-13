@@ -49,7 +49,7 @@
 
         <v-row class="justify-center">
             <v-col v-show="pendingTasks > 0 || results.length" cols="12" md="12" xl="10">
-                <v-sheet elevation="2" class="pa-4" rounded="lg">
+                <v-sheet elevation="2" class="pa-4" rounded="lg" data-cy="qm-table">
                     <v-row v-if="pendingTasks === 0" class="mx-auto my-auto pa-2">
                         <v-col md="5">
                             <v-menu location="bottom">

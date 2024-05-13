@@ -82,7 +82,7 @@
               </template>
             </v-alert>
             <v-expansion-panels class="mb-2 text-body-1">
-              <v-expansion-panel class="text-blue-darken-3">
+              <v-expansion-panel class="text-blue-darken-3" data-cy="home-support">
 
                 <template v-slot:title><v-icon class="mr-1">mdi mdi-lifebuoy</v-icon><strong>Support</strong></template>
 

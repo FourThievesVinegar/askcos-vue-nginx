@@ -111,7 +111,7 @@
 
     <v-row class="justify-center">
       <v-col cols="12" md="12" xl="10">
-        <v-sheet elevation="2" class="d-flex justify-center align-center pa-5" rounded="lg">
+        <v-sheet elevation="2" class="d-flex justify-center align-center pa-5" rounded="lg" data-cy="buyables-table">
           <v-data-table v-if="buyables.length" :headers="headers" :items="buyables" :loading="showLoader">
             <template v-slot:item.smiles="{ item }">
               <copy-tooltip :data="item.smiles">
@@ -123,7 +123,7 @@
     item.properties[1].availability)) ? (item.properties[1].value || item.properties[1].availability) :
     "Unknown" }}
             </template>
-            <template v-slot:item.lead_time="{ item }">
+            <template v-slot:item.lead_time="{ item }" data-cy="buyables-leadtime">
               {{ item.lead_time ? item.lead_time : "Unknown" }}
             </template>
             <template v-slot:item.similarity="{ item }">
