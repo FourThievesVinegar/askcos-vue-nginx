@@ -4,13 +4,11 @@
 describe("ASKCOS Homepage", () => {
   beforeEach(() => {
     cy.viewport("macbook-11");
-    cy.visit("/");
-  });
-  before(() => {
     cy.fixture("users.json").then((users) => {
       const validUser = users.validUser;
       cy.login(validUser.username, validUser.password);
     });
+    cy.visit("/");
   });
 
   it("Test Fast Filter Score", function () {
