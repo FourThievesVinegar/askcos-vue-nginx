@@ -51,6 +51,7 @@ Cypress.Commands.add("waitCelery", () => {
       if (json.response.body.complete || json.response.body.failed) {
         return;
       }
+      // eslint-disable-line cypress/no-unnecessary-waiting
       cy.wait(celeryPollingInterval);
       check()
     });
