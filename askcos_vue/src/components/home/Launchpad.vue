@@ -7,11 +7,11 @@
         <v-text-field v-model="smilesInput" class="centered-input" variant="outlined"
           label="Type here or draw structure..." prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details
           clearable rounded="pill" data-cy="home-searchbar">
-          <template v-slot:prepend >
+          <template v-slot:prepend>
             <v-tooltip max-width="200px" location="bottom">
               <template v-slot:activator="{ props }" v-if="enableResolver">
                 <v-btn v-bind="props" icon="mdi mdi-server" :class="allowResolve ? 'text-green' : 'text-grey'"
-                  @click="toggleResolver" variant="flat" data-cy="home-NIH-resolver"> 
+                  @click="toggleResolver" variant="flat" data-cy="home-NIH-resolver">
                 </v-btn>
               </template>
               <p v-if="!!allowResolve">Connection to NIH name resolver is ON, structures may be sent to an external
@@ -30,8 +30,8 @@
               rounded="pill" color="green" data-cy="home-resolve-btn">Resolve</v-btn>
           </template>
           <template v-slot:append>
-            <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large" @click="canonicalize()" data-cy="home-canonicalize"
-              rounded="pill">Canonicalize</v-btn>
+            <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large" @click="canonicalize()"
+              data-cy="home-canonicalize" rounded="pill">Canonicalize</v-btn>
           </template>
         </v-text-field>
       </v-col>
@@ -70,8 +70,9 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Interactive Path Planner
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary" data-cy="home-ipp"
-                :href="`/network?tab=IPP&target=${encodeURIComponent(smiles)}`" target="_blank">Perform
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                data-cy="home-ipp" :href="`/network?tab=IPP&target=${encodeURIComponent(smiles)}`"
+                target="_blank">Perform
                 One-Step</v-btn></v-card-actions>
           </v-card>
         </v-col>
@@ -116,8 +117,8 @@
                 <v-chip variant="tonal" color="red" class="text-body-1">Please login to submit</v-chip>
               </template>
               <template v-else>
-                <v-btn prepend-icon="mdi mdi-table" variant="tonal" color="primary" href="/results" data-cy="home-view-tree-results"
-                  target="_blank">Visit Results</v-btn>
+                <v-btn prepend-icon="mdi mdi-table" variant="tonal" color="primary" href="/results"
+                  data-cy="home-view-tree-results" target="_blank">Visit Results</v-btn>
               </template>
             </v-card-actions>
           </v-card>
@@ -130,8 +131,9 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Predict Forward Synthesis
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary" data-cy="home-forward-synthesis"
-                :href="`/forward?tab=forward&reactants=${encodeURIComponent(smiles)}`" target="_blank">Run
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                data-cy="home-forward-synthesis" :href="`/forward?tab=forward&reactants=${encodeURIComponent(smiles)}`"
+                target="_blank">Run
                 Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
@@ -140,8 +142,9 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Predict Impurities
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary" data-cy="home-predict-impurties"
-                :href="`/forward?tab=impurity&reactants=${encodeURIComponent(smiles)}`" target="_blank">Run
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                data-cy="home-predict-impurties" :href="`/forward?tab=impurity&reactants=${encodeURIComponent(smiles)}`"
+                target="_blank">Run
                 Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
@@ -150,8 +153,9 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Predict Aromatic Site Selectivity
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary" data-cy="home-site-selectivity"
-                :href="`/forward?tab=sites&reactants=${encodeURIComponent(smiles)}`" target="_blank">Run
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                data-cy="home-site-selectivity" :href="`/forward?tab=sites&reactants=${encodeURIComponent(smiles)}`"
+                target="_blank">Run
                 Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
@@ -163,8 +167,9 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Solvent Screen
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary" data-cy="home-solvent-screen"
-                :href="`/solprop?tab=solscreen&solute=${encodeURIComponent(smiles)}`" target="_blank">Run
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                data-cy="home-solvent-screen" :href="`/solprop?tab=solscreen&solute=${encodeURIComponent(smiles)}`"
+                target="_blank">Run
                 Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
@@ -173,8 +178,9 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Buyables
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi-cart-variant" variant="tonal" data-cy="home-buyables"
-                color="primary" :href="`/buyables?q=${encodeURIComponent(smiles)}`" target="_blank">Search
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi-cart-variant" variant="tonal"
+                data-cy="home-buyables" color="primary" :href="`/buyables?q=${encodeURIComponent(smiles)}`"
+                target="_blank">Search
                 Buyables</v-btn></v-card-actions>
           </v-card>
         </v-col>
@@ -183,8 +189,9 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               QM Descriptor
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary" data-cy="home-qm-descriptors"
-                :href="`/qm?smiles=${encodeURIComponent(smiles)}`" target="_blank">Run Task</v-btn></v-card-actions>
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                data-cy="home-qm-descriptors" :href="`/qm?smiles=${encodeURIComponent(smiles)}`" target="_blank">Run
+                Task</v-btn></v-card-actions>
           </v-card>
         </v-col>
       </v-row>
@@ -221,14 +228,15 @@
             <v-card-actions class="justify-center">
               <template v-if="mappedSmiles === undefined || !!mappedSmiles.length > 0 || mappedSmiles === 'error'">
                 <v-btn-group density="compact" color="primary">
-                  <v-btn v-if="mappedSmiles === undefined" prepend-icon="mdi mdi-play" variant="tonal" color="primary" data-cy="home-generate-atom-mapping"
-                    @click="getMappedSmiles(smiles)">Evaluate</v-btn>
-                  <v-btn v-if="!!mappedSmiles" prepend-icon="mdi mdi-play" variant="tonal" 
+                  <v-btn v-if="mappedSmiles === undefined" prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                    data-cy="home-generate-atom-mapping" @click="getMappedSmiles(smiles)">Evaluate</v-btn>
+                  <v-btn v-if="!!mappedSmiles" prepend-icon="mdi mdi-play" variant="tonal"
                     @click="showMappedSmiles = !showMappedSmiles"> {{ showMappedSmiles ? 'Hide' :
       'Show' }}</v-btn>
-                  <v-menu location="bottom" id="mapper-settings" :close-on-content-click="false" >
+                  <v-menu location="bottom" id="mapper-settings" :close-on-content-click="false">
                     <template v-slot:activator="{ props }">
-                      <v-btn v-bind="props" icon="mdi mdi-menu-down" variant="tonal" color="primary" data-cy="home-generate-atom-mapping-setting"/>
+                      <v-btn v-bind="props" icon="mdi mdi-menu-down" variant="tonal" color="primary"
+                        data-cy="home-generate-atom-mapping-setting" />
                     </template>
                     <v-card width="auto" min-width="250px">
                       <v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary" data-cy="home-mapping-checkbox"
@@ -265,7 +273,8 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Predict Forward Synthesis
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary" data-cy="home-forward-synthesis"
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                data-cy="home-forward-synthesis"
                 :href="'/forward?tab=forward&rxnsmiles=' + encodeURIComponent(smiles)">Run
                 Task</v-btn></v-card-actions>
           </v-card>
@@ -285,7 +294,8 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Predict Conditions
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary" data-cy="home-predict-condition"
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                data-cy="home-predict-condition"
                 :href="'/forward?tab=context&rxnsmiles=' + encodeURIComponent(smiles)">Run
                 Task</v-btn></v-card-actions>
           </v-card>
@@ -295,7 +305,8 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Predict Impurities
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary" data-cy="home-predict-impurities"
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                data-cy="home-predict-impurities"
                 :href="'/forward?tab=impurity&rxnsmiles=' + encodeURIComponent(smiles)">Run
                 Task</v-btn></v-card-actions>
           </v-card>
@@ -305,7 +316,8 @@
             <v-card-title class="text-h5 text-center text-wrap bg-grey-lighten-2">
               Predict Regioselectivity
             </v-card-title>
-            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary" data-cy="home-predict-regioselectivity"
+            <v-card-actions class="justify-center"><v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
+                data-cy="home-predict-regioselectivity"
                 :href="'/forward?tab=selectivity&rxnsmiles=' + encodeURIComponent(smiles)">Run
                 Task</v-btn></v-card-actions>
           </v-card>
@@ -322,7 +334,8 @@
             </v-card-title>
             <v-card-actions class="justify-center">
               <v-btn prepend-icon="mdi mdi-play" variant="tonal" color="primary"
-                v-if="classificationStatus === 'not started'" @click="getClassification(smiles)" data-cy="home-classify-reaction">Evaluate</v-btn>
+                v-if="classificationStatus === 'not started'" @click="getClassification(smiles)"
+                data-cy="home-classify-reaction">Evaluate</v-btn>
               <template v-if="classificationStatus === 'evaluating'">
                 <v-progress-circular indeterminate color="primary"></v-progress-circular>
               </template>
@@ -447,7 +460,7 @@ const resolveSmiles = async () => {
 }
 
 const type = computed(() => {
-  if (smiles.value.includes(">")) {
+  if (smilesInput.value.includes(">")) {
     return "rxn";
   } else {
     return "mol";
@@ -455,12 +468,12 @@ const type = computed(() => {
 });
 
 const canonicalize = () => {
-  API.post("/api/rdkit/canonicalize/", { smiles: smiles.value })
+  API.post("/api/rdkit/canonicalize/", { smiles: smilesInput.value })
     .then((json) => {
-      smiles.value = json.smiles;
+      smilesInput.value = json.smiles;
     })
     .catch((error) => {
-      console.error("Could not canonicalize: " + error);
+      createConfirm({ title: "Action Unsuccessful", content: "Could not canonicalize: " + error.message, dialogProps: { width: "auto" } })
     });
 };
 

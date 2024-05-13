@@ -15,7 +15,6 @@ describe("ASKCOS Homepage", () => {
     cy.get('[placeholder="SMILES"]').type(
       "C1=CC(=C(C=C1F)F)C(CN2C=NC=N2)(CN3C=NC=N3)O"
     );
-    cy.wait(1000);
     cy.get('[data-cy="home-canonicalize"]').click();
     cy.get('[data-cy="home-searchbar"]')
       .find("input")
