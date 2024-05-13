@@ -7,8 +7,8 @@
         <v-row class="justify-center align-center">
           <v-col cols="12" md="10" sm="12">
             <v-text-field v-model="resultsStore.target" density="compact" variant="outlined" label="Target"
-              placeholder="SMILES" type="text" clearable class="target-input" hide-details
-              prepend-inner-icon="mdi mdi-flask" min-width="100px">
+              placeholder="SMILES" type="text" clearable hide-details prepend-inner-icon="mdi mdi-flask"
+              min-width="100px" rounded="pill" bg-color="white">
               <template v-slot:prepend>
                 <v-tooltip max-width="200px" location="bottom">
                   <template v-slot:activator="{ props }" v-if="enableResolver">
@@ -26,7 +26,8 @@
                 </v-tooltip>
               </template>
               <template v-slot:append-inner>
-                <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil" @click="showKetcherModal()">Draw</v-btn>
+                <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil" @click="showKetcherModal()"
+                  rounded="pill">Draw</v-btn>
               </template>
               <template v-slot:append>
                 <v-btn variant="flat" color="green-darken-1" prepend-icon="mdi mdi-play" class="mr-2"
@@ -71,14 +72,14 @@
           <div v-if="strategies.length !== 0" class="pa-0 slider">
             <v-slide-group show-arrows>
               <v-slide-group-item v-for="(strategy, idx) in strategies" :key="idx">
-                <v-chip class="text-overline mr-1">
-                  {{ strategy.retro_backend }} {{ strategy.retro_model_name }}
+                <v-chip class="text-body-1 mr-1">
+                  {{ replaceString(strategy.retro_backend) }} {{ "(" + replaceString(strategy.retro_model_name) + ")" }}
                 </v-chip>
               </v-slide-group-item>
             </v-slide-group>
           </div>
           <div v-else>
-            <v-chip class="text-overline mr-1" color="error">
+            <v-chip class="text-body-1 mr-1" color="error">
               No strategy added
             </v-chip>
           </div>
@@ -577,6 +578,9 @@ export default {
     ...mapStores(useResultsStore, useSettingsStore),
   },
   methods: {
+    replaceString(string) {
+      return string.toLowerCase().replace(/_/g, ' ')
+    },
     addTag() {
       if (this.newTag.trim()) {
         this.savedResultTags.push(this.newTag.trim());
@@ -1744,10 +1748,6 @@ export default {
   white-space: nowrap;
   overflow-x: auto;
   /* Enable horizontal scrollbar for overflow */
-}
-
-.target-input .v-input__control {
-  background-color: white;
 }
 
 .open-toolbar {
