@@ -1,19 +1,6 @@
 <template>
     <v-container fluid>
-        <v-row class="justify-center">
-            <v-col cols="12" md="12" xl="10">
-                <div class="my-4">
-                    <v-breadcrumbs class="pa-0 text-body-1" :items="breadCrumbItems">
-                        <template v-slot:prepend>
-                            <v-icon icon="mdi-home" size="small"></v-icon>
-                        </template>
-                    </v-breadcrumbs>
-                    <h4 class="text-h4 text-primary">
-                        Template Info
-                    </h4>
-                </div>
-            </v-col>
-        </v-row>
+        <bread-crumbs pageTitle="Template Info" />
         <v-row class="justify-center">
             <v-col cols="12" md="12" xl="10">
                 <v-sheet elevation="2" rounded="lg" class="pa-5">
@@ -45,7 +32,7 @@
                         <v-col col="12" sm="8" md="10" v-if="templateInfo['necessary_reagent']">
                             <p v-if="templateInfo['necessary_reagent']"><em>
                                     Note: This reaction would require a reagent to contribute {{
-                        templateInfo['necessary_reagent'] }}
+                                            templateInfo['necessary_reagent'] }}
                                 </em></p>
                             <p v-if="templateInfo['intra_only']"><em>
                                     Note: This template should be used for intramolecular reactions <b>only</b>
@@ -178,7 +165,7 @@ import { createReaxysQuery, createReaxysUrl } from "@/common/reaxys";
 import { createCasClient } from "@/common/cas-client";
 import { storageAvailable } from "@/common/utils";
 import { saveAs } from 'file-saver';
-import { useRoute } from 'vue-router';
+import BreadCrumbs from "@/components/BreadCrumbs.vue"
 
 const PROXY_STORAGE_KEY = 'casProxyUrl';
 
@@ -188,6 +175,7 @@ export default {
         CopyTooltip,
         SciFindernButton,
         SmilesImage,
+        BreadCrumbs
     },
     setup() {
         const casClient = ref(null);
@@ -200,8 +188,6 @@ export default {
         const rxnListCurrentPage = ref(1);
         const rxnListItemsPerPage = ref(50);
         const loading = ref(false);
-        const route = useRoute();
-        const breadCrumbItems = [{ title: 'Home', to: "/" }, { title: route.meta.title }]
 
         const headers = ref([
             { key: 'reaction_id', title: 'Reaction ID', },
@@ -452,7 +438,6 @@ export default {
             casSearch,
             initializeCasClient,
             saveProxyUrl,
-            breadCrumbItems,
         };
     },
 };
