@@ -38,21 +38,17 @@ import * as THREE from "three";
 import RINGS from 'vanta/dist/vanta.rings.min'
 import { ref, onMounted } from 'vue';
 import { API } from "@/common/api";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
 const vantaRef = ref(null);
 const username = ref(null);
 const password = ref(null);
-const createdAccount = ref(false);
-const creationFailure = ref(false);
 const loginFailure = ref(false);
-const route = useRoute();
 const router = useRouter();
 
 const usernameRules = ref([
     value => {
         if (value) return true
-
         return 'Username is required'
     },
 ])
@@ -98,8 +94,4 @@ const login = () => {
         loginFailure.value = true;
     })
 }
-
-
 </script>
-
-<style lang="scss"></style>
