@@ -1,59 +1,11 @@
 <template>
     <v-container fluid>
         <bread-crumbs pageTitle="API Logs" />
-        <v-row class="justify-center">
-            <v-col cols="12" md="12" lg="12" xl="10" class="d-flex align-center justify-center">
-                <v-expansion-panels multiple density="compact" v-if="fastapiStore.logs.length !== 0"
-                    v-model="logsOpened">
-                    <v-expansion-panel v-for="(log, index) in fastapiStore.logs" :key="index" density="compact">
-                        <template v-slot:title>
-                            <v-chip :color="methodToColors[log.method]">{{ log.method }}</v-chip> <span
-                                class="text-body-1 ml-2"><b>{{
-                        log.endpoint }}</b></span>
-                        </template>
-                        <template v-slot:text>
-                            <v-row>
-                                <v-col>
-                                    <h6 class="text-h6">Request:</h6>
-                                    <pre style="white-space: pre-wrap">{{ log.request ? JSON.parse(log.request) : "No Request" }}</pre>
-                                </v-col>
-                                <v-col>
-                                    <h6 class="text-h6">Response:</h6>
-                                    <pre style="white-space: pre-wrap">{{ log.response || "No Response" }}</pre>
-                                </v-col>
-                            </v-row>
-                        </template>
-                    </v-expansion-panel>
-                </v-expansion-panels>
-                <div v-else class="text-center">
-                    <v-img :width="400" cover :src="emptyLogsSrc" class="mb-3"></v-img>
-                    <h6 class="text-h6">Nothing to log</h6>
-                    <p class="text-body-1">Explore ASKCOS to record FastAPI requests/response</p>
-                </div>
-            </v-col>
-        </v-row>
+        <log-result />
     </v-container>
 </template>
 
 <script setup>
-import { ref, watch } from "vue"
-import { useFastapiStore } from "@/store/fastapi"
-import emptyLogs from "@/assets/emptyLogs.svg"
-import BreadCrumbs from "@/components/BreadCrumbs.vue"
-
-const fastapiStore = useFastapiStore();
-
-const methodToColors = ref({
-    GET: "blue",
-    POST: "green"
-})
-
-const emptyLogsSrc = ref(emptyLogs)
-
-const logsOpened = ref([])
-
-watch(fastapiStore.logs, () => {
-    logsOpened.value = Array.from(logsOpened.value, x => ++x);
-})
-
+import BreadCrumbs from "@/components/BreadCrumbs"
+import LogResult from "@/components/logs/LogResult";
 </script>
