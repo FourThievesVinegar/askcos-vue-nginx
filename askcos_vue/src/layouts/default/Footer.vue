@@ -33,7 +33,6 @@ export default {
   data() {
     return {
       version: import.meta.env.VITE_VERSION,
-      lastUpdated: import.meta.env.VITE_LAST_UPDATE,
       lastCommitHash: import.meta.env.VITE_APP_VERSION
     };
   },
