@@ -15,6 +15,8 @@ RUN npm install
 # Copy all the application files to the container
 COPY ./askcos_vue ./
 
+COPY .git/ ./.git/
+
 # Build the production version of the application
 RUN npm run build
 
