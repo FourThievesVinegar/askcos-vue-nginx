@@ -57,13 +57,14 @@
           <v-row v-else class="pa-5">
             <v-col cols="12" class="d-flex justify-center align-center">
               <div v-if="filterActive == 'all'" class="d-flex text-center justify-center align-center flex-column">
-                <v-img :width="400" cover :src="banlist"></v-img>
+                <v-img :width="300" cover :src="banlist"></v-img>
                 <h6 class="mt-2 text-h6">No Ban Items</h6>
                 <p class="text-body-1">Add banned chemicals/reactions via IPP/Tree Explorer or add manually above</p>
               </div>
               <div v-else class="d-flex text-center justify-center align-center flex-column">
-                <v-img :width="400" cover :src="banlist"></v-img>
-                <h2 class="mt-6">No Ban Items</h2>
+                <v-img :width="300" cover :src="banlist"></v-img>
+                <h6 class="mt-2 text-h6">No Ban Items</h6>
+                <p class="text-body-1">Try different filter</p>
               </div>
             </v-col>
           </v-row>
