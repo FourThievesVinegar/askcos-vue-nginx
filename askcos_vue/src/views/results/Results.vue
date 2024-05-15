@@ -19,9 +19,9 @@
       <v-col cols="12" md="12" xl="10" class="py-0">
         <v-sheet elevation="2" rounded="lg" class="ma-0 pa-10">
           <v-text-field v-model="searchQuery" prepend-inner-icon="mdi mdi-flask" density="compact" variant="outlined"
-            label="Search Result Descriptions" hide-details clearable id="results-text">
+            label="Search Result Descriptions" hide-details clearable id="results-text" rounded="pill">
             <template v-slot:append>
-              <v-btn color="primary" variant="flat" class="mr-5" id="results-search">
+              <v-btn color="primary" variant="flat" class="mr-5" id="results-search" rounded="pill">
                 Search
               </v-btn>
               <v-btn v-if="allResults.length" icon="mdi-delete" class="bg-red mr-5" :disabled="selection.length === 0"
