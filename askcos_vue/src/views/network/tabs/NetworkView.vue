@@ -89,7 +89,7 @@
       </v-container>
     </v-toolbar>
     <div v-if="!isCanvasEmpty">
-      <div id="network" :class="visible ? 'open-toolbar' : 'close-toolbar'" ref="network"></div>
+      <div id="network" class="open-toolbar" ref="network"></div>
       <div v-if="treeViewEnabled" id="tree-view-overlay">
         <v-btn-group variant="outlined" density="comfortable" divided :border="true">
           <v-btn icon="mdi mdi-chevron-double-left" @click="changeTreeIndex('first')"
@@ -1752,12 +1752,7 @@ export default {
 
 .open-toolbar {
   width: 100%;
-  height: calc(100vh - 16rem);
-}
-
-.close-toolbar {
-  width: 100%;
-  height: calc(100vh - 16rem);
+  height: calc(100vh - 16.5rem);
 }
 
 #tree-view-overlay {
