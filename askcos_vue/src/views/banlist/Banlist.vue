@@ -6,14 +6,14 @@
         <v-sheet elevation="2" rounded="lg">
           <v-row class="mb-2 px-5 pt-2">
             <v-col cols="12">
-              <p class="text-body-3 left-justify">
+              <p class="text-body-3">
                 This page lists chemicals and reactions that you have identified as problematic in some way. Entries
                 listed as active will be excluded from retrosynthetic predictions using the interactive path planner and
                 tree builder. You can delete or deactivate any of these banned items at any time.
               </p>
             </v-col>
             <v-col cols="12" class="d-flex justify-center">
-              <v-btn variant="tonal" color="teal-darken-1 " @click="showModal = true">Add New Entry</v-btn>
+              <v-btn variant="tonal" color="teal-darken-1 " @click="showBanItemDialog = true">Add New Entry</v-btn>
             </v-col>
           </v-row>
 
@@ -69,67 +69,27 @@
         </v-sheet>
       </v-col>
     </v-row>
+
+    <ban-item-dialog v-model:showBanItemDialog="showBanItemDialog" v-model:pendingTasks="pendingTasks"
+      v-model:activeTab="activeTab" @loadCollection="loadCollection" />
   </v-container>
-
-  <v-dialog v-model="showModal" max-width="600px">
-    <v-card>
-      <v-card-title class="mt-2">
-        <v-col cols="12">Add new banlist entry</v-col></v-card-title>
-
-      <v-card-text class="text-justify">
-        <v-row>
-          <v-col cols="12">
-            <v-select v-model="newType" item-text="key" item-value="title" :items="['chemicals', 'reactions']"
-              label="Entry Type" density="comfortable" variant="outlined" hide-details clearable></v-select>
-          </v-col>
-          <v-col cols="12">
-            <v-text-field v-model="newSmiles" label="SMILES" maxlength="150" autocomplete="off" density="comfortable"
-              variant="outlined" hide-details clearable>
-              <template v-slot:append-inner>
-                <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher(newSmiles)">Draw</v-btn>
-              </template>
-            </v-text-field>
-          </v-col>
-          <v-col cols="12" v-if="!!newSmiles">
-            <smiles-image :smiles="newSmiles" height="100px"></smiles-image>
-          </v-col>
-          <v-col cols="12">
-            <v-text-field v-model="newDesc" label="Description" maxlength="150" autocomplete="off" density="comfortable"
-              variant="outlined" hide-details clearable></v-text-field>
-          </v-col>
-        </v-row>
-      </v-card-text>
-      <v-card-actions class="mb-2">
-        <v-spacer></v-spacer>
-        <v-btn color="success" @click="addEntry">Submit</v-btn>
-        <v-btn text @click="showModal = false">Cancel</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-  <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="newSmiles" @input="showKetcher = false"
-    @update:smiles="updateSmiles" />
 </template>
 
 <script setup>
 import banlist from "@/assets/banlist.svg";
-import { ref, computed, onMounted, nextTick } from 'vue';
-import KetcherModal from "@/components/KetcherModal";
-import SmilesImage from "@/components/SmilesImage.vue";
+import { ref, computed, onMounted } from 'vue';
+import SmilesImage from "@/components/SmilesImage";
 import CopyTooltip from "@/components/CopyTooltip";
 import { API } from "@/common/api";
 import dayjs from 'dayjs';
-import BreadCrumbs from "@/components/BreadCrumbs.vue"
+import BreadCrumbs from "@/components/BreadCrumbs"
+import BanItemDialog from "@/components/banlist/BanItemDialog"
 
-const ketcherRef = ref(null);
-const showKetcher = ref(false);
 const activeTab = ref(0);
 const chemicals = ref([]);
 const reactions = ref([]);
-const showModal = ref(false);
-const newSmiles = ref('');
-const newDesc = ref('');
-const newActive = ref(true)
-const newType = ref("chemicals");
+const showBanItemDialog = ref(false);
+
 const filterActive = ref('all');
 const pendingTasks = ref(0);
 const filterOptions = ref([
@@ -190,65 +150,23 @@ const tabItems = computed(() => {
   }
 });
 
-const addEntry = () => {
-  pendingTasks.value++;
-  const body = new URLSearchParams({
-    description: newDesc.value || 'no description',
-    smiles: newSmiles.value,
-    active: newActive.value
-  }).toString().replace(/\+/g, '%20');
-  API.post(`/api/banlist/${newType.value}/post?${body}`)
-    .then(json => {
-      json.created = dayjs(json.created).format('MMMM D, YYYY h:mm A');
-      if (newType.value === 'chemicals') {
-        chemicals.value.push(json);
-      } else {
-        reactions.value.push(json);
-      }
-    })
-    .catch(error => console.error(error))
-    .finally(() => {
-      loadCollection(newType.value === 'chemicals' ? 'chemicals' : 'reactions');
-      showModal.value = false;
-      nextTick(() => {
-        if (newType.value === 'chemicals') {
-          activeTab.value = 0;
-        } else {
-          activeTab.value = 1;
-        }
-        pendingTasks.value--;
-      });
-    })
-}
-
 const deleteEntry = (id, category) => {
   pendingTasks.value++;
-
-  if (window.confirm('Click "OK" to confirm deleting this entry')) {
-
-    API.delete(`/api/banlist/${category}/delete?_id=${id}`)
-      .then(json => {
-        if (json['success']) {
-          const collection = category === 'chemicals' ? chemicals.value : reactions.value;
-          const index = collection.findIndex(item => item.id === id);
-          if (index !== -1) {
-            collection.splice(index, 1);
-          }
-        }
-      })
-      .finally(() => {
-        pendingTasks.value--;
-      });
-  }
+  API.delete(`/api/banlist/${category}/delete?_id=${id}`)
+    .then(() => {
+      loadCollection(category);
+    })
+    .finally(() => {
+      pendingTasks.value--;
+    });
 }
+
 const deleteChemical = (id) => {
   deleteEntry(id, 'chemicals')
-  loadCollection('chemicals');
 }
 
 const deleteReaction = (id) => {
   deleteEntry(id, 'reactions')
-  loadCollection('reactions');
 }
 
 const toggleActivation = async (item, category) => {
@@ -269,20 +187,4 @@ const toggleActivation = async (item, category) => {
   item.active = !item.active;
   loadCollection(category);
 };
-
-const openKetcher = (source) => {
-  newSmiles.value = source;
-  showKetcher.value = true;
-  ketcherRef.value.smilesToKetcher();
-};
-
-const updateSmiles = (source) => {
-  newSmiles.value = source;
-}
 </script>
-
-<style scoped>
-.left-justify {
-  text-justify: inter-word;
-}
-</style>
