@@ -415,7 +415,7 @@ Normally, only the top 'Max. num. templates' will be applied - with these filter
 
 <script>
 import { ref, reactive, computed, watch, onMounted, nextTick } from "vue";
-import { useConfirm } from 'vuetify-use-dialog';
+import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
 import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage";
 import SettingInput from "@/components/network/SettingInput";
@@ -456,7 +456,7 @@ export default {
     },
     setup() {
         const createConfirm = useConfirm()
-        // const createSnackbar = useSnackbar()
+        const createSnackbar = useSnackbar()
         const target = ref("");
         const validSmiles = ref(true);
         const modelStatus = ref([]);
@@ -661,7 +661,6 @@ export default {
                 })
                 .catch((error) => {
                     // alert("There was an error predicting precursors for this target: " + error);
-                    // createSnackbar({ text: "There was an error predicting precursors for this target: " + error["message"], snackbarProps: { timeout: -1, vertical: true } })
                     createConfirm({ title: 'Alert', content: "There was an error predicting precursors for this target: " + error["message"], dialogProps: { width: "60%" } })
                 })
                 .finally(() => {
@@ -678,7 +677,6 @@ export default {
             })
             if (runningPreds) {
                  createSnackbar({ text: "Some predictions are still running!", snackbarProps: { timeout: -1, vertical: true } })
-                // alert("Some predictions are still running!")
                 return;
             }
             if (skipConfirm || confirm("This will clear all of your current results. Continue anyway?")) {

@@ -5,6 +5,17 @@ import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
 // Utilities
 import { defineConfig } from "vite";
+import childProcess from 'child_process';
+
+let lastCommitHash = '';
+try {
+  lastCommitHash = childProcess
+    .execSync('git rev-parse --short HEAD')
+    .toString()
+    .trim();
+} catch (e) {
+  console.error(e);
+}
 
 const fastapiGatewayPtr = {
   target: "https://askcos.mit.edu/",
@@ -27,7 +38,7 @@ export default defineConfig({
       },
     }),
   ],
-  define: { "process.env": {} },
+  define: { 'import.meta.env.VITE_APP_VERSION': JSON.stringify(lastCommitHash) },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
