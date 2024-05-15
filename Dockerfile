@@ -1,8 +1,7 @@
 # Stage 1: Get the Production version of Vue
 FROM node:18-alpine as build
 
-RUN apt-get -y update
-RUN apt-get -y install git
+RUN apk add --no-cache git
 
 # Set the working directory inside the container
 WORKDIR /askcos_vue
