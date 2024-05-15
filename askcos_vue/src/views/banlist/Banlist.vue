@@ -47,7 +47,8 @@
                   </copy-tooltip>
                 </template>
                 <template v-slot:item.delete="{ item }">
-                  <v-icon @click="activeTab === 0 ? deleteChemical(item.id) : deleteReaction(item.id)"
+                  <v-icon
+                    @click="activeTab === 0 ? deleteEntry(item.id, 'chemicals') : deleteEntry(item.id, 'reactions')"
                     class="text-center">mdi-delete</v-icon>
                 </template>
               </v-data-table>
@@ -161,30 +162,17 @@ const deleteEntry = (id, category) => {
     });
 }
 
-const deleteChemical = (id) => {
-  deleteEntry(id, 'chemicals')
-}
-
-const deleteReaction = (id) => {
-  deleteEntry(id, 'reactions')
-}
-
 const toggleActivation = async (item, category) => {
+  pendingTasks.value++;
   const action = item.active ? 'deactivate' : 'activate';
-  try {
-    const response = await API.get(`/api/banlist/${category}/${action}`, {
-      _id: item.id
-    });
-    const data = await response.json();
-    if (data.success) {
-      item.active = !item.active;
-    } else {
-      console.error("Failed to toggle activation:", data.message);
-    }
-  } catch (error) {
+  await API.get(`/api/banlist/${category}/${action}`, {
+    _id: item.id
+  }).then(() => {
+    loadCollection(category);
+  }).catch((error) => {
     console.error("Error toggling activation:", error);
-  }
-  item.active = !item.active;
-  loadCollection(category);
+  }).finally(() => {
+    pendingTasks.value--;
+  });
 };
 </script>
