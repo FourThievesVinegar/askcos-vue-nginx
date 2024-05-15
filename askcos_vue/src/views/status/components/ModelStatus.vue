@@ -47,6 +47,9 @@
 <script setup>
 import { API } from "@/common/api";
 import { onMounted, ref } from "vue"
+import { useConfirm } from 'vuetify-use-dialog';
+
+const createConfirm = useConfirm()
 const data = ref([]);
 const date = ref(new Date());
 
@@ -67,7 +70,7 @@ const getStatus = async () => {
     data.value = json['modules'];
     date.value = new Date();
   } catch (error) {
-    alert(error);
+    createConfirm({ title: "Action Unsuccessful", content: "Model Status " + error, dialogProps: { width: "auto" } })
   } finally {
     loading.value = false;
   }
