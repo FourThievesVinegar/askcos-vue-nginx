@@ -3,7 +3,6 @@
     bottom></v-progress-linear>
   <v-container fluid>
     <bread-crumbs pageTitle="Buyable Compounds" />
-
     <v-row class="justify-center">
       <v-col cols="12" md="12" xl="10">
         <v-sheet elevation="2" rounded="lg" class="pa-5">
@@ -11,20 +10,53 @@
             <v-col cols="12" md="12">
               <v-text-field v-model="searchSmilesQuery" data-cy="all-sources-checkbox" placeholder="SMILES/SMARTS"
                 prepend-inner-icon="mdi mdi-flask" density="compact" variant="outlined"
-                label="Enter SMILES/SMART to explore" hide-details clearable>
+                label="Enter SMILES/SMART to explore" hide-details clearable rounded="pill">
                 <template v-slot:append>
                   <v-checkbox-btn v-model="searchRegex" label="Use SMARTS" hide-details class="mr-5">
                   </v-checkbox-btn>
-                  <v-btn color="success" @click="search" variant="flat" class="mr-5" :loading="showLoader">
+                  <v-menu location="bottom" :close-on-content-click="false">
+                    <template v-slot:activator="{ props }">
+                      <v-btn color="primary" variant="flat" v-bind="props" :disabled="fetchLoad" :loading="fetchLoad"
+                        rounded="pill" class="mr-5">
+                        Select Sources
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item v-for="source in buyablesSources" :key="source" @click="selectSource(source)">
+                        <v-row align="center">
+                          <v-col cols="auto">
+                            <v-list-item-title>
+                              {{ source }}
+                              <v-icon class="ml-1 mb-2" v-show="selectedSources.includes(source)" icon="mdi-check">
+                              </v-icon>
+                            </v-list-item-title>
+                          </v-col>
+                        </v-row>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                  <v-btn color="success" @click="search" variant="flat" class="mr-5" :loading="showLoader"
+                    rounded="pill">
                     Search
                   </v-btn>
-                  <v-btn variant="tonal" @click="clear()" :disabled="!buyables.length">
+                  <v-btn variant="tonal" @click="clear()" :disabled="!buyables.length" rounded="pill">
                     Clear Results
                   </v-btn>
+                  <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
+                    <template v-slot:activator="{ props }">
+                      <v-btn v-show="isAdmin" color="orange-accent-4" v-bind="props" icon="mdi-plus" variant="flat" size="small"
+                        class="ml-5">
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item @click="showAddModal = !showAddModal">Add One</v-list-item>
+                      <v-list-item @click="showUploadModal = !showUploadModal">Add Buyable(s)</v-list-item>
+                    </v-list>
+                  </v-menu>
                 </template>
                 <template v-slot:append-inner>
                   <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher(searchSmilesQuery)"
-                    size="small">Draw</v-btn>
+                    size="small" rounded="pill">Draw</v-btn>
                 </template>
               </v-text-field>
               <div v-if="!!searchSmilesQuery" class="my-3">
@@ -52,44 +84,6 @@
               </v-slider>
             </v-col>
             <v-col cols="12" md="4" class="d-flex justify-space-evenly align-center">
-              <v-menu location="bottom" :close-on-content-click="false">
-                <template v-slot:activator="{ props }">
-                  <v-btn color="primary" variant="flat" v-bind="props" :disabled="fetchLoad" :loading="fetchLoad">
-                    Select Sources
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item v-for="source in buyablesSources" :key="source" @click="selectSource(source)">
-                    <v-row align="center">
-                      <v-col cols="auto">
-                        <v-list-item-title>
-                          {{ source }}
-                          <v-icon class="ml-1 mb-2" v-show="selectedSources.includes(source)" icon="mdi-check">
-                          </v-icon>
-                        </v-list-item-title>
-                      </v-col>
-                    </v-row>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-              <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
-                <template v-slot:activator="{ props }">
-                  <v-tooltip bottom text="Test">
-                    <!-- notes -->
-                    <template v-slot:activator="{ tooltipprop }">
-                      <div v-bind="tooltipprop" v-show="isAdmin">
-                        <v-btn color="orange-accent-4" v-bind="props" append-icon="mdi mdi-menu-down" variant="flat">
-                          Add Compound
-                        </v-btn>
-                      </div>
-                    </template>
-                  </v-tooltip>
-                </template>
-                <v-list>
-                  <v-list-item @click="showAddModal = !showAddModal">Add One</v-list-item>
-                  <v-list-item @click="showUploadModal = !showUploadModal">Add Buyable(s)</v-list-item>
-                </v-list>
-              </v-menu>
             </v-col>
           </v-row>
         </v-sheet>
