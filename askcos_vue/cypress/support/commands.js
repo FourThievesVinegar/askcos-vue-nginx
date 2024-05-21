@@ -58,3 +58,57 @@ Cypress.Commands.add("waitCelery", () => {
   };
   check();
 });
+
+function visRun(callback) {
+  cy.window().then(async (win) => {
+    const { visNetwork: network, resultsStore: store } = win;
+    if (network && store) {
+      await callback({ network, store });
+    } else {
+      throw new Error("No page globals were found.");
+    }
+  });
+}
+
+Cypress.Commands.add("visRun", visRun);
+
+Cypress.Commands.add("getReactionNode", (smiles) => {
+  visRun(({ store }) => {
+    let nodes = store.dispGraph.nodes.get({
+      filter: (node) => {
+        return node.type == "reaction" && node.smiles == smiles;
+      },
+    });
+    return cy.wrap(nodes[0].id);
+  });
+});
+
+Cypress.Commands.add("getChemicalNode", (smiles) => {
+  visRun(({ store }) => {
+    let nodes = store.dispGraph.nodes.get({
+      filter: (node) => {
+        return node.type == "chemical" && node.smiles == smiles;
+      },
+    });
+    return cy.wrap(nodes[0].id);
+  });
+});
+
+Cypress.Commands.add("openNodeDetail", (nodeID) => {
+  visRun(({ network }) => {
+    const { x, y } = network.canvasToDOM(
+      network.getPositions([nodeID])[nodeID]
+    );
+    cy.get("canvas").click(x, y);
+  });
+});
+
+Cypress.Commands.add("getCluster", (nodeID) => {
+  visRun(({ network }) => {
+    const nodes = network.clustering.findNode(nodeID);
+    if (nodes && nodes.length !== 0) {
+      return cy.wrap(nodes[0]);
+    }
+    return cy.wrap("Undefined Cluster");
+  });
+});

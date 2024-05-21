@@ -615,6 +615,9 @@ export default {
         this.networkInitialized = true;
         this.pendingTasks -= 1;
       });
+      Object.assign(window, {
+        visNetwork: this.network,
+      });
     },
     checkCanvasEmpty() {
       // Getting the current canvas element

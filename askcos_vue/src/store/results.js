@@ -567,7 +567,6 @@ export const useResultsStore = defineStore("results", {
         this.updateReactionSmiles({
           newNode: reactionObj,
         });
-
         newNodes.push(
           makeReactionDisplayNode({
             id: reactionId,

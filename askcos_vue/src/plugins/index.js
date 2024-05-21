@@ -6,6 +6,7 @@
 
 // Plugins
 import { loadFonts } from "./webfontloader";
+import { loadResultStore } from "./resultstoreloader";
 import vuetify from "./vuetify";
 import pinia from "../store";
 import router from "../router";
@@ -14,6 +15,7 @@ import VuetifyUseDialog from "vuetify-use-dialog";
 import keycloakPlugin from "./keycloak";
 
 export function registerPlugins(app) {
+  // order is important
   loadFonts();
   app
     .use(vuetify)
@@ -28,4 +30,5 @@ export function registerPlugins(app) {
       idpHint: "github",
     })
     .use(router);
+  loadResultStore()
 }
