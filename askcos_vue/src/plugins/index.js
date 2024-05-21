@@ -30,5 +30,5 @@ export function registerPlugins(app) {
       idpHint: "github",
     })
     .use(router);
-  loadResultStore()
+  loadResultStore();
 }
