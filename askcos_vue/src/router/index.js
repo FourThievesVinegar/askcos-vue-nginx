@@ -2,8 +2,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { nextTick } from "vue";
 
-const DEFAULT_TITLE = "ASKCOS";
-
 const routes = [
   {
     path: "/commands",
@@ -46,7 +44,7 @@ const routes = [
         query: {
           tab: "IPP",
         },
-        name: "Network",
+        name: "Interactive Path Planner",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -60,7 +58,7 @@ const routes = [
         query: {
           tab: "RP",
         },
-        name: "Network",
+        name: "One-Step Retrosynthesis",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -74,7 +72,7 @@ const routes = [
         query: {
           tab: "TE",
         },
-        name: "Network",
+        name: "Tree Explorer",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -92,7 +90,7 @@ const routes = [
     children: [
       {
         path: "",
-        name: "Status",
+        name: "Server Status",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -158,7 +156,7 @@ const routes = [
     children: [
       {
         path: "",
-        name: "Banlist",
+        name: "My Banlist",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -179,7 +177,7 @@ const routes = [
         query: {
           tab: "context",
         },
-        name: "Forward",
+        name: "Condition Recommendation",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -193,7 +191,7 @@ const routes = [
         query: {
           tab: "forward",
         },
-        name: "Forward",
+        name: "Product Prediction",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -207,7 +205,7 @@ const routes = [
         query: {
           tab: "impurity",
         },
-        name: "Forward",
+        name: "Impurity Prediction",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -221,7 +219,7 @@ const routes = [
         query: {
           tab: "selectivity",
         },
-        name: "Forward",
+        name: "Regioselectivity Prediction",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -235,7 +233,7 @@ const routes = [
         query: {
           tab: "sites",
         },
-        name: "Forward",
+        name: "Aromatic C-H Functionalization",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -256,7 +254,7 @@ const routes = [
         query: {
           tab: "solpred",
         },
-        name: "SolProp",
+        name: "Solubility Prediction",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -270,7 +268,7 @@ const routes = [
         query: {
           tab: "solscreen",
         },
-        name: "SolProp",
+        name: "Solvent Screening",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -288,7 +286,7 @@ const routes = [
     children: [
       {
         path: "",
-        name: "QM",
+        name: "QM Descriptor",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -360,7 +358,7 @@ const routes = [
     children: [
       {
         path: "",
-        name: "Template",
+        name: "Template Info",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -435,7 +433,7 @@ router.afterEach(async (to) => {
   // eslint-disable-next-line no-undef
   NProgress.done();
   await nextTick();
-  document.title = `${to.meta.title} - ASKCOS` || DEFAULT_TITLE;
+  document.title = `${to.meta.title} - ASKCOS`;
 });
 
 router.beforeEach((_to, from, next) => {
