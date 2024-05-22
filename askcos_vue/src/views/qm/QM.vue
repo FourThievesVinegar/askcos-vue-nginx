@@ -9,16 +9,16 @@
                         <v-col cols="12" md="10" my="10">
                             <v-text-field v-model="smiles" class="centered-input" variant="outlined"
                                 label="Enter a molecule or reaction SMILES" prepend-inner-icon="mdi mdi-flask"
-                                placeholder="SMILES" hide-details clearable @click:clear="smiles = ''">
+                                placeholder="SMILES" hide-details clearable @click:clear="smiles = ''" rounded="pill">
                                 <template v-slot:append-inner>
                                     <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
-                                        @click="openKetcher(smiles)">Draw</v-btn>
+                                        @click="openKetcher(smiles)" rounded="pill">Draw</v-btn>
                                 </template>
                                 <template v-slot:append>
                                     <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict"
-                                        :loading="!batch && loading">Submit</v-btn>
+                                        :loading="!batch && loading" rounded="pill">Submit</v-btn>
                                     <v-btn variant="tonal" class="mr-5" :disabled="results.length === 0"
-                                        @click="clear()">
+                                        @click="clear()" rounded="pill">
                                         Clear Results
                                     </v-btn>
                                 </template>

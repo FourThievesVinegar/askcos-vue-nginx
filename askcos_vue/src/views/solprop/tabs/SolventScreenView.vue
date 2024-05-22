@@ -9,9 +9,10 @@
             <v-row class="justify-center align-center">
               <v-col cols="12" md="4">
                 <v-text-field :rules="[v => !!v || 'Solute is required']" variant="outlined" label="Solute"
-                  v-model="solute" clearable prepend-inner-icon="mdi mdi-flask">
+                  v-model="solute" clearable prepend-inner-icon="mdi mdi-flask" rounded="pill">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solute')">Draw</v-btn>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solute')"
+                      rounded="pill">Draw</v-btn>
                   </template>
                 </v-text-field>
                 <div v-if="!!solute" class="my-3">
@@ -22,7 +23,7 @@
               <v-col cols="12" md="4">
                 <v-row class="mb-2">
                   <v-select label="Solvent Set" variant="outlined" :items="[...Object.keys(solventSets), 'custom']"
-                    hide-details v-model="solventSet">
+                    hide-details v-model="solventSet" rounded="pill">
                   </v-select>
                 </v-row>
                 <v-row>
