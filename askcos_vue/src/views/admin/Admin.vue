@@ -1,7 +1,6 @@
 <template>
     <v-layout style="height:100vh">
         <app-bar />
-
         <v-main style="background-color: #f0f2f5">
             <v-container fluid>
                 <v-row class="justify-center">
@@ -226,7 +225,6 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
-
             <dialog-box v-model:openDialog="openDialogEmail" v-model:value="newEmail" @updateValue="changeEmail()"
                 label="Email" />
             <dialog-box v-model:openDialog="openDialogPassword" v-model:value="newPassword"
