@@ -3,9 +3,8 @@
         <v-row class="justify-center align-center">
             <v-col cols="12" md="6" data-cy="retro-left-panel">
                 <v-sheet elevation="2" class="pa-5" rounded="lg">
-                    <v-text-field id="retro-target" v-model="target"
-                        density="compact" variant="outlined" label="Target" placeholder="SMILES" type="text" clearable
-                        hide-details class="target-input">
+                    <v-text-field id="retro-target" v-model="target" density="compact" variant="outlined" label="Target"
+                        placeholder="SMILES" type="text" clearable hide-details class="target-input" rounded="pill">
                         <template v-slot:prepend-inner v-if="enableResolver">
                             <v-btn icon="mdi mdi-server" :class="allowResolve ? 'text-green' : 'text-grey'"
                                 @click="toggleResolver" variant="flat">
@@ -13,21 +12,18 @@
                         </template>
                         <template v-slot:append-inner>
                             <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil" @click="() => {
-                                showKetcher = true;
-                                ketcherRef.smilesToKetcher();
-                            }">Draw</v-btn>
+                        showKetcher = true;
+                        ketcherRef.smilesToKetcher();
+                    }" rounded="pill">Draw</v-btn>
                         </template>
                     </v-text-field>
-                    <div v-if="!!target" class="my-3">
-                        <smiles-image :smiles="target" height="100px"></smiles-image>
-                    </div>
-                    <div class="my-3">
-                        <v-select id="retro-model-0" label="Model" :items="models" v-model="settings.model"
-                            variant="outlined" density="compact" hide-details class="my-3" data-cy="retro-model"></v-select>
-                        <v-select id="retro-training-set-0" label="Training Set" :items="trainingSets"
-                            v-model="settings.trainingSet" variant="outlined" density="compact" hide-details class="my-3"
-                            data-cy="retro-training-set"></v-select>
-                    </div>
+                    <smiles-image :smiles="target" height="100px" v-if="!!target" class="my-3"></smiles-image>
+                    <v-select id="retro-model-0" label="Model" :items="models" v-model="settings.model"
+                        variant="outlined" density="compact" hide-details class="my-3" data-cy="retro-model"
+                        rounded="pill"></v-select>
+                    <v-select id="retro-training-set-0" label="Training Set" :items="trainingSets"
+                        v-model="settings.trainingSet" variant="outlined" density="compact" hide-details class="my-3"
+                        data-cy="retro-training-set" rounded="pill"></v-select>
                     <div class="text-center">
                         <v-btn variant="flat" color="success" @click="runRetro()" :disabled="!target || !validSmiles"
                             data-cy="retro-submit">Submit</v-btn>
@@ -91,7 +87,8 @@
                     </v-carousel>
                     <div class="d-flex justify-end pa-3 ">
                         <v-btn variant="flat" color="primary" class="justify-end mr-2"
-                            @click="allPredictionsDialog = true">See All Predictions</v-btn>
+                            @click="allPredictionsDialog = true">See All
+                            Predictions</v-btn>
                         <v-btn variant="tonal" class="justify-end" @click="clear()">Clear All</v-btn>
                     </div>
                 </v-sheet>
@@ -109,7 +106,6 @@
                     <v-data-table :headers="headers" :items="tableItems" item-value="smiles" class="elevation-2"
                         ref="retroResultTable" :fixed-header="true">
                         <template v-for="header in headers" v-slot:[`item.${header.key}`]="{ item }">
-                            <!-- <pre>{{ item }}</pre> -->
                             <div v-if="header.key === 'smiles'">
                                 <smiles-image :smiles="item.smiles" width="100px"></smiles-image>
                                 <table>
@@ -149,15 +145,15 @@
                                         <tr v-if="item[header.key].template">
                                             <th>Templates</th>
                                             <td>
-                                                <template v-if="predictions[header.key]['model'] === 'template_relevance'">
+                                                <template
+                                                    v-if="predictions[header.key]['model'] === 'template_relevance'">
                                                     <p v-for="id in item[header.key].template.tforms" :key="id"
                                                         class="mb-0">
                                                         <a :href="`/template?id=${id}`" target="_blank">{{ id }}</a>
                                                     </p>
                                                 </template>
                                                 <template v-else>
-                                                    <v-btn
-                                                        v-for="(template, index) in item[header.key].template.tforms"
+                                                    <v-btn v-for="(template, index) in item[header.key].template.tforms"
                                                         :key="template" size="small" :class="{ 'ml-1': index > 0 }"
                                                         @click="viewTemplate(template)">
                                                         {{ index + 1 }}
@@ -223,8 +219,8 @@
                                         <v-checkbox-btn v-model="item.show" label="Show in Table"></v-checkbox-btn>
                                         <v-btn v-if="item.model === 'template_relevance'" variant="plain"
                                             @click="viewSettings(item)">View all settings</v-btn>
-                                        <v-btn variant="tonal" density="compact" color="error" @click="deleteResult(index)"
-                                            icon="mdi-delete"></v-btn>
+                                        <v-btn variant="tonal" density="compact" color="error"
+                                            @click="deleteResult(index)" icon="mdi-delete"></v-btn>
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -279,8 +275,9 @@ For example, if the sum of the scores of the top two templates exceeds this valu
                     label-for="retro-min-plausibility"
                     help-text="This is the minimum plausibility that a predictor transformation must receive from the Fast Filter model in order to be kept and returned as a result.
 The plausibility score can help filter out bad suggestions, but in some cases can be over conservative and filter out false negatives.">
-                    <v-text-field type="number" min="0" max="1" step="0.000001" v-model.number="settings.minPlausibility"
-                        class="my-1" variant="outlined" density="compact" hide-details></v-text-field>
+                    <v-text-field type="number" min="0" max="1" step="0.000001"
+                        v-model.number="settings.minPlausibility" class="my-1" variant="outlined" density="compact"
+                        hide-details></v-text-field>
                 </setting-input>
                 <setting-input
                     v-if="settings.model === 'template_relevance' && templateAttributes && templateAttributes[settings.trainingSet] && templateAttributes[settings.trainingSet].length"
@@ -355,7 +352,7 @@ Normally, only the top 'Max. num. templates' will be applied - with these filter
                             <td>
                                 <div v-if="selectedSettings.attributeFilter.length">
                                     <p v-for="(filter, index) in selectedSettings.attributeFilter" :key="index">{{
-                                        filter.name }} {{ filter.logic }} {{ filter.value }}</p>
+                        filter.name }} {{ filter.logic }} {{ filter.value }}</p>
                                 </div>
                                 <span v-else>None</span>
                             </td>
@@ -646,9 +643,9 @@ export default {
             labels.value[newIndex] = `Prediction #${newIndex}`;
             API.runCeleryTask(url, body)
                 .then((output) => {
-                    if(output["status_code"] === 500){
+                    if (output["status_code"] === 500) {
                         // alert("There was an error predicting precursors for this target: " + output["message"]);
-                         createConfirm({ title: 'Error', content: "There was an error predicting precursors for this target: " + output["message"], dialogProps: { width: "60%" } })
+                        createConfirm({ title: 'Error', content: "There was an error predicting precursors for this target: " + output["message"], dialogProps: { width: "60%" } })
                         return;
                     }
                     results.value[newIndex] = output["result"];
@@ -676,7 +673,7 @@ export default {
                 }
             })
             if (runningPreds) {
-                 createSnackbar({ text: "Some predictions are still running!", snackbarProps: { timeout: -1, vertical: true } })
+                createSnackbar({ text: "Some predictions are still running!", snackbarProps: { timeout: -1, vertical: true } })
                 return;
             }
             if (skipConfirm || confirm("This will clear all of your current results. Continue anyway?")) {

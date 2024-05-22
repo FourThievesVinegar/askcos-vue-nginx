@@ -18,17 +18,21 @@
             <v-row align="center">
               <v-col :cols="mode === 'context' || mode === 'impurity' || mode === 'selectivity' ? 6 : 12">
                 <v-text-field v-model="reactants" data-cy="reactants" class="centered-input" variant="outlined"
-                  label="Reactants" prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
+                  label="Reactants" prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable
+                  rounded="pill">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('reactants')">Draw</v-btn>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('reactants')"
+                      rounded="pill">Draw</v-btn>
                   </template>
                 </v-text-field>
               </v-col>
               <v-col cols="6" v-if="mode !== 'forward' && mode !== 'sites'">
                 <v-text-field v-model="product" data-cy="product" label="Product" class="centered-input"
-                  variant="outlined" prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable>
+                  variant="outlined" prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable
+                  rounded="pill">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('product')">Draw</v-btn>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('product')"
+                      rounded="pill">Draw</v-btn>
                   </template>
                 </v-text-field>
               </v-col>
@@ -51,18 +55,20 @@
               <v-col cols="6">
                 <v-text-field v-model="reagents" label="Reagents" class="centered-input" variant="outlined"
                   prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" data-cy="reagents" hide-details clearable
-                  :disabled="mode === 'context' || mode === 'sites'">
+                  :disabled="mode === 'context' || mode === 'sites'" rounded="pill">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('reagents')">Draw</v-btn>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('reagents')"
+                      rounded="pill">Draw</v-btn>
                   </template>
                 </v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-text-field v-model="solvent" label="Solvent" class="centered-input" variant="outlined"
                   prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" data-cy="solvent" hide-details clearable
-                  :disabled="mode === 'context' || mode === 'sites'">
+                  :disabled="mode === 'context' || mode === 'sites'" rounded="pill">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solvent')">Draw</v-btn>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solvent')"
+                      rounded="pill">Draw</v-btn>
                   </template>
                 </v-text-field>
               </v-col>

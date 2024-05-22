@@ -9,9 +9,10 @@
             <v-row>
               <v-col>
                 <v-text-field :rules="[v => !!v || 'Solute is required']" variant="outlined" label="Solute"
-                  v-model="solute" data-cy="solute" clearable prepend-inner-icon="mdi mdi-flask">
+                  v-model="solute" data-cy="solute" clearable prepend-inner-icon="mdi mdi-flask" rounded="pill">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solute')">Draw</v-btn>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solute')"
+                      rounded="pill">Draw</v-btn>
                   </template>
                 </v-text-field>
                 <div v-if="!!solute" class="my-3">
@@ -21,9 +22,10 @@
               </v-col>
               <v-col>
                 <v-text-field :rules="[v => !!v || 'Solvent is required']" variant="outlined" label="Solvent"
-                  v-model="solvent" data-cy="solvent" clearable prepend-inner-icon="mdi mdi-flask">
+                  v-model="solvent" data-cy="solvent" clearable prepend-inner-icon="mdi mdi-flask" rounded="pill">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solvent')">Draw</v-btn>
+                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solvent')"
+                      rounded="pill">Draw</v-btn>
                   </template>
                 </v-text-field>
                 <div v-if="!!solvent" class="my-3">
@@ -32,7 +34,8 @@
               </v-col>
               <v-col>
                 <v-text-field :rules="[v => !!v || 'Temperature is required']" variant="outlined" label="Temperature"
-                  v-model="temperature" data-cy="temp" clearable prepend-inner-icon="mdi-thermometer-lines">
+                  v-model="temperature" data-cy="temp" clearable prepend-inner-icon="mdi-thermometer-lines"
+                  rounded="pill">
                 </v-text-field>
               </v-col>
             </v-row>
@@ -174,7 +177,8 @@
                 <v-expansion-panel-text class="text-black">
                   <v-text-field variant="outlined" label="Ref. Solvent" v-model="refSolvent">
                     <template v-slot:append-inner>
-                      <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('refSolvent')">Draw</v-btn>
+                      <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
+                        @click="openKetcher('refSolvent')">Draw</v-btn>
                     </template>
                   </v-text-field>
                   <div v-if="!!refSolvent" class="my-3">
@@ -209,7 +213,7 @@
   </v-container>
   <solubility-modal :visible="showInfo" width="auto" @close-dialog="$event => showInfo = $event"></solubility-modal>
 </template>
-  
+
 <script>
 import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage";
