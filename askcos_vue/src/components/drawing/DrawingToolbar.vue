@@ -12,8 +12,7 @@
                   @click="canonicalize(smiles)" rounded="pill">Canonicalize</v-btn>
               </template>
               <template v-slot:append-inner>
-                <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher(smiles)"
-                  rounded="pill">Draw</v-btn>
+                <draw-button v-model:smiles="smiles" />
               </template>
             </v-text-field>
           </v-col>
@@ -21,18 +20,13 @@
       </v-sheet>
     </v-col>
   </v-row>
-  <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="smiles" @input="showKetcher = false"
-    @update:smiles="updateSmiles" />
+
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import { API } from "@/common/api";
-import KetcherModal from "@/components/KetcherModal";
-
+import DrawButton from "@/components/DrawButton"
 const smiles = defineModel("smiles", { required: true, default: '' })
-const showKetcher = ref(false);
-const ketcherRef = ref(null);
 
 const canonicalize = () => {
   API.post("/api/rdkit/canonicalize/", { smiles: smiles.value })
@@ -43,14 +37,4 @@ const canonicalize = () => {
       console.error("Could not canonicalize: " + error);
     });
 };
-
-const openKetcher = (source) => {
-  smiles.value = source;
-  showKetcher.value = true;
-  ketcherRef.value.smilesToKetcher();
-};
-
-const updateSmiles = (newSmiles) => {
-  smiles.value = newSmiles;
-}
 </script>

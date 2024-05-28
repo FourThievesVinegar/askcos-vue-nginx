@@ -230,7 +230,6 @@
 import SmilesImage from "@/components/SmilesImage";
 import SmilesInput from "@/components/SmilesInput";
 import SolubilityModal from '@/components/solprop/SolubilityModal'
-import KetcherModal from "@/components/KetcherModal";
 import { API } from "@/common/api";
 import { colorMap } from "@/common/color";
 import { loadCustomSolventSets, saveCustomSolventSets, solventSets } from "@/views/solprop/solvents";

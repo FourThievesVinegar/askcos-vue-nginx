@@ -47,7 +47,7 @@
             <v-divider></v-divider>
             <v-card-actions class="mb-2">
                 <v-spacer></v-spacer>
-                <v-btn variant="tonal"  text @click="dialog = false">Close</v-btn>
+                <v-btn variant="tonal" @click="dialog = false">Close</v-btn>
                 <v-btn variant="tonal" color="primary" @click="submitSupport">Submit</v-btn>
             </v-card-actions>
         </v-card>

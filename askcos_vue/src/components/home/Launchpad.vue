@@ -1,7 +1,5 @@
 <template>
   <div>
-    <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="smiles" @input="showKetcher = false"
-      @update:smiles="(ketcherSmiles) => smiles = ketcherSmiles" />
     <v-row class="my-6 justify-center">
       <v-col cols="12" md="10" data-cy="home-smiles-input-field">
         <v-text-field v-model="smilesInput" class="centered-input" variant="outlined"
@@ -24,8 +22,7 @@
             </v-tooltip>
           </template>
           <template v-slot:append-inner>
-            <v-btn v-if="!allowResolve" variant="tonal" prepend-icon="mdi mdi-pencil"
-              @click="() => { showKetcher = true; ketcherRef.smilesToKetcher(); }" rounded="pill">Draw</v-btn>
+            <draw-button v-if="!allowResolve" v-model:smiles="smiles" />
             <v-btn v-if="allowResolve" variant="flat" prepend-icon="mdi mdi-magnify" @click="() => { resolveSmiles() }"
               rounded="pill" color="green" data-cy="home-resolve-btn">Resolve</v-btn>
           </template>
@@ -232,7 +229,7 @@
                     data-cy="home-generate-atom-mapping" @click="getMappedSmiles(smiles)">Evaluate</v-btn>
                   <v-btn v-if="!!mappedSmiles" prepend-icon="mdi mdi-play" variant="tonal"
                     @click="showMappedSmiles = !showMappedSmiles"> {{ showMappedSmiles ? 'Hide' :
-      'Show' }}</v-btn>
+          'Show' }}</v-btn>
                   <v-menu location="bottom" id="mapper-settings" :close-on-content-click="false">
                     <template v-slot:activator="{ props }">
                       <v-btn v-bind="props" icon="mdi mdi-menu-down" variant="tonal" color="primary"
@@ -341,7 +338,7 @@
               </template>
               <v-btn variant="tonal" color="primary" v-if="classificationResults.length"
                 @click="showClassificationResults = !showClassificationResults"> {{ showClassificationResults ? 'Hide' :
-      'Show' }}</v-btn>
+          'Show' }}</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -402,7 +399,6 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
-import KetcherModal from "@/components/KetcherModal";
 import { refDebounced } from '@vueuse/core'
 import SmilesImage from "@/components/SmilesImage";
 import { useSettingsStore } from "@/store/settings";
@@ -411,6 +407,7 @@ import { TB_PRESETS } from "@/common/tb-presets";
 import { num2str } from "@/common/utils";
 import { resolveChemName } from "@/common/resolver";
 import { useConfirm } from 'vuetify-use-dialog';
+import DrawButton from "@/components/DrawButton"
 
 const smilesInput = ref("");
 const smiles = refDebounced(smilesInput, 500)
@@ -428,8 +425,6 @@ const tbStatus = ref(undefined);
 const tbPreset = ref("normal");
 const tbPresetOptions = ref(TB_PRESETS);
 const tbDesc = ref("");
-const showKetcher = ref(false);
-const ketcherRef = ref(null);
 const headers = [
   { key: 'rank', title: 'Rank', align: 'center' },
   { key: 'reaction_num', title: 'Reaction Number', align: 'center' },

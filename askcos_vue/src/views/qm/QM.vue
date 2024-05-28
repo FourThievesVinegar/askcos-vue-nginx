@@ -1,7 +1,6 @@
 <template>
     <v-container fluid>
         <bread-crumbs pageTitle="QM Descriptor" />
-
         <v-row class="justify-center">
             <v-col cols="12" md="12" xl="10">
                 <v-sheet elevation="2" rounded="lg" class="pa-5">
@@ -11,8 +10,7 @@
                                 label="Enter a molecule or reaction SMILES" prepend-inner-icon="mdi mdi-flask"
                                 placeholder="SMILES" hide-details clearable @click:clear="smiles = ''" rounded="pill">
                                 <template v-slot:append-inner>
-                                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
-                                        @click="openKetcher(smiles)" rounded="pill">Draw</v-btn>
+                                    <draw-button v-model:smiles="smiles" />
                                 </template>
                                 <template v-slot:append>
                                     <v-btn type="submit" variant="flat" color="success" class="mr-5" @click="predict"
@@ -33,7 +31,6 @@
                 </v-sheet>
             </v-col>
         </v-row>
-
         <v-row class="justify-center">
             <v-col v-show="pendingTasks > 0 || results.length" cols="12" md="12" xl="10">
                 <v-sheet elevation="2" class="pa-4" rounded="lg" data-cy="qm-table">
@@ -98,23 +95,19 @@
             </v-col>
         </v-row>
     </v-container>
-    <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="smiles" @input="showKetcher = false"
-        @update:smiles="updateSmiles" />
 </template>
 
 <script setup>
 import { API } from "@/common/api";
 import { ref, computed, nextTick, onMounted } from 'vue';
-import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage.vue";
 import { useConfirm } from 'vuetify-use-dialog';
 import * as Papa from "papaparse";
 import { useRoute } from 'vue-router';
 import BreadCrumbs from "@/components/BreadCrumbs"
+import DrawButton from "@/components/DrawButton"
 
 const smiles = ref('');
-const showKetcher = ref(false);
-const ketcherRef = ref(null);
 const loading = ref(false);
 const batch = ref(false);
 const results = ref([]);
@@ -182,16 +175,6 @@ const apiKeyToField = ref({
 });
 
 const createConfirm = useConfirm();
-
-const openKetcher = (source) => {
-    smiles.value = source;
-    showKetcher.value = true;
-    ketcherRef.value.smilesToKetcher();
-};
-
-const updateSmiles = (newSmiles) => {
-    smiles.value = newSmiles;
-}
 
 const predict = () => {
     pendingTasks.value += 1
