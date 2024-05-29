@@ -1,5 +1,5 @@
 <template>
-    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher(smiles)" rounded="pill">Draw</v-btn>
+    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher(smiles)" rounded="pill" :size="props.size">Draw</v-btn>
     <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="smiles" @input="showKetcher = false"
         @update:smiles="updateSmiles" />
 </template>
@@ -8,6 +8,7 @@
 import { ref } from 'vue';
 import KetcherModal from "@/components/KetcherModal";
 const smiles = defineModel("smiles", { required: true, default: '' })
+const props = defineProps({ size: { type: String, required: true, default: "default" } })
 const showKetcher = ref(false);
 const ketcherRef = ref(null);
 
