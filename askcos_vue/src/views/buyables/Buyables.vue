@@ -44,8 +44,8 @@
                   </v-btn>
                   <v-menu location="bottom" id="tb-submit-settings" :close-on-content-click="false">
                     <template v-slot:activator="{ props }">
-                      <v-btn v-show="isAdmin" color="orange-accent-4" v-bind="props" icon="mdi-plus" variant="flat" size="small"
-                        class="ml-5">
+                      <v-btn v-show="isAdmin" color="orange-accent-4" v-bind="props" icon="mdi-plus" variant="flat"
+                        size="small" class="ml-5">
                       </v-btn>
                     </template>
                     <v-list>
@@ -55,8 +55,7 @@
                   </v-menu>
                 </template>
                 <template v-slot:append-inner>
-                  <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher(searchSmilesQuery)"
-                    size="small" rounded="pill">Draw</v-btn>
+                  <draw-button v-model:smiles="searchSmilesQuery" size="small" />
                 </template>
               </v-text-field>
               <div v-if="!!searchSmilesQuery" class="my-3">
@@ -129,9 +128,6 @@
       </v-col>
     </v-row>
   </v-container>
-
-  <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="searchSmilesQuery" @input="showKetcher = false"
-    @update:smiles="updateSmiles" />
 
   <v-dialog v-model="showAddModal" max-width="600px">
     <v-card>
@@ -241,9 +237,9 @@ import { ref, computed, onMounted, watch } from 'vue';
 import SmilesImage from "@/components/SmilesImage.vue";
 import CopyTooltip from "@/components/CopyTooltip";
 import emptyCart from "@/assets/emptyCart.svg";
-import KetcherModal from "@/components/KetcherModal";
 import { useConfirm, useSnackbar } from 'vuetify-use-dialog';
 import BreadCrumbs from "@/components/BreadCrumbs.vue"
+import DrawButton from "@/components/DrawButton"
 
 const buyables = ref([]);
 const uploadFile = ref(null);
@@ -356,10 +352,6 @@ const openKetcher = (source) => {
   showKetcher.value = true;
   ketcherRef.value.smilesToKetcher();
 };
-
-const updateSmiles = (newSmiles) => {
-  searchSmilesQuery.value = newSmiles;
-}
 
 const fetchSources = async () => {
   fetchLoad.value = true;
