@@ -21,8 +21,7 @@
                   label="Reactants" prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable
                   rounded="pill">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('reactants')"
-                      rounded="pill">Draw</v-btn>
+                    <draw-button v-model:smiles="reactants" />
                   </template>
                 </v-text-field>
               </v-col>
@@ -31,8 +30,7 @@
                   variant="outlined" prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" hide-details clearable
                   rounded="pill">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('product')"
-                      rounded="pill">Draw</v-btn>
+                    <draw-button v-model:smiles="product" />
                   </template>
                 </v-text-field>
               </v-col>
@@ -57,8 +55,7 @@
                   prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" data-cy="reagents" hide-details clearable
                   :disabled="mode === 'context' || mode === 'sites'" rounded="pill">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('reagents')"
-                      rounded="pill">Draw</v-btn>
+                    <draw-button v-model:smiles="reagents" />
                   </template>
                 </v-text-field>
               </v-col>
@@ -67,8 +64,7 @@
                   prepend-inner-icon="mdi mdi-flask" placeholder="SMILES" data-cy="solvent" hide-details clearable
                   :disabled="mode === 'context' || mode === 'sites'" rounded="pill">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solvent')"
-                      rounded="pill">Draw</v-btn>
+                    <draw-button v-model:smiles="solvent" />
                   </template>
                 </v-text-field>
               </v-col>
@@ -156,9 +152,6 @@
         </v-window>
       </v-col>
     </v-row>
-
-    <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="currentSmiles" @input="showKetcher = false"
-      @update:smiles="(ketcherSmiles) => updateSmiles(ketcherSmiles)" />
     <v-dialog v-model="dialog" max-width="600px" class="justify-center align-center">
       <v-card class="pa-3 m-5">
         <template v-if="openSettingsPanel === 'condition-settings'">
@@ -288,7 +281,6 @@
 import { ref, onMounted, computed, watch, reactive, nextTick } from 'vue'
 import { useRouter, useRoute } from "vue-router";
 import { API } from "@/common/api";
-import KetcherModal from "@/components/KetcherModal";
 import SmilesImage from "@/components/SmilesImage";
 import ConditionRecommendation from "@/views/forward/tab/ConditionRecommendation.vue"
 import SynthesisPrediction from "@/views/forward/tab/SynthesisPrediction.vue"
@@ -299,6 +291,7 @@ import { saveAs } from 'file-saver';
 import { useConfirm } from 'vuetify-use-dialog';
 import { createReaxysQuery } from "@/common/reaxys";
 import { copyToClipboard } from "@/common/utils";
+import DrawButton from "@/components/DrawButton"
 
 const route = useRoute();
 const router = useRouter();
@@ -329,9 +322,6 @@ const selectivityModel = ref('GNN')
 const pendingTasks = ref(0)
 const reactionScore = ref(null)
 const evaluating = ref(false)
-const showKetcher = ref(false);
-const ketcherRef = ref(null);
-const currentInputSource = ref('');
 const impurityResults = ref([]);
 const impurityProgress = ref({
   percent: 0,
@@ -503,43 +493,6 @@ const evaluateIndex = async (index) => {
   }
 }
 
-const currentSmiles = computed(() => {
-  switch (currentInputSource.value) {
-    case 'reactants':
-      return reactants.value;
-    case 'product':
-      return product.value;
-    case 'reagents':
-      return reagents.value;
-    case 'solvent':
-      return solvent.value;
-    default:
-      return '';
-  }
-});
-
-const openKetcher = (source) => {
-  currentInputSource.value = source;
-  showKetcher.value = true;
-  ketcherRef.value.smilesToKetcher();
-};
-
-const updateSmiles = (ketcherSmiles) => {
-  switch (currentInputSource.value) {
-    case 'reactants':
-      reactants.value = ketcherSmiles;
-      break;
-    case 'product':
-      product.value = ketcherSmiles;
-      break;
-    case 'reagents':
-      reagents.value = ketcherSmiles;
-      break;
-    case 'solvent':
-      solvent.value = ketcherSmiles;
-      break;
-  }
-};
 
 const modes = ref({
   0: 'context',
