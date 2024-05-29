@@ -11,10 +11,7 @@
                             </v-btn>
                         </template>
                         <template v-slot:append-inner>
-                            <v-btn variant="tonal" size="small" prepend-icon="mdi-pencil" @click="() => {
-                        showKetcher = true;
-                        ketcherRef.smilesToKetcher();
-                    }" rounded="pill">Draw</v-btn>
+                            <draw-button v-model:smiles="target" />
                         </template>
                     </v-text-field>
                     <smiles-image :smiles="target" height="100px" v-if="!!target" class="my-3"></smiles-image>
@@ -234,8 +231,6 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
-    <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="target" @input="showKetcher = false"
-        @update:smiles="(ketcherSmiles) => target = ketcherSmiles" />
     <v-dialog v-model="showAdvSettings" width="500px">
         <v-card>
             <v-card-title>
@@ -422,6 +417,7 @@ import { resolveChemName } from "@/common/resolver";
 import { num2str } from "@/common/utils";
 import { useSettingsStore } from "@/store/settings";
 import emptyVoid from "@/assets/void.svg";
+import DrawButton from "@/components/DrawButton"
 
 const defaultSettings = {
     model: "template_relevance",
@@ -440,6 +436,7 @@ export default {
         SettingInput,
         KetcherModal,
         SmilesImage,
+        DrawButton
     },
     data() {
         return {
@@ -817,8 +814,3 @@ export default {
     },
 };
 </script>
-<style>
-.target-input .v-input__control {
-    background-color: white;
-}
-</style>
