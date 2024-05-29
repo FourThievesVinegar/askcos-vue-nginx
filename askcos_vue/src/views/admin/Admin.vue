@@ -73,7 +73,7 @@
                                         </v-menu>
                                         <v-spacer></v-spacer>
                                         <v-btn color="primary" variant="flat" prepend-icon="mdi-plus"
-                                            @click="dialog = true">New
+                                            @click="openDialogNewUser = true">New
                                             User</v-btn>
                                     </v-toolbar>
                                 </template>
@@ -127,12 +127,12 @@
                                             </v-list-item>
                                             <v-list-item v-if="!(item.accountType === 'Guest')">
                                                 <v-btn variant="tonal" color="primary"
-                                                    @click="mutate(item.username, 'pwd')">Change
+                                                    @click="mutate(item.username, 'pwd')">Edit
                                                     Password</v-btn>
                                             </v-list-item>
                                             <v-list-item v-if="!(item.accountType === 'Guest')">
                                                 <v-btn variant="tonal" color="primary"
-                                                    @click="mutate(item.username, 'email')">Change
+                                                    @click="mutate(item.username, 'email')">Edit
                                                     Email</v-btn>
                                             </v-list-item>
                                             <v-list-item>
@@ -186,48 +186,10 @@
                 </v-row>
                 <loader v-if="dataLoading" />
             </v-container>
-
-            <v-dialog v-model="dialog" max-width="600px">
-                <v-card>
-                    <v-card-title class="mt-2">
-                        <v-col cols="12">Add new user</v-col></v-card-title>
-
-                    <v-card-text>
-                        <v-row>
-                            <v-col cols="12">
-                                <v-text-field v-model="newUsername" variant="outlined" label="Username" hide-details
-                                    clearable></v-text-field>
-                            </v-col>
-                        </v-row>
-                        <v-row>
-                            <v-col cols="12">
-                                <v-text-field v-model="newEmail" variant="outlined" label="Email" hide-details
-                                    clearable></v-text-field>
-                            </v-col>
-                        </v-row>
-
-                        <v-row>
-                            <v-col cols="12">
-                                <v-text-field v-model="newPassword" variant="outlined" label="Password" type="password"
-                                    hide-details clearable></v-text-field>
-                            </v-col>
-                        </v-row>
-
-                        <v-row>
-                            <v-col cols="12">
-                                <v-checkbox label="Make admin" v-model="newSuperuser"></v-checkbox>
-                            </v-col>
-                        </v-row>
-                    </v-card-text>
-                    <v-card-actions class="mb-2">
-                        <v-spacer></v-spacer>
-                        <v-btn text @click="addUser()">Submit</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
-            <dialog-box v-model:openDialog="openDialogEmail" v-model:value="newEmail" @updateValue="changeEmail()"
-                label="Email" />
-            <dialog-box v-model:openDialog="openDialogPassword" v-model:value="newPassword"
+            <new-user-dialog-box v-model:openDialog="openDialogNewUser" />
+            <edit-user-dialog-box v-model:openDialog="openDialogEditEmail" v-model:value="newEmail"
+                @updateValue="changeEmail()" label="Email" />
+            <edit-user-dialog-box v-model:openDialog="openDialogEditPassword" v-model:value="newPassword"
                 @updateValue="changePassword()" label="Password" :hide="true" />
         </v-main>
     </v-layout>
@@ -235,7 +197,8 @@
 
 <script setup>
 import AppBar from "@/components/admin/AppBar"
-import DialogBox from "@/components/admin/DialogBox"
+import EditUserDialogBox from "@/components/admin/EditUserDialogBox"
+import NewUserDialogBox from "@/components/admin/NewUserDialogBox"
 import Loader from "@/components/admin/Loader"
 import { ref, onMounted, computed } from 'vue'
 import { API } from "@/common/api";
@@ -246,14 +209,11 @@ const createSnackbar = useSnackbar()
 const username = ref(localStorage.getItem('username'))
 const userEmail = ref('')
 const userLastLogin = ref('')
-const newUsername = ref('')
 const newPassword = ref('')
 const newEmail = ref('')
-const newSuperuser = ref(false)
 const selectedUser = ref('')
 const isAdmin = ref(false)
 const users = ref([])
-const dialog = ref(false)
 const selection = ref([]);
 const filterOptions = ref([
     { key: 'Guest', title: 'Guest' },
@@ -268,8 +228,9 @@ const headers = ref([
     { title: 'Last Login', key: 'last_login' },
     { title: 'Actions', key: 'actions', align: 'center' },
 ])
-const openDialogPassword = ref(false)
-const openDialogEmail = ref(false)
+const openDialogNewUser = ref(false)
+const openDialogEditPassword = ref(false)
+const openDialogEditEmail = ref(false)
 const usersDict = ref({});
 const filterSelected = ref(null)
 const dataLoading = ref(true)
@@ -290,7 +251,7 @@ const formatDateWithoutTimezone = (dateString) => {
 };
 
 const changePassword = async () => {
-    openDialogPassword.value = false;
+    openDialogEditPassword.value = false;
     await API.post('/api/user/reset-password', { username: selectedUser.value, password: newPassword.value }, true)
         .then(async response => {
             console.log(response.Error)
@@ -309,7 +270,7 @@ const changePassword = async () => {
 }
 
 const changeEmail = async () => {
-    openDialogEmail.value = false;
+    openDialogEditEmail.value = false;
     await API.post('/api/user/update', { username: selectedUser.value, email: newEmail.value }, true)
         .then(async response => {
             console.log(response.Error)
@@ -370,54 +331,14 @@ const fetchData = async () => {
     dataLoading.value = false
 }
 
-const addUser = () => {
-    if (!newUsername.value || !newPassword.value || !newEmail.value) {
-        createSnackbar({ text: "Please fill in all fields", snackbarProps: { timeout: 3000 } });
-        return;
-    }
-
-    let body = {
-        username: newUsername.value,
-        password: newPassword.value,
-        email: newEmail.value,
-        is_superuser: newSuperuser.value,
-    };
-
-    API.post('/api/user/register', body, true)
-        .then(async response => {
-            console.log(response.Error)
-            if (response === "OK") {
-                await fetchData();
-                createSnackbar({ text: "User added successfully!", snackbarProps: { timeout: 3000 } });
-                clearUserFields();
-            }
-        })
-        .catch((err) => {
-            const match = err.toString().match(/\"detail\":\"([^\"]+)\"/);
-            const detail = match[1];
-            createSnackbar({ text: `Failed to add user: ${detail}`, snackbarProps: { timeout: 3000 } });
-            clearUserFields();
-        })
-        .finally(() => {
-            dialog.value = false;
-        });
-};
-
-const clearUserFields = () => {
-    newUsername.value = '';
-    newPassword.value = '';
-    newEmail.value = '';
-    newSuperuser.value = false;
-};
-
 const mutate = async (username, method) => {
     switch (method) {
         case 'email':
-            openDialogEmail.value = true;
+            openDialogEditEmail.value = true;
             selectedUser.value = username;
             break;
         case 'pwd':
-            openDialogPassword.value = true;
+            openDialogEditPassword.value = true;
             selectedUser.value = username;
             break;
         case 'admin':

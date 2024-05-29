@@ -4,7 +4,7 @@
                 <div class="my-4">
                     <v-breadcrumbs class="pa-0 text-body-1" :items="breadCrumbItems">
                         <template v-slot:prepend>
-                            <v-icon icon="mdi-home" size="small"></v-icon>
+                            <v-icon icon="mdi-home" size="large"></v-icon>
                         </template>
                     </v-breadcrumbs>
                     <h4 class="text-h4 text-primary">

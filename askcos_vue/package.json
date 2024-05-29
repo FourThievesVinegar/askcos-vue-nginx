@@ -10,7 +10,8 @@
     "lint": "eslint . --fix --ignore-path .gitignore",
     "test": "jest --config ./jest.config.js --collectCoverage --coverageDirectory=\"./coverage\" --ci --reporters=default --reporters=jest-junit --watchAll=false",
     "flow": "flow",
-    "cy:open": "cypress open"
+    "cy:open": "cypress open",
+    "vca": "vca --dir pages"
   },
   "dependencies": {
     "@mdi/font": "7.0.96",
@@ -44,6 +45,7 @@
     "@babel/eslint-parser": "^7.22.10",
     "@babel/plugin-transform-runtime": "^7.22.10",
     "@babel/preset-env": "^7.22.10",
+    "@tkskto/vue-component-analyzer": "^0.8.0",
     "@types/file-saver": "^2.0.7",
     "@types/papaparse": "^5.3.11",
     "@types/three": "^0.158.3",
