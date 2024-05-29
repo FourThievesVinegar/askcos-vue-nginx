@@ -3,16 +3,13 @@
     <v-row class="justify-center">
       <v-col cols="12" md="12" class="pa-0">
         <v-sheet elevation="2" class="pa-10" rounded="lg" width="100%">
-          <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="currentSmiles" @input="showKetcher = false"
-            @update:smiles="(ketcherSmiles) => updateSmiles(ketcherSmiles)" />
           <v-form @submit.prevent>
             <v-row>
               <v-col>
                 <v-text-field :rules="[v => !!v || 'Solute is required']" variant="outlined" label="Solute"
                   v-model="solute" data-cy="solute" clearable prepend-inner-icon="mdi mdi-flask" rounded="pill">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solute')"
-                      rounded="pill">Draw</v-btn>
+                    <draw-button v-model:smiles="solute" />
                   </template>
                 </v-text-field>
                 <div v-if="!!solute" class="my-3">
@@ -24,8 +21,7 @@
                 <v-text-field :rules="[v => !!v || 'Solvent is required']" variant="outlined" label="Solvent"
                   v-model="solvent" data-cy="solvent" clearable prepend-inner-icon="mdi mdi-flask" rounded="pill">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solvent')"
-                      rounded="pill">Draw</v-btn>
+                    <draw-button v-model:smiles="solvent" />
                   </template>
                 </v-text-field>
                 <div v-if="!!solvent" class="my-3">
@@ -177,8 +173,7 @@
                 <v-expansion-panel-text class="text-black">
                   <v-text-field variant="outlined" label="Ref. Solvent" v-model="refSolvent">
                     <template v-slot:append-inner>
-                      <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
-                        @click="openKetcher('refSolvent')">Draw</v-btn>
+                      <draw-button v-model:smiles="refSolvent" />
                     </template>
                   </v-text-field>
                   <div v-if="!!refSolvent" class="my-3">
@@ -224,7 +219,7 @@ import { API } from "@/common/api";
 import { saveAs } from "file-saver";
 import * as Papa from "papaparse";
 import { useConfirm } from 'vuetify-use-dialog'
-
+import DrawButton from "@/components/DrawButton"
 
 export default {
   name: "SolubilityPrediction",
@@ -234,6 +229,7 @@ export default {
     SolubilityModal,
     KetcherModal,
     ErrorDialog,
+    DrawButton
   },
   setup() {
     const createConfirm = useConfirm();

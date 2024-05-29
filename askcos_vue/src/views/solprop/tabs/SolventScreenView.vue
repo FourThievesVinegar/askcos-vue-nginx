@@ -3,16 +3,13 @@
     <v-row class="justify-center align-center">
       <v-col cols="12" md="12" class="pa-0">
         <v-sheet elevation="2" class="pa-10" rounded="lg">
-          <ketcher-modal ref="ketcherRef" v-model="showKetcher" :smiles="currentSmiles" @input="showKetcher = false"
-            @update:smiles="(ketcherSmiles) => updateSmiles(ketcherSmiles)" />
           <v-form @submit.prevent>
             <v-row class="justify-center align-center">
               <v-col cols="12" md="4">
                 <v-text-field :rules="[v => !!v || 'Solute is required']" variant="outlined" label="Solute"
                   v-model="solute" clearable prepend-inner-icon="mdi mdi-flask" rounded="pill">
                   <template v-slot:append-inner>
-                    <v-btn variant="tonal" prepend-icon="mdi mdi-pencil" @click="openKetcher('solute')"
-                      rounded="pill">Draw</v-btn>
+                    <draw-button v-model:smiles="solute" />
                   </template>
                 </v-text-field>
                 <div v-if="!!solute" class="my-3">
@@ -188,8 +185,7 @@
                 <v-expansion-panel-text class="text-black">
                   <v-text-field variant="outlined" label="Ref. Solvent" v-model="refSolvent">
                     <template v-slot:append-inner>
-                      <v-btn variant="tonal" prepend-icon="mdi mdi-pencil"
-                        @click="openKetcher('refSolvent')">Draw</v-btn>
+                      <draw-button v-model:smiles="refSolvent" />
                     </template>
                   </v-text-field>
                   <div v-if="!!refSolvent" class="my-3">
@@ -241,6 +237,7 @@ import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, Li
 import emptyChart from '@/assets/emptyChart.svg'
 import { useConfirm } from 'vuetify-use-dialog';
 import ErrorDialog from '@/components/ErrorDialog'
+import DrawButton from "@/components/DrawButton"
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
@@ -250,10 +247,10 @@ export default {
     SmilesImage,
     SmilesInput,
     SolubilityModal,
-    KetcherModal,
     'bar-chart': Bar,
     'line-chart': Line,
     ErrorDialog,
+    DrawButton
   },
   data() {
     return {
