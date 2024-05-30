@@ -106,6 +106,7 @@ import * as Papa from "papaparse";
 import { useRoute } from 'vue-router';
 import BreadCrumbs from "@/components/BreadCrumbs"
 import DrawButton from "@/components/DrawButton"
+import { saveAs } from "file-saver";
 
 const smiles = ref('');
 const loading = ref(false);
