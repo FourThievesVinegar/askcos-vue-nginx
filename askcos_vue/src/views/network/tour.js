@@ -231,7 +231,7 @@ Results from subsequent expansions are merged with any existing results by remov
         title: 'Add Precursor',
         text: `This lets you add a custom SMILES as a precursor option for the chemical.
 Once you've added a custom precursor, you can choose to expand it like any other node.
-Note that ASKCOS currently does not verify whether the custom precursor is a reasonable reaction.`,
+Note that ChemHacktica currently does not verify whether the custom precursor is a reasonable reaction.`,
         attachTo: {
           element: '#add-precursor-btn',
           on: 'top',

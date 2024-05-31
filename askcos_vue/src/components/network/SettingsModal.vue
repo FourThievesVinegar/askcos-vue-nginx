@@ -36,7 +36,7 @@
                     <v-window v-model="tab" style="width:100%">
                         <v-window-item value="general">
                             <v-container fluid>
-                                <setting-input v-if="enableResolver" label="Enable PubChem name resolver" help-text="When enabled, any input that cannot be parsed by RDKit on the ASKCOS server will be sent to the
+                                <setting-input v-if="enableResolver" label="Enable PubChem name resolver" help-text="When enabled, any input that cannot be parsed by RDKit on the ChemHacktica server will be sent to the
         PubChem Power User Gateway API to resolve a common name (i.e. - fluconazole) to a SMILES string.">
                                     <v-switch label="" v-model="allowResolve" id="allowResolve" hide-details
                                         color="primary"></v-switch>
@@ -241,12 +241,12 @@
                                         color="primary"></v-switch>
                                 </setting-input>
                                 <setting-input label="Align node images to target"
-                                    help-text="When enabled, ASKCOS will attempt to align chemical node drawings to the target molecule in the graph visualization.">
+                                    help-text="When enabled, ChemHacktica will attempt to align chemical node drawings to the target molecule in the graph visualization.">
                                     <v-switch label="" v-model="alignNodeImagesToTarget" id="alignMols" hide-details
                                         color="primary"></v-switch>
                                 </setting-input>
                                 <setting-input label="Align precursors to product"
-                                    help-text="When enabled, ASKCOS will attempt to align reactants to products for precursors and reaction drawings.">
+                                    help-text="When enabled, ChemHacktica will attempt to align reactants to products for precursors and reaction drawings.">
                                     <v-switch label="" v-model="alignPrecursorsToProduct" id="alignRxns" hide-details
                                         color="primary"></v-switch>
                                 </setting-input>

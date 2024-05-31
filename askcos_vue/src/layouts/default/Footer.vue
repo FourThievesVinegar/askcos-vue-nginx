@@ -1,5 +1,5 @@
 <template>
-  <v-footer class="text-white" absolute app height="50px" style="background: #1665c0;">
+  <v-footer class="text-white" absolute app height="50px" style="background: #491d88;">
     <v-row class="justify-center align-center" no-gutters>
       <v-col class="text-center my-2 d-flex justify-center" cols="12">
         <div class="d-flex flex-row align-center">

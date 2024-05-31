@@ -3,7 +3,7 @@
         <v-container fluid>
             <v-row class="d-flex justify-space-between align-center px-16">
                 <v-col cols="12" md="6" lg="5">
-                    <h1 class="text-h1 font-weight-bold text-white">ASKCOS</h1>
+                    <h1 class="text-h1 font-weight-bold text-white">ChemHacktica</h1>
                     <h6 class="text-h6 font-weight-bold text-white">Computer-aided Design Tools for Organic Synthesis</h6>
                 </v-col>
                 <v-col cols="12" md="6" lg="4" xl="3" class="d-flex justify-center align-center">

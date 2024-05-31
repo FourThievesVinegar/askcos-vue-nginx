@@ -29,7 +29,7 @@
                                 v-model="selection" item-value="username" height="500" :loading=dataLoading>
                                 <template v-slot:top>
                                     <v-toolbar flat>
-                                        <v-toolbar-title>ASKCOS Users</v-toolbar-title>
+                                        <v-toolbar-title>ChemHacktica Users</v-toolbar-title>
                                         <v-select label="Filter by account type" density="comfortable"
                                             variant="outlined" hide-details clearable :items="filterOptions"
                                             item-text="title" item-value="key" v-model="filterSelected"

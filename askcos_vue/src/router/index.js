@@ -433,7 +433,7 @@ router.afterEach(async (to) => {
   // eslint-disable-next-line no-undef
   NProgress.done();
   await nextTick();
-  document.title = `${to.meta.title} - ASKCOS`;
+  document.title = `${to.meta.title} - ChemHacktica`;
 });
 
 router.beforeEach((_to, from, next) => {

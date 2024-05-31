@@ -21,11 +21,11 @@
               Hi, {{ myusername }}!
             </h4>
             <p class="text-body-1">
-              Thanks for signing up at ASKCOS <v-chip size="small">v2</v-chip>. Here, we have hosted a number of
+              Thanks for signing up at ChemHacktica <v-chip size="small">v2</v-chip>. Here, we have hosted a number of
               computational tools to assist in synthetic planning and other aspects of organic chemistry.
             </p>
             <p class="text-body-1 mt-1">
-              To learn more about ASKCOS <v-btn variant="tonal" color="primary" prepend-icon="mdi-book"
+              To learn more about ASKCOS, the software that ChemHacktica is based on, <v-btn variant="tonal" color="primary" prepend-icon="mdi-book"
                 href="https://askcos-docs.mit.edu" target="_blank">ASKCOS Docs</v-btn>
             </p>
             <p class="text-body-1 mt-1">
@@ -56,7 +56,7 @@
               Hi, Guest!
             </h4>
             <p class="text-body-1">
-              You are currently using a temporary guest account at ASKCOS <v-chip size="small">v2</v-chip>. This account
+              You are currently using a temporary guest account at ChemHacktica <v-chip size="small">v2</v-chip>. This account
               can
               be and will be deleted after a certain period of time. After deletion all of the data is permanently lost.
             </p>
@@ -64,7 +64,7 @@
               Please consider signing up via the login page.
             </p>
             <p class="text-body-1 mt-1">
-              To learn more about ASKCOS <v-btn variant="tonal" color="primary" prepend-icon="mdi-book"
+              To learn more about ASKCOS, the software ChemHacktica is based on <v-btn variant="tonal" color="primary" prepend-icon="mdi-book"
                 href="https://askcos-docs.mit.edu" target="_blank">ASKCOS Docs</v-btn>
             </p>
           </v-card-text>

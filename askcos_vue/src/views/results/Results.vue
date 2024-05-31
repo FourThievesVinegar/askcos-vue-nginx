@@ -103,7 +103,7 @@
           <div v-else class="text-center">
             <v-img :width="400" cover :src="results"></v-img>
             <h6 class="mt-2 text-h6">No Results Yet...</h6>
-            <p class="mt-2 text-body-1">Try exploring ASKCOS</p>
+            <p class="mt-2 text-body-1">Try exploring ChemHacktica</p>
           </div>
         </v-sheet>
       </v-col>

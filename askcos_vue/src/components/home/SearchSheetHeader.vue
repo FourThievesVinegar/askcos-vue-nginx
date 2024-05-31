@@ -1,9 +1,9 @@
 <template>
     <v-row class="justify-center align-center pa-0 ma-0">
         <v-col cols="12" class="d-flex justify-center align-center text-center">
-            <v-icon icon="mdi-compass-rose" class="text-h2 text-blue-darken-3 mr-2"></v-icon>
-            <h2 class="text-h2 text-blue-darken-3 header font-weight-medium text-center">
-                <strong>Explore ASKCOS</strong>
+            <v-icon icon="mdi-compass-rose" class="text-h2 text-primary mr-2"></v-icon>
+            <h2 class="text-h2 text-primary header font-weight-medium text-center">
+                <strong>Explore ChemHacktica</strong>
             </h2>
         </v-col>
     </v-row>
@@ -17,10 +17,11 @@
 <style scoped>
 .header {
     background: linear-gradient(to right,
-            #65676b 20%,
-            #006bd6 30%,
-            #0080ff 70%,
-            #8a8e94 80%);
+                #491d88 20%,
+                #143B86 30%,
+                #6ac4b0 70%,
+                #d9c84b 90%,
+                #cf4673 95%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

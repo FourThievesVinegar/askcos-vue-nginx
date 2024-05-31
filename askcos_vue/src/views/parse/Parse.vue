@@ -1,5 +1,5 @@
 <template>
-    Redirecting to ASKCOS...
+    Redirecting to ChemHacktica...
 </template>
 
 <script setup>

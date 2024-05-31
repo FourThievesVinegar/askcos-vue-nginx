@@ -26,7 +26,7 @@
             <div v-else class="text-center">
                 <v-img :width="400" cover :src="emptyLogsSrc" class="mb-3"></v-img>
                 <h6 class="text-h6">Nothing to log</h6>
-                <p class="text-body-1">Explore ASKCOS to record FastAPI requests/response</p>
+                <p class="text-body-1">Explore ChemHacktica to record FastAPI requests/response</p>
             </div>
         </v-col>
     </v-row>

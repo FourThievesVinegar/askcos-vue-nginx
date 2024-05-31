@@ -1,6 +1,6 @@
 <template>
     <v-expansion-panels class="mb-2 text-body-1">
-        <v-expansion-panel class="text-blue-darken-3" data-cy="home-support">
+        <v-expansion-panel class="text-primary" data-cy="home-support">
             <template v-slot:title>
                 <v-icon class="mr-1">mdi mdi-lifebuoy</v-icon>
                 <strong>Support</strong>
@@ -21,13 +21,13 @@
             INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
             IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
             OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
-            IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."' class="text-blue-darken-3">
+            IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."' class="text-primary">
             <template v-slot:title>
                 <v-icon class="mr-1">mdi-license</v-icon>
                 <strong>License</strong>
             </template>
         </v-expansion-panel>
-        <v-expansion-panel class="text-blue-darken-3">
+        <v-expansion-panel class="text-primary">
             <template v-slot:title>
                 <v-icon class="mr-1">mdi-account-group</v-icon>
                 <strong>Contributors</strong>

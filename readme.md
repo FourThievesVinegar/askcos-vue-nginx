@@ -1,6 +1,8 @@
-# ASKCOS Web
+# ChemHacktica Web
 
-> The front page of the "ASKCOS:Computer-aided Design Tools for Organic Synthesis"
+> The front page of the "ChemHacktica:Computer-aided Design Tools for Organic Synthesis"
+
+A fork of the ASKCOS project
 
 [![Pipeline ](https://gitlab.com/mlpds_mit/askcosv2/askcos-vue-nginx/badges/main/pipeline.svg)](https://gitlab.com/mlpds_mit/askcosv2/askcos-vue-nginx/-/pipelines?page=1&scope=branches&ref=main)
 [![coverage report](https://gitlab.com/mlpds_mit/askcosv2/askcos-vue-nginx/badges/main/coverage.svg)](https://mlpds_mit.gitlab.io/askcosv2/askcos-vue-nginx)
