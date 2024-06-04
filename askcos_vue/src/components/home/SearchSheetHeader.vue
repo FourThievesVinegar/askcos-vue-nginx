@@ -20,8 +20,8 @@
                 #491d88 20%,
                 #143B86 30%,
                 #6ac4b0 70%,
-                #d9c84b 90%,
-                #cf4673 95%);
+                #d9c84b 75%,
+                #cf4673 80%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
