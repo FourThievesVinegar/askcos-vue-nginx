@@ -21,21 +21,14 @@
               also performing computationally-expensive requests." variant="tonal" class="mb-2 py-2"></v-alert>
         <v-alert border="start" density="compact" variant="tonal" icon="mdi mdi-handshake" class="mb-2">
             <template v-slot:text class="text-body-1">
-                This work began under the DARPA Make-It program
-                (ARO W911NF-16-2-0023) and continues to be supported by the
+                Big thanks to open source scientists of all stripes!
                 <a class="text-decoration-none text-primary font-weight-medium d-inline-flex align-center"
-                    target="_blank" href="https://mlpds.mit.edu">
-                    Machine Learning for Pharmaceutical Discovery and Synthesis Consortium <v-icon size="x-small">mdi
-                        mdi-open-in-new</v-icon></a>,
-                and the National Institutes of Health (1U18TR004149-01).
+                    target="_blank" href="https://fourthievesvinegar.org">
+                    This fork maintained by the Four Thieves Vinegar Collective<v-icon size="x-small">mdi
+                        mdi-open-in-new</v-icon></a>.
             </template>
         </v-alert>
         <expansion-panels />
-        <p class="mt-4 text-subtitle-2">Please review the <a
-                class="text-decoration-none text-primary font-weight-medium d-inline-flex align-center"
-                href="https://askcos-docs.mit.edu/guide/9-Privacy-&-Terms-of-Service/9.1-ASKCOS-Terms-of-Service.html"
-                target="_blank">Terms of Service <v-icon size="x-small">mdi mdi-open-in-new</v-icon></a> before using
-            ASKCOS.</p>
     </v-sheet>
 </template>
 

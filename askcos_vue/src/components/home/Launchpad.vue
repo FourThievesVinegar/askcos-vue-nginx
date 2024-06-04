@@ -26,16 +26,23 @@
             <v-btn v-if="allowResolve" variant="flat" prepend-icon="mdi mdi-magnify" @click="() => { resolveSmiles() }"
               rounded="pill" color="green" data-cy="home-resolve-btn">Resolve</v-btn>
           </template>
-          <template v-slot:append>
+          <template v-slot:append v-if="!validSmiles || type !== 'mol'">
             <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large" @click="canonicalize()"
               data-cy="home-canonicalize" rounded="pill">Canonicalize</v-btn>
+          </template>
+          <template v-slot:append v-if="validSmiles && type === 'mol'">            
+            <v-btn variant="flat" color="primary" prepend-icon="mdi mdi-web" size="large" 
+                :href="`/network?tab=IPP&target=${encodeURIComponent(smiles)}`"
+                target="_blank" rounded="pill">Perform
+                One-Step</v-btn>
           </template>
         </v-text-field>
       </v-col>
     </v-row>
 
     <v-row v-if="!!smiles" class="justify-center">
-      <v-col><smiles-image :smiles="smiles" allow-copy @load="validSmiles = true"
+      <v-col>
+        <smiles-image :smiles="smiles" allow-copy @load="validSmiles = true"
           @error="validSmiles = false"></smiles-image></v-col>
     </v-row>
 

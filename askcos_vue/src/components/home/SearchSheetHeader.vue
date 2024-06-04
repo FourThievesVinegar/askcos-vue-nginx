@@ -1,7 +1,7 @@
 <template>
     <v-row class="justify-center align-center pa-0 ma-0">
         <v-col cols="12" class="d-flex justify-center align-center text-center">
-            <v-icon icon="mdi-compass-rose" class="text-h2 text-primary mr-2"></v-icon>
+            <img src="https://synth.fourthievesvinegar.org/apple-touch-icon.png" width="44" class="mr-2"/>
             <h2 class="text-h2 text-primary header font-weight-medium text-center">
                 <strong>Explore ChemHacktica</strong>
             </h2>
